@@ -2,7 +2,7 @@ import { FormContainer, FormGroup, Label, Input, TextArea, ErrorMessage } from "
 import { SubmitButton } from "./Buttons";
 import { ImageUploader } from "./ImageUploader";
 import { AIGenerator } from "./AIGeneratorButton";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Artwork, createArtwork } from "@/lib/dpop";
 import styled from "@emotion/styled";
 import { convertDefaultToResized } from "@/lib/image";
@@ -95,6 +95,7 @@ const ArtworkForm = ({
     const [isGeneratingAI, setIsGeneratingAI] = useState(false);
     const [isUploadingImage, setIsUploadingImage] = useState(false);
     const [artworkName, setArtworkName] = useState('');
+    const [artistName, setArtistName] = useState('');
     const [description, setDescription] = useState('');
     const [imagePreview, setImagePreview] = useState<string | null>(null);
     const [isForSale, setIsForSale] = useState(false);
@@ -102,6 +103,13 @@ const ArtworkForm = ({
     const [collaborators, setCollaborators] = useState('1');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitError, setSubmitError] = useState<string | null>(null);
+
+    // useEffect(() => {
+    //   const username = localStorage.getItem('username');
+    //   if (username) {
+    //     setArtistName(username);
+    //   }
+    // }, []);
   
     const handleSubmit = async (e: React.FormEvent) => {
       e.preventDefault();
@@ -111,6 +119,7 @@ const ArtworkForm = ({
       try {
         // Here you would implement the actual submission logic
         // For example, uploading to IPFS and then calling the Sui contract
+        const uploadedBy = localStorage.getItem('username');
         
         // Upload image to API
         if (imagePreview) {
@@ -119,12 +128,15 @@ const ArtworkForm = ({
               title: artworkName,
               description: description,
               data: {
+                  artist_name: artistName,
                   image: imagePreview,
                   is_for_sale: isForSale,
                   price: isForSale ? parseFloat(price) : undefined,
-                  num_collaborators: parseInt(collaborators)
+                  num_collaborators: parseInt(collaborators),
+                  uploaded_by: uploadedBy || undefined,
               }
-          });  
+          });
+
           console.log('Artwork created successfully:', artwork);
           onSubmitSuccess(artwork);
         } else {
@@ -212,6 +224,18 @@ const ArtworkForm = ({
           onChange={(e) => setDescription(e.target.value)}
           placeholder="Describe your artistic vision in excruciating detail..."
           rows={4}
+          required
+        />
+      </FormGroup>
+
+      <FormGroup>
+        <Label htmlFor="artistName">Artist Name</Label>
+        <Input
+          id="artistName"
+          type="text"
+          value={artistName}
+          onChange={(e) => setArtistName(e.target.value)}
+          placeholder="Artist's name"
           required
         />
       </FormGroup>

@@ -17,6 +17,8 @@ export interface ArtworkData {
   is_for_sale?: boolean;
   price?: number;
   num_collaborators?: number;
+  artist_name?: string;
+  uploaded_by?: string;
 }
 
 export interface Artwork {

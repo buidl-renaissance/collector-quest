@@ -385,15 +385,15 @@ const ModalOverlay = styled.div`
   justify-content: center;
   align-items: center;
   z-index: 1000;
-  padding: 2rem;
+  padding: 1rem;
 `;
 
 const ModalContent = styled.div`
   background: #2D3748;
   border-radius: 0.5rem;
   width: 100%;
-  max-width: 900px;
-  max-height: 90vh;
+  max-width: 95vw;
+  max-height: 95vh;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
@@ -401,6 +401,7 @@ const ModalContent = styled.div`
   
   @media (min-width: 768px) {
     flex-direction: row;
+    height: 95vh;
   }
 `;
 
@@ -422,21 +423,24 @@ const ModalCloseButton = styled.button`
 
 const ModalImageContainer = styled.div`
   flex: 1;
+  height: 50vh;
   
   @media (min-width: 768px) {
-    max-width: 50%;
+    height: 100%;
+    max-width: 60%;
   }
 `;
 
 const ModalImage = styled.img`
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
 `;
 
 const ModalInfo = styled.div`
   flex: 1;
   padding: 2rem;
+  overflow-y: auto;
 `;
 
 const ModalTitle = styled.h2`
