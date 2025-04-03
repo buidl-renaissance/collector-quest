@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import { NextApiRequest, NextApiResponse } from 'next';
 import OpenAI from "openai";
 import { z } from "zod";
 import { zodResponseFormat } from "openai/helpers/zod";
@@ -10,16 +10,16 @@ const ArtworkSchema = z.object({
 
 const openai = new OpenAI();
 
-export async function POST(request: Request) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
+
   try {
-    const body = await request.json();
-    const { imageUrl } = body;
+    const { imageUrl } = req.body;
 
     if (!imageUrl) {
-      return NextResponse.json(
-        { error: "Image URL is required" },
-        { status: 400 }
-      );
+      return res.status(400).json({ error: "Image URL is required" });
     }
 
     const systemPrompt = `You are an art expert who can analyze images and create compelling titles and descriptions for artwork. 
@@ -42,16 +42,13 @@ export async function POST(request: Request) {
     
     const artwork = completion.choices[0].message.parsed;
 
-    return NextResponse.json({ artwork });
+    return res.status(200).json({ artwork });
 
   } catch (error: unknown) {
     console.error("Artwork API Error:", error);
-    return NextResponse.json(
-      { 
-        error: "Failed to generate artwork title and description",
-        detail: error instanceof Error ? error.message : String(error)
-      },
-      { status: 500 }
-    );
+    return res.status(500).json({ 
+      error: "Failed to generate artwork title and description",
+      detail: error instanceof Error ? error.message : String(error)
+    });
   }
 }

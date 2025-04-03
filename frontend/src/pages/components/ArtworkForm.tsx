@@ -3,8 +3,6 @@ import { SubmitButton } from "./Buttons";
 import { ImageUploader } from "./ImageUploader";
 import { AIGenerator } from "./AIGeneratorButton";
 import { useState } from "react";
-import { uploadMedia } from "@/lib/dpop";
-import { convertDefaultToResized } from "@/lib/image";
 import { Artwork, createArtwork } from "@/lib/dpop";
 import styled from "@emotion/styled";
 
@@ -96,7 +94,6 @@ const ArtworkForm = ({
     const [isGeneratingAI, setIsGeneratingAI] = useState(false);
     const [artworkName, setArtworkName] = useState('');
     const [description, setDescription] = useState('');
-    const [imageFile, setImageFile] = useState<File | null>(null);
     const [imagePreview, setImagePreview] = useState<string | null>(null);
     const [isForSale, setIsForSale] = useState(false);
     const [price, setPrice] = useState('');
@@ -114,38 +111,18 @@ const ArtworkForm = ({
         // For example, uploading to IPFS and then calling the Sui contract
         
         // Upload image to API
-        if (imageFile) {
-          const formData = new FormData();
-          formData.append('file', imageFile);
-          
-          // Upload to the specified API endpoint
-          const uploadData = await uploadMedia(imageFile);
-          
-          if (!uploadData.ok) {
-            throw new Error('Failed to upload image to server');
-          }
-          
-          console.log('Image uploaded successfully:', uploadData);
-          
-          // Create artwork with the uploaded image URL
-          const imageUrl = convertDefaultToResized(uploadData.url);
-  
+        if (imagePreview) {
           // Create the artwork in the database
           const artwork = await createArtwork({
               title: artworkName,
               description: description,
               data: {
-                  image: imageUrl,
+                  image: imagePreview,
                   is_for_sale: isForSale,
                   price: isForSale ? parseFloat(price) : undefined,
                   num_collaborators: parseInt(collaborators)
               }
-          });
-  
-          if (!artwork.ok) {
-            throw new Error('Failed to create artwork record');
-          }
-  
+          });  
           console.log('Artwork created successfully:', artwork);
           onSubmitSuccess(artwork);
         } else {
@@ -155,7 +132,6 @@ const ArtworkForm = ({
         // Reset form
         setArtworkName('');
         setDescription('');
-        setImageFile(null);
         setImagePreview(null);
         setIsForSale(false);
         setPrice('');

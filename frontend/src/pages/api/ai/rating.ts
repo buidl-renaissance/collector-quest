@@ -13,7 +13,7 @@ const RatingSchema = z.object({
   rating: z.number().nullable(),
 });
 
-export async function POST(request: Request) {
+export default async function handler(request: Request) {
   try {
     const body = await request.json();
     const { text, projectContext } = body;

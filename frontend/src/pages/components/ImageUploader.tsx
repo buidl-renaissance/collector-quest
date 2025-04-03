@@ -130,7 +130,7 @@ const ImagePreview = styled.img`
   max-height: 300px;
   border-radius: 0.5rem;
   display: block;
-  margin: 0 auto;
+  /* margin: 0 auto; */
 `;
 
 const RemoveButton = styled.button`
