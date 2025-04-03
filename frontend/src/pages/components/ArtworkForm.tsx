@@ -2,7 +2,7 @@ import { FormContainer, FormGroup, Label, Input, TextArea, ErrorMessage } from "
 import { SubmitButton } from "./Buttons";
 import { ImageUploader } from "./ImageUploader";
 import { AIGenerator } from "./AIGeneratorButton";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Artwork, createArtwork } from "@/lib/dpop";
 import styled from "@emotion/styled";
 import { convertDefaultToResized } from "@/lib/image";

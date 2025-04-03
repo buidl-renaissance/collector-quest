@@ -17,6 +17,10 @@ export interface ArtworkData {
   is_for_sale?: boolean;
   price?: number;
   num_collaborators?: number;
+  review?: {
+    text: string;
+    image: string;
+  };
   artist_name?: string;
   uploaded_by?: string;
 }
@@ -31,7 +35,7 @@ export interface Artwork {
   collaborators?: Artist[];
   content?: Content[];
   data: ArtworkData;
-  meta: any;
+  meta: Record<string, unknown>;
 }
 
 export interface Content {

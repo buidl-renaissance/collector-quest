@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
-import styled from '@emotion/styled';
-import { FaPalette, FaUpload, FaUser } from 'react-icons/fa';
-import { useRouter } from 'next/router';
+import React, { useState, useEffect } from "react";
+import Link from "next/link";
+import styled from "@emotion/styled";
+import { FaPalette, FaUpload, FaUser } from "react-icons/fa";
+import { useRouter } from "next/router";
 
 // Styled components for the navigation bar
 const NavContainer = styled.nav`
-  background: linear-gradient(to right, #1A202C, #2D3748);
+  background: linear-gradient(to right, #1a202c, #2d3748);
   padding: 1rem 2rem;
   display: flex;
   justify-content: space-between;
@@ -17,27 +17,22 @@ const NavContainer = styled.nav`
 const Logo = styled.div`
   font-size: 1.5rem;
   font-weight: bold;
-  color: #E2E8F0;
+  color: #e2e8f0;
   display: flex;
   align-items: center;
   gap: 0.5rem;
 `;
 
-const NavLinks = styled.div`
-  display: flex;
-  gap: 1.5rem;
-`;
-
 const NavLink = styled.a`
-  color: #A0AEC0;
+  color: #a0aec0;
   text-decoration: none;
   display: flex;
   align-items: center;
   gap: 0.5rem;
   transition: color 0.3s ease;
-  
+
   &:hover {
-    color: #805AD5;
+    color: #805ad5;
   }
 `;
 
@@ -45,7 +40,7 @@ const UserInfo = styled.div`
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  color: #E2E8F0;
+  color: #e2e8f0;
 `;
 
 const UserIcon = styled.div`
@@ -56,39 +51,39 @@ const UserIcon = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #805AD5;
+  color: #805ad5;
 `;
 
 const NavigationBar = () => {
   const [username, setUsername] = useState<string | null>(null);
   const router = useRouter();
-  
+
   useEffect(() => {
     // Check if username is stored in localStorage
-    const storedUsername = localStorage.getItem('username');
+    const storedUsername = localStorage.getItem("username");
     if (storedUsername) {
       setUsername(storedUsername);
     }
 
     // Listen for storage events to update username if changed in another tab
     const handleStorageChange = (event: StorageEvent) => {
-      if (event.key === 'username') {
+      if (event.key === "username") {
         setUsername(event.newValue);
       }
     };
 
-    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener("storage", handleStorageChange);
 
     return () => {
-      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener("storage", handleStorageChange);
     };
   }, []);
 
   return (
     <NavContainer>
-      {router.pathname !== '/' ? (
-        <Link href="/" passHref>
-          <Logo as="a">
+      {router.pathname !== "/" ? (
+        <Link href="/">
+          <Logo>
             <FaPalette /> Lord Smearington&apos;s Gallery
           </Logo>
         </Link>
@@ -97,7 +92,7 @@ const NavigationBar = () => {
           <FaPalette /> Lord Smearington&apos;s Gallery
         </Logo>
       )}
-      
+
       {username ? (
         <UserInfo>
           <UserIcon>
@@ -106,11 +101,9 @@ const NavigationBar = () => {
           {username}
         </UserInfo>
       ) : (
-        <Link href="/submit" passHref>
-          <NavLink>
-            <FaUser /> Sign In
-          </NavLink>
-        </Link>
+        <NavLink href="/submit">
+          <FaUser /> Sign In
+        </NavLink>
       )}
     </NavContainer>
   );
