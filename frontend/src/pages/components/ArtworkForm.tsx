@@ -5,6 +5,7 @@ import { AIGenerator } from "./AIGeneratorButton";
 import { useState } from "react";
 import { Artwork, createArtwork } from "@/lib/dpop";
 import styled from "@emotion/styled";
+import { convertDefaultToResized } from "@/lib/image";
 
 type ArtworkFormProps = {
     onSubmitSuccess: (artwork: Artwork) => void;
@@ -92,6 +93,7 @@ const ArtworkForm = ({
   }: ArtworkFormProps) => {
 
     const [isGeneratingAI, setIsGeneratingAI] = useState(false);
+    const [isUploadingImage, setIsUploadingImage] = useState(false);
     const [artworkName, setArtworkName] = useState('');
     const [description, setDescription] = useState('');
     const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -156,7 +158,7 @@ const ArtworkForm = ({
             headers: {
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ imageUrl: imagePreview }),
+            body: JSON.stringify({ imageUrl: convertDefaultToResized(imagePreview) }),
           });
           
           if (!response.ok) {
@@ -179,12 +181,15 @@ const ArtworkForm = ({
       <ImageUploader 
         imagePreview={imagePreview || ''} 
         setImagePreview={setImagePreview}
+        onFileSelected={() => setIsUploadingImage(true)}
+        onUploadComplete={() => setIsUploadingImage(false)}
       />
   
       <AIGenerator 
         generateAIMetadata={generateAIMetadata} 
         isSubmitting={isSubmitting}
         isGeneratingAI={isGeneratingAI}
+        isDisabled={isUploadingImage}
       />
   
       <FormGroup>

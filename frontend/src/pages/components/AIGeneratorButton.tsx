@@ -12,18 +12,20 @@ const AIGenerateContainer = styled.div`
   align-items: self-start;
 `;
 
-const AIGenerateButton = styled.button`
+const AIGenerateButton = styled.button<{ disabled?: boolean }>`
   background: rgba(128, 90, 213, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 0.5rem;
   padding: 0.5rem 1rem;
-  cursor: pointer;
+  cursor: ${props => props.disabled ? 'not-allowed' : 'pointer'};
   transition: all 0.3s ease;
   text-align: left;
+  min-width: 250px;
+  opacity: ${props => props.disabled ? 0.6 : 1};
 
   &:hover {
-    border-color: #805AD5;
-    background: rgba(128, 90, 213, 0.1);
+    border-color: ${props => props.disabled ? 'rgba(255, 255, 255, 0.1)' : '#805AD5'};
+    background: rgba(128, 90, 213, ${props => props.disabled ? 0.05 : 0.1});
   }
 `;
 
@@ -41,17 +43,18 @@ type AIGeneratorProps = {
   generateAIMetadata: () => void;
   isSubmitting: boolean;
   isGeneratingAI: boolean;
+  isDisabled: boolean;
 };
 
 // AIGenerator Component
-export const AIGenerator = ({ generateAIMetadata, isSubmitting, isGeneratingAI }: AIGeneratorProps) => (
+export const AIGenerator = ({ generateAIMetadata, isSubmitting, isGeneratingAI, isDisabled }: AIGeneratorProps) => (
     <FormGroup>
       <Label>Generate with AI</Label>
       <AIGenerateContainer>
         <AIGenerateButton 
           type="button" 
           onClick={generateAIMetadata}
-          disabled={isSubmitting || isGeneratingAI}
+          disabled={isSubmitting || isGeneratingAI || isDisabled}
         >
           <AIGenerateIcon>✨</AIGenerateIcon>
           {isGeneratingAI ? 'Generating...' : 'Generate Random Title & Description'}
