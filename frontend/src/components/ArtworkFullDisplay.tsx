@@ -19,18 +19,13 @@ const ArtworkFullDisplay: React.FC<ArtworkFullDisplayProps> = ({
       <Content>
         {onClose && <CloseButton onClick={onClose}>×</CloseButton>}
         <ImageContainer>
-          <Image
-            src={artwork.data.image}
-            alt={artwork.title}
-          />
+          <Image src={artwork.data.image} alt={artwork.title} />
         </ImageContainer>
         <InfoSection>
           <Title>{artwork.title}</Title>
           <Artist>
             Created by:{" "}
-            {artwork.artist?.name ||
-              artwork.data?.artist_name ||
-              "Unknown"}
+            {artwork.artist?.name || artwork.data?.artist_name || "Unknown"}
           </Artist>
           <Description>{artwork.description}</Description>
 
@@ -73,7 +68,7 @@ const Content = styled.div`
   overflow: hidden;
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
     0 10px 10px -5px rgba(0, 0, 0, 0.04);
-  
+
   @media (min-width: 768px) {
     flex-direction: row;
     max-height: 80vh;
@@ -91,7 +86,7 @@ const CloseButton = styled.button`
   cursor: pointer;
   z-index: 10;
   line-height: 1;
-  
+
   &:hover {
     color: #805ad5;
   }
@@ -102,7 +97,7 @@ const ImageContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  
+
   @media (min-width: 768px) {
     max-width: 60%;
   }

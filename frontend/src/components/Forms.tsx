@@ -17,7 +17,7 @@ const FormGroup = styled.div`
 const Label = styled.label`
   display: block;
   margin-bottom: 0.5rem;
-  color: #E2E8F0;
+  color: #e2e8f0;
   font-weight: 500;
 `;
 
@@ -30,13 +30,13 @@ const Input = styled.input`
   color: white;
   font-size: 1rem;
   transition: all 0.3s ease;
-  
+
   &:focus {
     outline: none;
-    border-color: #805AD5;
+    border-color: #805ad5;
     box-shadow: 0 0 0 2px rgba(128, 90, 213, 0.3);
   }
-  
+
   &::placeholder {
     color: #718096;
   }
@@ -53,13 +53,13 @@ const TextArea = styled.textarea`
   resize: vertical;
   min-height: 100px;
   transition: all 0.3s ease;
-  
+
   &:focus {
     outline: none;
-    border-color: #805AD5;
+    border-color: #805ad5;
     box-shadow: 0 0 0 2px rgba(128, 90, 213, 0.3);
   }
-  
+
   &::placeholder {
     color: #718096;
   }
@@ -67,7 +67,7 @@ const TextArea = styled.textarea`
 
 // Message Components
 const ErrorMessage = styled.div`
-  color: #FC8181;
+  color: #fc8181;
   background: rgba(252, 129, 129, 0.1);
   border: 1px solid rgba(252, 129, 129, 0.3);
   padding: 0.75rem 1rem;

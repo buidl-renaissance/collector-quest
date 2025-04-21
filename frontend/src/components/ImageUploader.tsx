@@ -12,74 +12,83 @@ type ImageUploaderProps = {
 };
 
 // ImageUploader Component
-export const ImageUploader = ({ imagePreview, setImagePreview, onFileSelected, onUploadComplete }: ImageUploaderProps) => {
-    const [isUploading, setIsUploading] = useState(false);
-    const [, setImageFile] = useState<File | null>(null);
+export const ImageUploader = ({
+  imagePreview,
+  setImagePreview,
+  onFileSelected,
+  onUploadComplete,
+}: ImageUploaderProps) => {
+  const [isUploading, setIsUploading] = useState(false);
+  const [, setImageFile] = useState<File | null>(null);
 
-    const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        onFileSelected?.(file || null);
-        if (file) {
-          setImageFile(file);
-          const reader = new FileReader();
-          reader.onloadend = () => {
-            setImagePreview(reader.result as string);
-          };
-          reader.readAsDataURL(file);
-    
-          setIsUploading(true);
-          const result = await uploadMedia(file);
-          if (result && result.url) {
-            setIsUploading(false);
-            setImagePreview(result.url);
-            onUploadComplete?.(result.url);
-          } else {
-            throw new Error('Failed to upload image');
-          }
-        }
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    onFileSelected?.(file || null);
+    if (file) {
+      setImageFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
       };
-      
-      return (
-  <FormGroup>
-    <Label>Artwork Image</Label>
-    <ImageUploadContainer>
-      {imagePreview ? (
-        <PreviewContainer>
-          <ImagePreview src={imagePreview} alt="Preview" />
-          {isUploading && (
-            <UploadingOverlay>
-              <UploadingSpinner />
-              <UploadingOverlayText>Uploading...</UploadingOverlayText>
-            </UploadingOverlay>
-          )}
-          <RemoveButton onClick={() => {
-            setImageFile(null);
-            setImagePreview(null);
-          }}>
-            Remove
-          </RemoveButton>
-        </PreviewContainer>
-      ) : (
-        <UploadBox>
-          <UploadIcon>
-            <FaUpload />
-          </UploadIcon>
-          <UploadText>
-            Drag and drop your image here, or click to browse
-          </UploadText>
-          <UploadInput
-            type="file"
-            accept="image/*"
-            onChange={handleImageChange}
-            required
-          />
-        </UploadBox>
+      reader.readAsDataURL(file);
+
+      setIsUploading(true);
+      const result = await uploadMedia(file);
+      if (result && result.url) {
+        setIsUploading(false);
+        setImagePreview(result.url);
+        onUploadComplete?.(result.url);
+      } else {
+        throw new Error("Failed to upload image");
+      }
+    }
+  };
+
+  return (
+    <FormGroup>
+      <Label>Artwork Image</Label>
+      <ImageUploadContainer>
+        {imagePreview ? (
+          <PreviewContainer>
+            <ImagePreview src={imagePreview} alt="Preview" />
+            {isUploading && (
+              <UploadingOverlay>
+                <UploadingSpinner />
+                <UploadingOverlayText>Uploading...</UploadingOverlayText>
+              </UploadingOverlay>
+            )}
+            <RemoveButton
+              onClick={() => {
+                setImageFile(null);
+                setImagePreview(null);
+              }}
+            >
+              Remove
+            </RemoveButton>
+          </PreviewContainer>
+        ) : (
+          <UploadBox>
+            <UploadIcon>
+              <FaUpload />
+            </UploadIcon>
+            <UploadText>
+              Drag and drop your image here, or click to browse
+            </UploadText>
+            <UploadInput
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              required
+            />
+          </UploadBox>
+        )}
+      </ImageUploadContainer>
+      {isUploading && !imagePreview && (
+        <UploadingText>Uploading...</UploadingText>
       )}
-    </ImageUploadContainer>
-    {isUploading && !imagePreview && <UploadingText>Uploading...</UploadingText>}
-  </FormGroup>
-);
-}
+    </FormGroup>
+  );
+};
 
 // Image Upload Components
 const ImageUploadContainer = styled.div`
@@ -98,25 +107,25 @@ const UploadBox = styled.div`
   display: flex;
   justify-content: center;
   gap: 2rem;
-  
+
   &:hover {
-    border-color: #805AD5;
+    border-color: #805ad5;
     background: rgba(128, 90, 213, 0.1);
   }
 `;
 
 const UploadingText = styled.p`
-  color: #A0AEC0;
+  color: #a0aec0;
   margin: 0;
 `;
 
 const UploadIcon = styled.div`
   font-size: 2rem;
-  color: #805AD5;
+  color: #805ad5;
 `;
 
 const UploadText = styled.p`
-  color: #A0AEC0;
+  color: #a0aec0;
   margin: 0;
 `;
 
@@ -166,14 +175,18 @@ const UploadingOverlayText = styled.p`
 const UploadingSpinner = styled.div`
   border: 4px solid rgba(255, 255, 255, 0.3);
   border-radius: 50%;
-  border-top: 4px solid #805AD5;
+  border-top: 4px solid #805ad5;
   width: 40px;
   height: 40px;
   animation: spin 1s linear infinite;
-  
+
   @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
   }
 `;
 
@@ -188,8 +201,8 @@ const RemoveButton = styled.button`
   padding: 0.25rem 0.5rem;
   cursor: pointer;
   font-size: 0.875rem;
-  
+
   &:hover {
-    background: #E53E3E;
+    background: #e53e3e;
   }
 `;

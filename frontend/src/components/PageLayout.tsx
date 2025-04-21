@@ -1,8 +1,8 @@
-import { FaArrowLeft } from 'react-icons/fa';
-import Link from 'next/link';
-import styled from '@emotion/styled';
-import { keyframes } from '@emotion/react';
-import NavigationBar from './NavigationBar';
+import { FaArrowLeft } from "react-icons/fa";
+import Link from "next/link";
+import styled from "@emotion/styled";
+import { keyframes } from "@emotion/react";
+import NavigationBar from "./NavigationBar";
 
 // Page Layout Component
 const PageLayout = ({ children }: { children: React.ReactNode }) => (
@@ -10,7 +10,7 @@ const PageLayout = ({ children }: { children: React.ReactNode }) => (
     <NavigationBar />
     <PageContainer>
       <PageBackground />
-      
+
       {/* Floating elements for visual interest */}
       {[...Array(10)].map((_, i) => (
         <FloatingElement
@@ -22,15 +22,15 @@ const PageLayout = ({ children }: { children: React.ReactNode }) => (
           animationDuration={`${Math.random() * 10 + 10}s`}
         />
       ))}
-      
+
       <ContentContainer>
         <BackLink href="/">
           <FaArrowLeft /> Back to Gallery
         </BackLink>
-        
+
         <PageTitle>Submit Your Masterpiece</PageTitle>
         <PageSubtitle>Let Lord Smearington Judge Your Creation</PageSubtitle>
-        
+
         {children}
       </ContentContainer>
     </PageContainer>
@@ -60,21 +60,27 @@ const PageBackground = styled.div`
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(135deg, #1A202C 0%, #2D3748 100%);
+  background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
   z-index: -2;
 `;
 
-const FloatingElement = styled.div<{ top: string; left: string; size: string; opacity: number; animationDuration: string }>`
+const FloatingElement = styled.div<{
+  top: string;
+  left: string;
+  size: string;
+  opacity: number;
+  animationDuration: string;
+}>`
   position: absolute;
-  top: ${props => props.top};
-  left: ${props => props.left};
-  width: ${props => props.size};
-  height: ${props => props.size};
+  top: ${(props) => props.top};
+  left: ${(props) => props.left};
+  width: ${(props) => props.size};
+  height: ${(props) => props.size};
   border-radius: 50%;
-  background: radial-gradient(circle at center, #805AD5 0%, transparent 70%);
-  opacity: ${props => props.opacity};
+  background: radial-gradient(circle at center, #805ad5 0%, transparent 70%);
+  opacity: ${(props) => props.opacity};
   z-index: -1;
-  animation: ${float} ${props => props.animationDuration} infinite ease-in-out;
+  animation: ${float} ${(props) => props.animationDuration} infinite ease-in-out;
 `;
 
 const ContentContainer = styled.div`
@@ -88,15 +94,15 @@ const ContentContainer = styled.div`
 const BackLink = styled(Link)`
   display: inline-flex;
   align-items: center;
-  color: #E2E8F0;
+  color: #e2e8f0;
   text-decoration: none;
   margin-bottom: 2rem;
   font-size: 1rem;
   gap: 0.5rem;
   transition: color 0.3s ease;
-  
+
   &:hover {
-    color: #805AD5;
+    color: #805ad5;
   }
 `;
 
@@ -105,7 +111,7 @@ const PageTitle = styled.h1`
   color: white;
   margin-bottom: 0.5rem;
   text-align: center;
-  background: linear-gradient(to right, #805AD5, #D53F8C);
+  background: linear-gradient(to right, #805ad5, #d53f8c);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -113,7 +119,7 @@ const PageTitle = styled.h1`
 
 const PageSubtitle = styled.h2`
   font-size: 1.25rem;
-  color: #A0AEC0;
+  color: #a0aec0;
   margin-bottom: 3rem;
   text-align: center;
   font-style: italic;

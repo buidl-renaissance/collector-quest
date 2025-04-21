@@ -22,12 +22,10 @@ const ModalContainer: React.FC<ModalContainerProps> = ({
       <Container onClick={(e) => e.stopPropagation()}>
         <Content>
           <CloseButton onClick={onClose}>×</CloseButton>
-        
-        <ChildrenContainer>
-          {children}
-        </ChildrenContainer>
+
+          <ChildrenContainer>{children}</ChildrenContainer>
         </Content>
-        
+
         {showNavigation && onPrevious && onNext && (
           <NavigationButtons>
             <NavButton onClick={onPrevious}>
@@ -96,7 +94,7 @@ const CloseButton = styled.button`
   cursor: pointer;
   z-index: 10;
   line-height: 1;
-  
+
   &:hover {
     color: #805ad5;
   }

@@ -1,4 +1,11 @@
-import { FormContainer, FormGroup, Label, Input, TextArea, ErrorMessage } from "./Forms";
+import {
+  FormContainer,
+  FormGroup,
+  Label,
+  Input,
+  TextArea,
+  ErrorMessage,
+} from "./Forms";
 import { SubmitButton } from "./Buttons";
 import { ImageUploader } from "./ImageUploader";
 import { AIGenerator } from "./AIGeneratorButton";
@@ -8,8 +15,8 @@ import styled from "@emotion/styled";
 import { convertDefaultToResized } from "@/lib/image";
 
 type ArtworkFormProps = {
-    onSubmitSuccess: (artwork: Artwork) => void;
-}
+  onSubmitSuccess: (artwork: Artwork) => void;
+};
 
 // Currency Input Component
 const CurrencyInputContainer = styled.div`
@@ -38,7 +45,7 @@ const ToggleContainer = styled.div`
 `;
 
 const ToggleLabel = styled.span`
-  color: #E2E8F0;
+  color: #e2e8f0;
   margin-left: 0.75rem;
 `;
 
@@ -53,11 +60,11 @@ const ToggleInput = styled.input`
   opacity: 0;
   width: 0;
   height: 0;
-  
+
   &:checked + span {
-    background-color: #805AD5;
+    background-color: #805ad5;
   }
-  
+
   &:checked + span:before {
     transform: translateX(26px);
   }
@@ -73,7 +80,7 @@ const ToggleSlider = styled.span`
   background-color: rgba(45, 55, 72, 0.7);
   transition: 0.4s;
   border-radius: 24px;
-  
+
   &:before {
     position: absolute;
     content: "";
@@ -88,122 +95,122 @@ const ToggleSlider = styled.span`
 `;
 
 // ArtworkForm Component
-const ArtworkForm = ({ 
-    onSubmitSuccess,
-  }: ArtworkFormProps) => {
+const ArtworkForm = ({ onSubmitSuccess }: ArtworkFormProps) => {
+  const [isGeneratingAI, setIsGeneratingAI] = useState(false);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [artworkName, setArtworkName] = useState("");
+  const [artistName, setArtistName] = useState("");
+  const [description, setDescription] = useState("");
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [isForSale, setIsForSale] = useState(false);
+  const [price, setPrice] = useState("");
+  const [collaborators, setCollaborators] = useState("1");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
-    const [isGeneratingAI, setIsGeneratingAI] = useState(false);
-    const [isUploadingImage, setIsUploadingImage] = useState(false);
-    const [artworkName, setArtworkName] = useState('');
-    const [artistName, setArtistName] = useState('');
-    const [description, setDescription] = useState('');
-    const [imagePreview, setImagePreview] = useState<string | null>(null);
-    const [isForSale, setIsForSale] = useState(false);
-    const [price, setPrice] = useState('');
-    const [collaborators, setCollaborators] = useState('1');
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [submitError, setSubmitError] = useState<string | null>(null);
+  // useEffect(() => {
+  //   const username = localStorage.getItem('username');
+  //   if (username) {
+  //     setArtistName(username);
+  //   }
+  // }, []);
 
-    // useEffect(() => {
-    //   const username = localStorage.getItem('username');
-    //   if (username) {
-    //     setArtistName(username);
-    //   }
-    // }, []);
-  
-    const handleSubmit = async (e: React.FormEvent) => {
-      e.preventDefault();
-      setIsSubmitting(true);
-      setSubmitError(null);
-  
-      try {
-        // Here you would implement the actual submission logic
-        // For example, uploading to IPFS and then calling the Sui contract
-        const uploadedBy = localStorage.getItem('username');
-        
-        // Upload image to API
-        if (imagePreview) {
-          // Create the artwork in the database
-          const artwork = await createArtwork({
-              title: artworkName,
-              description: description,
-              data: {
-                  artist_name: artistName,
-                  image: imagePreview,
-                  is_for_sale: isForSale,
-                  price: isForSale ? parseFloat(price) : undefined,
-                  num_collaborators: parseInt(collaborators),
-                  uploaded_by: uploadedBy || undefined,
-              }
-          });
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setSubmitError(null);
 
-          console.log('Artwork created successfully:', artwork);
-          onSubmitSuccess(artwork);
-        } else {
-          throw new Error('No image file selected');
-        }
-        
-        // Reset form
-        setArtworkName('');
-        setDescription('');
-        setImagePreview(null);
-        setIsForSale(false);
-        setPrice('');
-        setCollaborators('1');
-      } catch (error) {
-        setSubmitError('Failed to submit artwork. Please try again.');
-        console.error('Submission error:', error);
-      } finally {
-        setIsSubmitting(false);
+    try {
+      // Here you would implement the actual submission logic
+      // For example, uploading to IPFS and then calling the Sui contract
+      const uploadedBy = localStorage.getItem("username");
+
+      // Upload image to API
+      if (imagePreview) {
+        // Create the artwork in the database
+        const artwork = await createArtwork({
+          title: artworkName,
+          description: description,
+          data: {
+            artist_name: artistName,
+            image: imagePreview,
+            is_for_sale: isForSale,
+            price: isForSale ? parseFloat(price) : undefined,
+            num_collaborators: parseInt(collaborators),
+            uploaded_by: uploadedBy || undefined,
+          },
+        });
+
+        console.log("Artwork created successfully:", artwork);
+        onSubmitSuccess(artwork);
+      } else {
+        throw new Error("No image file selected");
       }
-    };
-    
-      const generateAIMetadata = async () => {
-        if (!imagePreview) return;
-        if (isGeneratingAI) return;
-        if (artworkName && description) return;
-        
-        setIsGeneratingAI(true);
-        try {
-          const response = await fetch('/api/ai/artwork', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ imageUrl: convertDefaultToResized(imagePreview) }),
-          });
-          
-          if (!response.ok) {
-            throw new Error('Failed to generate AI metadata');
-          }
-          
-          const data = await response.json();
-          setArtworkName(data.artwork.title);
-          setDescription(data.artwork.description);
-        } catch (error) {
-          console.error('Error generating AI metadata:', error);
-          setSubmitError('Failed to generate AI metadata. Please try again or fill in manually.');
-        } finally {
-          setIsGeneratingAI(false);
-        }
-      };
-    return (
-    
+
+      // Reset form
+      setArtworkName("");
+      setDescription("");
+      setImagePreview(null);
+      setIsForSale(false);
+      setPrice("");
+      setCollaborators("1");
+    } catch (error) {
+      setSubmitError("Failed to submit artwork. Please try again.");
+      console.error("Submission error:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const generateAIMetadata = async () => {
+    if (!imagePreview) return;
+    if (isGeneratingAI) return;
+    if (artworkName && description) return;
+
+    setIsGeneratingAI(true);
+    try {
+      const response = await fetch("/api/ai/artwork", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          imageUrl: convertDefaultToResized(imagePreview),
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to generate AI metadata");
+      }
+
+      const data = await response.json();
+      setArtworkName(data.artwork.title);
+      setDescription(data.artwork.description);
+    } catch (error) {
+      console.error("Error generating AI metadata:", error);
+      setSubmitError(
+        "Failed to generate AI metadata. Please try again or fill in manually."
+      );
+    } finally {
+      setIsGeneratingAI(false);
+    }
+  };
+  return (
     <FormContainer onSubmit={handleSubmit}>
-      <ImageUploader 
-        imagePreview={imagePreview || ''} 
+      <ImageUploader
+        imagePreview={imagePreview || ""}
         setImagePreview={setImagePreview}
         onFileSelected={() => setIsUploadingImage(true)}
         onUploadComplete={() => setIsUploadingImage(false)}
       />
-  
-      <AIGenerator 
-        generateAIMetadata={generateAIMetadata} 
+
+      <AIGenerator
+        generateAIMetadata={generateAIMetadata}
         isSubmitting={isSubmitting}
         isGeneratingAI={isGeneratingAI}
         isDisabled={isUploadingImage}
       />
-  
+
       <FormGroup>
         <Label htmlFor="artworkName">Artwork Title</Label>
         <Input
@@ -215,7 +222,7 @@ const ArtworkForm = ({
           required
         />
       </FormGroup>
-      
+
       <FormGroup>
         <Label htmlFor="description">Description</Label>
         <TextArea
@@ -239,7 +246,7 @@ const ArtworkForm = ({
           required
         />
       </FormGroup>
-      
+
       <FormGroup>
         <Label htmlFor="collaborators">Number of Collaborators</Label>
         <Input
@@ -253,12 +260,12 @@ const ArtworkForm = ({
           required
         />
       </FormGroup>
-      
+
       <FormGroup>
         <ToggleContainer>
           <ToggleSwitch>
-            <ToggleInput 
-              type="checkbox" 
+            <ToggleInput
+              type="checkbox"
               checked={isForSale}
               onChange={(e) => setIsForSale(e.target.checked)}
             />
@@ -267,7 +274,7 @@ const ArtworkForm = ({
           <ToggleLabel>List for Sale</ToggleLabel>
         </ToggleContainer>
       </FormGroup>
-      
+
       {isForSale && (
         <FormGroup>
           <Label htmlFor="price">Price (in USDC)</Label>
@@ -286,14 +293,14 @@ const ArtworkForm = ({
           </CurrencyInputContainer>
         </FormGroup>
       )}
-      
+
       {submitError && <ErrorMessage>{submitError}</ErrorMessage>}
-      
+
       <SubmitButton type="submit" disabled={isSubmitting}>
-        {isSubmitting ? 'Submitting...' : 'Submit to Lord Smearington'}
+        {isSubmitting ? "Submitting..." : "Submit to Lord Smearington"}
       </SubmitButton>
     </FormContainer>
   );
-}
+};
 
 export default ArtworkForm;
