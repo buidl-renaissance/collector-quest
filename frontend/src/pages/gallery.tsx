@@ -3,10 +3,10 @@ import { keyframes } from "@emotion/react";
 import { FaArrowLeft, FaStar } from "react-icons/fa";
 import Link from "next/link";
 import styled from "@emotion/styled";
-import { ArtworkCard } from "./components/ArtworkCard";
+import { ArtworkCard } from "../components/ArtworkCard";
 import { Artwork } from "@/lib/interfaces";
-import ArtworkFullDisplay from "./components/ArtworkFullDisplay";
-import ModalContainer from "./components/ModalContainer";
+import ArtworkFullDisplay from "../components/ArtworkFullDisplay";
+import ModalContainer from "../components/ModalContainer";
 // Mock data for artworks - in a real app, this would come from an API
 const mockArtworks: Artwork[] = [
   {

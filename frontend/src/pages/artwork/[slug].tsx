@@ -4,7 +4,7 @@ import styled from "@emotion/styled";
 import Link from "next/link";
 import { FaArrowLeft } from "react-icons/fa";
 import { Artwork } from "@/lib/interfaces";
-import ArtworkFullDisplay from "../components/ArtworkFullDisplay";
+import ArtworkFullDisplay from "../../components/ArtworkFullDisplay";
 
 // Mock data for artworks - in a real app, this would come from an API
 const mockArtworks = [
