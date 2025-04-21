@@ -8,6 +8,8 @@ import UsernameForm from './components/Username';
 import PageLayout from './components/PageLayout';
 import { FaArrowRight } from 'react-icons/fa';
 import { Artwork } from '@/lib/dpop';
+import { useWallet } from '@suiet/wallet-kit';
+import { ConnectButton } from '@suiet/wallet-kit';
 
 const pulse = keyframes`
   0% { transform: scale(1); opacity: 0.7; }
@@ -55,6 +57,26 @@ const Flex = styled.div`
   align-items: center;
   gap: 0.5rem;
   justify-content: center;
+`;
+
+const ConnectWalletMessage = styled.div`
+  background: rgba(76, 29, 149, 0.2);
+  padding: 2rem;
+  border-radius: 1rem;
+  text-align: center;
+  margin: 2rem auto;
+  max-width: 500px;
+  
+  h3 {
+    color: #e2e8f0;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  p {
+    color: #A0AEC0;
+    margin-bottom: 2rem;
+  }
 `;
 
 interface ArtworkSubmission {
@@ -141,6 +163,7 @@ export default function SubmitPage() {
   const [username, setUsername] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [artworkData, setArtworkData] = useState<ArtworkSubmission | undefined>(undefined);
+  const wallet = useWallet();
 
   useEffect(() => {
     // Check if username is stored in localStorage
@@ -171,7 +194,13 @@ export default function SubmitPage() {
 
   return (
     <PageLayout>
-      {!username ? (
+      {!wallet.connected ? (
+        <ConnectWalletMessage>
+          <h3>Connect Your Wallet</h3>
+          <p>Please connect your wallet to submit artwork to Lord Smearington&apos;s Gallery</p>
+          <ConnectButton />
+        </ConnectWalletMessage>
+      ) : !username ? (
         <UsernameForm onSubmit={handleUsernameSubmit} />
       ) : submitSuccess ? (
         <SuccessView 
