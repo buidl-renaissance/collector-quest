@@ -13,6 +13,8 @@ import { useState } from "react";
 import { Artwork, createArtwork } from "@/lib/dpop";
 import styled from "@emotion/styled";
 import { convertDefaultToResized } from "@/lib/image";
+import { useWallet } from '@suiet/wallet-kit';
+import { TransactionBlock } from "@mysten/sui.js/transactions";
 
 type ArtworkFormProps = {
   onSubmitSuccess: (artwork: Artwork) => void;
@@ -107,6 +109,7 @@ const ArtworkForm = ({ onSubmitSuccess }: ArtworkFormProps) => {
   const [collaborators, setCollaborators] = useState("1");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const wallet = useWallet();
 
   // useEffect(() => {
   //   const username = localStorage.getItem('username');
@@ -127,6 +130,38 @@ const ArtworkForm = ({ onSubmitSuccess }: ArtworkFormProps) => {
 
       // Upload image to API
       if (imagePreview) {
+        // Check if wallet is connected
+        if (!wallet.connected) {
+          throw new Error("Wallet is not connected. Please connect your wallet first.");
+        }
+        
+        const packageId = "0x033332b5de804714bdea0f0db308ebd7a8ddad039e3a08da5acb2ed8046827a7";
+        
+        // Create a transaction block to mint the artwork on-chain
+        const tx = new TransactionBlock();
+        
+        // Call the create_artwork function from the artwork module
+        tx.moveCall({
+          target: `${packageId}::artwork::create_artwork`,
+          arguments: [
+            tx.pure(Array.from(new TextEncoder().encode(artworkName))),
+            tx.pure(Array.from(new TextEncoder().encode(description))),
+            tx.pure(Array.from(new TextEncoder().encode(imagePreview))),
+            tx.pure(isForSale ? parseInt(price) : 0),
+          ],
+        });
+        
+        // Sign and execute the transaction
+        const response = await wallet.signAndExecuteTransactionBlock({
+          transactionBlock: tx as any,
+          options: {
+            showEffects: true,
+            showEvents: true,
+          },
+        });
+        
+        console.log("Transaction executed:", response);
+
         // Create the artwork in the database
         const artwork = await createArtwork({
           title: artworkName,
@@ -138,6 +173,7 @@ const ArtworkForm = ({ onSubmitSuccess }: ArtworkFormProps) => {
             price: isForSale ? parseFloat(price) : undefined,
             num_collaborators: parseInt(collaborators),
             uploaded_by: uploadedBy || undefined,
+            transaction_digest: response.digest,
           },
         });
 

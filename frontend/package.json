@@ -13,6 +13,8 @@
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@mysten/sui": "^1.28.0",
+    "@mysten/sui.js": "^0.54.1",
+    "@mysten/wallet-adapter-react": "^11.0.0",
     "@suiet/wallet-kit": "^0.3.4",
     "next": "15.2.4",
     "openai": "^4.91.1",

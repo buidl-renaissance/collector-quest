@@ -23,6 +23,7 @@ export interface ArtworkData {
   };
   artist_name?: string;
   uploaded_by?: string;
+  transaction_digest?: string;
 }
 
 export interface Artwork {

@@ -98,7 +98,6 @@ module artwork::artwork {
 
     /// Create a new artwork
     public entry fun create_artwork(
-        _cap: &ArtistCap,
         name: vector<u8>,
         description: vector<u8>,
         url_string: vector<u8>,
