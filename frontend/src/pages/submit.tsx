@@ -10,6 +10,8 @@ import { FaArrowRight } from 'react-icons/fa';
 import { Artwork } from '@/lib/dpop';
 import { useWallet } from '@suiet/wallet-kit';
 import { ConnectButton } from '@suiet/wallet-kit';
+import { getHandle, getHandleByOwner } from '@/lib/getHandle';
+import RegisterHandle from '@/components/RegisterHandle';
 
 const pulse = keyframes`
   0% { transform: scale(1); opacity: 0.7; }
@@ -160,23 +162,33 @@ const SuccessView = ({
 
 export default function SubmitPage() {
   const [submitSuccess, setSubmitSuccess] = useState(false);
-  const [username, setUsername] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  // const [username, setUsername] = useState<string | null>(null);
+  // const [isLoading, setIsLoading] = useState(true);
   const [artworkData, setArtworkData] = useState<ArtworkSubmission | undefined>(undefined);
   const wallet = useWallet();
+  const [handle, setHandle] = useState<string | null>(null);
 
   useEffect(() => {
-    // Check if username is stored in localStorage
-    const storedUsername = localStorage.getItem('username');
-    if (storedUsername) {
-      setUsername(storedUsername);
+    if (wallet.connected && !handle) {
+      const fetchHandle = async () => {
+        const handle = await getHandleByOwner(wallet.address || "");
+        setHandle(handle?.name || null);
+      };
+      fetchHandle();
     }
-    setIsLoading(false);
-  }, []);
+  }, [wallet, handle]);
+  // useEffect(() => {
+  //   // Check if username is stored in localStorage
+  //   const storedUsername = localStorage.getItem('username');
+  //   if (storedUsername) {
+  //     setUsername(storedUsername);
+  //   }
+  //   setIsLoading(false);
+  // }, []);
 
-  const handleUsernameSubmit = (newUsername: string) => {
-    setUsername(newUsername);
-  };
+  // const handleUsernameSubmit = (newUsername: string) => {
+  //   setUsername(newUsername);
+  // };
 
   const handleSubmitSuccess = (artwork: Artwork) => {
     setArtworkData({
@@ -188,9 +200,9 @@ export default function SubmitPage() {
     setSubmitSuccess(true);
   };
 
-  if (isLoading) {
-    return <PageLayout><div>Loading...</div></PageLayout>;
-  }
+  // if (isLoading) {
+  //   return <PageLayout><div>Loading...</div></PageLayout>;
+  // }
 
   return (
     <PageLayout>
@@ -200,8 +212,8 @@ export default function SubmitPage() {
           <p>Please connect your wallet to submit artwork to Lord Smearington&apos;s Gallery</p>
           <ConnectButton />
         </ConnectWalletMessage>
-      ) : !username ? (
-        <UsernameForm onSubmit={handleUsernameSubmit} />
+      ) : !handle ? (
+        <RegisterHandle />
       ) : submitSuccess ? (
         <SuccessView 
           setSubmitSuccess={setSubmitSuccess} 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { keyframes } from "@emotion/react";
 import { FaArrowLeft, FaStar } from "react-icons/fa";
 import Link from "next/link";
@@ -7,122 +7,19 @@ import { ArtworkCard } from "../components/ArtworkCard";
 import { Artwork } from "@/lib/interfaces";
 import ArtworkFullDisplay from "../components/ArtworkFullDisplay";
 import ModalContainer from "../components/ModalContainer";
-// Mock data for artworks - in a real app, this would come from an API
-const mockArtworks: Artwork[] = [
-  {
-    id: 1,
-    slug: "gods-work-1",
-    title: 'Gods Work #1 - "Moments Between the Noise"',
-    description:
-      'A reflection on the quiet spaces within chaos, "Moments Between the Noise" captures the fleeting instants of clarity, creation, and connection that define the artistic journey. As the first installment in the God\'s Work series, this piece embodies the misadventures of a digital artist navigating the digital landscape.',
-    data: {
-      image:
-        "https://dpop.nyc3.digitaloceanspaces.com/uploads/LhsRXi729Z828HQApR1gxHD58PfcVLqGV3MroovZ.jpg",
-      artist_name: "Daniel Geanes | ECNTRC",
-      is_for_sale: true,
-      price: 1000,
-      review: {
-        text: "This piece HOWLS with the agony of a thousand neon signs drowning in a sea of melted crayons! The brushstrokes are VIOLENT whispers that tickle the eyeballs with ferocious gentleness!",
-        image: "",
-      },
-    },
-    meta: {},
-  },
-  {
-    id: 2,
-    slug: "city-of-angles",
-    title: "City of Angles",
-    description: "DET <3 LOS ANGELES\nOil, Gold Leaf on Canvas\n20 x 16 inches",
-    data: {
-      image:
-        "https://dpop.nyc3.digitaloceanspaces.com/uploads/MQ4W4exztUkNheUJhcNqXXJEJQStm8UivHSoe9lh.png",
-      artist_name: "Munera Ziad Kaakouch",
-      is_for_sale: true,
-      price: 400,
-      review: {
-        text: "These shapes are CONSPIRING against my retinas! Each triangle is a DERANGED manifesto on the futility of straight lines in a curved universe! I feel personally ATTACKED by the color palette!",
-        image: "",
-      },
-    },
-    meta: {},
-  },
-  {
-    id: 3,
-    slug: "digital-icons-tribute-to-daft-punk",
-    title: "Digital Icons – A Tribute to Daft Punk",
-    description:
-      "This vibrant and striking painting pays homage to the legendary electronic duo Daft Punk. Their iconic helmets, depicted with shimmering highlights and bold contrasts, capture the futuristic and enigmatic essence of their personas.",
-    data: {
-      image:
-        "https://dpop.nyc3.digitaloceanspaces.com/uploads/LIdk68Iy4WLdxPnzYx4EFhwAPoEtfpbnMzLTppPm.jpg",
-      artist_name: "Nathan Karinen",
-      is_for_sale: false,
-      review: {
-        text: "This artwork WEEPS with the sorrow of abandoned pixels! I can TASTE the digital despair - it's like licking a battery while crying in the rain! MAGNIFICENT desolation!",
-        image: "",
-      },
-    },
-    meta: {},
-  },
-  {
-    id: 4,
-    slug: "trippin-psychedelic-self-reflection",
-    title: "Trippin' – A Psychedelic Self-Reflection",
-    description:
-      "This surreal and introspective artwork, titled Trippin' – A Psychedelic Self-Reflection, explores the fluid nature of perception and self-awareness. The portrait, outlined in fine blue lines, features abstract facial distortions, fragmented features, and delicate, colorful pathways.",
-    data: {
-      image:
-        "https://dpop.nyc3.digitaloceanspaces.com/uploads/iMZV1ShrbGalvYla0ClWPi6iqK7LxoVWQycolYAq.jpg",
-      artist_name: "Daniel Geanes | ECNTRC",
-      is_for_sale: true,
-      price: 400,
-      review: {
-        text: "The MIND-BENDING contortions of reality in this piece make my brain do BACKFLIPS! Every line SCREAMS with the ecstasy of consciousness expanding beyond its boundaries!",
-        image: "",
-      },
-    },
-    meta: {},
-  },
-  {
-    id: 5,
-    slug: "silent-samurai",
-    title: "Silent Samurai",
-    description:
-      "This bold painting captures the essence of a ninja, featuring deep black strokes forming a mask and intense eyes that peer into the unknown. A vivid red headband crosses the top, adding a splash of color and hinting at the warrior's fierce determination.",
-    data: {
-      image:
-        "https://dpop.nyc3.digitaloceanspaces.com/uploads/jTIQTGqhQrJQyl0z6ngXVVzOvBp9mTsvpxKNXOTz.jpg",
-      artist_name: "WiredInSamurai",
-      is_for_sale: true,
-      price: 100,
-      review: {
-        text: "The INTENSITY of this warrior's gaze PENETRATES my soul with the precision of a thousand blades! Each stroke COMMANDS respect with the authority of an ancient battlefield!",
-        image: "",
-      },
-    },
-    meta: {},
-  },
-];
+import { getArtworks } from "@/lib/getArtwork";
 
-export default function Gallery() {
-  const [artworks, setArtworks] = useState(mockArtworks);
-  const [selectedArtwork, setSelectedArtwork] = useState<
-    (typeof mockArtworks)[0] | null
-  >(null);
+export async function getStaticProps() {
+  const artworks = await getArtworks();
+  // console.log("ARTWORKS", artworks);
+  return {
+    props: { artworks },
+  };
+}
+
+export default function Gallery({ artworks }: { artworks: Artwork[] }) {
+  const [selectedArtwork, setSelectedArtwork] = useState<Artwork | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  // In a real app, you would fetch artworks from an API
-  useEffect(() => {
-    // Simulating API fetch
-    const fetchArtworks = async () => {
-      // const response = await fetch('/api/artworks');
-      // const data = await response.json();
-      // setArtworks(data);
-      setArtworks(mockArtworks);
-    };
-
-    fetchArtworks();
-  }, []);
 
   const openArtworkModal = (artwork: Artwork) => {
     setSelectedArtwork(artwork);
