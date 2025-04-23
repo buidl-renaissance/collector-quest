@@ -48,9 +48,9 @@ export async function getHandleByOwner(ownerAddress: string): Promise<Handle | n
 
     // Return handle information
     return {
-      id: handleObj.id,
+      id: handleObj.data?.objectId,
       name: content.fields.name,
-      owner: handleObj.owner
+      owner: handleObj.data?.content.fields.owner
     };
   } catch (error) {
     console.error("Error fetching handle by owner:", error);

@@ -11,7 +11,7 @@ import { getArtworks } from "@/lib/getArtwork";
 
 export async function getStaticProps() {
   const artworks = await getArtworks();
-  // console.log("ARTWORKS", artworks);
+  console.log("ARTWORKS", artworks);
   return {
     props: { artworks },
   };
