@@ -4,13 +4,12 @@ import Link from 'next/link';
 import styled from '@emotion/styled';
 import { ButtonGroup, PrimaryButton, SecondaryButton } from '../components/Buttons';
 import ArtworkForm from '../components/ArtworkForm';
-import UsernameForm from '../components/Username';
 import PageLayout from '../components/PageLayout';
 import { FaArrowRight } from 'react-icons/fa';
 import { Artwork } from '@/lib/dpop';
 import { useWallet } from '@suiet/wallet-kit';
 import { ConnectButton } from '@suiet/wallet-kit';
-import { getHandle, getHandleByOwner } from '@/lib/getHandle';
+import { getHandleByOwner } from '@/lib/getHandle';
 import RegisterHandle from '@/components/RegisterHandle';
 
 const pulse = keyframes`

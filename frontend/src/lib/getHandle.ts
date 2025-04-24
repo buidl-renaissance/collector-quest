@@ -1,9 +1,24 @@
-import { SuiClient } from '@mysten/sui.js/client';
+import { SuiClient, SuiEvent, EventId } from '@mysten/sui.js/client';
 
 export interface Handle {
   id: string;
   name: string;
   owner: string;
+}
+
+interface HandleContent {
+  fields: {
+    name: string;
+    owner: string;
+  };
+}
+
+interface HandleEvent {
+  id: EventId;
+  parsedJson: {
+    name: string;
+    owner: string;
+  };
 }
 
 /**
@@ -40,7 +55,7 @@ export async function getHandleByOwner(ownerAddress: string): Promise<Handle | n
     
     // Get the first handle object
     const handleObj = data[0];
-    const content = handleObj.data?.content;
+    const content = handleObj.data?.content as HandleContent | undefined;
     
     if (!content || !content.fields) {
       return null;
@@ -48,9 +63,9 @@ export async function getHandleByOwner(ownerAddress: string): Promise<Handle | n
 
     // Return handle information
     return {
-      id: handleObj.data?.objectId,
+      id: handleObj.data?.objectId || '',
       name: content.fields.name,
-      owner: handleObj.data?.content.fields.owner
+      owner: content.fields.owner
     };
   } catch (error) {
     console.error("Error fetching handle by owner:", error);
@@ -79,9 +94,9 @@ export async function getHandle(handleName: string): Promise<Handle | null> {
     console.log("REGISTRED HANDLES> ", handleName, data);
 
     // Find the handle with the matching name
-    const handleEvent = data.find((event: any) => 
-      event.parsedJson?.name === handleName
-    );
+    const handleEvent = data.find((event: SuiEvent) => 
+      (event.parsedJson as any)?.name === handleName
+    ) as HandleEvent | undefined;
 
     console.log("HANDLE EVENT", handleEvent);
 
@@ -91,7 +106,7 @@ export async function getHandle(handleName: string): Promise<Handle | null> {
 
     // Return handle information
     return {
-      id: handleEvent.id,
+      id: handleEvent.id.txDigest,
       name: handleEvent.parsedJson.name,
       owner: handleEvent.parsedJson.owner
     };
@@ -123,11 +138,14 @@ export async function getAllHandles(): Promise<Handle[]> {
     }
 
     // Transform events into Handle objects
-    const handles: Handle[] = data.map((event: any) => ({
-      id: event.id,
-      name: event.parsedJson.name,
-      owner: event.parsedJson.owner
-    }));
+    const handles: Handle[] = data.map((event: SuiEvent) => {
+      const parsedJson = event.parsedJson as { name: string; owner: string };
+      return {
+        id: (event.id as EventId).txDigest,
+        name: parsedJson.name,
+        owner: parsedJson.owner
+      };
+    });
     
     return handles;
   } catch (error) {
