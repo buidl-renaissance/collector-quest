@@ -286,11 +286,11 @@ const EventDetailTitle = styled.h3`
   font-size: 1.25rem;
 `;
 
-const RegistrationNote = styled.p`
-  color: #d4af37;
-  margin-top: 32px;
-  font-style: italic;
-`;
+// const RegistrationNote = styled.p`
+//   color: #d4af37;
+//   margin-top: 32px;
+//   font-style: italic;
+// `;
 
 const FooterText = styled.p`
   color: #fff;
