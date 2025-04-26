@@ -1,6 +1,7 @@
-import React from "react";
+
 import Image from "next/image";
 import styled from "@emotion/styled";
+import { GetStaticProps } from "next";
 // import TwitterIcon from '@mui/icons-material/Twitter';
 // import DiscordIcon from '@mui/icons-material/Discord';
 
@@ -296,6 +297,21 @@ const FooterText = styled.p`
   color: #fff;
   text-align: center;
 `;
+
+export const getStaticProps: GetStaticProps = async () => {
+  return {
+    props: {
+      metadata: {
+        title:
+          "Unleashing the Absurd: A Sui Workshop and Demo with Lord Smearington",
+        description:
+          "Join Lord Smearington for a workshop and demo on Sui NFTs, AI tools, and the absurd. Register now to unleash your creativity!",
+        image: "/images/lord-smearington-summoning.jpg",
+        url: "https://www.lordsmearington.com/workshop",
+      },
+    },
+  };
+};
 
 const WorkshopPage: React.FC = () => {
   //   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
