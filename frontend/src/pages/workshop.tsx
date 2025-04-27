@@ -327,12 +327,12 @@ const WorkshopPage: React.FC = () => {
         <Container>
           <HeroTitle>
             <span style={{ fontSize: "3rem" }}>Unleashing the Absurd</span>
-            <br />A Sui Workshop and Demo with Lord Smearington
+            <br />AI Creator Workshop with Lord Smearington
           </HeroTitle>
 
           <ContentSection marginTop="2" marginBottom="4">
             <EventDetail style={{ fontSize: "1.2rem" }}>
-              May 14th, 2025
+              May 21st, 2025
             </EventDetail>
             <EventDetail style={{ fontSize: "0.8rem" }}>8:00 PM</EventDetail>
 
