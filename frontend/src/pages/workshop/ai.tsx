@@ -329,7 +329,7 @@ export const getServerSideProps: GetServerSideProps = async () => {
         description:
           "Join Lord Smearington for a workshop and demo on AI tools, creative prompting, and the absurd. Register now to unleash your creativity!",
         image: "/images/lord-smearington-summoning.jpg",
-        url: "https://www.lordsmearington.com/workshop",
+        url: "https://smearington.theethical.ai/workshop",
       },
     },
   };
