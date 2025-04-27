@@ -1,7 +1,7 @@
 
 import Image from "next/image";
 import styled from "@emotion/styled";
-import { GetStaticProps } from "next";
+import { GetServerSideProps } from "next";
 // import TwitterIcon from '@mui/icons-material/Twitter';
 // import DiscordIcon from '@mui/icons-material/Discord';
 
@@ -298,7 +298,7 @@ const FooterText = styled.p`
   text-align: center;
 `;
 
-export const getStaticProps: GetStaticProps = async () => {
+export const getServerSideProps: GetServerSideProps = async () => {
   return {
     props: {
       metadata: {
