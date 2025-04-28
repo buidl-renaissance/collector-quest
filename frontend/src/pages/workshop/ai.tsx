@@ -346,7 +346,7 @@ const WorkshopPage: React.FC = () => {
     <PageWrapper>
       {/* Hero Section */}
       <HeroSection>
-        <video autoPlay muted loop>
+        <video autoPlay muted loop playsInline>
           <source src="/videos/unicorn-paint.mp4" type="video/mp4" />
         </video>
         <Container>
