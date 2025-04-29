@@ -178,12 +178,6 @@ const Button = styled.button`
   }
 `;
 
-const ConnectWalletButton = styled(Button)`
-  max-width: 300px;
-  margin: 2rem auto;
-  display: block;
-`;
-
 const NoGuardiansMessage = styled.p`
   text-align: center;
   font-size: 1.2rem;
