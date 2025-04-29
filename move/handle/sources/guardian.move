@@ -20,14 +20,14 @@ module handle::guardian {
     const EInvalidGuardian: u64 = 4;
 
     // Registry to store all guardians
-    struct GuardianRegistry has key {
+    public struct GuardianRegistry has key {
         id: UID,
         guardians: Table<address, GuardianInfo>,
         admin: address
     }
 
     // Information about a guardian
-    struct GuardianInfo has store {
+    public struct GuardianInfo has store {
         address: address,
         name: String,
         active: bool,
@@ -37,20 +37,20 @@ module handle::guardian {
     }
 
     // Events
-    struct GuardianRegistered has copy, drop {
+    public struct GuardianRegistered has copy, drop {
         guardian: address,
         name: String
     }
 
-    struct GuardianDeactivated has copy, drop {
+    public struct GuardianDeactivated has copy, drop {
         guardian: address
     }
 
-    struct GuardianReactivated has copy, drop {
+    public struct GuardianReactivated has copy, drop {
         guardian: address
     }
 
-    struct GuardianReputationUpdated has copy, drop {
+    public struct GuardianReputationUpdated has copy, drop {
         guardian: address,
         new_score: u64
     }
@@ -84,13 +84,13 @@ module handle::guardian {
         assert!(!table::contains(&registry.guardians, sender), EGuardianAlreadyRegistered);
         
         // Create specialty set
-        let specialty_set = vec_set::empty();
-        let i = 0;
+        let mut specialty_set = vec_set::empty<String>();
+        let mut i = 0;
         let len = vector::length(&specialties);
         
         while (i < len) {
-            let specialty = vector::borrow(&specialties, i);
-            vec_set::insert(&mut specialty_set, *specialty);
+            let specialty = *vector::borrow(&specialties, i);
+            vec_set::insert(&mut specialty_set, specialty);
             i = i + 1;
         };
         
@@ -235,4 +235,19 @@ module handle::guardian {
         let guardian_info = table::borrow(&registry.guardians, guardian);
         vec_set::contains(&guardian_info.specialties, specialty)
     }
+
+    // // Get all registered guardians
+    // public fun get_all_guardians(registry: &GuardianRegistry): vector<address> {
+    //     let result = vector::empty<address>();
+    //     let keys = table::keys(&registry.guardians);
+    //     let len = vector::length(&keys);
+        
+    //     let i = 0;
+    //     while (i < len) {
+    //         let guardian_address = *vector::borrow(&keys, i);
+    //         vector::push_back(&mut result, guardian_address);
+    //         i = i + 1;
+    //     };
+    //     result
+    // }
 }

@@ -34,7 +34,7 @@ module handle::handle {
     const MAX_FAILED_ATTEMPTS: u64 = 5;
 
     // Registry to store all handle registrations
-    struct Registry has key {
+    public struct Registry has key {
         id: UID,
         handles: Table<String, HandleInfo>,
         addresses: Table<address, String>,
@@ -42,7 +42,7 @@ module handle::handle {
     }
 
     // Information about a handle registration
-    struct HandleInfo has store {
+    public struct HandleInfo has store {
         handle: String,
         owner: address,
         pin_hash: vector<u8>, // Hashed PIN code for security
@@ -54,28 +54,28 @@ module handle::handle {
     }
 
     // Events
-    struct HandleRegistrationRequested has copy, drop {
+    public struct HandleRegistrationRequested has copy, drop {
         handle: String,
         requester: address
     }
 
-    struct HandleConfirmed has copy, drop {
+    public struct HandleConfirmed has copy, drop {
         handle: String,
         owner: address,
         guardian: address
     }
 
-    struct HandleRegistrationCompleted has copy, drop {
+    public struct HandleRegistrationCompleted has copy, drop {
         handle: String,
         owner: address
     }
     
-    struct HandleLocked has copy, drop {
+    public struct HandleLocked has copy, drop {
         handle: String,
         owner: address
     }
     
-    struct GuardianAdded has copy, drop {
+    public struct GuardianAdded has copy, drop {
         handle: String,
         guardian: address
     }
@@ -125,7 +125,7 @@ module handle::handle {
         
         // Emit event
         event::emit(GuardianAdded {
-            handle: string::clone(&handle_info.handle),
+            handle: handle_info.handle,
             guardian
         });
     }
@@ -151,25 +151,25 @@ module handle::handle {
         // Ensure address is not already registered
         assert!(!table::contains(&registry.addresses, sender), EAddressAlreadyRegistered);
         
-        // Hash the PIN code for secure storage
+        // Hash the PIN code for secure storage, we need to hash the handle name with the pin code to ensure unique hash for each handle
         let pin_hash = hash_pin(pin_code);
         
         // Create handle guardians set
-        let guardians_set = vec_set::empty();
-        let i = 0;
+        let mut guardians_set = vec_set::empty();
+        let mut i = 0;
         let len = vector::length(&handle_guardians);
         
         while (i < len) {
             let guardian = *vector::borrow(&handle_guardians, i);
             // Ensure guardian is a valid global guardian
             assert!(vec_set::contains(&registry.guardians, &guardian), EInvalidGuardian);
-            vec_set::insert(&mut guardians_set, guardian);
+            vec_set::insert(&mut guardians_set, copy guardian);
             i = i + 1;
         };
         
         // Create handle info with requester as owner
         let handle_info = HandleInfo {
-            handle: string::clone(&handle),
+            handle,
             owner: sender,
             pin_hash,
             confirmations: vec_set::empty(),
@@ -180,11 +180,11 @@ module handle::handle {
         };
         
         // Add to registry
-        table::add(&mut registry.handles, string::clone(&handle), handle_info);
+        table::add(&mut registry.handles, handle, handle_info);
         
         // Emit event
         event::emit(HandleRegistrationRequested {
-            handle: string::clone(&handle),
+            handle,
             requester: sender
         });
     }
@@ -228,11 +228,12 @@ module handle::handle {
                 
                 // Emit locked event
                 event::emit(HandleLocked {
-                    handle: string::clone(&handle_info.handle),
+                    handle: handle_info.handle,
                     owner: handle_info.owner
                 });
-            }
+            };
             
+            // Return error for invalid PIN code
             assert!(false, EInvalidPinCode);
         };
         
@@ -247,7 +248,7 @@ module handle::handle {
         
         // Emit confirmation event
         event::emit(HandleConfirmed {
-            handle: string::clone(&handle_info.handle),
+            handle: handle_info.handle,
             owner: handle_info.owner,
             guardian: sender
         });
@@ -257,11 +258,11 @@ module handle::handle {
             handle_info.confirmed = true;
             
             // Register the address to handle mapping
-            table::add(&mut registry.addresses, handle_info.owner, string::clone(&handle_info.handle));
+            table::add(&mut registry.addresses, handle_info.owner, handle_info.handle);
             
             // Emit completion event
             event::emit(HandleRegistrationCompleted {
-                handle: string::clone(&handle_info.handle),
+                handle: handle_info.handle,
                 owner: handle_info.owner
             });
         }
@@ -270,7 +271,7 @@ module handle::handle {
     // Get handle for an address
     public fun get_handle_for_address(registry: &Registry, addr: address): String {
         assert!(table::contains(&registry.addresses, addr), EAddressAlreadyRegistered);
-        string::clone(table::borrow(&registry.addresses, addr))
+        *table::borrow(&registry.addresses, addr)
     }
 
     // Check if a handle is registered and confirmed
@@ -299,5 +300,18 @@ module handle::handle {
         
         let handle_info = table::borrow(&registry.handles, *handle);
         vec_set::into_keys(handle_info.handle_guardians)
+    }
+
+    // Get handle owner
+    public fun get_handle_owner(registry: &Registry, handle: &String): address {
+        assert!(table::contains(&registry.handles, *handle), EHandleNotFound);
+        
+        let handle_info = table::borrow(&registry.handles, *handle);
+        handle_info.owner
+    }
+    
+    // Check if a handle exists
+    public fun handle_exists(registry: &Registry, handle: &String): bool {
+        table::contains(&registry.handles, *handle)
     }
 }
