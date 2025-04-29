@@ -4,6 +4,19 @@ import { keyframes } from "@emotion/react";
 import Link from "next/link";
 import Head from "next/head";
 
+export const getServerSideProps = async () => {
+  return {
+    props: {
+      metadata: {
+        title: "Art Night Detroit x Spotlite Vol. 08",
+        description:
+          "Join us for Art Night Detroit x Spotlite Vol. 08 on April 30, 2025. Creative projects, visual art showcase, live music, and more!",
+        image: "/images/art-night-spot-lite-vol-08.jpg",
+      },
+    },
+  };
+};
+
 const ArtNightSpotLiteVol8Page = () => {
   return (
     <Container>
