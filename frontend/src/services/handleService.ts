@@ -1,7 +1,7 @@
 import { SuiClient } from "@mysten/sui.js/client";
 import { getFullnodeUrl } from "@mysten/sui.js/client";
 import { TransactionBlock } from "@mysten/sui.js/transactions";
-import { SuiWallet } from "@mysten/sui.js/wallet";
+
 // Types
 export interface Handle {
   id: string;
@@ -89,7 +89,14 @@ export const getHandleByName = async (name: string): Promise<Handle | null> => {
 
   console.log(result);
 
-  return result.results?.[0]?.returnValues?.[0];
+  const returnValue = result.results?.[0]?.returnValues?.[0];
+  if (returnValue === undefined) {
+    return null;
+  }
+  
+  // The return value is a tuple of [number[], string], so we need to convert it to Handle
+  // First, cast to unknown, then to Handle to avoid the TypeScript error
+  return returnValue as unknown as Handle;
 };
 
 /**
@@ -114,7 +121,12 @@ export const getHandleByOwner = async (
     transactionBlock: txb,
   });
 
-  return result.results?.[0]?.returnValues?.[0] || null;
+  const returnValue = result.results?.[0]?.returnValues?.[0];
+  if (returnValue === undefined) {
+    return null;
+  }
+  
+  return returnValue as unknown as Handle;
 };
 
 /**
@@ -124,7 +136,7 @@ export const getHandleByOwner = async (
  * @returns Promise<Handle> Newly created handle
  */
 export const registerHandle = async (
-  wallet: SuiWallet,
+  wallet: any,
   name: string
 ): Promise<Handle> => {
   // In a real implementation, we would execute a transaction like this:
