@@ -1,3 +1,5 @@
+import { EventId } from "@mysten/sui.js/client";
+
 export interface Artist {
   id: number;
   name: string;
@@ -212,3 +214,23 @@ export interface Project {
   created_at: string;
   updated_at: string;
 }
+
+export interface Handle {
+  id: string;
+  name: string;
+  owner: string;
+  confirmed?: boolean;
+}
+
+export interface Artifact {
+  id: string;
+  title: string;
+  description: string;
+  image: string;
+  attributes: {
+    name: string;
+    trait_type: string;
+    value: string;
+  }[];
+}
+

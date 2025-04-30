@@ -71,3 +71,20 @@ Follow the instructions below to run the project locally.
 │ │ Modules: guardian, handle, realm │
 │ └── │
 ╰────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+
+# Important IDs for Development
+
+## Package IDs
+- **Handle Package ID**: `0x98c0ccb80eb75d33294fd3bbd6843442de30ae06f8865cb60a4c92971eafefa3`
+
+## Shared Objects
+- **Handle Registry**: `0xe39e7bc6f2db921ba6a0ffc6f5afc2ff673d51260d2d34c62fc368e9b20603b5`
+- **Guardian Registry**: `0x2d40516a5503deac36b4baaf4a5c4a1a817ca0b4e22fe10a768726d34f388447`
+- **Realm Registry**: `0x571e20225321ee766869fda973e5b745978c224555d26e8f0227d82412bf31bd`
+
+## Environment Variables
+Add these to your `.env` file:
+
+
+
+

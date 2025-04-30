@@ -3,7 +3,7 @@ import Link from "next/link";
 import styled from "@emotion/styled";
 import { FaPalette } from "react-icons/fa";
 import { useRouter } from "next/router";
-import { ConnectButton } from "@suiet/wallet-kit";
+import Image from "next/image";
 
 // Styled components for the navigation bar
 const NavContainer = styled.nav`
@@ -31,16 +31,18 @@ const NavigationBar = () => {
       {router.pathname !== "/" ? (
         <Link href="/">
           <Logo>
-            <FaPalette /> Lord Smearington&apos;s Gallery
+            <Image src="/canvas.png" alt="Logo" width={32} height={32} />
+            <span>WiredInSamurai</span>
           </Logo>
         </Link>
       ) : (
         <Logo>
-          <FaPalette /> Lord Smearington&apos;s Gallery
+          <Image src="/canvas.png" alt="Logo" width={32} height={32} />
+          <span>WiredInSamurai</span>
         </Logo>
       )}
 
-      <ConnectButton />
+      {/* <ConnectButton /> */}
     </NavContainer>
   );
 };
