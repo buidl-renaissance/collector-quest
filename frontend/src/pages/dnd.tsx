@@ -128,7 +128,7 @@ const DnDPage: React.FC = () => {
           Lord Smearington awaits those brave enough to help build his realm. Apply now to join our fellowship of builders.
         </JoinDescription>
         <ButtonGroup>
-          <PrimaryButton href="/events/art-night-spot-lite-vol8">Join IRL</PrimaryButton>
+          <PrimaryButton href="/events">Join IRL</PrimaryButton>
           <SecondaryButton href="https://discord.gg/kSuS9kdgTk" target="_blank">Join Online</SecondaryButton>
         </ButtonGroup>
       </JoinSection>

@@ -4,8 +4,22 @@ import styled from "@emotion/styled";
 import { keyframes } from "@emotion/react";
 import NavigationBar from "./NavigationBar";
 
+interface PageLayoutProps {
+  children: React.ReactNode;
+  title: string;
+  subtitle: string;
+  backLink: string;
+  backLinkText: string;
+}
+
 // Page Layout Component
-const PageLayout = ({ children }: { children: React.ReactNode }) => (
+const PageLayout = ({
+  children,
+  title,
+  subtitle,
+  backLink,
+  backLinkText,
+}: PageLayoutProps) => (
   <>
     <NavigationBar />
     <PageContainer>
@@ -23,13 +37,15 @@ const PageLayout = ({ children }: { children: React.ReactNode }) => (
         />
       ))}
 
-      <ContentContainer>
-        <BackLink href="/">
-          <FaArrowLeft /> Back to Gallery
+      {backLink && (
+        <BackLink href={backLink}>
+          <FaArrowLeft /> {backLinkText}
         </BackLink>
+      )}
 
-        <PageTitle>Submit Your Masterpiece</PageTitle>
-        <PageSubtitle>Let Lord Smearington Judge Your Creation</PageSubtitle>
+      <ContentContainer>
+        <PageTitle>{title}</PageTitle>
+        <PageSubtitle>{subtitle}</PageSubtitle>
 
         {children}
       </ContentContainer>
@@ -100,6 +116,7 @@ const BackLink = styled(Link)`
   font-size: 1rem;
   gap: 0.5rem;
   transition: color 0.3s ease;
+  margin-left: 2rem;
 
   &:hover {
     color: #805ad5;

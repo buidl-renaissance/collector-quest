@@ -204,7 +204,12 @@ export default function SubmitPage() {
   // }
 
   return (
-    <PageLayout>
+    <PageLayout
+      title="Submit Your Relic"
+      subtitle="Your Creation Will Be Judged by Lord Smearington"
+      backLink="/gallery"
+      backLinkText="Back to Gallery"
+    >
       {!wallet.connected ? (
         <ConnectWalletMessage>
           <h3>Connect Your Wallet</h3>

@@ -4,24 +4,163 @@ import { keyframes } from '@emotion/react';
 import { FaSearch, FaUserCircle, FaArrowRight } from 'react-icons/fa';
 import Link from 'next/link';
 import { ConnectButton, useWallet } from '@suiet/wallet-kit';
-import { getHandles, getHandleByOwner } from '../services/handleService';
+import { getAllHandles, getHandleByOwner, Handle } from '../lib/getHandle';
 import PageWrapper from '../components/PageWrapper'
 
-// Types
-interface Handle {
-  id: string;
-  name: string;
-  owner: string;
-  confirmed: boolean;
-  createdAt: string;
-}
 
-// Animations
-// const float = keyframes`
-//   0% { transform: translateY(0px); }
-//   50% { transform: translateY(-10px); }
-//   100% { transform: translateY(0px); }
-// `;
+const HandlePage: React.FC = () => {
+  const [handles, setHandles] = useState<Handle[]>([]);
+  const [filteredHandles, setFilteredHandles] = useState<Handle[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [loading, setLoading] = useState(true);
+  const wallet = useWallet();
+  const [userHandle, setUserHandle] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchHandles = async () => {
+      setLoading(true);
+      try {
+        const handlesData: Handle[] = await getAllHandles();
+        setHandles(handlesData);
+        setFilteredHandles(handlesData);
+      } catch (error) {
+        console.error('Error fetching handles:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchHandles();
+  }, []);
+
+  useEffect(() => {
+    if (wallet.connected) {
+      const fetchUserHandle = async () => {
+        try {
+          const handle = await getHandleByOwner(wallet.address || "");
+          setUserHandle(handle?.name || null);
+        } catch (error) {
+          console.error('Error fetching user handle:', error);
+        }
+      };
+      
+      fetchUserHandle();
+    }
+  }, [wallet.connected, wallet.address]);
+
+  useEffect(() => {
+    if (searchTerm) {
+      const filtered = handles.filter(handle => 
+        handle.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        handle.owner.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      setFilteredHandles(filtered);
+    } else {
+      setFilteredHandles(handles);
+    }
+  }, [searchTerm, handles]);
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Search is already handled by the useEffect above
+  };
+
+  return (
+    <PageWrapper>
+      <HeroSection>
+        <video autoPlay muted loop playsInline>
+          <source src="/videos/digital-identity.mp4" type="video/mp4" />
+        </video>
+        <Container>
+          <HeroTitle>Handle Registry</HeroTitle>
+        </Container>
+      </HeroSection>
+
+      <Container>
+        <ContentSection paddingY="4">
+          <SectionTitle>Discover Digital Identities</SectionTitle>
+          
+          <form onSubmit={handleSearch}>
+            <SearchContainer>
+              <SearchInput 
+                type="text" 
+                placeholder="Search by handle or address..." 
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+              <SearchButton type="submit">
+                <FaSearch />
+              </SearchButton>
+            </SearchContainer>
+          </form>
+
+          {!wallet.connected ? (
+            <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+              <p style={{ marginBottom: '1rem' }}>Connect your wallet to register your own handle</p>
+              <ConnectButton />
+            </div>
+          ) : !userHandle ? (
+            <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+              <p style={{ marginBottom: '1rem' }}>You don&apos;t have a handle yet. Register one now!</p>
+              <Link href="/register" passHref>
+                <Button as="a">
+                  <FlexDiv>
+                    Register Handle <FaArrowRight />
+                  </FlexDiv>
+                </Button>
+              </Link>
+            </div>
+          ) : (
+            <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+              <p style={{ marginBottom: '1rem' }}>Your handle: <strong>{userHandle}</strong></p>
+              <Link href={`/handle/${userHandle}`} passHref>
+                <Button as="a">
+                  <FlexDiv>
+                    View Your Handle <FaArrowRight />
+                  </FlexDiv>
+                </Button>
+              </Link>
+            </div>
+          )}
+
+          {loading ? (
+            <p style={{ textAlign: 'center' }}>Loading handles...</p>
+          ) : filteredHandles.length === 0 ? (
+            <NoHandlesMessage>
+              <p>No handles found matching your search.</p>
+            </NoHandlesMessage>
+          ) : (
+            <HandlesGrid>
+              {filteredHandles.map((handle) => (
+                <HandleCard key={handle.id}>
+                  <Link href={`/handle/${handle.name}`} passHref>
+                    <HandleDetailLink>
+                      <HandleImageContainer>
+                        <HandleIcon>
+                          <FaUserCircle />
+                        </HandleIcon>
+                      </HandleImageContainer>
+                      <HandleContent>
+                        <HandleName>@{handle.name}</HandleName>
+                        <HandleOwner>{handle.owner}</HandleOwner>
+                        <HandleStatus confirmed={handle.confirmed || false}>
+                          {handle.confirmed ? 'Confirmed' : 'Pending Confirmation'}
+                        </HandleStatus>
+                        <Button>View Details</Button>
+                      </HandleContent>
+                    </HandleDetailLink>
+                  </Link>
+                </HandleCard>
+              ))}
+            </HandlesGrid>
+          )}
+        </ContentSection>
+      </Container>
+    </PageWrapper>
+  );
+};
+
+export default HandlePage;
 
 const pulse = keyframes`
   0% { transform: scale(1); opacity: 0.8; }
@@ -231,157 +370,3 @@ const HandleDetailLink = styled.a`
   color: inherit;
   display: block;
 `;
-
-const HandlePage: React.FC = () => {
-  const [handles, setHandles] = useState<Handle[]>([]);
-  const [filteredHandles, setFilteredHandles] = useState<Handle[]>([]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [loading, setLoading] = useState(true);
-  const wallet = useWallet();
-  const [userHandle, setUserHandle] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchHandles = async () => {
-      setLoading(true);
-      try {
-        const handlesData = await getHandles();
-        setHandles(handlesData);
-        setFilteredHandles(handlesData);
-      } catch (error) {
-        console.error('Error fetching handles:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchHandles();
-  }, []);
-
-  useEffect(() => {
-    if (wallet.connected) {
-      const fetchUserHandle = async () => {
-        try {
-          const handle = await getHandleByOwner(wallet.address || "");
-          setUserHandle(handle?.name || null);
-        } catch (error) {
-          console.error('Error fetching user handle:', error);
-        }
-      };
-      
-      fetchUserHandle();
-    }
-  }, [wallet.connected, wallet.address]);
-
-  useEffect(() => {
-    if (searchTerm) {
-      const filtered = handles.filter(handle => 
-        handle.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        handle.owner.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-      setFilteredHandles(filtered);
-    } else {
-      setFilteredHandles(handles);
-    }
-  }, [searchTerm, handles]);
-
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Search is already handled by the useEffect above
-  };
-
-  return (
-    <PageWrapper>
-      <HeroSection>
-        <video autoPlay muted loop playsInline>
-          <source src="/videos/digital-identity.mp4" type="video/mp4" />
-        </video>
-        <Container>
-          <HeroTitle>Handle Registry</HeroTitle>
-        </Container>
-      </HeroSection>
-
-      <Container>
-        <ContentSection paddingY="4">
-          <SectionTitle>Discover Digital Identities</SectionTitle>
-          
-          <form onSubmit={handleSearch}>
-            <SearchContainer>
-              <SearchInput 
-                type="text" 
-                placeholder="Search by handle or address..." 
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-              <SearchButton type="submit">
-                <FaSearch />
-              </SearchButton>
-            </SearchContainer>
-          </form>
-
-          {!wallet.connected ? (
-            <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-              <p style={{ marginBottom: '1rem' }}>Connect your wallet to register your own handle</p>
-              <ConnectButton />
-            </div>
-          ) : !userHandle ? (
-            <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-              <p style={{ marginBottom: '1rem' }}>You don&apos;t have a handle yet. Register one now!</p>
-              <Link href="/register" passHref>
-                <Button as="a">
-                  <FlexDiv>
-                    Register Handle <FaArrowRight />
-                  </FlexDiv>
-                </Button>
-              </Link>
-            </div>
-          ) : (
-            <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-              <p style={{ marginBottom: '1rem' }}>Your handle: <strong>{userHandle}</strong></p>
-              <Link href={`/handle/${userHandle}`} passHref>
-                <Button as="a">
-                  <FlexDiv>
-                    View Your Handle <FaArrowRight />
-                  </FlexDiv>
-                </Button>
-              </Link>
-            </div>
-          )}
-
-          {loading ? (
-            <p style={{ textAlign: 'center' }}>Loading handles...</p>
-          ) : filteredHandles.length === 0 ? (
-            <NoHandlesMessage>
-              <p>No handles found matching your search.</p>
-            </NoHandlesMessage>
-          ) : (
-            <HandlesGrid>
-              {filteredHandles.map((handle) => (
-                <HandleCard key={handle.id}>
-                  <Link href={`/handle/${handle.name}`} passHref>
-                    <HandleDetailLink>
-                      <HandleImageContainer>
-                        <HandleIcon>
-                          <FaUserCircle />
-                        </HandleIcon>
-                      </HandleImageContainer>
-                      <HandleContent>
-                        <HandleName>@{handle.name}</HandleName>
-                        <HandleOwner>{handle.owner}</HandleOwner>
-                        <HandleStatus confirmed={handle.confirmed}>
-                          {handle.confirmed ? 'Confirmed' : 'Pending Confirmation'}
-                        </HandleStatus>
-                        <Button>View Details</Button>
-                      </HandleContent>
-                    </HandleDetailLink>
-                  </Link>
-                </HandleCard>
-              ))}
-            </HandlesGrid>
-          )}
-        </ContentSection>
-      </Container>
-    </PageWrapper>
-  );
-};
-
-export default HandlePage;

@@ -4,6 +4,7 @@ export interface Handle {
   id: string;
   name: string;
   owner: string;
+  confirmed?: boolean;
 }
 
 interface HandleContent {
