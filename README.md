@@ -18,73 +18,81 @@ Lord Smearington's Absurd NFT Gallery is a whimsical platform where artists can 
 
 Follow the instructions below to run the project locally.
 
-╭────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
-│ Object Changes │
-├────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
-│ Created Objects: │
-│ ┌── │
-│ │ ObjectID: 0x2d40516a5503deac36b4baaf4a5c4a1a817ca0b4e22fe10a768726d34f388447 │
-│ │ Sender: 0xddd99e2b3539abdfb553ad6b9513c780b13512120dba7658b688097b5b9d6d0d │
-│ │ Owner: Shared( 401311950 ) │
-│ │ ObjectType: 0x98c0ccb80eb75d33294fd3bbd6843442de30ae06f8865cb60a4c92971eafefa3::guardian::GuardianRegistry │
-│ │ Version: 401311950 │
-│ │ Digest: 2kcxAYVUDB2L1E3wzv3VnQk1tomF9v5f39H3mSM9kxfk │
-│ └── │
-│ ┌── │
-│ │ ObjectID: 0x571e20225321ee766869fda973e5b745978c224555d26e8f0227d82412bf31bd │
-│ │ Sender: 0xddd99e2b3539abdfb553ad6b9513c780b13512120dba7658b688097b5b9d6d0d │
-│ │ Owner: Shared( 401311950 ) │
-│ │ ObjectType: 0x98c0ccb80eb75d33294fd3bbd6843442de30ae06f8865cb60a4c92971eafefa3::realm::RealmRegistry │
-│ │ Version: 401311950 │
-│ │ Digest: 6ie2vghAcACSKpnzxDNW6JDyfngQUdMTM7c2SuE1yayC │
-│ └── │
-│ ┌── │
-│ │ ObjectID: 0x88d0fceb84e797df7461d39a7cb84d6de087ccb7da94fb7a719dfe159c289fdb │
-│ │ Sender: 0xddd99e2b3539abdfb553ad6b9513c780b13512120dba7658b688097b5b9d6d0d │
-│ │ Owner: Account Address ( 0xddd99e2b3539abdfb553ad6b9513c780b13512120dba7658b688097b5b9d6d0d ) │
-│ │ ObjectType: 0x2::package::UpgradeCap │
-│ │ Version: 401311950 │
-│ │ Digest: F57fYnRGuaq5zssJQqkgw6aWoHLB95fby6VhVX5YKAgd │
-│ └── │
-│ ┌── │
-│ │ ObjectID: 0xe39e7bc6f2db921ba6a0ffc6f5afc2ff673d51260d2d34c62fc368e9b20603b5 │
-│ │ Sender: 0xddd99e2b3539abdfb553ad6b9513c780b13512120dba7658b688097b5b9d6d0d │
-│ │ Owner: Shared( 401311950 ) │
-│ │ ObjectType: 0x98c0ccb80eb75d33294fd3bbd6843442de30ae06f8865cb60a4c92971eafefa3::handle::Registry │
-│ │ Version: 401311950 │
-│ │ Digest: Ce2syT9B6opzXGDYJMjvN6TfRKs4aVKm9gjD1RcAE7CR │
-│ └── │
-│ Mutated Objects: │
-│ ┌── │
-│ │ ObjectID: 0x71a3f1ae8f344a53677845c2faaa684d691c357d08ed5939b29631afac391240 │
-│ │ Sender: 0xddd99e2b3539abdfb553ad6b9513c780b13512120dba7658b688097b5b9d6d0d │
-│ │ Owner: Account Address ( 0xddd99e2b3539abdfb553ad6b9513c780b13512120dba7658b688097b5b9d6d0d ) │
-│ │ ObjectType: 0x2::coin::Coin<0x2::sui::SUI> │
-│ │ Version: 401311950 │
-│ │ Digest: B61xdidtwo9tYCJVjb4W8mceVq1raLcWYBemhREXfebx │
-│ └── │
-│ Published Objects: │
-│ ┌── │
-│ │ PackageID: 0x98c0ccb80eb75d33294fd3bbd6843442de30ae06f8865cb60a4c92971eafefa3 │
-│ │ Version: 1 │
-│ │ Digest: 7LgoBfZCx8ZG8gyXJnPXekARzEGfpiU4qUYt4N4BQ8uV │
-│ │ Modules: guardian, handle, realm │
-│ └── │
-╰────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+╭──────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Object Changes                                                                                               │
+├──────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ Created Objects:                                                                                             │
+│  ┌──                                                                                                         │
+│  │ ObjectID: 0x1dea6e4ed09fff36bca2787738766214d4d31d7f3c9925e33ee286201b32a5b7                              │
+│  │ Sender: 0xddd99e2b3539abdfb553ad6b9513c780b13512120dba7658b688097b5b9d6d0d                                │
+│  │ Owner: Shared( 401311951 )                                                                                │
+│  │ ObjectType: 0x31f578c392104334987123ec60bba7f3c45a5ffa8c8a3a47181a504bc44096::realm::RealmRegistry        │
+│  │ Version: 401311951                                                                                        │
+│  │ Digest: CdzUDEAqNWwQvVhw5dGo42wUSDEQUCKw1ygFEQ2BPYN9                                                      │
+│  └──                                                                                                         │
+│  ┌──                                                                                                         │
+│  │ ObjectID: 0x38b0e4f75fc7e04543c58ad4a06032835079a1ddc74304226e755e753cddc25e                              │
+│  │ Sender: 0xddd99e2b3539abdfb553ad6b9513c780b13512120dba7658b688097b5b9d6d0d                                │
+│  │ Owner: Account Address ( 0xddd99e2b3539abdfb553ad6b9513c780b13512120dba7658b688097b5b9d6d0d )             │
+│  │ ObjectType: 0x2::package::UpgradeCap                                                                      │
+│  │ Version: 401311951                                                                                        │
+│  │ Digest: Az9DLsyWc7Hc5dLwqLfynfci8Hbm2pbVnbJiABbfHG8c                                                      │
+│  └──                                                                                                         │
+│  ┌──                                                                                                         │
+│  │ ObjectID: 0x99f76cf66109f5acdcb2f7b54507955b314595a55e4110eafda57f966eee02ac                              │
+│  │ Sender: 0xddd99e2b3539abdfb553ad6b9513c780b13512120dba7658b688097b5b9d6d0d                                │
+│  │ Owner: Shared( 401311951 )                                                                                │
+│  │ ObjectType: 0x31f578c392104334987123ec60bba7f3c45a5ffa8c8a3a47181a504bc44096::handle::Registry            │
+│  │ Version: 401311951                                                                                        │
+│  │ Digest: DM8XYe5MfBJy4U3t6UAaVLGapLQ6Quwyq84rGdjnziDy                                                      │
+│  └──                                                                                                         │
+│  ┌──                                                                                                         │
+│  │ ObjectID: 0xc424f3529c1229110323f49485851b0b36c7d118274b4bd5649e93119aca6367                              │
+│  │ Sender: 0xddd99e2b3539abdfb553ad6b9513c780b13512120dba7658b688097b5b9d6d0d                                │
+│  │ Owner: Shared( 401311951 )                                                                                │
+│  │ ObjectType: 0x31f578c392104334987123ec60bba7f3c45a5ffa8c8a3a47181a504bc44096::guardian::GuardianRegistry  │
+│  │ Version: 401311951                                                                                        │
+│  │ Digest: 5MJkuWRprR5uV36DrPKWcbD5nCqJe5VLUPtnvPLuBTNm                                                      │
+│  └──                                                                                                         │
+│ Mutated Objects:                                                                                             │
+│  ┌──                                                                                                         │
+│  │ ObjectID: 0x71a3f1ae8f344a53677845c2faaa684d691c357d08ed5939b29631afac391240                              │
+│  │ Sender: 0xddd99e2b3539abdfb553ad6b9513c780b13512120dba7658b688097b5b9d6d0d                                │
+│  │ Owner: Account Address ( 0xddd99e2b3539abdfb553ad6b9513c780b13512120dba7658b688097b5b9d6d0d )             │
+│  │ ObjectType: 0x2::coin::Coin<0x2::sui::SUI>                                                                │
+│  │ Version: 401311951                                                                                        │
+│  │ Digest: 3pKYuFGxB7z8ZiXcwbLx7QzTsE7bPYpYNTy5KXqFZHvd                                                      │
+│  └──                                                                                                         │
+│ Published Objects:                                                                                           │
+│  ┌──                                                                                                         │
+│  │ PackageID: 0x0031f578c392104334987123ec60bba7f3c45a5ffa8c8a3a47181a504bc44096                             │
+│  │ Version: 1                                                                                                │
+│  │ Digest: C8pCGMFUQ85V2zFhKVrcYkDUHcsRCdCkZx8xPkGj9dqZ                                                      │
+│  │ Modules: guardian, handle, realm                                                                          │
+│  └──                                                                                                         │
+╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+╭───────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Balance Changes                                                                                   │
+├───────────────────────────────────────────────────────────────────────────────────────────────────┤
+│  ┌──                                                                                              │
+│  │ Owner: Account Address ( 0xddd99e2b3539abdfb553ad6b9513c780b13512120dba7658b688097b5b9d6d0d )  │
+│  │ CoinType: 0x2::sui::SUI                                                                        │
+│  │ Amount: -66719480                                                                              │
+│  └──                                                                                              │
+╰───────────────────────────────────────────────────────────────────────────────────────────────────╯
 
-# Important IDs for Development
+## Important Object IDs
 
-## Package IDs
-- **Handle Package ID**: `0x98c0ccb80eb75d33294fd3bbd6843442de30ae06f8865cb60a4c92971eafefa3`
+### Registry Objects
+- Handle Registry: `0x99f76cf66109f5acdcb2f7b54507955b314595a55e4110eafda57f966eee02ac`
+- Guardian Registry: `0xc424f3529c1229110323f49485851b0b36c7d118274b4bd5649e93119aca6367`
+- Realm Registry: `0x1dea6e4ed09fff36bca2787738766214d4d31d7f3c9925e33ee286201b32a5b7`
 
-## Shared Objects
-- **Handle Registry**: `0xe39e7bc6f2db921ba6a0ffc6f5afc2ff673d51260d2d34c62fc368e9b20603b5`
-- **Guardian Registry**: `0x2d40516a5503deac36b4baaf4a5c4a1a817ca0b4e22fe10a768726d34f388447`
-- **Realm Registry**: `0x571e20225321ee766869fda973e5b745978c224555d26e8f0227d82412bf31bd`
+### Package ID
+- Package ID: `0x0031f578c392104334987123ec60bba7f3c45a5ffa8c8a3a47181a504bc44096`
 
-## Environment Variables
-Add these to your `.env` file:
+### Other Objects
+- Upgrade Cap: `0x38b0e4f75fc7e04543c58ad4a06032835079a1ddc74304226e755e753cddc25e`
 
-
-
-
+## Usage
+To interact with these objects, use the object IDs above in your transactions.

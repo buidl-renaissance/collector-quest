@@ -1,9 +1,10 @@
 import { TransactionBlock } from "@mysten/sui.js/transactions";
 import { getSponsorKeypair } from "./sponsor";
 import { getSuiClient } from "./wallet";
-import { Collectible } from "./interfaces";
+import { Artifact } from "./interfaces";
+import { SuiClient } from "./client";
 
-export const getCollectibleSponsoredTx = async (coin: Collectible) => {
+export const getArtifactSponsoredTx = async (artifact: Artifact) => {
   const tx = new TransactionBlock();
 
   // Check the correct number of arguments for the mint function
@@ -15,11 +16,11 @@ export const getCollectibleSponsoredTx = async (coin: Collectible) => {
       tx.pure(
         "0x379276e515345598b1d337018599c6b90844086ebacdb241faf6a350388b7aa1"
       ), // Publisher object ID
-      tx.pure(coin.id), // Coin ID
-      tx.pure(coin.title), // Title
-      tx.pure(coin.description), // Description
-      tx.pure(coin.image), // Image URL
-      tx.pure(coin.attributes), // Attributes
+      tx.pure(artifact.id), // Coin ID
+      tx.pure(artifact.title), // Title
+      tx.pure(artifact.description), // Description
+      tx.pure(artifact.image), // Image URL
+      tx.pure(artifact.attributes), // Attributes
       // Add any missing required arguments here if needed
     ],
   });
@@ -40,9 +41,8 @@ export const getCollectibleSponsoredTx = async (coin: Collectible) => {
   return signedTx;
 };
 
-export const mintCollectibleForUser = async (
-  collectible: Collectible,
-  userAddress: string
+export const mintArtifactForUser = async (
+  artifact: Artifact,
 ) => {
   try {
     const client = getSuiClient();
@@ -59,11 +59,10 @@ export const mintCollectibleForUser = async (
         tx.pure(
           "0x379276e515345598b1d337018599c6b90844086ebacdb241faf6a350388b7aa1"
         ), // Registry object ID
-        tx.pure(collectible.title), // Title
-        tx.pure(collectible.description || "A digital collectible"), // Description
-        tx.pure(collectible.image), // Image URL
-        tx.pure(collectible.attributes), // Attributes
-        tx.pure(userAddress), // The user's address as the collector
+        tx.pure(artifact.title), // Title
+        tx.pure(artifact.description || "A digital collectible"), // Description
+        tx.pure(artifact.image), // Image URL
+        tx.pure(artifact.attributes), // Attributes
         // The ctx parameter is automatically provided by the Move runtime
       ],
     });
@@ -86,19 +85,18 @@ export const mintCollectibleForUser = async (
       },
     });
 
-    console.log("Collectible minted for user:", result);
+    console.log("Artifact minted for user:", result);
     if (result && result.digest) {
       return {
         success: true,
         digest: result.digest,
-        collectibleId: collectible.id,
-        userAddress,
+        artifactId: artifact.id,
       };
     } else {
       throw new Error("Minting failed: No transaction digest returned");
     }
   } catch (error) {
-    console.error("Error minting collectible for user:", error);
+    console.error("Error minting artifact for user:", error);
     throw error;
   }
 };
@@ -110,7 +108,7 @@ interface RegisterHandleParams {
   guardians: string[];
 }
 
-const registerHandleTransaction = ({
+export const registerHandleTransaction = ({
   handle,
   owner,
   pinCode,
@@ -132,44 +130,4 @@ const registerHandleTransaction = ({
   });
 
   return tx;
-};
-
-export const registerHandleBuildTransaction = async ({
-  
-});
-
-export const registerHandle = async ({
-  handle,
-  owner,
-  pinCode,
-  guardians,
-}: RegisterHandleParams) => {
-  try {
-    const client = getSuiClient();
-
-    // Get the sponsor keypair to sign and execute the transaction
-    const tx = registerHandleTransaction({
-      handle,
-      owner,
-      pinCode,
-      guardians,
-    });
-
-    const sponsorKeypair = getSponsorKeypair();
-    const bytes = await tx.build({ client });
-    const result = await client.signAndExecuteTransactionBlock({
-      signer: sponsorKeypair,
-      transactionBlock: bytes,
-      options: {
-        showEffects: true,
-        showEvents: true,
-      },
-    });
-
-    console.log("Handle registered:", result);
-    return result;
-  } catch (error) {
-    console.error("Error registering handle:", error);
-    throw error;
-  }
 };

@@ -1,4 +1,6 @@
 import { SuiClient, SuiEvent, EventId } from '@mysten/sui.js/client';
+import { getSuiClient } from './wallet';
+import { TransactionBlock } from '@mysten/sui.js/transactions';
 
 export interface Handle {
   id: string;
@@ -21,6 +23,38 @@ interface HandleEvent {
     owner: string;
   };
 }
+
+export const getHandleByAddress = async (address: string): Promise<any> => {
+  try {
+    const client = getSuiClient();
+    
+    const packageId = process.env.NEXT_PUBLIC_PACKAGE_ID || "0x0031f578c392104334987123ec60bba7f3c45a5ffa8c8a3a47181a504bc44096";
+    const registryId = process.env.NEXT_PUBLIC_HANDLE_REGISTRY_ID || "0x99f76cf66109f5acdcb2f7b54507955b314595a55e4110eafda57f966eee02ac";
+    
+    const txb = new TransactionBlock();
+
+    txb.moveCall({
+      target: `${packageId}::handle::get_handle_for_address`,
+      arguments: [
+        txb.object(registryId),
+        txb.pure(address),
+      ],
+    });
+  
+    const result = await client.devInspectTransactionBlock({
+      transactionBlock: txb,
+      sender: address,
+    });
+
+    const value = result.results?.[0]?.returnValues?.[0][0];
+    console.log("VALUE", value);
+  
+    return Buffer.from(value as any, 'base64').toString();
+  } catch (error) {
+    console.error("Error fetching handle by address:", error);
+    return null;
+  }
+};
 
 /**
  * Get handle for a specific owner address

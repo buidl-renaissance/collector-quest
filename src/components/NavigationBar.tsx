@@ -4,6 +4,7 @@ import styled from "@emotion/styled";
 import { FaPalette } from "react-icons/fa";
 import { useRouter } from "next/router";
 import Image from "next/image";
+import { useHandle } from "@/hooks/useHandle";
 
 // Styled components for the navigation bar
 const NavContainer = styled.nav`
@@ -26,19 +27,20 @@ const Logo = styled.div`
 
 const NavigationBar = () => {
   const router = useRouter();
+  const { handle, loading, error } = useHandle();
   return (
     <NavContainer>
       {router.pathname !== "/" ? (
         <Link href="/">
           <Logo>
             <Image src="/canvas.png" alt="Logo" width={32} height={32} />
-            <span>WiredInSamurai</span>
+            {handle && <span>{handle}</span>}
           </Logo>
         </Link>
       ) : (
         <Logo>
           <Image src="/canvas.png" alt="Logo" width={32} height={32} />
-          <span>WiredInSamurai</span>
+          {handle && <span>{handle}</span>}
         </Logo>
       )}
 

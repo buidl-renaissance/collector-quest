@@ -205,15 +205,15 @@ export default function SubmitPage() {
 
   return (
     <PageLayout
-      title="Submit Your Relic"
-      subtitle="Your Creation Will Be Judged by Lord Smearington"
+      title="Submit Your Artifact"
+      subtitle="Your Artifact Will Be Judged by Lord Smearington"
       backLink="/gallery"
       backLinkText="Back to Gallery"
     >
       {!wallet.connected ? (
         <ConnectWalletMessage>
           <h3>Connect Your Wallet</h3>
-          <p>Please connect your wallet to submit artwork to Lord Smearington&apos;s Gallery</p>
+          <p>Please connect your wallet to submit artifact to Lord Smearington&apos;s Gallery</p>
           <ConnectButton />
         </ConnectWalletMessage>
       ) : !handle ? (

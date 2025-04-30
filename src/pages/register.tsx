@@ -1,29 +1,40 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import styled from "@emotion/styled";
 import PageLayout from "@/components/PageLayout";
-import { registerHandle } from "../lib/getHandle";
-import { ConnectButton } from "@suiet/wallet-kit";
-import { useWallet } from "@suiet/wallet-kit";
+// import { registerHandle } from "../lib/getHandle";
+import { SuiClient } from "@/lib/client";
+import { getWallet } from "@/lib/wallet";
+import PinCode from "@/components/PinCode";
+import { getHandleByAddress } from "@/lib/getHandle";
 
 const RegisterPage = () => {
   const [handle, setHandle] = useState("");
+  const [pinCode, setPinCode] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
-  const wallet = useWallet();
   const router = useRouter();
+
+  useEffect(() => {
+    const fetchHandle = async () => {
+      const wallet = getWallet();
+      if (!wallet) {
+        setError("Please connect your wallet first");
+        return;
+      }
+      const handle = await getHandleByAddress(wallet.getPublicKey().toSuiAddress());
+      console.log("HANDLE", handle);
+      setHandle(handle);
+    };
+    fetchHandle();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!handle.trim()) {
       setError("Please enter a valid handle");
-      return;
-    }
-
-    if (!wallet.connected || !wallet.address) {
-      setError("Please connect your wallet first");
       return;
     }
 
@@ -31,16 +42,30 @@ const RegisterPage = () => {
     setError(null);
 
     try {
-      await fetch("/api/register", {
-        method: "POST",
-        body: JSON.stringify({ handle, owner: wallet.address, pinCode: '1111', guardians: [] }),
-      });
+      const wallet = getWallet();
+      if (!wallet) {
+        setError("Please connect your wallet first");
+        return;
+      }
+
+      const client = new SuiClient(wallet);
+      const result = await client.registerHandle(
+        handle,
+        wallet.getPublicKey().toSuiAddress(),
+        pinCode,
+        []
+      );
+
+      console.log("REGISTRATION RESULT", result);
+
       setSuccess(true);
-      setTimeout(() => {
-        router.push("/gallery");
-      }, 2000);
+      // setTimeout(() => {
+      //   router.push("/gallery");
+      // }, 2000);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to register handle");
+      setError(
+        err instanceof Error ? err.message : "Failed to register handle"
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -53,61 +78,35 @@ const RegisterPage = () => {
       backLink="/gallery"
       backLinkText="Back to Gallery"
     >
-      {!wallet.connected ? (
-        <ConnectWalletMessage>
-          <h3>Connect Your Wallet</h3>
-          <p>Please connect your wallet to register your character</p>
-          <ConnectButton />
-        </ConnectWalletMessage>
-      ) : success ? (
-        <SuccessMessage>
-          <h3>Registration Successful!</h3>
-          <p>Your handle has been registered successfully.</p>
-          <p>Redirecting to gallery...</p>
-        </SuccessMessage>
-      ) : (
-        <FormContainer>
-          <form onSubmit={handleSubmit}>
-            <FormGroup>
-              <Label htmlFor="handle">Choose Your Handle</Label>
-              <Input
-                id="handle"
-                type="text"
-                value={handle}
-                onChange={(e) => setHandle(e.target.value)}
-                placeholder="Enter your unique handle"
-                disabled={isSubmitting}
-              />
-            </FormGroup>
-            {error && <ErrorMessage>{error}</ErrorMessage>}
-            <SubmitButton type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Registering..." : "Register Handle"}
-            </SubmitButton>
-          </form>
-        </FormContainer>
-      )}
+      <FormContainer>
+        <form onSubmit={handleSubmit}>
+          <FormGroup>
+            <Label htmlFor="handle">Choose Your Handle</Label>
+            <Input
+              id="handle"
+              type="text"
+              value={handle}
+              onChange={(e) => setHandle(e.target.value)}
+              placeholder="Enter your unique handle"
+              disabled={isSubmitting}
+            />
+            <Label htmlFor="pinCode" style={{ textAlign: "center" }}>Enter your PIN Code</Label>
+            <PinCode
+              value={pinCode}
+              onChange={(value: string) => setPinCode(value)}
+              disabled={isSubmitting}
+            />
+          </FormGroup>
+          {error && <ErrorMessage>{error}</ErrorMessage>}
+          <SubmitButton type="submit" disabled={isSubmitting}>
+            {isSubmitting ? "Registering..." : "Register Handle"}
+          </SubmitButton>
+        </form>
+      </FormContainer>
     </PageLayout>
   );
 };
 
-const ConnectWalletMessage = styled.div`
-  text-align: center;
-  background: rgba(26, 32, 44, 0.8);
-  padding: 2rem;
-  border-radius: 10px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  color: white;
-  
-  h3 {
-    margin-bottom: 1rem;
-    font-size: 1.5rem;
-  }
-  
-  p {
-    margin-bottom: 2rem;
-    color: #a0aec0;
-  }
-`;
 
 const FormContainer = styled.div`
   background: rgba(26, 32, 44, 0.8);
@@ -138,17 +137,18 @@ const Input = styled.input`
   color: white;
   font-size: 1rem;
   transition: border-color 0.3s;
-  
+  margin-bottom: 1rem;
+
   &:focus {
     outline: none;
     border-color: #805ad5;
     box-shadow: 0 0 0 3px rgba(128, 90, 213, 0.3);
   }
-  
+
   &::placeholder {
     color: #718096;
   }
-  
+
   &:disabled {
     opacity: 0.7;
     cursor: not-allowed;
@@ -166,11 +166,11 @@ const SubmitButton = styled.button`
   font-weight: 600;
   cursor: pointer;
   transition: opacity 0.3s;
-  
+
   &:hover:not(:disabled) {
     opacity: 0.9;
   }
-  
+
   &:disabled {
     opacity: 0.7;
     cursor: not-allowed;
@@ -190,13 +190,13 @@ const SuccessMessage = styled.div`
   border-radius: 10px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   color: white;
-  
+
   h3 {
     margin-bottom: 1rem;
     font-size: 1.5rem;
     color: #68d391;
   }
-  
+
   p {
     margin-bottom: 0.5rem;
     color: #a0aec0;

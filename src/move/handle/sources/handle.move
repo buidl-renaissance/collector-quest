@@ -181,6 +181,9 @@ module handle::handle {
         
         // Add to registry
         table::add(&mut registry.handles, handle, handle_info);
+
+        // Add to addresses table
+        table::add(&mut registry.addresses, sender, handle);
         
         // Emit event
         event::emit(HandleRegistrationRequested {
@@ -258,7 +261,7 @@ module handle::handle {
             handle_info.confirmed = true;
             
             // Register the address to handle mapping
-            table::add(&mut registry.addresses, handle_info.owner, handle_info.handle);
+            // table::add(&mut registry.addresses, handle_info.owner, handle_info.handle);
             
             // Emit completion event
             event::emit(HandleRegistrationCompleted {

@@ -248,7 +248,7 @@ const ArtworkForm = ({ onSubmitSuccess }: ArtworkFormProps) => {
       />
 
       <FormGroup>
-        <Label htmlFor="artworkName">Artwork Title</Label>
+        <Label htmlFor="artworkName">Title</Label>
         <Input
           id="artworkName"
           type="text"
@@ -283,7 +283,7 @@ const ArtworkForm = ({ onSubmitSuccess }: ArtworkFormProps) => {
         />
       </FormGroup>
 
-      <FormGroup>
+      {/* <FormGroup>
         <Label htmlFor="collaborators">Number of Collaborators</Label>
         <Input
           id="collaborators"
@@ -295,7 +295,7 @@ const ArtworkForm = ({ onSubmitSuccess }: ArtworkFormProps) => {
           step="1"
           required
         />
-      </FormGroup>
+      </FormGroup> */}
 
       <FormGroup>
         <ToggleContainer>
