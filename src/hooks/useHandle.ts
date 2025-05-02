@@ -8,19 +8,22 @@ import { getWallet } from '@/lib/wallet';
  */
 export const useHandle = () => {
   const [handle, setHandle] = useState<string | null>(null);
+  const [image, setImage] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchHandle = async () => {
       try {
-        // Check for cached handle in localStorage
-        const cachedHandle = localStorage.getItem('userHandle');
-        if (cachedHandle) {
-          setHandle(cachedHandle);
-          setLoading(false);
-          return;
-        }
+        // // Check for cached handle in localStorage
+        // const cachedHandle = localStorage.getItem('userHandle');    
+        // const cachedImage = localStorage.getItem('userHandleImage');
+        // if (cachedHandle) {
+        //   setHandle(cachedHandle);
+        //   setImage(cachedImage);
+        //   setLoading(false);
+        //   return;
+        // }
 
         // Get wallet
         const wallet = getWallet();
@@ -34,12 +37,14 @@ export const useHandle = () => {
         const address = wallet.getPublicKey().toSuiAddress();
         
         // Fetch handle from blockchain
-        const fetchedHandle = await getHandleByAddress(address);
+        const { handle: fetchedHandle, image: fetchedImage } = await getHandleByAddress(address);
         
         if (fetchedHandle) {
           // Store in localStorage for future use
-          localStorage.setItem('userHandle', fetchedHandle);
+        //   localStorage.setItem('userHandle', fetchedHandle);
+        //   localStorage.setItem('userHandleImage', fetchedImage);
           setHandle(fetchedHandle);
+        //   setImage(fetchedImage);
         }
       } catch (err) {
         console.error('Error fetching handle:', err);
@@ -52,5 +57,5 @@ export const useHandle = () => {
     fetchHandle();
   }, []);
 
-  return { handle, loading, error };
+  return { handle, image, loading, error };
 };

@@ -103,6 +103,7 @@ export const mintArtifactForUser = async (
 
 interface RegisterHandleParams {
   handle: string;
+  imageUrl: string;
   owner: string;
   pinCode: string;
   guardians: string[];
@@ -110,6 +111,7 @@ interface RegisterHandleParams {
 
 export const registerHandleTransaction = ({
   handle,
+  imageUrl,
   owner,
   pinCode,
   guardians,
@@ -124,6 +126,7 @@ export const registerHandleTransaction = ({
           "0xe39e7bc6f2db921ba6a0ffc6f5afc2ff673d51260d2d34c62fc368e9b20603b5"
       ), // Registry object ID
       tx.pure(handle),
+      tx.pure(imageUrl),
       tx.pure(pinCode),
       tx.pure(guardians),
     ],

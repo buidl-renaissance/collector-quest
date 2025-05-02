@@ -12,11 +12,12 @@ export class SuiClient {
 
   async registerHandle(
     handle: string,
+    imageUrl: string,
     owner: string,
     pinCode: string,
     guardians: string[]
   ) {
-    const tx = registerHandleTransaction({ handle, owner, pinCode, guardians });
+    const tx = registerHandleTransaction({ handle, imageUrl, owner, pinCode, guardians });
     tx.setSender(owner);
     tx.setGasOwner('0x1551923e851c9ffe82ea65139d123b0ec32784d65c06ab6b7a3d75aea00b6b85');
     tx.setGasBudget(100000000);
@@ -30,11 +31,12 @@ export class SuiClient {
 
   async executeRegisterHandle(
     handle: string,
+    imageUrl: string,
     owner: string,
     pinCode: string,
     guardians: string[]
   ) {
-    const tx = registerHandleTransaction({ handle, owner, pinCode, guardians });
+    const tx = registerHandleTransaction({ handle, imageUrl, owner, pinCode, guardians });
     const bytes = await tx.build({ client: this.client });
 
     return await this.client.executeTransactionBlock({
@@ -130,10 +132,11 @@ export class SuiClient {
 export const registerHandle = async (
   userWallet: Ed25519Keypair,
   handle: string,
+  imageUrl: string,
   owner: string,
   pinCode: string,
   guardians: string[]
 ) => {
   const suiClient = new SuiClient(userWallet);
-  return suiClient.registerHandle(handle, owner, pinCode, guardians);
+  return suiClient.registerHandle(handle, imageUrl, owner, pinCode, guardians);
 };

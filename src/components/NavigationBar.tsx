@@ -27,19 +27,27 @@ const Logo = styled.div`
 
 const NavigationBar = () => {
   const router = useRouter();
-  const { handle, loading, error } = useHandle();
+  const { handle, image, loading, error } = useHandle();
   return (
     <NavContainer>
       {router.pathname !== "/" ? (
         <Link href="/">
           <Logo>
-            <Image src="/canvas.png" alt="Logo" width={32} height={32} />
+            {image ? (
+              <Image src={image} alt="Logo" width={32} height={32} />
+            ) : (
+              <Image src="/canvas.png" alt="Logo" width={32} height={32} />
+            )}
             {handle && <span>{handle}</span>}
           </Logo>
         </Link>
       ) : (
         <Logo>
-          <Image src="/canvas.png" alt="Logo" width={32} height={32} />
+          {image ? (
+            <Image src={image} alt="Logo" width={32} height={32} />
+          ) : (
+            <Image src="/canvas.png" alt="Logo" width={32} height={32} />
+          )}
           {handle && <span>{handle}</span>}
         </Logo>
       )}

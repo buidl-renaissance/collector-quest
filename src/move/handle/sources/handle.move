@@ -26,6 +26,7 @@ module handle::handle {
     const EHandleLocked: u64 = 8;
     const EGuardianAlreadyAdded: u64 = 9;
     const EInvalidGuardian: u64 = 10;
+    const EAddressAlreadyLinked: u64 = 11;
 
     // Minimum number of guardian confirmations required
     const MIN_CONFIRMATIONS: u64 = 2;
@@ -36,21 +37,24 @@ module handle::handle {
     // Registry to store all handle registrations
     public struct Registry has key {
         id: UID,
-        handles: Table<String, HandleInfo>,
+        handles: Table<String, UID>,
         addresses: Table<address, String>,
         guardians: VecSet<address>
     }
 
     // Information about a handle registration
-    public struct HandleInfo has store {
+    public struct HandleInfo has key, store {
+        id: UID,
         handle: String,
         owner: address,
+        image: String,
         pin_hash: vector<u8>, // Hashed PIN code for security
         confirmations: VecSet<address>,
         confirmed: bool,
         failed_attempts: u64,
         locked: bool,
-        handle_guardians: VecSet<address> // Specific guardians for this handle
+        handle_guardians: VecSet<address>, // Specific guardians for this handle
+        linked_addresses: VecSet<address> // Multiple addresses linked to this handle
     }
 
     // Events
@@ -78,6 +82,22 @@ module handle::handle {
     public struct GuardianAdded has copy, drop {
         handle: String,
         guardian: address
+    }
+    
+    public struct AddressLinked has copy, drop {
+        handle: String,
+        address: address
+    }
+    
+    public struct AddressUnlinked has copy, drop {
+        handle: String,
+        address: address
+    }
+    
+    public struct HandleImageUpdated has copy, drop {
+        handle: String,
+        new_image: String,
+        owner: address
     }
 
     // Initialize the registry
@@ -139,6 +159,7 @@ module handle::handle {
     public fun request_handle_registration(
         registry: &mut Registry, 
         handle: String,
+        image: String,
         pin_code: vector<u8>,
         handle_guardians: vector<address>,
         ctx: &mut TxContext
@@ -167,29 +188,39 @@ module handle::handle {
             i = i + 1;
         };
         
+        // Create linked addresses set with the owner as the first linked address
+        let mut linked_addresses = vec_set::empty();
+        vec_set::insert(&mut linked_addresses, sender);
+        
         // Create handle info with requester as owner
         let handle_info = HandleInfo {
-            handle,
+            id: object::new(ctx),
+            handle: copy handle,
             owner: sender,
+            image,
             pin_hash,
             confirmations: vec_set::empty(),
             confirmed: false,
             failed_attempts: 0,
             locked: false,
-            handle_guardians: guardians_set
+            handle_guardians: guardians_set,
+            linked_addresses
         };
-        
+
         // Add to registry
-        table::add(&mut registry.handles, handle, handle_info);
+        table::add(&mut registry.handles, copy handle, handle_info.id);
 
         // Add to addresses table
         table::add(&mut registry.addresses, sender, handle);
         
         // Emit event
         event::emit(HandleRegistrationRequested {
-            handle,
+            handle: copy handle,
             requester: sender
         });
+
+        // Create and transfer the Handle NFT to the caller
+        transfer::transfer(handle_info, tx_context::sender(ctx));
     }
 
     // Guardian confirms a handle registration with PIN verification
@@ -270,11 +301,98 @@ module handle::handle {
             });
         }
     }
+    
+    // Link an additional address to a handle
+    public entry fun link_address(
+        registry: &mut Registry,
+        handle: String,
+        address_to_link: address,
+        pin_code: vector<u8>,
+        ctx: &mut TxContext
+    ) {
+        let sender = tx_context::sender(ctx);
+        
+        // Ensure handle exists
+        assert!(table::contains(&registry.handles, handle), EHandleNotFound);
+        
+        let handle_info = table::borrow_mut(&mut registry.handles, handle);
+        
+        // Ensure sender is the owner
+        assert!(handle_info.owner == sender, ENotAuthorized);
+        
+        // Ensure handle is confirmed
+        assert!(handle_info.confirmed, ENotAuthorized);
+        
+        // Verify PIN code
+        let pin_hash = hash_pin(pin_code);
+        assert!(pin_hash == handle_info.pin_hash, EInvalidPinCode);
+        
+        // Ensure address is not already linked to another handle
+        assert!(!table::contains(&registry.addresses, address_to_link), EAddressAlreadyRegistered);
+        
+        // Ensure address is not already linked to this handle
+        assert!(!vec_set::contains(&handle_info.linked_addresses, &address_to_link), EAddressAlreadyLinked);
+        
+        // Add address to linked addresses
+        vec_set::insert(&mut handle_info.linked_addresses, address_to_link);
+        
+        // Add to addresses table
+        table::add(&mut registry.addresses, address_to_link, handle);
+        
+        // Emit event
+        event::emit(AddressLinked {
+            handle,
+            address: address_to_link
+        });
+    }
+    
+    // Unlink an address from a handle
+    public entry fun unlink_address(
+        registry: &mut Registry,
+        handle: String,
+        address_to_unlink: address,
+        pin_code: vector<u8>,
+        ctx: &mut TxContext
+    ) {
+        let sender = tx_context::sender(ctx);
+        
+        // Ensure handle exists
+        assert!(table::contains(&registry.handles, handle), EHandleNotFound);
+        
+        let handle_info = table::borrow_mut(&mut registry.handles, handle);
+        
+        // Ensure sender is the owner
+        assert!(handle_info.owner == sender, ENotAuthorized);
+        
+        // Cannot unlink the owner address
+        assert!(address_to_unlink != handle_info.owner, ENotAuthorized);
+        
+        // Verify PIN code
+        let pin_hash = hash_pin(pin_code);
+        assert!(pin_hash == handle_info.pin_hash, EInvalidPinCode);
+        
+        // Ensure address is linked to this handle
+        assert!(vec_set::contains(&handle_info.linked_addresses, &address_to_unlink), EHandleNotFound);
+        
+        // Remove address from linked addresses
+        vec_set::remove(&mut handle_info.linked_addresses, &address_to_unlink);
+        
+        // Remove from addresses table
+        table::remove(&mut registry.addresses, address_to_unlink);
+        
+        // Emit event
+        event::emit(AddressUnlinked {
+            handle,
+            address: address_to_unlink
+        });
+    }
 
-    // Get handle for an address
-    public fun get_handle_for_address(registry: &Registry, addr: address): String {
+    // Get handle and image URL for an address
+    public fun get_handle_for_address(registry: &Registry, addr: address): (String, String) {
         assert!(table::contains(&registry.addresses, addr), EAddressAlreadyRegistered);
-        *table::borrow(&registry.addresses, addr)
+        let handle = *table::borrow(&registry.addresses, addr);
+        let handle_info = table::borrow(&registry.handles, handle);
+        (handle, handle_info.image)
     }
 
     // Check if a handle is registered and confirmed
@@ -283,7 +401,8 @@ module handle::handle {
             return false
         };
         
-        let handle_info = table::borrow(&registry.handles, *handle);
+        let handle_id = table::borrow(&registry.handles, *handle);
+        let handle_info = get_handle_by_id(handle_id);
         handle_info.confirmed
     }
     
@@ -293,7 +412,8 @@ module handle::handle {
             return false
         };
         
-        let handle_info = table::borrow(&registry.handles, *handle);
+        let handle_id = table::borrow(&registry.handles, *handle);
+        let handle_info = get_handle_by_id(handle_id);
         handle_info.locked
     }
     
@@ -301,15 +421,26 @@ module handle::handle {
     public fun get_handle_guardians(registry: &Registry, handle: &String): vector<address> {
         assert!(table::contains(&registry.handles, *handle), EHandleNotFound);
         
-        let handle_info = table::borrow(&registry.handles, *handle);
+        let handle_id = table::borrow(&registry.handles, *handle);
+        let handle_info = get_handle_by_id(handle_id);
         vec_set::into_keys(handle_info.handle_guardians)
+    }
+    
+    // Get all linked addresses for a specific handle
+    public fun get_linked_addresses(registry: &Registry, handle: &String): vector<address> {
+        assert!(table::contains(&registry.handles, *handle), EHandleNotFound);
+        
+        let handle_id = table::borrow(&registry.handles, *handle);
+        let handle_info = get_handle_by_id(handle_id);
+        vec_set::into_keys(handle_info.linked_addresses)
     }
 
     // Get handle owner
     public fun get_handle_owner(registry: &Registry, handle: &String): address {
         assert!(table::contains(&registry.handles, *handle), EHandleNotFound);
         
-        let handle_info = table::borrow(&registry.handles, *handle);
+        let handle_id = table::borrow(&registry.handles, *handle);
+        let handle_info = get_handle_by_id(handle_id);
         handle_info.owner
     }
     
@@ -317,4 +448,42 @@ module handle::handle {
     public fun handle_exists(registry: &Registry, handle: &String): bool {
         table::contains(&registry.handles, *handle)
     }
+    
+    // Update handle image
+    public entry fun update_handle_image(
+        registry: &mut Registry, 
+        handle: String, 
+        new_image: String, 
+        ctx: &mut TxContext
+    ) {
+        assert!(table::contains(&registry.handles, handle), EHandleNotFound);
+        
+        let handle_id = table::borrow_mut(&mut registry.handles, handle);
+        let handle_info = get_handle_by_id(handle_id);
+        
+        assert!(tx_context::sender(ctx) == handle_info.owner, ENotAuthorized);
+        
+        handle_info.image = new_image;
+        
+        event::emit(HandleImageUpdated {
+            handle,
+            new_image,
+            owner: handle_info.owner
+        });
+    }
+
+    // Get handle info by handle string
+    public fun get_handle_info(registry: &Registry, handle: &String): &HandleInfo {
+        assert!(table::contains(&registry.handles, *handle), EHandleNotFound);
+        
+        let handle_id = table::borrow(&registry.handles, *handle);
+        dynamic_object_field::borrow<ID, HandleInfo>(&registry.id, *handle_id)
+    }
+    
+    // Get handle object by ID
+    public fun get_handle_by_id(handle_id: &UID): &HandleInfo {
+        object::borrow<HandleInfo>(handle_id)
+    }
+
+    
 }

@@ -45,7 +45,7 @@ const EventsPage = () => {
             </EventContent>
           </EventCard>
           
-          <EventCard>
+          {/* <EventCard>
             <EventImage src="/images/lord-smearington.jpg" alt="Sui Developer Workshop with Lord Smearington" />
             <EventContent>
               <EventDate>Tuesday, May 6th, 2025</EventDate>
@@ -55,7 +55,7 @@ const EventsPage = () => {
               </EventDescription>
               <EventButton href="/events/sui-developer-workshop">Learn More</EventButton>
             </EventContent>
-          </EventCard>
+          </EventCard> */}
 
           <EventCard>
             <EventImage src="/images/ai-creator-workshop.png" alt="AI Creator Workshop with Lord Smearington" />
@@ -66,6 +66,18 @@ const EventsPage = () => {
                 Join Lord Smearington for a workshop on AI tools, creative prompting, and embracing the absurd.
               </EventDescription>
               <EventButton href="/events/ai-creator-workshop">Learn More</EventButton>
+            </EventContent>
+          </EventCard>
+          
+          <EventCard>
+            <EventImage src="/images/lord-smearington.jpg" alt="Interdimensional Art Gallery with Lord Smearington" />
+            <EventContent>
+              <EventDate>Saturday, May 17th, 2025</EventDate>
+              <EventTitle>Experience the Absurd: An Interdimensional Art Gallery Experience presented by Lord Smearington</EventTitle>
+              <EventDescription>
+                Join Lord Smearington for a first of it's kind interdimensional art gallery experience.
+              </EventDescription>
+              <EventButton href="/events/interdimensional-art-gallery">Learn More</EventButton>
             </EventContent>
           </EventCard>
           

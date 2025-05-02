@@ -303,11 +303,11 @@ export const getServerSideProps: GetServerSideProps = async () => {
     props: {
       metadata: {
         title:
-          "Embracing the Absurd: A Sui Workshop and Demo with Lord Smearington",
+          "Embracing the Absurd: Sui NFTs, AI Tools, and Insights from Lord Smearington",
         description:
           "Join Lord Smearington for a workshop and demo on Sui NFTs, AI tools, and the absurd. Register now to unleash your creativity!",
         image: "/images/lord-smearington-summoning.jpg",
-        url: "https://smearington.theethical.ai/workshop/sui",
+        url: "https://smearington.theethical.ai/events/sui",
       },
     },
   };

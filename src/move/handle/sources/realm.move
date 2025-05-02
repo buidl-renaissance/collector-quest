@@ -109,7 +109,7 @@ module handle::realm {
         };
         
         // Get creator's handle
-        let creator_handle = handle::get_handle_for_address(handle_registry, sender);
+        let (creator_handle, creator_image) = handle::get_handle_for_address(handle_registry, sender);
         
         // Create members set with creator's handle as first member
         let mut members = vec_set::empty();
@@ -148,7 +148,7 @@ module handle::realm {
         let sender = tx_context::sender(ctx);
         
         // Get user's handle
-        let user_handle = handle::get_handle_for_address(handle_registry, sender);
+        let (user_handle, user_image) = handle::get_handle_for_address(handle_registry, sender);
         
         // Ensure handle is confirmed
         assert!(handle::is_handle_confirmed(handle_registry, &user_handle), EHandleNotConfirmed);
@@ -182,7 +182,7 @@ module handle::realm {
         let sender = tx_context::sender(ctx);
         
         // Get user's handle
-        let user_handle = handle::get_handle_for_address(handle_registry, sender);
+        let (user_handle, user_image) = handle::get_handle_for_address(handle_registry, sender);
         
         // Ensure realm exists
         assert!(table::contains(&registry.realms, realm_name), ERealmNotFound);
