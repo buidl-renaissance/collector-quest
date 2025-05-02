@@ -37,7 +37,8 @@ module handle::realm {
         members: VecSet<String>, // Store handles instead of addresses
         member_count: u64,
         realm_guardians: VecSet<address>,
-        created_at: u64
+        created_at: u64,
+        handle_registry: Registry // Each realm has its own handle registry
     }
 
     // Events
@@ -115,6 +116,9 @@ module handle::realm {
         let mut members = vec_set::empty();
         vec_set::insert(&mut members, copy creator_handle);
         
+        // Create a new handle registry for this realm
+        let realm_handle_registry = handle::create_registry(ctx);
+        
         // Create realm
         let realm = Realm {
             name,
@@ -125,7 +129,8 @@ module handle::realm {
             members,
             member_count: 1,
             realm_guardians: guardians_set,
-            created_at: tx_context::epoch(ctx)
+            created_at: tx_context::epoch(ctx),
+            handle_registry: realm_handle_registry
         };
         
         // Add to registry

@@ -3,7 +3,7 @@ import styled from '@emotion/styled';
 import { keyframes } from '@emotion/react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { FaArrowLeft, FaStar, FaCalendarAlt, FaUsers, FaMapMarkerAlt } from 'react-icons/fa';
+import { FaArrowLeft, FaStar, FaCalendarAlt, FaUsers, FaMapMarkerAlt, FaPlusCircle } from 'react-icons/fa';
 import { useWallet } from '@suiet/wallet-kit';
 import { GetServerSideProps } from 'next';
 
@@ -225,6 +225,37 @@ const FilterButton = styled.button<{ active: boolean }>`
   }
 `;
 
+const RegisterRealmButton = styled.a`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #d4af37, #f1c40f);
+  color: #1a1a2e;
+  border: none;
+  border-radius: 30px;
+  padding: 0.75rem 1.5rem;
+  font-family: 'Cinzel', serif;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin: 2rem auto;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  text-decoration: none;
+  width: fit-content;
+  
+  &:hover {
+    background: linear-gradient(135deg, #f1c40f, #d4af37);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  }
+  
+  svg {
+    margin-right: 0.5rem;
+    font-size: 1.2rem;
+  }
+`;
+
 // Mock data for realms
 const mockRealms = [
   {
@@ -242,8 +273,8 @@ const mockRealms = [
     name: "Cryptic Canvas Summit",
     description: "Annual gathering of NFT artists and collectors to showcase groundbreaking digital art.",
     image: "/images/realm2.jpg",
-    type: "event",
-    date: "June 15-18, 2025",
+    type: "community",
+    members: 876,
     location: "New York City",
     tags: ["conference", "exhibition", "networking"]
   },
@@ -252,8 +283,8 @@ const mockRealms = [
     name: "Blockchain Brushstrokes",
     description: "Weekly workshops teaching the fundamentals of creating and minting NFT art on Sui.",
     image: "/images/realm3.jpg",
-    type: "event",
-    date: "Every Saturday",
+    type: "community",
+    members: 542,
     location: "Online",
     tags: ["education", "workshop", "beginner-friendly"]
   },
@@ -272,8 +303,8 @@ const mockRealms = [
     name: "Digital Renaissance Fair",
     description: "A three-day festival celebrating the renaissance of digital art in the blockchain era.",
     image: "/images/realm5.jpg",
-    type: "event",
-    date: "August 5-7, 2025",
+    type: "community",
+    members: 1205,
     location: "San Francisco",
     tags: ["festival", "exhibition", "performances"]
   },
@@ -305,8 +336,14 @@ export const getServerSideProps: GetServerSideProps = async () => {
 const RealmsPage: React.FC = () => {
   const { connected } = useWallet();
   const [realms, setRealms] = useState(mockRealms);
-  const [filter, setFilter] = useState("all");
   const [loading, setLoading] = useState(true);
+  const [showRegisterModal, setShowRegisterModal] = useState(false);
+  const [newRealm, setNewRealm] = useState({
+    name: '',
+    description: '',
+    location: '',
+    kingdomName: ''
+  });
 
   useEffect(() => {
     // Simulate loading realms from an API
@@ -327,14 +364,6 @@ const RealmsPage: React.FC = () => {
     loadRealms();
   }, []);
 
-  const handleFilterChange = (newFilter: string) => {
-    setFilter(newFilter);
-  };
-
-  const filteredRealms = filter === "all" 
-    ? realms 
-    : realms.filter(realm => realm.type === filter);
-
   const handleJoinRealm = (realmId: string) => {
     if (!connected) {
       alert("Please connect your wallet to join this realm.");
@@ -343,6 +372,43 @@ const RealmsPage: React.FC = () => {
     
     // In a real implementation, this would handle joining the realm
     alert(`You've joined realm ${realmId}. This functionality will be implemented soon!`);
+  };
+
+  const handleRegisterRealm = () => {
+    if (!connected) {
+      alert("Please connect your wallet to register a realm.");
+      return;
+    }
+    
+    setShowRegisterModal(true);
+  };
+
+  const handleSubmitRealm = () => {
+    // Validate form
+    if (!newRealm.name || !newRealm.description || !newRealm.kingdomName) {
+      alert("Please fill in all required fields.");
+      return;
+    }
+    
+    // In a real implementation, this would call the smart contract to register a realm
+    alert(`Realm "${newRealm.name}" will be registered under kingdom "${newRealm.kingdomName}". This functionality will be implemented soon!`);
+    
+    // Close modal and reset form
+    setShowRegisterModal(false);
+    setNewRealm({
+      name: '',
+      description: '',
+      location: '',
+      kingdomName: ''
+    });
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setNewRealm(prev => ({
+      ...prev,
+      [name]: value
+    }));
   };
 
   return (
@@ -382,41 +448,24 @@ const RealmsPage: React.FC = () => {
 
       <Container>
         <ContentSection paddingY="4">
-          <SectionTitle>Discover Communities & Events</SectionTitle>
+          <SectionTitle>Discover Communities</SectionTitle>
           
           <p style={{ textAlign: "center", maxWidth: "800px", margin: "0 auto 2rem" }}>
-            Explore vibrant communities and exciting events in the world of NFT art and blockchain creativity. 
+            Explore vibrant communities in the world of NFT art and blockchain creativity. 
             Connect with fellow artists, collectors, and enthusiasts who share your passion.
           </p>
 
-          <FilterContainer>
-            <FilterButton 
-              active={filter === "all"} 
-              onClick={() => handleFilterChange("all")}
-            >
-              All Realms
-            </FilterButton>
-            <FilterButton 
-              active={filter === "community"} 
-              onClick={() => handleFilterChange("community")}
-            >
-              Communities
-            </FilterButton>
-            <FilterButton 
-              active={filter === "event"} 
-              onClick={() => handleFilterChange("event")}
-            >
-              Events
-            </FilterButton>
-          </FilterContainer>
+          <RegisterRealmButton href="/realms/register">
+            <FaPlusCircle /> Register New Realm
+          </RegisterRealmButton>
 
           {loading ? (
-            <p style={{ textAlign: "center" }}>Loading realms...</p>
-          ) : filteredRealms.length === 0 ? (
-            <p style={{ textAlign: "center" }}>No realms found matching your filter.</p>
+            <p style={{ textAlign: "center" }}>Loading communities...</p>
+          ) : realms.length === 0 ? (
+            <p style={{ textAlign: "center" }}>No communities found.</p>
           ) : (
             <RealmGrid>
-              {filteredRealms.map((realm) => (
+              {realms.map((realm) => (
                 <RealmCard key={realm.id}>
                   <RealmImageContainer>
                     <Image
@@ -430,22 +479,16 @@ const RealmsPage: React.FC = () => {
                     <RealmName>{realm.name}</RealmName>
                     <RealmDescription>{realm.description}</RealmDescription>
                     
-                    {realm.type === "community" ? (
-                      <RealmMeta>
-                        <FaUsers /> {realm.members} members
-                      </RealmMeta>
-                    ) : (
-                      <RealmMeta>
-                        <FaCalendarAlt /> {realm.date}
-                      </RealmMeta>
-                    )}
+                    <RealmMeta>
+                      <FaUsers /> {realm.members} members
+                    </RealmMeta>
                     
                     <RealmMeta>
                       <FaMapMarkerAlt /> {realm.location}
                     </RealmMeta>
                     
                     <Button onClick={() => handleJoinRealm(realm.id)}>
-                      {realm.type === "community" ? "Join Community" : "Register for Event"}
+                      Join Community
                     </Button>
                   </RealmContent>
                 </RealmCard>
@@ -454,6 +497,7 @@ const RealmsPage: React.FC = () => {
           )}
         </ContentSection>
       </Container>
+
     </PageWrapper>
   );
 };
