@@ -75,7 +75,7 @@ const EventsPage = () => {
               <EventDate>Saturday, May 17th, 2025</EventDate>
               <EventTitle>Experience the Absurd: An Interdimensional Art Gallery Experience presented by Lord Smearington</EventTitle>
               <EventDescription>
-                Join Lord Smearington for a first of it's kind interdimensional art gallery experience.
+                Join Lord Smearington for a first of it&apos;s kind interdimensional art gallery experience.
               </EventDescription>
               <EventButton href="/events/interdimensional-art-gallery">Learn More</EventButton>
             </EventContent>

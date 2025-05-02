@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
-import { useRouter } from "next/router";
 import styled from "@emotion/styled";
 import PageLayout from "@/components/PageLayout";
-// import { registerHandle } from "../lib/getHandle";
 import { SuiClient } from "@/lib/client";
 import { getWallet } from "@/lib/wallet";
 import PinCode from "@/components/PinCode";
@@ -17,8 +15,7 @@ const RegisterPage = () => {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
-  const router = useRouter();
-
+  
   useEffect(() => {
     const fetchHandle = async () => {
       const wallet = getWallet();
@@ -171,7 +168,7 @@ const RegisterPage = () => {
         <SuccessMessage>
           <h3>Registration Successful!</h3>
           <p>Your handle <strong>{handle}</strong> has been registered.</p>
-          <p>You can now explore Lord Smearington's Gallery.</p>
+          <p>You can now explore Lord Smearington&apos;s Gallery.</p>
         </SuccessMessage>
       </PageLayout>
     );
@@ -180,7 +177,7 @@ const RegisterPage = () => {
   return (
     <PageLayout
       title="Register Your Character"
-      subtitle="Create your unique identity in Lord Smearington's Gallery"
+      subtitle="Create your unique identity in Lord Smearington&apos;s Gallery"
       backLink="/gallery"
       backLinkText="Back to Gallery"
     >

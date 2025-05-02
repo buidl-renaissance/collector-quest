@@ -6,8 +6,9 @@ interface UploadButtonProps {
   onUploadError?: (error: string) => void;
   className?: string;
   accept?: string;
+  label?: string;
+  maxSize?: number;
   multiple?: boolean;
-  children?: React.ReactNode;
   uploadUrl?: string;
   disabled?: boolean;
 }
@@ -59,8 +60,9 @@ export const UploadButton: React.FC<UploadButtonProps> = ({
   onUploadError,
   className,
   accept = 'image/*',
+  label = 'Upload Image',
+  maxSize = 5, // Default 5MB
   multiple = false,
-  children = 'Upload Image',
   disabled = false,
 }) => {
   const [isUploading, setIsUploading] = useState(false);
@@ -71,16 +73,26 @@ export const UploadButton: React.FC<UploadButtonProps> = ({
       fileInputRef.current.click();
     }
   };
-
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (!files || files.length === 0) return;
+
+    const file = files[0];
+    const fileSizeInMB = file.size / (1024 * 1024);
+    
+    // Check if file size exceeds the maximum allowed size
+    if (fileSizeInMB > maxSize) {
+      if (onUploadError) {
+        onUploadError(`File size exceeds the maximum allowed size of ${maxSize}MB`);
+      }
+      return;
+    }
 
     setIsUploading(true);
 
     try {
       const formData = new FormData();
-      formData.append('image', files[0]);
+      formData.append('image', file);
 
       const response = await fetch('https://api.detroiter.network/api/upload-media', {
         method: 'POST',
@@ -120,7 +132,7 @@ export const UploadButton: React.FC<UploadButtonProps> = ({
         type="button"
       >
         {isUploading && <LoadingSpinner />}
-        {isUploading ? 'Uploading...' : children}
+        {isUploading ? 'Uploading...' : label}
       </StyledButton>
       <HiddenInput
         type="file"

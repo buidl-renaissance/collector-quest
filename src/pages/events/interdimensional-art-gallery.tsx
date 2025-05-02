@@ -1,7 +1,6 @@
 import Image from "next/image";
 import styled from "@emotion/styled";
 import { GetServerSideProps } from "next";
-import NavigationBar from "@/components/NavigationBar";
 
 // Styled components
 const PageWrapper = styled.div`
@@ -241,10 +240,10 @@ const InterdimensionalArtGallery: React.FC = () => {
             <GridItem span={12}>
               <SectionTitle>A Word From Lord Smearington</SectionTitle>
               <BodyText>
-                "Art is the language of the cosmos, spoken through the imperfect vessels of mortal creators. In this gallery, I have collected whispers from the void, translated them through various mediums, and arranged them in a sequence that might momentarily allow your limited consciousness to perceive the grand absurdity of existence. Come prepared to leave your preconceptions at the door—they will only weigh you down as you float through the exhibition."
+                &ldquo;Art is the language of the cosmos, spoken through the imperfect vessels of mortal creators. In this gallery, I have collected whispers from the void, translated them through various mediums, and arranged them in a sequence that might momentarily allow your limited consciousness to perceive the grand absurdity of existence. Come prepared to leave your preconceptions at the door—they will only weigh you down as you float through the exhibition.&rdquo;
               </BodyText>
               <BodyText>
-                "I rate this exhibition 9 screaming teacups out of 12 melting clocks. Attendance is mandatory for those who wish to understand the true nature of creativity in our fractured multiverse."
+                &ldquo;I rate this exhibition 9 screaming teacups out of 12 melting clocks. Attendance is mandatory for those who wish to understand the true nature of creativity in our fractured multiverse.&rdquo;
               </BodyText>
             </GridItem>
           </Grid>
@@ -252,7 +251,7 @@ const InterdimensionalArtGallery: React.FC = () => {
       </Container>
 
       <footer>
-        <FooterText>© 2023 Lord Smearington's Realm. All rights reserved.</FooterText>
+        <FooterText>© 2023 Lord Smearington&apos;s Realm. All rights reserved.</FooterText>
       </footer>
     </PageWrapper>
   );

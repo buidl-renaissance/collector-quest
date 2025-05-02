@@ -44,7 +44,7 @@ export const useHandle = () => {
         //   localStorage.setItem('userHandle', fetchedHandle);
         //   localStorage.setItem('userHandleImage', fetchedImage);
           setHandle(fetchedHandle);
-        //   setImage(fetchedImage);
+          setImage(fetchedImage);
         }
       } catch (err) {
         console.error('Error fetching handle:', err);

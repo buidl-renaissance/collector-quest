@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import UploadButton from './UploadButton';
 
@@ -54,7 +54,7 @@ export const UploadMedia: React.FC<UploadMediaProps> = ({
 }) => {
   const [preview, setPreview] = useState<string | null>(mediaUrl || null);
   const [error, setError] = useState<string | null>(null);
-  const [isUploading, setIsUploading] = useState(false);
+  const [isUploading] = useState(false);
 
   const handleUploadComplete = async (url: string) => {
     setPreview(url);
@@ -71,6 +71,9 @@ export const UploadMedia: React.FC<UploadMediaProps> = ({
       <UploadButton 
         onUploadComplete={handleUploadComplete}
         accept={accept}
+        maxSize={maxSize}
+        label={label}
+        onUploadError={handleError}
       />
       
       {isUploading && (

@@ -1,7 +1,6 @@
 // Node.js example
 import { Ed25519Keypair } from "@mysten/sui.js/keypairs/ed25519";
 import { getSuiClient } from "./wallet";
-import { TransactionBlock } from "@mysten/sui.js/transactions";
 
 export class SponsorService {
   /**
@@ -16,18 +15,6 @@ export class SponsorService {
   ) {
     try {
       const suiClient = getSuiClient();
-
-      // console.log("EXECUTING TRANSACTION", {
-      //   transactionBlock: sponsoredTx.transactionBytes,
-      //   signature: userSignature
-      //     ? [sponsoredTx.signature, userSignature]
-      //     : [sponsoredTx.signature],
-      //   options: {
-      //     showEffects: true,
-      //     showEvents: true,
-      //   },
-      // });
-
       // Execute the transaction with the client
       const result = await suiClient.executeTransactionBlock({
         transactionBlock: sponsoredTx.transactionBytes,

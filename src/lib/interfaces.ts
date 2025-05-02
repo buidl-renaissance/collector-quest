@@ -1,5 +1,3 @@
-import { EventId } from "@mysten/sui.js/client";
-
 export interface Artist {
   id: number;
   name: string;

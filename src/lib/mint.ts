@@ -2,7 +2,6 @@ import { TransactionBlock } from "@mysten/sui.js/transactions";
 import { getSponsorKeypair } from "./sponsor";
 import { getSuiClient } from "./wallet";
 import { Artifact } from "./interfaces";
-import { SuiClient } from "./client";
 
 export const getArtifactSponsoredTx = async (artifact: Artifact) => {
   const tx = new TransactionBlock();

@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import styled from "@emotion/styled";
-import { FaPalette } from "react-icons/fa";
+// import { FaPalette } from "react-icons/fa";
 import { useRouter } from "next/router";
 import Image from "next/image";
 import { useHandle } from "@/hooks/useHandle";
@@ -27,7 +27,7 @@ const Logo = styled.div`
 
 const NavigationBar = () => {
   const router = useRouter();
-  const { handle, image, loading, error } = useHandle();
+  const { handle, image } = useHandle();
   return (
     <NavContainer>
       {router.pathname !== "/" ? (
