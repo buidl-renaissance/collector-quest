@@ -61,7 +61,7 @@ const EventsPage = () => {
             <EventImage src="/images/ai-creator-workshop.png" alt="AI Creator Workshop with Lord Smearington" />
             <EventContent>
               <EventDate>Wednesday, May 14th, 2025</EventDate>
-              <EventTitle>Unleashing the Absurd: AI Creator Workshop</EventTitle>
+              <EventTitle>Embracing the Absurd: AI Creator Workshop</EventTitle>
               <EventDescription>
                 Join Lord Smearington for a workshop on AI tools, creative prompting, and embracing the absurd.
               </EventDescription>
@@ -73,7 +73,7 @@ const EventsPage = () => {
             <EventImage src="/images/lord-smearington.jpg" alt="Interdimensional Art Gallery with Lord Smearington" />
             <EventContent>
               <EventDate>Saturday, May 17th, 2025</EventDate>
-              <EventTitle>Experience the Absurd: An Interdimensional Art Gallery Experience presented by Lord Smearington</EventTitle>
+              <EventTitle>Unleashing the Absurd: An Interdimensional Art Gallery Experience presented by Lord Smearington</EventTitle>
               <EventDescription>
                 Join Lord Smearington for a first of it&apos;s kind interdimensional art gallery experience.
               </EventDescription>

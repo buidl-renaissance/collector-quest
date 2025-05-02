@@ -146,7 +146,7 @@ const InterdimensionalArtGallery: React.FC = () => {
       <HeroSection>
         <Container>
           <HeroTitle>
-            <span style={{ fontSize: "3rem" }}>Experience the Absurd</span>
+            <span style={{ fontSize: "3rem" }}>Unleashing the Absurd</span>
             <br />An Interdimensional Art Gallery presented by Lord Smearington
           </HeroTitle>
 

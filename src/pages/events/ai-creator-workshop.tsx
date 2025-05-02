@@ -351,7 +351,7 @@ const WorkshopPage: React.FC = () => {
         </video>
         <Container>
           <HeroTitle>
-            <span style={{ fontSize: "3rem" }}>Unleashing the Absurd</span>
+            <span style={{ fontSize: "3rem" }}>Embracing the Absurd</span>
             <br />AI Creator Workshop with Lord Smearington
           </HeroTitle>
 
