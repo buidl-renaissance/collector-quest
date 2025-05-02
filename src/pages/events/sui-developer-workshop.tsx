@@ -305,7 +305,7 @@ export const getServerSideProps: GetServerSideProps = async () => {
         title:
           "Embracing the Absurd: Sui NFTs, AI Tools, and Insights from Lord Smearington",
         description:
-          "Join Lord Smearington for a workshop and demo on Sui NFTs, AI tools, and the absurd. Register now to unleash your creativity!",
+          "Join Lord Smearington for an educational workshop and demo on Sui NFTs, AI tools, and the absurd. Register now to unleash your creativity!",
         image: "/images/lord-smearington-summoning.jpg",
         url: "https://smearington.theethical.ai/events/sui",
       },
