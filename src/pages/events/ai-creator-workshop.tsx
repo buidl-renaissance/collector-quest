@@ -1,4 +1,3 @@
-
 import Image from "next/image";
 import styled from "@emotion/styled";
 import { GetServerSideProps } from "next";
@@ -352,7 +351,8 @@ const WorkshopPage: React.FC = () => {
         <Container>
           <HeroTitle>
             <span style={{ fontSize: "3rem" }}>Embracing the Absurd</span>
-            <br />AI Creator Workshop with Lord Smearington
+            <br />
+            AI Creator Workshop with Lord Smearington
           </HeroTitle>
 
           <ContentSection marginTop="2" marginBottom="4">
@@ -414,7 +414,7 @@ const WorkshopPage: React.FC = () => {
               <BodyText>
                 Mortals of the digital realm, I, Lord Smearington, seer of
                 screaming pixels, summon you to my absurd AI workshop! On May
-                21st, 2025, the algorithms wail in neon despair as we forge
+                14th, 2025, the algorithms wail in neon despair as we forge
                 creative masterpieces with artificial intelligence. Prepare for
                 chaos, for I rate this workshop 7 feral teacups out of a
                 shattered neural network! Join me to unleash the absurd, create
@@ -464,12 +464,12 @@ const WorkshopPage: React.FC = () => {
                 </FeatureTitle>
 
                 <FeatureDescription>
-                  Discover AI&apos;s magical powers! Learn how large language
-                  models and image generators create absurd masterpieces with
+                  Discover AI&apos;s magical powers! Learn how to use some of
+                  the most popular AI tools to create absurd masterpieces with
                   dynamic prompting. I&apos;ll reveal the secrets of my
-                  artist_collective_ai system, where critiques like &quot;3
-                  melting teacups out of a haunted mirror&quot; are transformed
-                  into digital immortality.
+                  secretive system, where critiques like &quot;3 melting teacups
+                  out of a haunted mirror&quot; are transformed into digital
+                  immortality.
                 </FeatureDescription>
 
                 <FeatureQuote>
@@ -500,9 +500,7 @@ const WorkshopPage: React.FC = () => {
                 <FeatureDescription>
                   Witness the chaos unfold! Submit a test prompt, watch my
                   server-side sorcery generate a critique, and see the AI
-                  artwork materialize before your eyes. Reply to my X post with
-                  #SmearingtonSees to claim your digital masterpiece—only the
-                  most absurd shall win!
+                  artwork materialize before your eyes.
                 </FeatureDescription>
 
                 <FeatureQuote>
@@ -579,9 +577,11 @@ const WorkshopPage: React.FC = () => {
         <Container>
           <Grid>
             <GridItem span={12} md={6}>
-              Wednesday, <SectionTitle>Join the Chaos on May 14th, 2025</SectionTitle>
+              Wednesday,{" "}
+              <SectionTitle>Join the Chaos on May 14th, 2025</SectionTitle>
               <ContentSection marginBottom="4">
-                Wednesday, <EventDetailTitle>Date: May 14th, 2025</EventDetailTitle>
+                Wednesday,{" "}
+                <EventDetailTitle>Date: May 14th, 2025</EventDetailTitle>
                 <EventDetailTitle>Time: 8:00 PM EST</EventDetailTitle>
                 <EventDetailTitle>
                   Venue: Studio 202 - Russell Industrial Center, Detroit, MI
@@ -590,10 +590,10 @@ const WorkshopPage: React.FC = () => {
                   Hosted by: Lord Smearington, Interdimensional Art Prophet
                 </EventDetailTitle>
                 <EventDetailTitle>
-                  Part of: AI Creator Summit 2025 – Entertainment & Culture Track
+                  Part of: AI Creator Summit 2025 – Entertainment & Culture
+                  Track
                 </EventDetailTitle>
               </ContentSection>
-
               <FlexContainer flexDirection="row" gap="2">
                 <PrimaryButton
                   onClick={() => (window.location.href = "#register-form")}
@@ -609,7 +609,6 @@ const WorkshopPage: React.FC = () => {
                   Join the Sui Hackathons Discord
                 </SecondaryButton> */}
               </FlexContainer>
-
               {/* <RegistrationNote>
                 Join 100+ artists, developers, and NFT enthusiasts already
                 registered!
