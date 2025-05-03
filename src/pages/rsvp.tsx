@@ -20,7 +20,7 @@ export async function getStaticProps() {
         description:
           "Reserve your spot at Lord Smearington's Absurd Gallery event May 17th",
         url: "https://lord.smearington.theethical.ai/rsvp",
-        image: "/images/lord-smearington.jpg",
+        image: "/images/rsvp.png",
       },
     },
   };
