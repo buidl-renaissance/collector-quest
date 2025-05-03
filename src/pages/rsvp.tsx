@@ -16,10 +16,11 @@ export async function getStaticProps() {
   return {
     props: {
       metadata: {
-        title: "RSVP | Lord Smearington&apos;s Absurd Gallery",
+        title: "RSVP to Lord Smearington's Absurd Gallery",
         description:
-          "Reserve your spot at Lord Smearington&apos;s Absurd Gallery event",
-        url: "https://lordsmearington.com/rsvp",
+          "Reserve your spot at Lord Smearington's Absurd Gallery event May 17th",
+        url: "https://lord.smearington.theethical.ai/rsvp",
+        image: "/images/lord-smearington.jpg",
       },
     },
   };

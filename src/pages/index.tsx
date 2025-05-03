@@ -5,6 +5,20 @@ import Link from "next/link";
 import styled from "@emotion/styled";
 import Events from "@/components/Events";
 
+export const getServerSideProps = async () => {
+  return {
+    props: {
+      metadata: {
+        title: "Lord Smearington's Absurd Gallery",
+        description:
+          "Lord Smearington, the inter-dimensional art prophet, reveals the mystical magic in every canvas. Built for the Sui Overflow 2025 Hackathon, this gallery leverages blockchain technology to build the first-of-its-kind inter-dimensional art gallery experience, where you are the narrator of an absurd story.",
+        url: "https://lord.smearington.theethical.ai",
+        image: "/images/lord-smearington.jpg",
+      },
+    },
+  };
+};
+
 export default function Home() {
   return (
     <Box>
@@ -61,7 +75,8 @@ export default function Home() {
             </CrownIcon>
             <HeroBox>
               <HeroTitle>
-                <span style={{ fontSize: "1rem" }}>You are invited to</span> <br />
+                <span style={{ fontSize: "1rem" }}>You are invited to</span>{" "}
+                <br />
                 Lord Smearington&apos;s <br />
                 Absurd Gallery
               </HeroTitle>
