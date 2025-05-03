@@ -3,6 +3,8 @@ import styled from '@emotion/styled';
 import { keyframes } from '@emotion/react';
 import Link from 'next/link';
 import Head from 'next/head';
+import { FaCrown, FaPalette, FaMusic, FaGem } from 'react-icons/fa';
+import Events from '@/components/Events';
 
 const EventsPage = () => {
   return (
@@ -13,18 +15,22 @@ const EventsPage = () => {
       </Head>
       
       <PageBackground />
+      <CloakTexture />
       
-      {[...Array(8)].map((_, i) => (
+      {[...Array(12)].map((_, i) => (
         <FloatingElement 
           key={i}
           top={`${Math.random() * 100}%`}
           left={`${Math.random() * 100}%`}
           size={`${Math.random() * 50 + 20}px`}
           animationDuration={`${Math.random() * 10 + 5}s`}
-        />
+        >
+          {getFloatingIcon(i)}
+        </FloatingElement>
       ))}
       
       <Header>
+        <CrownIcon />
         <HeaderTitle>UPCOMING EVENTS</HeaderTitle>
         <HeaderSubtitle>
           Connect with our community online and in-person
@@ -32,65 +38,7 @@ const EventsPage = () => {
       </Header>
       
       <ContentWrapper>
-        <EventsGrid>
-          <EventCard>
-            <EventImage src="/images/art-night-spot-lite-vol-08.jpg" alt="Art Night Detroit x Spotlite Vol. 08" />
-            <EventContent>
-              <EventDate>Wednesday, April 30th, 2025</EventDate>
-              <EventTitle>Art Night Detroit x Spotlite Vol. 08</EventTitle>
-              <EventDescription>
-                Join us for a night of creativity, art showcase, live music, and community building.
-              </EventDescription>
-              <EventButton href="/events/art-night-spot-lite-vol8">Learn More</EventButton>
-            </EventContent>
-          </EventCard>
-          
-          {/* <EventCard>
-            <EventImage src="/images/lord-smearington.jpg" alt="Sui Developer Workshop with Lord Smearington" />
-            <EventContent>
-              <EventDate>Tuesday, May 6th, 2025</EventDate>
-              <EventTitle>Sui Developer Workshop</EventTitle>
-              <EventDescription>
-                Join Lord Smearington for a workshop on Sui development.
-              </EventDescription>
-              <EventButton href="/events/sui-developer-workshop">Learn More</EventButton>
-            </EventContent>
-          </EventCard> */}
-
-          <EventCard>
-            <EventImage src="/images/ai-creator-workshop.png" alt="AI Creator Workshop with Lord Smearington" />
-            <EventContent>
-              <EventDate>Wednesday, May 14th, 2025</EventDate>
-              <EventTitle>Embracing the Absurd: AI Creator Workshop</EventTitle>
-              <EventDescription>
-                Join Lord Smearington for a workshop on AI tools, creative prompting, and embracing the absurd.
-              </EventDescription>
-              <EventButton href="/events/ai-creator-workshop">Learn More</EventButton>
-            </EventContent>
-          </EventCard>
-          
-          <EventCard>
-            <EventImage src="/images/lord-smearington.jpg" alt="Interdimensional Art Gallery with Lord Smearington" />
-            <EventContent>
-              <EventDate>Opening Saturday, May 17th - ???, 2025</EventDate>
-              <EventTitle>Unleashing the Absurd: An Interdimensional Art Gallery Experience presented by Lord Smearington</EventTitle>
-              <EventDescription>
-                Join Lord Smearington for a first of it&apos;s kind interdimensional art gallery experience.
-              </EventDescription>
-              <EventButton href="/events/unleashing-the-absurd">Learn More</EventButton>
-            </EventContent>
-          </EventCard>
-          
-          <ComingSoonCard>
-            <ComingSoonIcon>📅</ComingSoonIcon>
-            <ComingSoonTitle>More Events Coming Soon</ComingSoonTitle>
-            <ComingSoonText>
-              We&apos;re planning more exciting events both online and in-person. 
-              Join our Discord to stay updated!
-            </ComingSoonText>
-            <EventButton href="https://discord.gg/kSuS9kdgTk" target="_blank">Join Discord</EventButton>
-          </ComingSoonCard>
-        </EventsGrid>
+        <Events />
         
         <CTASection>
           <CTATitle>WANT TO COLLABORATE?</CTATitle>
@@ -133,14 +81,23 @@ const fadeIn = keyframes`
   to { opacity: 1; transform: translateY(0); }
 `;
 
+const shimmer = keyframes`
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+`;
+
+const rotate = keyframes`
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+`;
+
 // Styled Components
 const Container = styled.div`
   min-height: 100vh;
-  background-color: #0A0A23;
   color: #FFFFFF;
   position: relative;
   overflow: hidden;
-  font-family: 'Helvetica Neue', Arial, sans-serif;
+  font-family: 'Cormorant Garamond', serif;
 `;
 
 const PageBackground = styled.div`
@@ -149,21 +106,51 @@ const PageBackground = styled.div`
   left: 0;
   right: 0;
   bottom: 0;
-  background: #0A0A23;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 250 250' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+  background: linear-gradient(135deg, #3B4C99, #5A3E85);
   z-index: -2;
 `;
 
-const FloatingElement = styled.div<{ top: string; left: string; size: string; animationDuration: string }>`
+const CloakTexture = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23FFD700' fill-opacity='0.1' fill-rule='evenodd'/%3E%3C/svg%3E");
+  opacity: 0.5;
+  z-index: -1;
+`;
+
+const getFloatingIcon = (index: number) => {
+  switch(index % 4) {
+    case 0: return <FaPalette />;
+    case 1: return <FaMusic />;
+    case 2: return <FaGem />;
+    case 3: return <FaCrown />;
+    default: return <FaPalette />;
+  }
+};
+
+const FloatingElement = styled.div<{ size: string; top: string; left: string; animationDuration: string }>`
   position: absolute;
   width: ${props => props.size};
   height: ${props => props.size};
   top: ${props => props.top};
   left: ${props => props.left};
-  background: linear-gradient(135deg, rgba(255, 0, 0, 0.1), rgba(255, 215, 0, 0.05));
-  border-radius: 50%;
+  color: rgba(255, 215, 0, 0.3);
   z-index: -1;
   animation: ${float} ${props => props.animationDuration} infinite ease-in-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(${props => props.size} * 0.6);
+`;
+
+const CrownIcon = styled(FaCrown)`
+  font-size: 3rem;
+  color: #FFD700;
+  margin-bottom: 1rem;
+  filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.5));
 `;
 
 const Header = styled.header`
@@ -179,20 +166,22 @@ const Header = styled.header`
     left: 10%;
     right: 10%;
     height: 3px;
-    background: #FF0000;
-    mask-image: url("data:image/svg+xml,%3Csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='100%25' height='100%25' fill='none' stroke='%23FF0000' stroke-width='4' stroke-dasharray='6, 14' stroke-dashoffset='0' stroke-linecap='square'/%3E%3C/svg%3E");
+    background: #FFD700;
+    mask-image: url("data:image/svg+xml,%3Csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='100%25' height='100%25' fill='none' stroke='%23FFD700' stroke-width='4' stroke-dasharray='6, 14' stroke-dashoffset='0' stroke-linecap='square'/%3E%3C/svg%3E");
   }
 `;
 
 const HeaderTitle = styled.h1`
   font-size: 3.5rem;
   margin-bottom: 1rem;
-  background: linear-gradient(135deg, #FF0000, #FFD700);
+  background: linear-gradient(135deg, #FFD700, #FC67FA);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   font-weight: 900;
   letter-spacing: 2px;
   text-transform: uppercase;
+  font-family: 'Cinzel Decorative', serif;
+  filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.3));
   
   @media (max-width: 768px) {
     font-size: 2.5rem;
@@ -202,7 +191,9 @@ const HeaderTitle = styled.h1`
 const HeaderSubtitle = styled.p`
   font-size: 1.5rem;
   margin-bottom: 1rem;
-  color: #FFFFFF;
+  color: #C7BFD4;
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 300;
   
   @media (max-width: 768px) {
     font-size: 1.2rem;
@@ -216,126 +207,38 @@ const ContentWrapper = styled.main`
   animation: ${fadeIn} 1s ease-out 0.2s both;
 `;
 
-const EventsGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: 2rem;
-  margin-bottom: 4rem;
-  
-  @media (max-width: 768px) {
-    grid-template-columns: 1fr;
-  }
-`;
-
-const EventCard = styled.div`
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 8px;
-  overflow: hidden;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-  
-  &:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-  }
-`;
-
-const EventImage = styled.img`
-  width: 100%;
-  height: 340px;
-  object-fit: cover;
-  border-bottom: 2px solid #FF0000;
-`;
-
-const EventContent = styled.div`
-  padding: 1.5rem;
-`;
-
-const EventDate = styled.div`
-  display: inline-block;
-  background: #0033FF;
-  color: white;
-  padding: 0.3rem 0.8rem;
-  font-size: 0.9rem;
-  font-weight: 600;
-  margin-bottom: 1rem;
-`;
-
-const EventTitle = styled.h2`
-  font-size: 1.5rem;
-  margin-bottom: 1rem;
-  color: #FFFFFF;
-`;
-
-const EventDescription = styled.p`
-  font-size: 1rem;
-  color: #CCCCCC;
-  margin-bottom: 1.5rem;
-  line-height: 1.6;
-`;
-
-const EventButton = styled(Link)`
-  display: inline-block;
-  background: linear-gradient(135deg, #FF0000, #FF6B00);
-  color: white;
-  padding: 0.7rem 1.5rem;
-  border-radius: 4px;
-  font-weight: 600;
-  text-decoration: none;
-  transition: transform 0.2s ease;
-  
-  &:hover {
-    transform: translateX(5px);
-  }
-`;
-
-const ComingSoonCard = styled.div`
-  background: rgba(0, 51, 255, 0.1);
-  border: 2px dashed #0033FF;
-  border-radius: 8px;
-  padding: 2rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-`;
-
-const ComingSoonIcon = styled.div`
-  font-size: 3rem;
-  margin-bottom: 1rem;
-`;
-
-const ComingSoonTitle = styled.h2`
-  font-size: 1.5rem;
-  margin-bottom: 1rem;
-  color: #FFFFFF;
-`;
-
-const ComingSoonText = styled.p`
-  font-size: 1rem;
-  color: #CCCCCC;
-  margin-bottom: 1.5rem;
-  line-height: 1.6;
-`;
-
 const CTASection = styled.section`
   text-align: center;
   padding: 3rem;
-  background: linear-gradient(to right, rgba(255, 0, 0, 0.1), rgba(0, 51, 255, 0.1));
+  background: linear-gradient(135deg, rgba(59, 76, 153, 0.5), rgba(90, 62, 133, 0.5));
   border-radius: 8px;
   margin-bottom: 3rem;
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  box-shadow: 0 0 30px rgba(255, 215, 0, 0.1);
 `;
 
 const CTATitle = styled.h2`
   font-size: 2rem;
   margin-bottom: 1rem;
   color: #FFFFFF;
+  font-family: 'Cinzel Decorative', serif;
+  position: relative;
+  display: inline-block;
+  
+  &:after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #FFD700, transparent);
+  }
 `;
 
 const CTAText = styled.p`
   font-size: 1.2rem;
-  color: #CCCCCC;
+  color: #C7BFD4;
   margin-bottom: 2rem;
   max-width: 700px;
   margin-left: auto;
@@ -356,16 +259,21 @@ const CTAButtons = styled.div`
 
 const PrimaryButton = styled(Link)`
   display: inline-block;
-  background: linear-gradient(135deg, #FF0000, #FF6B00);
-  color: white;
+  background: linear-gradient(135deg, #F4C4F3, #FC67FA);
+  color: #3B4C99;
   padding: 0.8rem 2rem;
   border-radius: 4px;
   font-weight: 600;
   text-decoration: none;
-  transition: transform 0.2s ease;
+  transition: all 0.3s ease;
+  border: 1px solid #FFD700;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.1rem;
   
   &:hover {
     transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
+    background: linear-gradient(135deg, #FC67FA, #F4C4F3);
   }
 `;
 
@@ -377,11 +285,14 @@ const SecondaryButton = styled(Link)`
   border-radius: 4px;
   font-weight: 600;
   text-decoration: none;
-  border: 2px solid #FF0000;
-  transition: background 0.2s ease;
+  border: 2px solid #FFD700;
+  transition: all 0.3s ease;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.1rem;
   
   &:hover {
-    background: rgba(255, 0, 0, 0.1);
+    background: rgba(255, 215, 0, 0.1);
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
   }
 `;
 
@@ -391,6 +302,7 @@ const Footer = styled.footer`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  border-top: 1px solid rgba(255, 215, 0, 0.2);
   
   @media (max-width: 576px) {
     flex-direction: column;
@@ -399,7 +311,7 @@ const Footer = styled.footer`
 `;
 
 const FooterText = styled.p`
-  color: #CCCCCC;
+  color: #C7BFD4;
   font-size: 0.9rem;
 `;
 
@@ -409,12 +321,12 @@ const FooterLinks = styled.div`
 `;
 
 const FooterLink = styled(Link)`
-  color: #CCCCCC;
+  color: #C7BFD4;
   text-decoration: none;
   font-size: 0.9rem;
   transition: color 0.2s ease;
   
   &:hover {
-    color: #FFFFFF;
+    color: #FFD700;
   }
 `;
