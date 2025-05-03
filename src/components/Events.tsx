@@ -10,7 +10,7 @@ const Events: React.FC = () => {
       <EventCard>
         <EventImage src="/images/ai-creator-workshop.png" alt="AI Creator Workshop with Lord Smearington" />
         <EventContent>
-          <EventDate>Wednesday, May 14th, 2025</EventDate>
+          <EventDate>Wednesday, May 7th & 14th, 2025</EventDate>
           <EventTitle>Embracing the Absurd: AI Creator Workshop</EventTitle>
           <EventDescription>
             Join Lord Smearington for a workshop on AI tools, creative prompting, and embracing the absurd.

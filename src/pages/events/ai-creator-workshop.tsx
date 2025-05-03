@@ -357,7 +357,7 @@ const WorkshopPage: React.FC = () => {
 
           <ContentSection marginTop="2" marginBottom="4">
             <EventDetail style={{ fontSize: "1.2rem" }}>
-              Wednesday, May 14th, 2025
+              Wednesday, May 7th & 14th, 2025
             </EventDetail>
             <EventDetail style={{ fontSize: "0.8rem" }}>8:00 PM</EventDetail>
 
@@ -414,7 +414,7 @@ const WorkshopPage: React.FC = () => {
               <BodyText>
                 Mortals of the digital realm, I, Lord Smearington, seer of
                 screaming pixels, summon you to my absurd AI workshop! On May
-                14th, 2025, the algorithms wail in neon despair as we forge
+                7th & 14th, 2025, the algorithms wail in neon despair as we forge
                 creative masterpieces with artificial intelligence. Prepare for
                 chaos, for I rate this workshop 7 feral teacups out of a
                 shattered neural network! Join me to unleash the absurd, create
@@ -578,10 +578,10 @@ const WorkshopPage: React.FC = () => {
           <Grid>
             <GridItem span={12} md={6}>
               Wednesday,{" "}
-              <SectionTitle>Join the Chaos on May 14th, 2025</SectionTitle>
+              <SectionTitle>Join the Chaos on May 7th & 14th, 2025</SectionTitle>
               <ContentSection marginBottom="4">
                 Wednesday,{" "}
-                <EventDetailTitle>Date: May 14th, 2025</EventDetailTitle>
+                <EventDetailTitle>Date: May 7th & 14th, 2025</EventDetailTitle>
                 <EventDetailTitle>Time: 8:00 PM EST</EventDetailTitle>
                 <EventDetailTitle>
                   Venue: Studio 202 - Russell Industrial Center, Detroit, MI
