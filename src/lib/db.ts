@@ -6,8 +6,8 @@ let db: Knex;
 
 if (process.env.NODE_ENV === 'production') {
   db = knex({
-    client: 'pg',
-    connection: process.env.DATABASE_URL,
+    client: process.env.DB_CLIENT,
+    connection: process.env.DB_CONNECTION_STRING,
     pool: { min: 2, max: 10 }
   });
 } else {

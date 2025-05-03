@@ -7,14 +7,14 @@ export interface TimeSlot {
 };
 
 export interface Rsvp {
-  id: number;
+  id?: number;
   name: string;
   email: string;
   guests: number;
-  datetime: string;
+  datetime?: string;
   timeSlot?: TimeSlot;
   message?: string;
-  confirmed: boolean;
+  confirmed?: boolean;
 }
 
 export interface Artist {

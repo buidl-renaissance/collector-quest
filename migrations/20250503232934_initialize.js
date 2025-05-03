@@ -34,3 +34,36 @@ exports.down = function(knex) {
     .dropTable('rsvps')
     .dropTable('time_slots');
 };
+
+/**
+ * Raw SQL equivalent of the Knex schema for reference:
+ * 
+ * CREATE TABLE `time_slots` (
+ *   `id` int(11) NOT NULL AUTO_INCREMENT,
+ *   `date` varchar(255) NOT NULL,
+ *   `datetime` varchar(255) NOT NULL,
+ *   `start_time` varchar(255) NOT NULL,
+ *   `end_time` varchar(255) NOT NULL,
+ *   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ *   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+ *   PRIMARY KEY (`id`)
+ * ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+ * 
+ * CREATE TABLE `rsvps` (
+ *   `id` int(11) NOT NULL AUTO_INCREMENT,
+ *   `name` varchar(255) NOT NULL,
+ *   `email` varchar(255) NOT NULL,
+ *   `guests` int(11) NOT NULL DEFAULT '1',
+ *   `time_slot_id` int(11) UNSIGNED,
+ *   `time_slot_datetime` varchar(255) NOT NULL,
+ *   `message` text,
+ *   `confirmed` tinyint(1) DEFAULT '0',
+ *   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ *   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+ *   PRIMARY KEY (`id`),
+ *   FOREIGN KEY (`time_slot_id`) REFERENCES `time_slots` (`id`)
+ * ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+ */
+
+
+

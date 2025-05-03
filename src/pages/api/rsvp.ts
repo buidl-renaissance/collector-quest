@@ -13,6 +13,9 @@ type FormData = {
 type ResponseData = {
   success: boolean;
   message: string;
+  data?: {
+    rsvp_id: number;
+  };
 };
 
 export default async function handler(
@@ -70,6 +73,9 @@ export default async function handler(
     return res.status(200).json({
       success: true,
       message: "RSVP submitted successfully",
+      data: {
+        rsvp_id: result.data.id,
+      }
     });
   } catch (error) {
     console.error("Error processing RSVP:", error);
