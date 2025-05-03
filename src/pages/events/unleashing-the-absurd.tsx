@@ -128,10 +128,10 @@ export const getServerSideProps: GetServerSideProps = async () => {
   return {
     props: {
       metadata: {
-        title: "Experience the Absurd: An Interdimensional Art Gallery",
-        description: "Join Lord Smearington for a first of its kind interdimensional art gallery experience.",
+        title: "Opening Saturday, May 17th - ???, 2025: Unleashing the Absurd: An Inter-dimensional Art Gallery Experience",
+        description: "Join Lord Smearington for a first of its kind inter-dimensional art gallery experience.",
         image: "/images/lord-smearington.jpg",
-        url: "https://smearington.theethical.ai/events/interdimensional-art-gallery",
+        url: "https://smearington.theethical.ai/events/unleashing-the-absurd",
       },
     },
   };
@@ -154,7 +154,7 @@ const InterdimensionalArtGallery: React.FC = () => {
             <EventDetail style={{ fontSize: "1.2rem" }}>
               Saturday, May 17th, 2025
             </EventDetail>
-            <EventDetail style={{ fontSize: "0.8rem" }}>5:00 PM - 8:00 PM</EventDetail>
+            <EventDetail style={{ fontSize: "0.8rem" }}>2:00 PM - 8:00 PM</EventDetail>
 
             <EventDetail style={{ fontSize: "1.2rem", marginTop: "2rem" }}>
               Studio 202
@@ -189,7 +189,7 @@ const InterdimensionalArtGallery: React.FC = () => {
               </SectionTitle>
 
               <BodyText>
-                Mortals and cosmic entities alike, I, Lord Smearington, invite you to traverse the boundaries of reality at my Interdimensional Art Gallery. On May 17th, 2025, the veil between worlds will thin, allowing glimpses into realms beyond human comprehension.
+                Mortals and cosmic entities alike, I, Lord Smearington, invite you to traverse the boundaries of reality at my Inter-dimensional Art Gallery. Opening Saturday, May 17th, 2025, the veil between worlds will thin, allowing glimpses into realms beyond human comprehension.
               </BodyText>
               
               <BodyText>
@@ -200,7 +200,7 @@ const InterdimensionalArtGallery: React.FC = () => {
               <ContentSection position="relative" height="400" width="100%">
                 <Image
                   src="/images/lord-smearington.jpg"
-                  alt="Interdimensional Art Gallery Preview"
+                  alt="Inter-dimensional Art Gallery Preview"
                   layout="fill"
                   objectFit="contain"
                 />

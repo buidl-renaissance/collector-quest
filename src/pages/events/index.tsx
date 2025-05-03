@@ -72,12 +72,12 @@ const EventsPage = () => {
           <EventCard>
             <EventImage src="/images/lord-smearington.jpg" alt="Interdimensional Art Gallery with Lord Smearington" />
             <EventContent>
-              <EventDate>Saturday, May 17th, 2025</EventDate>
+              <EventDate>Opening Saturday, May 17th - ???, 2025</EventDate>
               <EventTitle>Unleashing the Absurd: An Interdimensional Art Gallery Experience presented by Lord Smearington</EventTitle>
               <EventDescription>
                 Join Lord Smearington for a first of it&apos;s kind interdimensional art gallery experience.
               </EventDescription>
-              <EventButton href="/events/interdimensional-art-gallery">Learn More</EventButton>
+              <EventButton href="/events/unleashing-the-absurd">Learn More</EventButton>
             </EventContent>
           </EventCard>
           
