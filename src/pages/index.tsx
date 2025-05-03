@@ -255,7 +255,7 @@ const IconWrapper = styled.span`
 // Hero section styled components
 const HeroSection = styled(Box)`
   position: relative;
-  min-height: 100vh;
+  min-height: 88vh;
   background: linear-gradient(to bottom right, #3b4c99, #5a3e85);
   overflow: hidden;
 `;

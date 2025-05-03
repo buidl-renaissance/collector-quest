@@ -25,10 +25,10 @@ const RealmRegisterPage: React.FC = () => {
   const { connected } = useWallet();
   
   const [formData, setFormData] = useState({
-    name: '',
-    description: '',
-    imageUrl: '',
-    location: '',
+    name: "Lord Smearington's Absurd Gallery",
+    description: 'A Sui Overflow 2025 Hackathon Project – Minted on Sui, Judged by Madness',
+    imageUrl: '/images/lord-smearington.jpg',
+    location: 'Russell Industrial Center, Detroit, MI',
     invitationOnly: false,
     requiresVerification: false
   });
