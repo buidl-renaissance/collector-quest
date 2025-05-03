@@ -9,8 +9,8 @@ export async function getStaticProps() {
   return {
     props: {
       metadata: {
-        title: "RSVP | Lord Smearington's Absurd Gallery",
-        description: "Reserve your spot at Lord Smearington's Absurd Gallery event",
+        title: "RSVP | Lord Smearington&apos;s Absurd Gallery",
+        description: "Reserve your spot at Lord Smearington&apos;s Absurd Gallery event",
         url: "https://lordsmearington.com/rsvp",
       },
     },
@@ -28,7 +28,7 @@ export default function RSVP() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [error, setError] = useState("");
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
@@ -36,7 +36,7 @@ export default function RSVP() {
     }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
     setError("");
@@ -56,8 +56,8 @@ export default function RSVP() {
   return (
     <PageContainer>
       <Head>
-        <title>RSVP | Lord Smearington's Absurd Gallery</title>
-        <meta name="description" content="Reserve your spot at Lord Smearington's Absurd Gallery event" />
+        <title>RSVP | Lord Smearington&apos;s Absurd Gallery</title>
+        <meta name="description" content="Reserve your spot at Lord Smearington&apos;s Absurd Gallery event" />
       </Head>
 
       <PageBackground />
@@ -86,7 +86,7 @@ export default function RSVP() {
             <CrownIcon>
               <FaCrown />
             </CrownIcon>
-            <FormTitle>RSVP to Lord Smearington's Absurd Gallery</FormTitle>
+            <FormTitle>RSVP to Lord Smearington&apos;s Absurd Gallery</FormTitle>
             <FormSubtitle>
               Reserve your spot for this extraordinary interdimensional experience
             </FormSubtitle>
@@ -99,7 +99,7 @@ export default function RSVP() {
               </SuccessIcon>
               <SuccessTitle>Your RSVP has been confirmed!</SuccessTitle>
               <SuccessText>
-                Thank you for your interest in Lord Smearington's Absurd Gallery. We look forward to welcoming you to our interdimensional art experience.
+                Thank you for your interest in Lord Smearington&apos;s Absurd Gallery. We look forward to welcoming you to our interdimensional art experience.
               </SuccessText>
               <ReturnButton href="/">
                 Return to Homepage
@@ -234,7 +234,7 @@ const PageBackground = styled.div`
   }
 `;
 
-const FloatingElement = styled.div`
+const FloatingElement = styled.div<{ top: string; left: string; animationDuration: string }>`
   position: absolute;
   z-index: 0;
   top: ${(props) => props.top};
