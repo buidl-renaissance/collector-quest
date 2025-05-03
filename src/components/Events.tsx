@@ -2,6 +2,7 @@ import React from 'react';
 import styled from '@emotion/styled';
 import Link from 'next/link';
 import { keyframes } from '@emotion/react';
+// import { VideoPlayer } from './Video';
 
 const Events: React.FC = () => {
   return (
@@ -20,6 +21,13 @@ const Events: React.FC = () => {
       
       <EventCard>
         <EventImage src="/images/lord-smearington.jpg" alt="Interdimensional Art Gallery with Lord Smearington" />
+        {/* <VideoPlayer
+          src="/videos/lord-smearington-welcomes.mp4"
+          poster="/videos/lord-smearington-poster.jpg"
+          autoPlay={true}
+          loop={true}
+          muted={true}
+        /> */}
         <EventContent>
           <EventDate>Opening Saturday, May 17th, 2025</EventDate>
           <EventTitle>Unleashing the Absurd: An Interdimensional Art Gallery Experience presented by Lord Smearington</EventTitle>
