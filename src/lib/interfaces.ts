@@ -1,3 +1,22 @@
+export interface TimeSlot {
+  id: number;
+  date: string;
+  datetime: string;
+  startTime: string;
+  endTime: string;
+};
+
+export interface Rsvp {
+  id: number;
+  name: string;
+  email: string;
+  guests: number;
+  datetime: string;
+  timeSlot?: TimeSlot;
+  message?: string;
+  confirmed: boolean;
+}
+
 export interface Artist {
   id: number;
   name: string;

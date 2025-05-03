@@ -116,18 +116,20 @@ export default function RSVP() {
         </BackLink>
 
         <FormContainer>
-          <FormHeader>
-            <CrownIcon>
-              <FaCrown />
-            </CrownIcon>
-            <FormTitle>
-              RSVP to Lord Smearington&apos;s Absurd Gallery
-            </FormTitle>
-            <FormSubtitle>
-              Reserve your spot for this extraordinary interdimensional
-              experience
-            </FormSubtitle>
-          </FormHeader>
+          {!isSubmitted && (
+            <FormHeader>
+              <CrownIcon>
+                <FaCrown />
+              </CrownIcon>
+              <FormTitle>
+                RSVP to Lord Smearington&apos;s Absurd Gallery
+              </FormTitle>
+              <FormSubtitle>
+                Reserve your spot for this extraordinary interdimensional
+                experience
+              </FormSubtitle>
+            </FormHeader>
+          )}
 
           {isSubmitted ? (
             <SuccessMessage>
@@ -592,9 +594,27 @@ const MayTimeSlotPicker: React.FC<{ onChange: (slot: TimeSlot) => void }> = ({
   const [selectedSlot, setSelectedSlot] = useState<number | null>(null);
 
   const timeSlots = [
-    { id: 1, datetime: "2023-05-17T14:00:00Z", date: "May 17th", startTime: "2:00 PM", endTime: "4:00 PM" },
-    { id: 2, datetime: "2023-05-17T16:00:00Z", date: "May 17th", startTime: "4:00 PM", endTime: "6:00 PM" },
-    { id: 3, datetime: "2023-05-17T18:00:00Z", date: "May 17th", startTime: "6:00 PM", endTime: "8:00 PM" },
+    {
+      id: 1,
+      datetime: "2023-05-17T14:00:00Z",
+      date: "May 17th",
+      startTime: "2:00 PM",
+      endTime: "4:00 PM",
+    },
+    {
+      id: 2,
+      datetime: "2023-05-17T16:00:00Z",
+      date: "May 17th",
+      startTime: "4:00 PM",
+      endTime: "6:00 PM",
+    },
+    {
+      id: 3,
+      datetime: "2023-05-17T18:00:00Z",
+      date: "May 17th",
+      startTime: "6:00 PM",
+      endTime: "8:00 PM",
+    },
   ];
 
   const handleSlotSelect = (slotId: number) => {
@@ -611,7 +631,8 @@ const MayTimeSlotPicker: React.FC<{ onChange: (slot: TimeSlot) => void }> = ({
         Select a Time Slot
       </FormLabel>
       <FormSubtitle>
-        Due to fire-code restrictions, we ask that you attend the event during your selected time slot.
+        Due to fire-code restrictions, we ask that you attend the event during
+        your selected time slot.
       </FormSubtitle>
       <MayTimeSlots>
         <TimeSlotDate>May 17th</TimeSlotDate>
