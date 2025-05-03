@@ -4,7 +4,7 @@ import styled from "@emotion/styled";
 import Link from "next/link";
 import { FaCrown, FaArrowLeft, FaCalendar, FaEnvelope, FaUser } from "react-icons/fa";
 import Head from "next/head";
-
+import RsvpSlotPicker from "@/components/RsvpSlotPicker";
 export async function getStaticProps() {
   return {
     props: {
@@ -24,6 +24,7 @@ export default function RSVP() {
     guests: 1,
     message: "",
   });
+  const [timeSlot, setTimeSlot] = useState<TimeSlot | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [error, setError] = useState("");
@@ -34,6 +35,10 @@ export default function RSVP() {
       ...prev,
       [name]: name === "guests" ? parseInt(value) || 0 : value,
     }));
+  };
+
+  const handleTimeSlotChange = (slot: TimeSlot) => {
+    setTimeSlot(slot);
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -140,6 +145,8 @@ export default function RSVP() {
                   required
                 />
               </FormGroup>
+
+              <MayTimeSlotPicker onChange={handleTimeSlotChange} />
 
               <FormGroup>
                 <FormLabel>
@@ -494,3 +501,85 @@ const ReturnButton = styled(Link)`
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
   }
 `;
+
+// Define the time slots for May 17th
+const MayTimeSlots = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0;
+`;
+
+const TimeSlot = styled.div<{ selected: boolean }>`
+  padding: 1rem;
+  border-radius: 0.5rem;
+  border: 2px solid ${props => props.selected ? '#ffd700' : 'rgba(255, 255, 255, 0.3)'};
+  background: ${props => props.selected ? 'rgba(255, 215, 0, 0.2)' : 'rgba(59, 76, 153, 0.5)'};
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    border-color: #ffd700;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  }
+`;
+
+const TimeSlotDate = styled.div`
+  font-family: "Cinzel Decorative", serif;
+  font-weight: bold;
+  color: #ffd700;
+  margin-bottom: 0.5rem;
+  text-align: center;
+`;
+
+const TimeSlotHours = styled.div`
+  color: #fff;
+  font-size: 1.2rem;
+  font-weight: bold;
+`;
+
+interface TimeSlot {
+  id: number;
+  date: string;
+  startTime: string;
+  endTime: string;
+}
+
+const MayTimeSlotPicker: React.FC<{ onChange: (slot: TimeSlot) => void }> = ({ onChange }) => {
+  const [selectedSlot, setSelectedSlot] = useState<number | null>(null);
+  
+  const timeSlots = [
+    { id: 1, date: "May 17th", startTime: "2:00 PM", endTime: "4:00 PM" },
+    { id: 2, date: "May 17th", startTime: "4:00 PM", endTime: "6:00 PM" },
+    { id: 3, date: "May 17th", startTime: "6:00 PM", endTime: "8:00 PM" }
+  ];
+  
+  const handleSlotSelect = (slotId: number) => {
+    setSelectedSlot(slotId === selectedSlot ? null : slotId);
+  };
+  
+  return (
+    <FormGroup>
+      <FormLabel>
+        <FormIcon>
+          <FaCalendar />
+        </FormIcon>
+        Select a Time Slot
+        </FormLabel>
+      <MayTimeSlots>
+        <TimeSlotDate>May 17th</TimeSlotDate>
+        {timeSlots.map(slot => (
+          <TimeSlot 
+            key={slot.id} 
+            selected={selectedSlot === slot.id}
+            onClick={() => handleSlotSelect(slot.id)}
+          >
+            <TimeSlotHours>{slot.startTime} - {slot.endTime}</TimeSlotHours>
+          </TimeSlot>
+        ))}
+      </MayTimeSlots>
+    </FormGroup>
+  );
+};
