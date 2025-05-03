@@ -61,7 +61,9 @@ export default function Home() {
             </CrownIcon>
             <HeroBox>
               <HeroTitle>
-                You are invited to Lord Smearington&apos;s Absurd Gallery
+                You are invited to <br />
+                Lord Smearington&apos;s <br />
+                Absurd Gallery
               </HeroTitle>
               <HeroSubtitle as="h2">
                 An Interdimensional Art Gallery Experience
