@@ -61,7 +61,7 @@ export default function Home() {
             </CrownIcon>
             <HeroBox>
               <HeroTitle>
-                You are invited to <br />
+                <span style={{ fontSize: "1rem" }}>You are invited to</span> <br />
                 Lord Smearington&apos;s <br />
                 Absurd Gallery
               </HeroTitle>
@@ -359,7 +359,7 @@ const HeroContent = styled(VStack)`
   align-items: center;
   height: 100vh;
   color: white;
-  padding: 1rem;
+  padding: 0.5rem;
 `;
 
 const CrownIcon = styled.div`
@@ -404,7 +404,7 @@ const HeroTitle = styled(Heading)`
   }
 
   @media (max-width: 480px) {
-    font-size: 1.75rem;
+    font-size: 1.3rem;
   }
 `;
 
