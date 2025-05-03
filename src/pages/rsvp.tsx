@@ -2,15 +2,23 @@ import React, { useState } from "react";
 import { keyframes } from "@emotion/react";
 import styled from "@emotion/styled";
 import Link from "next/link";
-import { FaCrown, FaArrowLeft, FaCalendar, FaEnvelope, FaUser } from "react-icons/fa";
+import {
+  FaCrown,
+  FaArrowLeft,
+  FaCalendar,
+  FaEnvelope,
+  FaUser,
+} from "react-icons/fa";
 import Head from "next/head";
 import RsvpSlotPicker from "@/components/RsvpSlotPicker";
+
 export async function getStaticProps() {
   return {
     props: {
       metadata: {
         title: "RSVP | Lord Smearington&apos;s Absurd Gallery",
-        description: "Reserve your spot at Lord Smearington&apos;s Absurd Gallery event",
+        description:
+          "Reserve your spot at Lord Smearington&apos;s Absurd Gallery event",
         url: "https://lordsmearington.com/rsvp",
       },
     },
@@ -29,7 +37,11 @@ export default function RSVP() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [error, setError] = useState("");
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
+  ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
@@ -37,9 +49,9 @@ export default function RSVP() {
     }));
   };
 
-  const handleTimeSlotChange = (slot: TimeSlot) => {
+  const handleTimeSlotChange = React.useCallback((slot: TimeSlot) => {
     setTimeSlot(slot);
-  };
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -49,7 +61,21 @@ export default function RSVP() {
     try {
       // Here you would typically send the data to your backend
       // For now, we'll just simulate a successful submission
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      const response = await fetch("/api/rsvp", {
+        method: "POST",
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          guests: formData.guests,
+          timeSlot: timeSlot,
+          message: formData.message,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to submit RSVP");
+      }
+
       setIsSubmitted(true);
     } catch (err) {
       setError("There was an error submitting your RSVP. Please try again.");
@@ -62,11 +88,14 @@ export default function RSVP() {
     <PageContainer>
       <Head>
         <title>RSVP | Lord Smearington&apos;s Absurd Gallery</title>
-        <meta name="description" content="Reserve your spot at Lord Smearington&apos;s Absurd Gallery event" />
+        <meta
+          name="description"
+          content="Reserve your spot at Lord Smearington's Absurd Gallery event"
+        />
       </Head>
 
       <PageBackground />
-      
+
       {/* Floating elements */}
       {[...Array(10)].map((_, i) => (
         <FloatingElement
@@ -91,9 +120,12 @@ export default function RSVP() {
             <CrownIcon>
               <FaCrown />
             </CrownIcon>
-            <FormTitle>RSVP to Lord Smearington&apos;s Absurd Gallery</FormTitle>
+            <FormTitle>
+              RSVP to Lord Smearington&apos;s Absurd Gallery
+            </FormTitle>
             <FormSubtitle>
-              Reserve your spot for this extraordinary interdimensional experience
+              Reserve your spot for this extraordinary interdimensional
+              experience
             </FormSubtitle>
           </FormHeader>
 
@@ -104,11 +136,11 @@ export default function RSVP() {
               </SuccessIcon>
               <SuccessTitle>Your RSVP has been confirmed!</SuccessTitle>
               <SuccessText>
-                Thank you for your interest in Lord Smearington&apos;s Absurd Gallery. We look forward to welcoming you to our interdimensional art experience.
+                Thank you for your interest in Lord Smearington&apos;s Absurd
+                Gallery. We look forward to welcoming you to our
+                interdimensional art experience.
               </SuccessText>
-              <ReturnButton href="/">
-                Return to Homepage
-              </ReturnButton>
+              <ReturnButton href="/">Return to Homepage</ReturnButton>
             </SuccessMessage>
           ) : (
             <RSVPForm onSubmit={handleSubmit}>
@@ -228,7 +260,7 @@ const PageBackground = styled.div`
   height: 100%;
   background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
   z-index: -1;
-  
+
   &:before {
     content: "";
     position: absolute;
@@ -241,14 +273,18 @@ const PageBackground = styled.div`
   }
 `;
 
-const FloatingElement = styled.div<{ top: string; left: string; animationDuration: string }>`
+const FloatingElement = styled.div<{
+  top: string;
+  left: string;
+  animationDuration: string;
+}>`
   position: absolute;
   z-index: 0;
   top: ${(props) => props.top};
   left: ${(props) => props.left};
   animation: ${float} ${(props) => props.animationDuration} infinite ease-in-out;
   opacity: 0.3;
-  
+
   @media (max-width: 768px) {
     display: none;
   }
@@ -276,11 +312,11 @@ const BackLink = styled(Link)`
   margin-bottom: 2rem;
   font-family: "Cinzel Decorative", serif;
   transition: color 0.3s ease;
-  
+
   &:hover {
     color: #ffd700;
   }
-  
+
   svg {
     margin-right: 0.5rem;
   }
@@ -295,7 +331,7 @@ const FormContainer = styled.div`
   max-width: 700px;
   margin: 0 auto;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  
+
   @media (max-width: 768px) {
     padding: 1.5rem;
   }
@@ -326,7 +362,7 @@ const FormTitle = styled.h1`
   -webkit-text-fill-color: transparent;
   background-clip: text;
   animation: ${shimmer} 6s linear infinite;
-  
+
   @media (max-width: 768px) {
     font-size: 1.5rem;
   }
@@ -336,7 +372,7 @@ const FormSubtitle = styled.h2`
   font-size: 1.25rem;
   font-style: italic;
   color: #c7bfd4;
-  
+
   @media (max-width: 768px) {
     font-size: 1rem;
   }
@@ -374,12 +410,12 @@ const FormInput = styled.input`
   color: white;
   font-family: "Cormorant Garamond", serif;
   font-size: 1.1rem;
-  
+
   &:focus {
     outline: none;
     box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.5);
   }
-  
+
   &::placeholder {
     color: rgba(255, 255, 255, 0.5);
   }
@@ -393,12 +429,12 @@ const FormSelect = styled.select`
   color: white;
   font-family: "Cormorant Garamond", serif;
   font-size: 1.1rem;
-  
+
   &:focus {
     outline: none;
     box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.5);
   }
-  
+
   option {
     background: #3b4c99;
   }
@@ -413,12 +449,12 @@ const FormTextarea = styled.textarea`
   font-family: "Cormorant Garamond", serif;
   font-size: 1.1rem;
   resize: vertical;
-  
+
   &:focus {
     outline: none;
     box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.5);
   }
-  
+
   &::placeholder {
     color: rgba(255, 255, 255, 0.5);
   }
@@ -435,13 +471,13 @@ const SubmitButton = styled.button`
   cursor: pointer;
   transition: all 0.3s ease;
   margin-top: 1rem;
-  
+
   &:hover:not(:disabled) {
     background: #3b4c99;
     transform: translateY(-2px);
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
   }
-  
+
   &:disabled {
     opacity: 0.7;
     cursor: not-allowed;
@@ -495,7 +531,7 @@ const ReturnButton = styled(Link)`
   text-decoration: none;
   font-family: "Cinzel Decorative", serif;
   transition: all 0.3s ease;
-  
+
   &:hover {
     background: #3b4c99;
     transform: translateY(-2px);
@@ -514,12 +550,14 @@ const MayTimeSlots = styled.div`
 const TimeSlot = styled.div<{ selected: boolean }>`
   padding: 1rem;
   border-radius: 0.5rem;
-  border: 2px solid ${props => props.selected ? '#ffd700' : 'rgba(255, 255, 255, 0.3)'};
-  background: ${props => props.selected ? 'rgba(255, 215, 0, 0.2)' : 'rgba(59, 76, 153, 0.5)'};
+  border: 2px solid
+    ${(props) => (props.selected ? "#ffd700" : "rgba(255, 255, 255, 0.3)")};
+  background: ${(props) =>
+    props.selected ? "rgba(255, 215, 0, 0.2)" : "rgba(59, 76, 153, 0.5)"};
   cursor: pointer;
   text-align: center;
   transition: all 0.3s ease;
-  
+
   &:hover {
     border-color: #ffd700;
     transform: translateY(-2px);
@@ -548,19 +586,22 @@ interface TimeSlot {
   endTime: string;
 }
 
-const MayTimeSlotPicker: React.FC<{ onChange: (slot: TimeSlot) => void }> = ({ onChange }) => {
+const MayTimeSlotPicker: React.FC<{ onChange: (slot: TimeSlot) => void }> = ({
+  onChange,
+}) => {
   const [selectedSlot, setSelectedSlot] = useState<number | null>(null);
-  
+
   const timeSlots = [
-    { id: 1, date: "May 17th", startTime: "2:00 PM", endTime: "4:00 PM" },
-    { id: 2, date: "May 17th", startTime: "4:00 PM", endTime: "6:00 PM" },
-    { id: 3, date: "May 17th", startTime: "6:00 PM", endTime: "8:00 PM" }
+    { id: 1, datetime: "2023-05-17T14:00:00Z", date: "May 17th", startTime: "2:00 PM", endTime: "4:00 PM" },
+    { id: 2, datetime: "2023-05-17T16:00:00Z", date: "May 17th", startTime: "4:00 PM", endTime: "6:00 PM" },
+    { id: 3, datetime: "2023-05-17T18:00:00Z", date: "May 17th", startTime: "6:00 PM", endTime: "8:00 PM" },
   ];
-  
+
   const handleSlotSelect = (slotId: number) => {
     setSelectedSlot(slotId === selectedSlot ? null : slotId);
+    onChange(timeSlots.find((slot) => slot.id === slotId) as TimeSlot);
   };
-  
+
   return (
     <FormGroup>
       <FormLabel>
@@ -568,16 +609,21 @@ const MayTimeSlotPicker: React.FC<{ onChange: (slot: TimeSlot) => void }> = ({ o
           <FaCalendar />
         </FormIcon>
         Select a Time Slot
-        </FormLabel>
+      </FormLabel>
+      <FormSubtitle>
+        Due to fire-code restrictions, we ask that you attend the event during your selected time slot.
+      </FormSubtitle>
       <MayTimeSlots>
         <TimeSlotDate>May 17th</TimeSlotDate>
-        {timeSlots.map(slot => (
-          <TimeSlot 
-            key={slot.id} 
+        {timeSlots.map((slot) => (
+          <TimeSlot
+            key={slot.id}
             selected={selectedSlot === slot.id}
             onClick={() => handleSlotSelect(slot.id)}
           >
-            <TimeSlotHours>{slot.startTime} - {slot.endTime}</TimeSlotHours>
+            <TimeSlotHours>
+              {slot.startTime} - {slot.endTime}
+            </TimeSlotHours>
           </TimeSlot>
         ))}
       </MayTimeSlots>
