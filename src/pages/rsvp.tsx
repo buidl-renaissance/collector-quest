@@ -311,6 +311,7 @@ const CrownIcon = styled.div`
   font-size: 3rem;
   margin-bottom: 1rem;
   filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.7));
+  display: inline-block;
 `;
 
 const FormTitle = styled.h1`

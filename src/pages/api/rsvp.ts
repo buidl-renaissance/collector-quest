@@ -1,9 +1,17 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
+type TimeSlot = {
+  id: number;
+  date: string;
+  startTime: string;
+  endTime: string;
+};
+
 type FormData = {
   name: string;
   email: string;
   guests: number;
+  timeSlot: TimeSlot;
   message?: string;
 };
 
@@ -23,10 +31,10 @@ export default async function handler(
 
   try {
     // Parse the request body
-    const { name, email, guests, message }: FormData = req.body;
+    const { name, email, guests, timeSlot, message }: FormData = req.body;
 
     // Basic validation
-    if (!name || !email || !guests) {
+    if (!name || !email || !guests || !timeSlot) {
       return res.status(400).json({ 
         success: false, 
         message: 'Missing required fields' 
@@ -40,12 +48,20 @@ export default async function handler(
       });
     }
 
+    // Validate timeSlot
+    if (!timeSlot.id || !timeSlot.date || !timeSlot.startTime || !timeSlot.endTime) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid time slot information'
+      });
+    }
+
     // Here you would typically store the data in a database
     // For example with a database client:
-    // await db.collection('rsvps').insertOne({ name, email, guests, message, createdAt: new Date() });
+    // await db.collection('rsvps').insertOne({ name, email, guests, timeSlot, message, createdAt: new Date() });
     
     // For now, we'll just log it and return success
-    console.log('RSVP Submission:', { name, email, guests, message });
+    console.log('RSVP Submission:', { name, email, guests, timeSlot, message });
 
     // Return success response
     return res.status(200).json({ 
