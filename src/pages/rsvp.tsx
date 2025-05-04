@@ -127,7 +127,7 @@ export default function RSVP() {
               </FormTitle>
               <FormSubtitle>
                 Reserve your spot for this extraordinary inter-dimensional art
-                gallery experience, where you are the narrator of an absurd
+                gallery experience, where you are the narrator of the
                 story.
               </FormSubtitle>
             </FormHeader>
