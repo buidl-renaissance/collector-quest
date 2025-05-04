@@ -6,10 +6,10 @@ import { GetServerSideProps } from "next";
 
 // Styled components
 const PageWrapper = styled.div`
-  background-color: #0a0a1a;
+  background-color: #3B4C99;
   color: white;
   min-height: 100vh;
-  font-family: "Inter", sans-serif;
+  font-family: "Cormorant Garamond", serif;
 `;
 
 const HeroSection = styled.div`
@@ -18,7 +18,7 @@ const HeroSection = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: "Cinzel", serif;
+  font-family: "Cinzel Decorative", serif;
   /* text-align: center; */
   padding: 0 16px;
   overflow: hidden;
@@ -30,7 +30,7 @@ const HeroSection = styled.div`
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7));
+    background: linear-gradient(rgba(63, 34, 106, 0.8), rgba(39, 55, 126, 0.8));
     z-index: 1;
   }
 
@@ -56,7 +56,7 @@ const HeroSection = styled.div`
 `;
 
 const HeroTitle = styled.h1<{ theme?: any }>`
-  font-family: "Cinzel", serif;
+  font-family: "Cinzel Decorative", serif;
   font-size: ${(props) =>
     props.theme?.breakpoints?.up("md") ? "4rem" : "1.5rem"};
   font-weight: 700;
@@ -87,20 +87,25 @@ const HeroTitle = styled.h1<{ theme?: any }>`
 // `;
 
 const PrimaryButton = styled.button`
-  background-color: #d4af37;
-  color: #000;
+  background-color: #FFD700;
+  color: #3B4C99;
   font-weight: bold;
   font-size: 0.8rem;
   margin-top: 1rem;
   padding: 12px 32px;
-  border: none;
+  border: 2px solid #FFD700;
   border-radius: 4px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
-  font-family: "Cinzel", serif;
+  transition: all 0.3s ease;
+  font-family: "Cinzel Decorative", serif;
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+  
   &:hover {
-    background-color: #f5cc50;
+    background-color: #3B4C99;
+    color: #FFD700;
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
   }
+  
   @media (min-width: 768px) {
     font-size: 1.2rem;
   }
@@ -122,28 +127,69 @@ const PrimaryButton = styled.button`
 // `;
 
 const SectionTitle = styled.h2<{ theme?: any }>`
-  font-family: "Cinzel", serif;
+  font-family: "Playfair Display SC", serif;
   font-size: ${(props) =>
     props.theme?.breakpoints?.up("md") ? "3rem" : "2rem"};
   font-weight: 700;
-  color: #d4af37;
+  color: #FFD700;
   margin-bottom: 32px;
+  text-shadow: 0 0 8px rgba(255, 215, 0, 0.3);
+  position: relative;
+  
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: -10px;
+    left: 0;
+    width: 80px;
+    height: 3px;
+    background: linear-gradient(90deg, #F4C4F3, #FC67FA);
+  }
 `;
 
 const DarkSection = styled.section`
-  background-color: #0f0f2a;
+  background-color: #5A3E85;
   padding: 80px 0;
+  position: relative;
+  
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url("/images/gold-embroidered-texture.png");
+    background-size: cover;
+    opacity: 0.05;
+    z-index: 0;
+  }
 `;
 
 const FeatureCard = styled.div`
   padding: 32px;
   height: 100%;
-  background-color: rgba(20, 20, 50, 0.7);
+  background-color: rgba(59, 76, 153, 0.7);
   border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  transition: transform 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 1px solid rgba(255, 215, 0, 0.2);
+  position: relative;
+  overflow: hidden;
+  
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 5px;
+    background: linear-gradient(90deg, #F4C4F3, #FC67FA);
+  }
+  
   &:hover {
     transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4), 0 0 15px rgba(255, 215, 0, 0.2);
   }
 `;
 
@@ -151,39 +197,41 @@ const IconCircle = styled.div`
   width: 120px;
   height: 120px;
   border-radius: 50%;
-  background-color: #1a1a4a;
+  background-color: #3B4C99;
   display: flex;
   align-items: center;
   justify-content: center;
   margin: 0 auto;
   margin-bottom: 1rem;
+  border: 2px solid #FFD700;
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
 `;
 
 const BenefitNumber = styled.div`
   min-width: 48px;
   height: 48px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #d4af37, #f5cc50);
-  color: #000;
+  background: linear-gradient(135deg, #FFD700, #FC67FA);
+  color: #3B4C99;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: bold;
   font-size: 1.2rem;
-  box-shadow: 0 2px 8px rgba(212, 175, 55, 0.5);
+  box-shadow: 0 2px 8px rgba(255, 215, 0, 0.5);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   margin-right: 1rem;
 
   &:hover {
     transform: scale(1.05);
-    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.7);
+    box-shadow: 0 4px 12px rgba(255, 215, 0, 0.7);
   }
 `;
 
 const BenefitsContainer = styled.div`
   background-image: linear-gradient(
-      rgba(10, 10, 26, 0.85),
-      rgba(10, 10, 26, 0.9)
+      rgba(59, 76, 153, 0.85),
+      rgba(90, 62, 133, 0.9)
     ),
     url("/images/swirling-paint.jpg");
   background-size: cover;
@@ -191,7 +239,7 @@ const BenefitsContainer = styled.div`
   border-radius: 16px;
   padding: 1rem;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(212, 175, 55, 0.2);
+  border: 1px solid rgba(255, 215, 0, 0.3);
   backdrop-filter: blur(5px);
 
   @media (min-width: 768px) {
@@ -203,15 +251,29 @@ const BenefitText = styled.h4`
   font-weight: 400;
   line-height: 1.8;
   font-size: 1.25rem;
-  color: #f0f0f0;
+  color: #fff;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
   letter-spacing: 0.02em;
   margin: 0;
 `;
 
 const Footer = styled.footer`
-  background-color: #0a0a1a;
+  background-color: #3B4C99;
   padding: 32px 0;
+  border-top: 1px solid rgba(255, 215, 0, 0.3);
+  position: relative;
+  
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url("/images/crown-pattern.png");
+    background-size: 100px;
+    opacity: 0.05;
+  }
 `;
 
 const Container = styled.div`
@@ -219,6 +281,8 @@ const Container = styled.div`
   max-width: 1200px;
   margin: 0 auto;
   padding: 2rem 1rem;
+  position: relative;
+  z-index: 1;
 `;
 
 const Grid = styled.div`
@@ -272,40 +336,48 @@ const ContentSection = styled.div<{
 const EventDetail = styled.p`
   margin-bottom: 0px;
   font-weight: bold;
+  color: #fff;
 `;
 
 const BodyText = styled.p`
   font-size: 1.1rem;
   line-height: 1.7;
   margin-bottom: 24px;
+  color: #fff;
 `;
 
 const FeatureTitle = styled.h3`
-  font-family: "Cinzel", serif;
+  font-family: "Playfair Display SC", serif;
   font-size: 1.5rem;
   font-weight: 600;
   text-align: center;
   margin-bottom: 16px;
-  color: #d4af37;
+  color: #FFD700;
+  text-shadow: 0 0 5px rgba(255, 215, 0, 0.3);
 `;
 
 const FeatureDescription = styled.p`
   margin-bottom: 16px;
   line-height: 1.6;
+  color: #C7BFD4;
 `;
 
 const FeatureQuote = styled.p`
+  font-family: "Brush Script MT", cursive;
   font-style: italic;
-  color: #d4af37;
+  color: #F4C4F3;
   text-align: center;
   font-weight: 500;
+  font-size: 1.rem;
+  text-shadow: 0 0 5px rgba(252, 103, 250, 0.3);
 `;
 
 const EventDetailTitle = styled.h3`
-  font-family: "Cinzel", serif;
-  color: #fff;
+  font-family: "Cinzel Decorative", serif;
+  color: #FFD700;
   margin-bottom: 16px;
   font-size: 1.25rem;
+  text-shadow: 0 0 5px rgba(255, 215, 0, 0.3);
 `;
 
 // const RegistrationNote = styled.p`
@@ -315,8 +387,18 @@ const EventDetailTitle = styled.h3`
 // `;
 
 const FooterText = styled.p`
-  color: #fff;
+  color: #C7BFD4;
   text-align: center;
+  position: relative;
+  
+  &::before {
+    content: "👑";
+    position: absolute;
+    top: -25px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 20px;
+  }
 `;
 
 export const getServerSideProps: GetServerSideProps = async () => {
@@ -549,7 +631,7 @@ const WorkshopPage: React.FC = () => {
       <Container>
         <ContentSection paddingY="10">
           <SectionTitle style={{ textAlign: "center" }}>
-            Why Face Lord Smearington&apos;s Judgment?
+            What&apos;s in it for you?
           </SectionTitle>
 
           <BenefitsContainer>
@@ -558,7 +640,7 @@ const WorkshopPage: React.FC = () => {
                 "Master AI's Creative Magic: Learn how AI models, prompt engineering, and creative workflows make it the perfect realm for digital art creation.",
                 "Unleash Your Inner Absurdity: Engage with the Absurd AI Gallery, submit your prompts, and claim a one-of-one AI artwork crafted by Lord Smearington himself.",
                 "Wield Magical Powers (AI Tools): Discover how AI development tools can enhance creative workflows, blending innovation with absurdity.",
-                'Join the AI Creator Community: Be part of the "Entertainment & Culture" movement, connect with fellow creators, and witness projects that make the algorithms wail!',
+                'Join the AI Creator Community: Be part of the movement, connect with fellow creators, and witness projects that make the algorithms wail!',
               ].map((benefit, index) => (
                 <GridItem span={12} key={index}>
                   <FlexContainer alignItems="flex-start" gap="2">
@@ -577,11 +659,11 @@ const WorkshopPage: React.FC = () => {
         <Container>
           <Grid>
             <GridItem span={12} md={6}>
-              Wednesday,{" "}
               <SectionTitle>Join the Chaos on May 7th & 14th, 2025</SectionTitle>
               <ContentSection marginBottom="4">
-                Wednesday,{" "}
-                <EventDetailTitle>Date: May 7th & 14th, 2025</EventDetailTitle>
+                <EventDetailTitle>
+                  Date: May 7th & 14th, 2025
+                </EventDetailTitle>
                 <EventDetailTitle>Time: 8:00 PM EST</EventDetailTitle>
                 <EventDetailTitle>
                   Venue: Studio 202 - Russell Industrial Center, Detroit, MI
@@ -595,11 +677,11 @@ const WorkshopPage: React.FC = () => {
                 </EventDetailTitle>
               </ContentSection>
               <FlexContainer flexDirection="row" gap="2">
-                <PrimaryButton
+                {/* <PrimaryButton
                   onClick={() => (window.location.href = "#register-form")}
                 >
                   Register Now to Unleash the Absurd
-                </PrimaryButton>
+                </PrimaryButton> */}
                 {/* <SecondaryButton
                   onClick={() =>
                     window.open("https://discord.gg/suihackathons", "_blank")

@@ -1,4 +1,5 @@
 import styled from "@emotion/styled";
+import Link from "next/link";
 // Button Components
 const SubmitButton = styled.button`
   width: 100%;
@@ -70,4 +71,33 @@ const SecondaryButton = styled.button`
   }
 `;
 
-export { SubmitButton, ButtonGroup, PrimaryButton, SecondaryButton };
+const ActionButton = styled(Link)`
+  background: linear-gradient(135deg, #2A3A87, #481790);
+  color: white;
+  padding: 0.6rem 1rem;
+  border-radius: 4px;
+  font-weight: 700;
+  text-decoration: none;
+  text-align: center;
+  transition: all 0.3s ease;
+  border: 2px solid #FFD700;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 0.8rem;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  text-transform: uppercase;
+  display: inline-block;
+  
+  &:hover {
+    transform: translateY(-5px);
+    background: #481790;
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.7);
+    color: #FFD700;
+  }
+
+  @media (max-width: 768px) {
+    display: block;
+    width: 100%;
+  }
+`;
+
+export { SubmitButton, ButtonGroup, PrimaryButton, SecondaryButton, ActionButton };

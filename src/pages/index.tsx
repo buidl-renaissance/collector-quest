@@ -107,7 +107,7 @@ export default function Home() {
         <AboutContainer>
           <AboutContent>
             <AboutTextBox>
-              <AboutBadge>THE VISIONARY</AboutBadge>
+              {/* <AboutBadge>THE VISIONARY</AboutBadge> */}
               <AboutHeading as="h2">Who Is Lord Smearington?</AboutHeading>
               <AboutText>
                 Lord Smearington, the inter-dimensional art prophet, reveals the
@@ -274,7 +274,7 @@ const HeroSection = styled(Box)`
   background: linear-gradient(to bottom right, #3b4c99, #5a3e85);
   overflow: hidden;
   @media (max-width: 768px) {
-    min-height: 88vh;
+    min-height: 60vh;
   }
 `;
 
@@ -375,6 +375,9 @@ const HeroContent = styled(VStack)`
   height: 100vh;
   color: white;
   padding: 0.5rem;
+  @media (max-width: 768px) {
+    height: 60vh;
+  }
 `;
 
 const CrownIcon = styled.div`
