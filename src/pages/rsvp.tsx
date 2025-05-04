@@ -16,8 +16,7 @@ export async function getStaticProps() {
   return {
     props: {
       metadata: {
-        title:
-          "You are invited to Lord Smearington's Absurd Gallery – May 17th",
+        title: "You are invited to Lord Smearington's Absurd Gallery – May 17th",
         description:
           "Reserve your spot at Lord Smearington's Absurd Gallery event May 17th",
         url: "https://lord.smearington.theethical.ai/rsvp",
@@ -127,9 +126,8 @@ export default function RSVP() {
                 RSVP to Lord Smearington&apos;s Absurd Gallery
               </FormTitle>
               <FormSubtitle>
-                Reserve your spot for this first-of-its-kind inter-dimensional
-                art gallery experience, where you are the narrator of an absurd
-                story.
+                Reserve your spot for this extraordinary inter-dimensional art
+                gallery experience
               </FormSubtitle>
             </FormHeader>
           )}
