@@ -16,7 +16,7 @@ export async function getStaticProps() {
   return {
     props: {
       metadata: {
-        title: "RSVP to Lord Smearington's Absurd Gallery",
+        title: "You are invited to Lord Smearington's Absurd Gallery – May 17th",
         description:
           "Reserve your spot at Lord Smearington's Absurd Gallery event May 17th",
         url: "https://lord.smearington.theethical.ai/rsvp",
