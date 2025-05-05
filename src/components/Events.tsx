@@ -7,7 +7,7 @@ import { keyframes } from '@emotion/react';
 const Events: React.FC = () => {
   return (
     <EventsGrid>
-      <EventCard>
+      {/* <EventCard>
         <EventImage src="/images/ai-creator-workshop.png" alt="AI Creator Workshop with Lord Smearington" />
         <EventContent>
           <EventDate>Wednesday, May 7th & 14th, 2025</EventDate>
@@ -17,7 +17,7 @@ const Events: React.FC = () => {
           </EventDescription>
           <EventButton href="/events/ai-creator-workshop">Learn More</EventButton>
         </EventContent>
-      </EventCard>
+      </EventCard> */}
       
       <EventCard>
         <EventImage src="/images/lord-smearington.jpg" alt="Interdimensional Art Gallery with Lord Smearington" />
