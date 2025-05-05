@@ -63,8 +63,6 @@ const CreateStoryPage: React.FC = () => {
       }
 
       setLoading(false);
-      // Redirect to the realm page
-      router.push(`/realms/${data.id}`);
     } catch (err) {
       console.error("Error creating story:", err);
       setError("Failed to create story. Please try again.");
