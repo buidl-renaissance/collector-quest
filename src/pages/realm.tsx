@@ -269,9 +269,13 @@ const FloatingObject = styled.div`
 const Container = styled.div`
   max-width: 1200px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 1rem;
   position: relative;
   z-index: 2;
+  
+  @media (min-width: 768px) {
+    padding: 2rem;
+  }
 `;
 
 const BackLink = styled(Link)`
@@ -279,10 +283,16 @@ const BackLink = styled(Link)`
   align-items: center;
   gap: 0.5rem;
   color: #ffd700;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
   text-decoration: none;
   font-weight: 500;
   transition: all 0.3s ease;
+  font-size: 0.9rem;
+
+  @media (min-width: 768px) {
+    margin-bottom: 2rem;
+    font-size: 1rem;
+  }
 
   &:hover {
     text-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
@@ -301,34 +311,52 @@ const CrownDivider = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 1.5rem 0;
+  margin: 1rem 0;
   color: #ffd700;
   font-size: 1.5rem;
+  
+  @media (min-width: 768px) {
+    margin: 1.5rem 0;
+  }
 `;
 
 const LoadingMessage = styled.div`
   text-align: center;
-  font-size: 1.5rem;
+  font-size: 1.2rem;
   color: #c7bfd4;
-  margin: 3rem 0;
+  margin: 2rem 0;
   display: flex;
   align-items: center;
   justify-content: center;
+  
+  @media (min-width: 768px) {
+    font-size: 1.5rem;
+    margin: 3rem 0;
+  }
 `;
 
 const ErrorMessage = styled.div`
   text-align: center;
-  font-size: 1.5rem;
+  font-size: 1.2rem;
   color: #fc67fa;
-  margin: 3rem 0;
+  margin: 2rem 0;
   text-shadow: 0 0 10px rgba(252, 103, 250, 0.5);
+  
+  @media (min-width: 768px) {
+    font-size: 1.5rem;
+    margin: 3rem 0;
+  }
 `;
 
 const RealmHeader = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
+  
+  @media (min-width: 768px) {
+    margin-bottom: 2rem;
+  }
 `;
 
 const RealmImageWrapper = styled.div`
@@ -357,27 +385,40 @@ const RealmImage = styled.img`
 `;
 
 const RealmTitle = styled.h1`
-  font-size: 3rem;
+  font-size: 2rem;
   text-align: center;
   margin: 0;
   color: #fff;
   font-family: "Cinzel Decorative", "Playfair Display SC", serif;
   text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+  
+  @media (min-width: 768px) {
+    font-size: 3rem;
+  }
 `;
 
 const RealmInfo = styled.div`
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(10px);
   border-radius: 12px;
-  padding: 2rem;
+  padding: 1.25rem;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
   border: 1px solid rgba(255, 215, 0, 0.3);
+  
+  @media (min-width: 768px) {
+    padding: 2rem;
+  }
 `;
 
 const InfoSection = styled.div`
-  margin-bottom: 2rem;
-  padding-bottom: 2rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.5rem;
   border-bottom: 1px solid rgba(255, 215, 0, 0.2);
+
+  @media (min-width: 768px) {
+    margin-bottom: 2rem;
+    padding-bottom: 2rem;
+  }
 
   &:last-child {
     border-bottom: none;
@@ -387,10 +428,15 @@ const InfoSection = styled.div`
 `;
 
 const SectionTitle = styled.h2`
-  font-size: 1.8rem;
-  margin: 0 0 1rem 0;
+  font-size: 1.4rem;
+  margin: 0 0 0.75rem 0;
   color: #ffd700;
   font-family: "Cinzel Decorative", "Playfair Display SC", serif;
+  
+  @media (min-width: 768px) {
+    font-size: 1.8rem;
+    margin: 0 0 1rem 0;
+  }
 `;
 
 const SectionTitleGlow = styled.span`
@@ -409,21 +455,36 @@ const SectionTitleGlow = styled.span`
 `;
 
 const Description = styled.p`
-  font-size: 1.2rem;
-  line-height: 1.8;
+  font-size: 1rem;
+  line-height: 1.6;
   color: #c7bfd4;
+  
+  @media (min-width: 768px) {
+    font-size: 1.2rem;
+    line-height: 1.8;
+  }
 `;
 
 const InfoText = styled.p`
-  font-size: 1.2rem;
+  font-size: 1rem;
   color: #c7bfd4;
   margin: 0;
+  
+  @media (min-width: 768px) {
+    font-size: 1.2rem;
+  }
 `;
 
 const SettingItem = styled.div`
   display: flex;
   margin-bottom: 0.8rem;
-  font-size: 1.1rem;
+  font-size: 1rem;
+  flex-direction: column;
+  
+  @media (min-width: 768px) {
+    flex-direction: row;
+    font-size: 1.1rem;
+  }
 `;
 
 const SettingLabel = styled.span`
@@ -445,18 +506,32 @@ const GuardiansList = styled.ul`
 const GuardianItem = styled.li`
   padding: 0.5rem 0;
   font-family: monospace;
-  font-size: 1rem;
+  font-size: 0.9rem;
   color: #c7bfd4;
   border-left: 2px solid #ffd700;
   padding-left: 1rem;
   margin-bottom: 0.5rem;
+  word-break: break-all;
+  
+  @media (min-width: 768px) {
+    font-size: 1rem;
+  }
 `;
 
 const StoriesGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: 1fr;
+  gap: 1rem;
   margin-bottom: 1.5rem;
+  
+  @media (min-width: 480px) {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  }
+  
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+  }
 `;
 
 const CreateStoryLink = styled(Link)`
@@ -472,6 +547,11 @@ const CreateStoryLink = styled(Link)`
   border-radius: 8px;
   transition: all 0.3s ease;
   margin-top: 1rem;
+  font-size: 0.9rem;
+  
+  @media (min-width: 768px) {
+    font-size: 1rem;
+  }
 
   &:hover {
     background: rgba(255, 215, 0, 0.1);
@@ -481,12 +561,18 @@ const CreateStoryLink = styled(Link)`
 
 const ActionButtons = styled.div`
   display: flex;
-  gap: 1rem;
-  margin-top: 2rem;
-  flex-wrap: wrap;
-
-  @media (max-width: 768px) {
-    flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+  flex-direction: column;
+  
+  @media (min-width: 480px) {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  
+  @media (min-width: 768px) {
+    gap: 1rem;
+    margin-top: 2rem;
   }
 `;
 
@@ -497,7 +583,7 @@ interface ActionButtonProps {
 const ActionButton = styled(Link)<ActionButtonProps>`
   padding: 0.75rem 1.5rem;
   border-radius: 8px;
-  font-size: 1rem;
+  font-size: 0.9rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -512,6 +598,12 @@ const ActionButton = styled(Link)<ActionButtonProps>`
   font-family: "Cormorant Garamond", serif;
   text-transform: uppercase;
   letter-spacing: 1px;
+  width: 100%;
+  
+  @media (min-width: 480px) {
+    width: auto;
+    font-size: 1rem;
+  }
 
   &:hover {
     transform: translateY(-5px);
