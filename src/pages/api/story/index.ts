@@ -30,6 +30,14 @@ export default async function handler(
       console.error('Error creating story:', error);
       return res.status(500).json({ error: 'Failed to create story' });
     }
+  } else if (req.method === 'GET') {
+    try {
+      const stories = await knex('stories').select('*');
+      return res.status(200).json(stories);
+    } catch (error) {
+      console.error('Error fetching stories:', error);
+      return res.status(500).json({ error: 'Failed to fetch stories' });
+    }
   } else {
     res.setHeader('Allow', ['GET', 'POST']);
     res.status(405).end(`Method ${req.method} Not Allowed`);
