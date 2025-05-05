@@ -141,7 +141,7 @@ export default function Home() {
             <CrownDivider>
               <FaCrown />
             </CrownDivider>
-            Join Our Absurd Community
+            Join Our Community
             <CrownDivider>
               <FaCrown />
             </CrownDivider>
