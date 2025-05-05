@@ -7,7 +7,7 @@ export default async function handler(
 ) {
   if (req.method === 'POST') {
     try {
-      const { title, description, videoUrl, script, realmId } = req.body;
+      const { title, description, videoUrl, script, realmId } = JSON.parse(req.body);
 
       // Validate required fields
       if (!title || !description || !videoUrl || !script || !realmId) {

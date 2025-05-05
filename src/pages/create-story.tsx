@@ -17,18 +17,27 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         title: `Create Story | Lord Smearington's Absurd NFT Gallery`,
         description: "Create a new interactive story for this realm.",
         image: "/images/story-creation-banner.jpg",
-        url: `https://smearington.theethical.ai/realms/${realm}/story`,
+        url: `https://smearington.theethical.ai/create-story`,
       },
     },
   };
 };
 
-const CreateStoryPage: React.FC<{ realmId: string }> = ({ realmId }) => {
+const data = {
+  title: "Lord Smearington Welcomes You to the Land of the Absurd",
+  description: "An invitation to the immersive art gallery experience.",
+  videoUrl:
+    "https://dpop.nyc3.digitaloceanspaces.com/uploads/Md7C9BhGVsFplhuUbKGT8qVZHRimd6JcK7a7hzgh.mp4",
+  script:
+    "Mortals and cosmic entities alike, I, Lord Smearington, invite you to traverse the boundaries of reality at my Inter-dimensional Art Gallery. Opening Saturday, May 17th, 2025, the veil between worlds will thin, allowing glimpses into realms beyond human comprehension.\n\nThis is not merely an exhibition but a journey through the absurd landscapes of my mind, where digital art, physical installations, and interactive experiences collide in a symphony of beautiful chaos.",
+};
+
+const CreateStoryPage: React.FC = () => {
   const router = useRouter();
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [videoUrl, setVideoUrl] = useState("");
-  const [script, setScript] = useState("");
+  const [title, setTitle] = useState(data.title);
+  const [description, setDescription] = useState(data.description);
+  const [videoUrl, setVideoUrl] = useState(data.videoUrl);
+  const [script, setScript] = useState(data.script);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -46,19 +55,19 @@ const CreateStoryPage: React.FC<{ realmId: string }> = ({ realmId }) => {
     try {
       const response = await fetch("/api/story", {
         method: "POST",
-        body: JSON.stringify({ title, description, videoUrl, script, realmId }),
+        body: JSON.stringify({ title, description, videoUrl, script }),
       });
       const data = await response.json();
 
       if (response.ok) {
-        router.push(`/realms/${realmId}/${data.id}`);
+        router.push(`/story/${data.id}`);
       } else {
         setError(data.error || "Failed to create story. Please try again.");
       }
 
       setLoading(false);
       // Redirect to the realm page
-      router.push(`/realms/${realmId}/${data.id}`);
+      router.push(`/realms/${data.id}`);
     } catch (err) {
       console.error("Error creating story:", err);
       setError("Failed to create story. Please try again.");
@@ -68,7 +77,7 @@ const CreateStoryPage: React.FC<{ realmId: string }> = ({ realmId }) => {
 
   return (
     <Container>
-      <BackLink href={`/realms/${realmId}`}>
+      <BackLink href={`/realm`}>
         <FaArrowLeft /> Back to Realm
       </BackLink>
 

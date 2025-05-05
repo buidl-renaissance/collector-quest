@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
 import styled from '@emotion/styled';
 import { GetServerSideProps } from 'next';
 import Link from 'next/link';
@@ -31,15 +30,15 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         title: `Realm Details | Lord Smearington's Absurd NFT Gallery`,
         description: "Explore this unique realm in the world of NFT art and blockchain creativity.",
         image: "/images/realm-details-banner.jpg",
-        url: `https://smearington.theethical.ai/realms/${realm}`,
+        url: `https://smearington.theethical.ai/realm`,
       },
     },
   };
 };
 
-const RealmDetailPage: React.FC<{ realmId: string }> = ({ realmId }) => {
-  const router = useRouter();
-  const wallet = useWallet();
+const RealmDetailPage: React.FC = () => {
+
+const wallet = useWallet();
   const [realm, setRealm] = useState<Realm | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -47,13 +46,9 @@ const RealmDetailPage: React.FC<{ realmId: string }> = ({ realmId }) => {
   useEffect(() => {
     const fetchRealmDetails = async () => {
       try {
-        // In a real implementation, this would fetch realm data from your API or blockchain
-        // For now, we'll simulate a response with mock data
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
         // Mock data for demonstration
         const mockRealm: Realm = {
-          id: realmId,
+          id: 'lord-smearington',
           name: "Lord Smearington's Absurd Gallery",
           description: "A Sui Overflow 2025 Hackathon Project – Minted on Sui, Judged by Madness",
           imageUrl: "https://lord.smearington.theethical.ai/images/lord-smearington.jpg",
@@ -74,10 +69,8 @@ const RealmDetailPage: React.FC<{ realmId: string }> = ({ realmId }) => {
       }
     };
 
-    if (realmId) {
-      fetchRealmDetails();
-    }
-  }, [realmId]);
+    fetchRealmDetails();
+  }, []);
 
   if (loading) {
     return (
@@ -187,9 +180,9 @@ const RealmDetailPage: React.FC<{ realmId: string }> = ({ realmId }) => {
           </InfoSection>
           
           <ActionButtons>
-            <ActionButton href={`/realms/${realmId}/artworks`}>View Artworks</ActionButton>
+            <ActionButton href={`/artworks`}>View Artworks</ActionButton>
             {wallet.connected && (
-              <ActionButton href={`/realms/${realmId}/submit`} primary>Submit Artwork</ActionButton>
+              <ActionButton href={`/submit`} primary>Submit Artwork</ActionButton>
             )}
           </ActionButtons>
         </RealmInfo>
