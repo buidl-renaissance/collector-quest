@@ -1,11 +1,9 @@
 import { TransactionBlock } from '@mysten/sui.js/transactions';
-import { SUI_CLOCK_OBJECT_ID } from '@mysten/sui.js/utils';
 
 // Constants for package and registry addresses
 // These would need to be replaced with actual addresses from your deployed contracts
-const REALM_PACKAGE_ID = '0x...'; // Replace with actual package ID
-const REALM_REGISTRY_ID = '0x...'; // Replace with actual registry object ID
-const KINGDOM_REGISTRY_ID = '0x...'; // Replace with actual kingdom registry object ID
+const REALM_PACKAGE_ID = '0x109f3eddc1cc0122144ba37f57a5d5486ac6490b077cbdb5bd9f71f62d6ee610'; // Replace with actual package ID
+const REALM_REGISTRY_ID = '0xf7ac547cfc70c518f7871463ed2e462162f71c2aa6b5ddf5f02e5600ecde79a7'; // Replace with actual registry object ID
 
 export interface RealmData {
   name: string;
@@ -32,17 +30,16 @@ export function createRegisterRealmTransaction(realmData: RealmData): Transactio
   // Create arguments for the transaction
   const args = [
     txb.object(REALM_REGISTRY_ID), // Realm registry object
-    txb.object(KINGDOM_REGISTRY_ID), // Kingdom registry object
-    txb.pure(realmData.name), // Realm name
-    txb.pure(realmData.description), // Description
-    txb.pure(realmData.imageUrl || ''), // Image URL (empty string if not provided)
-    txb.pure(realmData.location || ''), // Location (empty string if not provided)
-    guardiansVector, // Guardians vector
+    txb.pure(Array.from(new TextEncoder().encode(realmData.name))), // Realm name as encoded bytes
+    txb.pure(Array.from(new TextEncoder().encode(realmData.description))), // Description as encoded bytes
+    txb.pure(Array.from(new TextEncoder().encode(realmData.imageUrl || ''))), // Image URL as encoded bytes
+    txb.pure(Array.from(new TextEncoder().encode(realmData.location || ''))), // Location as encoded bytes
+    txb.pure(1), // Max handles per user
     txb.pure(realmData.invitationOnly), // Invitation only flag
     txb.pure(realmData.requiresVerification), // Requires verification flag
-    txb.object(SUI_CLOCK_OBJECT_ID), // Clock object for timestamp
+    guardiansVector, // Guardians vector
   ];
-  
+  console.log('args', args);
   // Call the create_realm function from the realm module
   txb.moveCall({
     target: `${REALM_PACKAGE_ID}::realm::create_realm`,

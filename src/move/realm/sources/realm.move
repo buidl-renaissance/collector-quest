@@ -8,11 +8,14 @@ module realm::realm {
     use sui::object::{Self, UID, ID};
     use sui::tx_context::{Self, TxContext};
     use sui::transfer;
+    use sui::url::{Self, Url};
     use sui::table::{Self, Table};
     use sui::vec_set::{Self, VecSet};
     use std::string::{Self, String};
     use sui::event;
     use std::vector;
+    use sui::package;
+    use sui::display;
 
     // Error codes
     const ENotAuthorized: u64 = 1;
@@ -40,7 +43,7 @@ module realm::realm {
         id: UID,
         name: String,
         description: String,
-        image_url: String,
+        url: Url,
         location: String,
         primary_guardian: address,
         guardians: VecSet<address>,
@@ -85,14 +88,55 @@ module realm::realm {
         guardian: address
     }
 
+    // Realm capability to track ownership
+    public struct RealmCapability has key, store {
+        id: UID,
+        realm_id: ID
+    }
+
+    /// One-time witness for the package
+    public struct REALM has drop {}
+
     // Initialize the realm registry
-    fun init(ctx: &mut TxContext) {
+    fun init(witness: REALM, ctx: &mut TxContext) {
+        // Create the Publisher object
+        let publisher = package::claim(witness, ctx);
+        
+        // Create the registry
         let registry = RealmRegistry {
             id: object::new(ctx),
             realms: table::new(ctx),
             guardians: vec_set::empty()
         };
         
+        // Set up the Display for Realm
+        let keys = vector[
+            string::utf8(b"name"),
+            string::utf8(b"description"),
+            string::utf8(b"url"),
+            string::utf8(b"location"),
+            string::utf8(b"primary_guardian"),
+        ];
+        
+        let values = vector[
+            string::utf8(b"{name}"),
+            string::utf8(b"{description}"),
+            string::utf8(b"{url}"),
+            string::utf8(b"{location}"),
+            string::utf8(b"Managed by {primary_guardian}"),
+        ];
+
+        let mut display = display::new_with_fields<Realm>(
+            &publisher, keys, values, ctx
+        );
+
+        // Commit the Display
+        display::update_version(&mut display);
+        
+        // Transfer the Publisher and Display to the transaction sender
+        transfer::public_transfer(publisher, tx_context::sender(ctx));
+        transfer::public_transfer(display, tx_context::sender(ctx));
+
         transfer::share_object(registry);
     }
 
@@ -102,13 +146,14 @@ module realm::realm {
         assert!(tx_context::sender(ctx) == @0x1, ENotAuthorized);
         vec_set::insert(&mut registry.guardians, guardian);
     }
+    
     // Create a new realm
     public fun create_realm(
         registry: &mut RealmRegistry,
-        name: String,
-        description: String,
-        image_url: String,
-        location: String,
+        name: vector<u8>,
+        description: vector<u8>,
+        url: vector<u8>,
+        location: vector<u8>,
         max_handles_per_user: u64,
         invitation_only: bool,
         requires_verification: bool,
@@ -138,10 +183,10 @@ module realm::realm {
         // Create realm
         let realm = Realm {
             id: object::new(ctx),
-            name: copy name,
-            description,
-            image_url,
-            location,
+            name: string::utf8(name),
+            description: string::utf8(description),
+            url: url::new_unsafe_from_bytes(url),
+            location: string::utf8(location),
             primary_guardian: sender,
             guardians: guardians_set,
             handles: table::new(ctx),
@@ -151,13 +196,21 @@ module realm::realm {
             invitation_only,
             requires_verification
         };
-        
+
         // Add to registry
-        table::add(&mut registry.realms, object::uid_to_inner(&realm.id), realm);
+        let realm_id = object::uid_to_inner(&realm.id);
+        table::add(&mut registry.realms, realm_id, realm);
         
+        // Create and transfer capability to sender
+        let capability = RealmCapability {
+            id: object::new(ctx),
+            realm_id
+        };
+        transfer::transfer(capability, sender);
+
         // Emit event
         event::emit(RealmCreated {
-            name,
+            name: string::utf8(name),
             primary_guardian: sender
         });
     }

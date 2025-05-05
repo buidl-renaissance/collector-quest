@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import styled from '@emotion/styled';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
-import { FaArrowLeft, FaImage, FaMapMarkerAlt } from 'react-icons/fa';
+import { FaArrowLeft } from 'react-icons/fa';
 import { useWallet } from '@suiet/wallet-kit';
 import { GetServerSideProps } from 'next';
 import { UploadMedia } from '@/components/UploadMedia';
+import { registerRealm } from '@/lib/realmActions';
 
 export const getServerSideProps: GetServerSideProps = async () => {
   return {
@@ -22,19 +23,19 @@ export const getServerSideProps: GetServerSideProps = async () => {
 
 const RealmRegisterPage: React.FC = () => {
   const router = useRouter();
-  const { connected } = useWallet();
-  
+  const wallet = useWallet();
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+
   const [formData, setFormData] = useState({
     name: "Lord Smearington's Absurd Gallery",
     description: 'A Sui Overflow 2025 Hackathon Project – Minted on Sui, Judged by Madness',
-    imageUrl: '/images/lord-smearington.jpg',
+    imageUrl: 'https://lord.smearington.theethical.ai/images/lord-smearington.jpg',
     location: 'Russell Industrial Center, Detroit, MI',
     invitationOnly: false,
     requiresVerification: false
   });
-  
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
+
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
@@ -56,7 +57,7 @@ const RealmRegisterPage: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!connected) {
+    if (!wallet.connected) {
       setError('Please connect your wallet to register a realm');
       return;
     }
@@ -74,6 +75,20 @@ const RealmRegisterPage: React.FC = () => {
       
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 2000));
+
+      // Create a transaction to register the realm
+      const result = await registerRealm(wallet, {
+        name: formData.name,
+        description: formData.description,
+        imageUrl: formData.imageUrl,
+        location: formData.location,
+        invitationOnly: formData.invitationOnly,
+        requiresVerification: formData.requiresVerification,
+        kingdomName: "Lord Smearington's Absurd Gallery",
+        guardians: []
+      });
+
+      console.log('Realm registered:', result);
       
       // Redirect to realms page on success
       router.push('/realms');

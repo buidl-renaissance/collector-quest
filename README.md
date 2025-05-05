@@ -18,71 +18,67 @@ Lord Smearington's Absurd NFT Gallery is a whimsical platform where artists can 
 
 Follow the instructions below to run the project locally.
 
-╭────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+╭──────────────────────────────────────────────────────────────────────────────────────────────────────────╮
 │ Object Changes │
-├────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+├──────────────────────────────────────────────────────────────────────────────────────────────────────────┤
 │ Created Objects: │
 │ ┌── │
-│ │ ObjectID: 0x1782c816ba8524e3127001fc6c08dfa202dce730e8b95950835a1f950ed02ca7 │
-│ │ Sender: 0xddd99e2b3539abdfb553ad6b9513c780b13512120dba7658b688097b5b9d6d0d │
-│ │ Owner: Shared( 401311953 ) │
-│ │ ObjectType: 0x185a6bfad4ee36b772d89dbffd9213fb1cb61458832bcafcde9039c1ef3edbdb::handle::Registry │
-│ │ Version: 401311953 │
-│ │ Digest: HDhnhG8EuxCtsywRgstMNCq8boCt6BMr9zDqkSjYK12T │
-│ └── │
-│ ┌── │
-│ │ ObjectID: 0x2ac913affdbb6533f11bcf1a930e3b21e29fd5f15a80c02d7b4ce68f95509a8d │
+│ │ ObjectID: 0x8c3e56aaf92546c936e3baec182aa422e7e47201ea2723773383c84c7f75715b │
 │ │ Sender: 0xddd99e2b3539abdfb553ad6b9513c780b13512120dba7658b688097b5b9d6d0d │
 │ │ Owner: Account Address ( 0xddd99e2b3539abdfb553ad6b9513c780b13512120dba7658b688097b5b9d6d0d ) │
 │ │ ObjectType: 0x2::package::UpgradeCap │
-│ │ Version: 401311953 │
-│ │ Digest: 9NHndGbuBtByPEwZAaGtAyM2P38QpQqb39zKTJpjrhiK │
+│ │ Version: 349178564 │
+│ │ Digest: JH2JTWqCSeUEfZK8APoG9YVPBteTTYnQZjRMLbJ8ME7 │
 │ └── │
 │ ┌── │
-│ │ ObjectID: 0x96b3e5311a491efc2e5b5a689656b7eced17355bc1fb784a51b470684fe5620a │
+│ │ ObjectID: 0xeb2836897f90683c4284bd59bb8853d77e0a62f5dbaec8e3f811b22375af6fbc │
 │ │ Sender: 0xddd99e2b3539abdfb553ad6b9513c780b13512120dba7658b688097b5b9d6d0d │
-│ │ Owner: Shared( 401311953 ) │
-│ │ ObjectType: 0x185a6bfad4ee36b772d89dbffd9213fb1cb61458832bcafcde9039c1ef3edbdb::guardian::GuardianRegistry │
-│ │ Version: 401311953 │
-│ │ Digest: DrZqPF9EQ4D8TbCLTV1UwvgYBQkdMd3vntLHzmJV84uD │
-│ └── │
-│ ┌── │
-│ │ ObjectID: 0xabc4135d2e96bdf8a53b8edcc3839094c5baf40423aed407fda4b9ce09d7096f │
-│ │ Sender: 0xddd99e2b3539abdfb553ad6b9513c780b13512120dba7658b688097b5b9d6d0d │
-│ │ Owner: Shared( 401311953 ) │
-│ │ ObjectType: 0x185a6bfad4ee36b772d89dbffd9213fb1cb61458832bcafcde9039c1ef3edbdb::realm::RealmRegistry │
-│ │ Version: 401311953 │
-│ │ Digest: 6TaQsWZTuqc1n3aJL9gqoMkFWYJ7heNoinXA1fr536aH │
+│ │ Owner: Shared( 349178564 ) │
+│ │ ObjectType: 0xb5f89236a37a68972feb28099126b8533ec3e203c665ca99fa764d297631b55c::realm::RealmRegistry │
+│ │ Version: 349178564 │
+│ │ Digest: 7N9Psy9DiJVwgXqZUpdbTdRhBbG6DrWVj6NrEEHLYUUH │
 │ └── │
 │ Mutated Objects: │
 │ ┌── │
-│ │ ObjectID: 0x71a3f1ae8f344a53677845c2faaa684d691c357d08ed5939b29631afac391240 │
+│ │ ObjectID: 0x91af3226c7d77b8f04710b92310d4fbf8ae2334fb562db4f7717d8e3f79001b8 │
 │ │ Sender: 0xddd99e2b3539abdfb553ad6b9513c780b13512120dba7658b688097b5b9d6d0d │
 │ │ Owner: Account Address ( 0xddd99e2b3539abdfb553ad6b9513c780b13512120dba7658b688097b5b9d6d0d ) │
 │ │ ObjectType: 0x2::coin::Coin<0x2::sui::SUI> │
-│ │ Version: 401311953 │
-│ │ Digest: HaVZ6z2dM4MgDy9kYLswF6gxtDCTruXK5avkdf6YCNey │
+│ │ Version: 349178564 │
+│ │ Digest: 3WHfUaG8Uh1Tbc3VQnk1h5oMvaAtwkV2A2aGDBtcgUqs │
 │ └── │
 │ Published Objects: │
 │ ┌── │
-│ │ PackageID: 0x185a6bfad4ee36b772d89dbffd9213fb1cb61458832bcafcde9039c1ef3edbdb │
+│ │ PackageID: 0xb5f89236a37a68972feb28099126b8533ec3e203c665ca99fa764d297631b55c │
 │ │ Version: 1 │
-│ │ Digest: CSYUdpx1tSQ9RQrWjNK24skbahCc3qESsKdvgULY7ojV │
-│ │ Modules: guardian, handle, realm │
+│ │ Digest: BgezETUc3bjZXJM56Zpma4t4uk13F7sgQ7AnZXWy44ZM │
+│ │ Modules: handle, realm │
 │ └── │
-╰────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+╰──────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+╭───────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Balance Changes │
+├───────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ ┌── │
+│ │ Owner: Account Address ( 0xddd99e2b3539abdfb553ad6b9513c780b13512120dba7658b688097b5b9d6d0d ) │
+│ │ CoinType: 0x2::sui::SUI │
+│ │ Amount: -39047880 │
+│ └── │
+╰───────────────────────────────────────────────────────────────────────────────────────────────────╯
 
-## Important IDs
+## Important Contract Addresses
 
-### Package ID
-- **Package ID**: `0x185a6bfad4ee36b772d89dbffd9213fb1cb61458832bcafcde9039c1ef3edbdb`
+Based on the deployment output above, here are the key addresses to use in your application:
+
+### Package Information
+- **Package ID**: `0xb5f89236a37a68972feb28099126b8533ec3e203c665ca99fa764d297631b55c`
+- **Modules**: `handle`, `realm`
+- **Version**: 1
 
 ### Registry Objects
-- **Handle Registry ID**: `0x1782c816ba8524e3127001fc6c08dfa202dce730e8b95950835a1f950ed02ca7`
-- **Guardian Registry ID**: `0x96b3e5311a491efc2e5b5a689656b7eced17355bc1fb784a51b470684fe5620a`
-- **Realm Registry ID**: `0xabc4135d2e96bdf8a53b8edcc3839094c5baf40423aed407fda4b9ce09d7096f`
+- **Realm Registry ID**: `0xeb2836897f90683c4284bd59bb8853d77e0a62f5dbaec8e3f811b22375af6fbc`
+  - **Type**: `0xb5f89236a37a68972feb28099126b8533ec3e203c665ca99fa764d297631b55c::realm::RealmRegistry`
+  - **Owner**: Shared
+  
+### Update Configuration
+To use these addresses in your application, update the constants in `src/lib/realmActions.ts`:
 
-### Other Objects
-- **Upgrade Cap ID**: `0x2ac913affdbb6533f11bcf1a930e3b21e29fd5f15a80c02d7b4ce68f95509a8d`
-
-## Environment Variables for Client Applications

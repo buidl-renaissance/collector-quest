@@ -480,10 +480,10 @@ const InterdimensionalArtGallery: React.FC = () => {
                 <FeatureIcon>
                   <FaStar />
                 </FeatureIcon>
-                <FeatureTitle>Immersive Installations</FeatureTitle>
+                <FeatureTitle>Character Experiences</FeatureTitle>
                 <FeatureDescription>
-                  Physical spaces transformed by light, sound, and projection
-                  mapping to create environments that defy conventional reality.
+                  Interact with Lord Smearington and other characters as you
+                  navigate the gallery.
                 </FeatureDescription>
               </FeatureBox>
             </GridItem>
@@ -494,8 +494,8 @@ const InterdimensionalArtGallery: React.FC = () => {
                 </FeatureIcon>
                 <FeatureTitle>Interactive Experiences</FeatureTitle>
                 <FeatureDescription>
-                  Become part of the art through augmented reality elements that
-                  respond to your presence and movements.
+                  Play your part in the story as you navigate the gallery and
+                  build your own path through the void.
                 </FeatureDescription>
               </FeatureBox>
             </GridItem>
