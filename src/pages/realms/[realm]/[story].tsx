@@ -3,8 +3,9 @@ import { useRouter } from 'next/router';
 import styled from '@emotion/styled';
 import { GetServerSideProps } from 'next';
 import Link from 'next/link';
-import { FaArrowLeft } from 'react-icons/fa';
+import { FaArrowLeft, FaCrown } from 'react-icons/fa';
 import { useWallet } from '@suiet/wallet-kit';
+import { keyframes } from '@emotion/react';
 
 interface Story {
   id: string;
@@ -104,7 +105,10 @@ const StoryPage: React.FC<{ realmId: string; storyId: string }> = ({ realmId, st
   if (loading) {
     return (
       <Container>
-        <LoadingMessage>Loading story details...</LoadingMessage>
+        <LoadingMessage>
+          <CrownIcon><FaCrown /></CrownIcon>
+          Loading story details...
+        </LoadingMessage>
       </Container>
     );
   }
@@ -138,6 +142,9 @@ const StoryPage: React.FC<{ realmId: string; storyId: string }> = ({ realmId, st
       </BackLink>
       
       <StoryHeader>
+        <CrownDivider>
+          <FaCrown />
+        </CrownDivider>
         <StoryTitle>{story.title}</StoryTitle>
         <StoryDescription>{story.description}</StoryDescription>
       </StoryHeader>
@@ -177,53 +184,92 @@ const StoryPage: React.FC<{ realmId: string; storyId: string }> = ({ realmId, st
   );
 };
 
+// Animation keyframes
+const pulse = keyframes`
+  0% { transform: scale(1); box-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
+  50% { transform: scale(1.05); box-shadow: 0 0 20px rgba(255, 215, 0, 0.7); }
+  100% { transform: scale(1); box-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
+`;
+
+const glow = keyframes`
+  0% { box-shadow: 0 0 5px rgba(255, 215, 0, 0.5); }
+  50% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.8); }
+  100% { box-shadow: 0 0 5px rgba(255, 215, 0, 0.5); }
+`;
+
 const Container = styled.div`
   max-width: 1200px;
   margin: 0 auto;
   padding: 2rem;
+  font-family: 'Cormorant Garamond', serif;
 `;
 
 const LoadingMessage = styled.div`
   text-align: center;
-  font-size: 1.2rem;
+  font-size: 1.5rem;
+  color: #C7BFD4;
   margin: 3rem 0;
-  color: #636e72;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const CrownIcon = styled.span`
+  color: #FFD700;
+  font-size: 1.8rem;
+  margin-right: 1rem;
+  animation: ${pulse} 2s infinite ease-in-out;
+`;
+
+const CrownDivider = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 1.5rem 0;
+  color: #FFD700;
+  font-size: 1.5rem;
 `;
 
 const ErrorMessage = styled.div`
   text-align: center;
-  font-size: 1.2rem;
+  font-size: 1.5rem;
   margin: 3rem 0;
-  color: #d63031;
+  color: #FC67FA;
+  text-shadow: 0 0 10px rgba(252, 103, 250, 0.5);
 `;
 
 const BackLink = styled(Link)`
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  color: #6c5ce7;
+  color: #3B4C99;
   text-decoration: none;
-  font-weight: 500;
+  font-weight: 700;
   margin-bottom: 2rem;
+  font-family: 'Cormorant Garamond', serif;
   
   &:hover {
+    color: #5A3E85;
     text-decoration: underline;
   }
 `;
 
 const StoryHeader = styled.div`
   margin-bottom: 2rem;
+  text-align: center;
 `;
 
 const StoryTitle = styled.h1`
-  font-size: 2.5rem;
+  font-size: 3rem;
   margin-bottom: 0.5rem;
-  color: #2d3436;
+  color: #fff;
+  font-family: 'Cinzel Decorative', 'Playfair Display SC', serif;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
 `;
 
 const StoryDescription = styled.p`
   font-size: 1.2rem;
-  color: #636e72;
+  color: #C7BFD4;
   line-height: 1.6;
 `;
 
@@ -241,7 +287,8 @@ const VideoContainer = styled.div`
   width: 100%;
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  border: 2px solid #FFD700;
   
   @media (min-width: 768px) {
     grid-column: 1 / 3;
@@ -249,68 +296,84 @@ const VideoContainer = styled.div`
 `;
 
 const ScriptContainer = styled.div`
-  background-color: #f5f6fa;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
   padding: 1.5rem;
   border-radius: 12px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 215, 0, 0.3);
 `;
 
 const ScriptTitle = styled.h2`
-  font-size: 1.5rem;
+  font-size: 1.8rem;
   margin-bottom: 1rem;
-  color: #2d3436;
+  color: #FFD700;
+  font-family: 'Cinzel Decorative', 'Playfair Display SC', serif;
 `;
 
 const ScriptText = styled.p`
   font-size: 1.1rem;
   line-height: 1.8;
-  color: #2d3436;
+  color: #C7BFD4;
 `;
 
 const ResponseSection = styled.div`
-  background-color: #fff;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
   padding: 1.5rem;
   border-radius: 12px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-  border: 1px solid #dfe6e9;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 215, 0, 0.3);
 `;
 
 const ResponseTitle = styled.h2`
-  font-size: 1.5rem;
+  font-size: 1.8rem;
   margin-bottom: 1rem;
-  color: #2d3436;
+  color: #FFD700;
+  font-family: 'Cinzel Decorative', 'Playfair Display SC', serif;
 `;
 
 const ResponseTextarea = styled.textarea`
   width: 100%;
   padding: 1rem;
-  border: 1px solid #dfe6e9;
+  border: 1px solid #5A3E85;
   border-radius: 8px;
   font-size: 1rem;
-  font-family: inherit;
+  font-family: 'Cormorant Garamond', serif;
   resize: vertical;
   margin-bottom: 1rem;
+  background: rgba(255, 255, 255, 0.1);
+  color: #C7BFD4;
   
   &:focus {
     outline: none;
-    border-color: #6c5ce7;
-    box-shadow: 0 0 0 2px rgba(108, 92, 231, 0.2);
+    border-color: #FFD700;
+    box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.2);
   }
 `;
 
 const SubmitButton = styled.button`
-  padding: 0.75rem 1.5rem;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 500;
+  background: linear-gradient(135deg, #2A3A87, #481790);
+  color: white;
+  padding: 0.6rem 1rem;
+  border-radius: 4px;
+  font-weight: 700;
+  text-decoration: none;
+  text-align: center;
+  transition: all 0.3s ease;
+  border: 2px solid #FFD700;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 0.8rem;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  text-transform: uppercase;
+  display: inline-block;
   cursor: pointer;
-  transition: all 0.2s ease;
-  background-color: #6c5ce7;
-  color: #fff;
-  border: none;
   
   &:hover {
-    background-color: #5649c0;
+    transform: translateY(-5px);
+    background: #481790;
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.7);
+    color: #FFD700;
   }
 `;
 
