@@ -180,7 +180,7 @@ const wallet = useWallet();
           </InfoSection>
           
           <ActionButtons>
-            <ActionButton href={`/artworks`}>View Artworks</ActionButton>
+            <ActionButton href={`/gallery`}>View Gallery</ActionButton>
             {wallet.connected && (
               <ActionButton href={`/submit`} primary>Submit Artwork</ActionButton>
             )}
