@@ -8,11 +8,8 @@ import { keyframes } from "@emotion/react";
 import { UploadMedia } from "@/components/UploadMedia";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const { realm } = context.params || {};
-
   return {
     props: {
-      realmId: realm,
       metadata: {
         title: `Create Story | Lord Smearington's Absurd NFT Gallery`,
         description: "Create a new interactive story for this realm.",
@@ -55,7 +52,7 @@ const CreateStoryPage: React.FC = () => {
     try {
       const response = await fetch("/api/story", {
         method: "POST",
-        body: JSON.stringify({ title, description, videoUrl, script }),
+        body: JSON.stringify({ realmId: "lord-smearington", title, description, videoUrl, script }),
       });
       const data = await response.json();
 
