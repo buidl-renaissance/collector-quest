@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import styled from 'styled-components';
-import UploadButton from './UploadButton';
+import styled from '@emotion/styled';
+import { UploadButton } from './UploadButton';
 
 interface UploadMediaProps {
   onUploadComplete?: (url: string) => void;
@@ -32,6 +32,13 @@ const PreviewImage = styled.img`
   border-radius: 4px;
 `;
 
+const PreviewVideo = styled.video`
+  max-width: 100%;
+  max-height: 300px;
+  object-fit: cover;
+  border-radius: 4px;
+`;
+
 const ErrorMessage = styled.p`
   color: #FF3366;
   font-size: 0.875rem;
@@ -54,7 +61,10 @@ export const UploadMedia: React.FC<UploadMediaProps> = ({
 }) => {
   const [preview, setPreview] = useState<string | null>(mediaUrl || null);
   const [error, setError] = useState<string | null>(null);
-  const [isUploading] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [mediaType, setMediaType] = useState<'image' | 'video'>(
+    accept.includes('video') ? 'video' : 'image'
+  );
 
   const handleUploadComplete = async (url: string) => {
     setPreview(url);
@@ -70,10 +80,10 @@ export const UploadMedia: React.FC<UploadMediaProps> = ({
     <UploadContainer>
       <UploadButton 
         onUploadComplete={handleUploadComplete}
+        onUploadError={handleError}
         accept={accept}
         maxSize={maxSize}
         label={label}
-        onUploadError={handleError}
       />
       
       {isUploading && (
@@ -86,7 +96,14 @@ export const UploadMedia: React.FC<UploadMediaProps> = ({
       
       {preview && !isUploading && (
         <PreviewContainer>
-          <PreviewImage src={preview} alt="Preview" />
+          {mediaType === 'image' ? (
+            <PreviewImage src={preview} alt="Preview" />
+          ) : (
+            <PreviewVideo controls autoPlay muted loop>
+              <source src={preview} type="video/mp4" />
+              Your browser does not support the video tag.
+            </PreviewVideo>
+          )}
         </PreviewContainer>
       )}
     </UploadContainer>

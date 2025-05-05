@@ -251,3 +251,19 @@ export interface Artifact {
   }[];
 }
 
+export interface Story {
+  id: string;
+  title: string;
+  description: string;
+  videoUrl: string;
+  script: string;
+  realmId: string;
+  createdAt: string;
+}
+
+export interface StoryResponse {
+  id: string;
+  storyId: string;
+  response: string;
+  createdAt: string;
+}

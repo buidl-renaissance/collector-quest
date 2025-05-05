@@ -1,5 +1,5 @@
 import knex, { Knex } from 'knex';
-import { Rsvp } from './interfaces';
+import { Rsvp, Story } from './interfaces';
 
 // Create a singleton instance of Knex
 let db: Knex;
@@ -68,6 +68,61 @@ export async function getTimeSlots() {
     };
   } catch (error) {
     console.error('Error fetching time slots:', error);
+    return { success: false, error };
+  }
+}
+
+/**
+ * Get a story by its ID
+ */
+export async function getStoryById(id: string) {
+  try {
+    const story = await db('stories')
+      .select('*')
+      .where('id', id)
+      .first();
+    
+    return { success: true, data: story };
+  } catch (error) {
+    console.error('Error fetching story:', error);
+    return { success: false, error };
+  }
+}
+
+/**
+ * Create a new story
+ */
+export async function createStory(data: Story) {
+  try {
+    const result = await db('stories').insert({
+      id: data.id,
+      title: data.title,
+      description: data.description,
+      videoUrl: data.videoUrl,
+      script: data.script,
+      realmId: data.realmId,
+      createdAt: data.createdAt
+    }).returning('*');
+    
+    return { success: true, data: result[0] };
+  } catch (error) {
+    console.error('Error creating story:', error);
+    return { success: false, error };
+  }
+}
+
+/**
+ * Get all stories
+ */
+export async function getAllStories() {
+  try {
+    const stories = await db('stories')
+      .select('*')
+      .orderBy('createdAt', 'desc');
+    
+    return { success: true, data: stories };
+  } catch (error) {
+    console.error('Error fetching stories:', error);
     return { success: false, error };
   }
 }

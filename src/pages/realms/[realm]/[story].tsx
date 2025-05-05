@@ -6,16 +6,7 @@ import Link from 'next/link';
 import { FaArrowLeft, FaCrown } from 'react-icons/fa';
 import { useWallet } from '@suiet/wallet-kit';
 import { keyframes } from '@emotion/react';
-
-interface Story {
-  id: string;
-  title: string;
-  description: string;
-  videoUrl: string;
-  script: string;
-  realmId: string;
-  createdAt: string;
-}
+import { Story } from '@/lib/interfaces';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const { realm, story } = context.params || {};
