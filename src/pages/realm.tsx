@@ -8,6 +8,10 @@ import {
   FaPalette,
   FaMapMarkerAlt,
   FaBookOpen,
+  FaInfoCircle,
+  FaCog,
+  FaUser,
+  FaUsers,
 } from "react-icons/fa";
 import { useWallet } from "@suiet/wallet-kit";
 import { keyframes } from "@emotion/react";
@@ -156,7 +160,9 @@ const RealmDetailPage: React.FC = () => {
         <RealmInfo>
           <InfoSection>
             <SectionTitle>
-              <SectionTitleGlow>Description</SectionTitleGlow>
+              <SectionTitleGlow>
+                Description
+              </SectionTitleGlow>
             </SectionTitle>
             <Description>{realm.description}</Description>
           </InfoSection>
@@ -165,7 +171,7 @@ const RealmDetailPage: React.FC = () => {
             <InfoSection>
               <SectionTitle>
                 <SectionTitleGlow>
-                  <FaMapMarkerAlt /> Location
+                  <FaMapMarkerAlt /> <span>Location</span>
                 </SectionTitleGlow>
               </SectionTitle>
               <InfoText>{realm.location}</InfoText>
@@ -174,7 +180,9 @@ const RealmDetailPage: React.FC = () => {
 
           <InfoSection>
             <SectionTitle>
-              <SectionTitleGlow>Realm Settings</SectionTitleGlow>
+              <SectionTitleGlow>
+                <FaCog /> <span>Realm Settings</span>
+              </SectionTitleGlow>
             </SectionTitle>
             <SettingItem>
               <SettingLabel>Invitation Only:</SettingLabel>
@@ -190,7 +198,9 @@ const RealmDetailPage: React.FC = () => {
 
           <InfoSection>
             <SectionTitle>
-              <SectionTitleGlow>Guardians</SectionTitleGlow>
+              <SectionTitleGlow>
+                <FaUsers /> <span>Guardians</span>
+              </SectionTitleGlow>
             </SectionTitle>
             <GuardiansList>
               {realm.guardians.map((guardian, index) => (
@@ -202,7 +212,7 @@ const RealmDetailPage: React.FC = () => {
           <InfoSection>
             <SectionTitle>
               <SectionTitleGlow>
-                <FaBookOpen /> Stories
+                <FaBookOpen /> <span>Stories</span>
               </SectionTitleGlow>
             </SectionTitle>
             <StoriesGrid>
@@ -211,7 +221,7 @@ const RealmDetailPage: React.FC = () => {
               ))}
             </StoriesGrid>
             <CreateStoryLink href="/create-story">
-              <FaCrown /> Create New Story
+              <FaCrown /> <span>Create New Story</span>
             </CreateStoryLink>
           </InfoSection>
 
@@ -272,7 +282,7 @@ const Container = styled.div`
   padding: 1rem;
   position: relative;
   z-index: 2;
-  
+
   @media (min-width: 768px) {
     padding: 2rem;
   }
@@ -314,7 +324,7 @@ const CrownDivider = styled.div`
   margin: 1rem 0;
   color: #ffd700;
   font-size: 1.5rem;
-  
+
   @media (min-width: 768px) {
     margin: 1.5rem 0;
   }
@@ -328,7 +338,7 @@ const LoadingMessage = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  
+
   @media (min-width: 768px) {
     font-size: 1.5rem;
     margin: 3rem 0;
@@ -341,7 +351,7 @@ const ErrorMessage = styled.div`
   color: #fc67fa;
   margin: 2rem 0;
   text-shadow: 0 0 10px rgba(252, 103, 250, 0.5);
-  
+
   @media (min-width: 768px) {
     font-size: 1.5rem;
     margin: 3rem 0;
@@ -353,7 +363,7 @@ const RealmHeader = styled.div`
   flex-direction: column;
   align-items: center;
   margin-bottom: 1.5rem;
-  
+
   @media (min-width: 768px) {
     margin-bottom: 2rem;
   }
@@ -391,7 +401,7 @@ const RealmTitle = styled.h1`
   color: #fff;
   font-family: "Cinzel Decorative", "Playfair Display SC", serif;
   text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
-  
+
   @media (min-width: 768px) {
     font-size: 3rem;
   }
@@ -404,7 +414,7 @@ const RealmInfo = styled.div`
   padding: 1.25rem;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
   border: 1px solid rgba(255, 215, 0, 0.3);
-  
+
   @media (min-width: 768px) {
     padding: 2rem;
   }
@@ -432,7 +442,7 @@ const SectionTitle = styled.h2`
   margin: 0 0 0.75rem 0;
   color: #ffd700;
   font-family: "Cinzel Decorative", "Playfair Display SC", serif;
-  
+
   @media (min-width: 768px) {
     font-size: 1.8rem;
     margin: 0 0 1rem 0;
@@ -440,9 +450,14 @@ const SectionTitle = styled.h2`
 `;
 
 const SectionTitleGlow = styled.span`
-  display: inline-block;
+  display: inline-flex;
   position: relative;
-
+  align-items: center;
+  span {
+    display: inline-block;
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+  }
   &:after {
     content: "";
     position: absolute;
@@ -458,7 +473,7 @@ const Description = styled.p`
   font-size: 1rem;
   line-height: 1.6;
   color: #c7bfd4;
-  
+
   @media (min-width: 768px) {
     font-size: 1.2rem;
     line-height: 1.8;
@@ -469,7 +484,7 @@ const InfoText = styled.p`
   font-size: 1rem;
   color: #c7bfd4;
   margin: 0;
-  
+
   @media (min-width: 768px) {
     font-size: 1.2rem;
   }
@@ -480,7 +495,7 @@ const SettingItem = styled.div`
   margin-bottom: 0.8rem;
   font-size: 1rem;
   flex-direction: column;
-  
+
   @media (min-width: 768px) {
     flex-direction: row;
     font-size: 1.1rem;
@@ -512,7 +527,7 @@ const GuardianItem = styled.li`
   padding-left: 1rem;
   margin-bottom: 0.5rem;
   word-break: break-all;
-  
+
   @media (min-width: 768px) {
     font-size: 1rem;
   }
@@ -523,11 +538,11 @@ const StoriesGrid = styled.div`
   grid-template-columns: 1fr;
   gap: 1rem;
   margin-bottom: 1.5rem;
-  
+
   @media (min-width: 480px) {
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   }
-  
+
   @media (min-width: 768px) {
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 1.5rem;
@@ -548,7 +563,12 @@ const CreateStoryLink = styled(Link)`
   transition: all 0.3s ease;
   margin-top: 1rem;
   font-size: 0.9rem;
-  
+  span {
+    display: inline-block;
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+  }
+
   @media (min-width: 768px) {
     font-size: 1rem;
   }
@@ -564,12 +584,12 @@ const ActionButtons = styled.div`
   gap: 0.75rem;
   margin-top: 1.5rem;
   flex-direction: column;
-  
+
   @media (min-width: 480px) {
     flex-direction: row;
     flex-wrap: wrap;
   }
-  
+
   @media (min-width: 768px) {
     gap: 1rem;
     margin-top: 2rem;
@@ -599,7 +619,7 @@ const ActionButton = styled(Link)<ActionButtonProps>`
   text-transform: uppercase;
   letter-spacing: 1px;
   width: 100%;
-  
+
   @media (min-width: 480px) {
     width: auto;
     font-size: 1rem;

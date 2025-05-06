@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import styled from "@emotion/styled";
 import { GetServerSideProps } from "next";
@@ -188,7 +188,7 @@ const float = keyframes`
 const Container = styled.div`
   max-width: 800px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 2rem 1rem;
   font-family: "Cormorant Garamond", serif;
   background: linear-gradient(
     135deg,
@@ -196,6 +196,10 @@ const Container = styled.div`
     rgba(90, 62, 133, 0.1)
   );
   position: relative;
+
+  @media (max-width: 768px) {
+    padding: 1.5rem 1rem;
+  }
 
   &::before {
     content: "";
@@ -220,6 +224,11 @@ const BackLink = styled(Link)`
   font-size: 1.1rem;
   transition: color 0.3s ease, transform 0.3s ease;
 
+  @media (max-width: 768px) {
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
   &:hover {
     color: #ffd700;
     transform: translateX(-5px);
@@ -239,6 +248,11 @@ const PageTitle = styled.h1`
   text-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
   position: relative;
 
+  @media (max-width: 768px) {
+    font-size: 2.2rem;
+    margin-bottom: 2rem;
+  }
+
   &::after {
     content: "";
     position: absolute;
@@ -248,6 +262,11 @@ const PageTitle = styled.h1`
     width: 150px;
     height: 3px;
     background: linear-gradient(90deg, transparent, #ffd700, transparent);
+
+    @media (max-width: 768px) {
+      width: 100px;
+      bottom: -10px;
+    }
   }
 `;
 
@@ -261,6 +280,11 @@ const FormContainer = styled.div`
   margin-bottom: 2.5rem;
   position: relative;
   overflow: hidden;
+
+  @media (max-width: 768px) {
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+  }
 
   &::before {
     content: "";
@@ -277,6 +301,10 @@ const Form = styled.form`
   display: flex;
   flex-direction: column;
   gap: 1.8rem;
+
+  @media (max-width: 768px) {
+    gap: 1.5rem;
+  }
 `;
 
 const FormGroup = styled.div`
@@ -292,6 +320,11 @@ const Label = styled.label`
   letter-spacing: 0.5px;
   display: flex;
   align-items: center;
+
+  @media (max-width: 768px) {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+  }
 
   &::before {
     content: "✦";
@@ -310,6 +343,11 @@ const Input = styled.input`
   background: rgba(255, 255, 255, 0.07);
   color: #c7bfd4;
   transition: all 0.3s ease;
+
+  @media (max-width: 768px) {
+    padding: 0.8rem;
+    font-size: 1rem;
+  }
 
   &:focus {
     outline: none;
@@ -334,6 +372,12 @@ const Textarea = styled.textarea`
   color: #c7bfd4;
   transition: all 0.3s ease;
   min-height: 100px;
+
+  @media (max-width: 768px) {
+    padding: 0.8rem;
+    font-size: 1rem;
+    min-height: 80px;
+  }
 
   &:focus {
     outline: none;
@@ -369,6 +413,12 @@ const SubmitButton = styled.button`
   margin-top: 1rem;
   position: relative;
   overflow: hidden;
+
+  @media (max-width: 768px) {
+    padding: 0.8rem 1.5rem;
+    font-size: 1.1rem;
+    width: 100%;
+  }
 
   &::before {
     content: "";
@@ -409,6 +459,10 @@ const SubmitButton = styled.button`
   svg {
     font-size: 1.3rem;
     animation: ${float} 3s ease-in-out infinite;
+
+    @media (max-width: 768px) {
+      font-size: 1.1rem;
+    }
   }
 `;
 
@@ -422,6 +476,12 @@ const ErrorMessage = styled.div`
   text-align: center;
   font-size: 1.1rem;
   position: relative;
+
+  @media (max-width: 768px) {
+    padding: 1rem;
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+  }
 
   &::before {
     content: "!";
@@ -449,6 +509,11 @@ const CrownDivider = styled.div`
   color: #ffd700;
   font-size: 1.8rem;
   position: relative;
+
+  @media (max-width: 768px) {
+    margin: 2rem 0;
+    font-size: 1.5rem;
+  }
 
   &::before,
   &::after {
@@ -480,6 +545,10 @@ const StoryGuidelines = styled.div`
   position: relative;
   overflow: hidden;
 
+  @media (max-width: 768px) {
+    padding: 1.5rem;
+  }
+
   &::before {
     content: "";
     position: absolute;
@@ -500,6 +569,11 @@ const GuidelinesTitle = styled.h2`
   text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
   position: relative;
 
+  @media (max-width: 768px) {
+    font-size: 1.6rem;
+    margin-bottom: 1.2rem;
+  }
+
   &::after {
     content: "";
     position: absolute;
@@ -509,6 +583,11 @@ const GuidelinesTitle = styled.h2`
     width: 100px;
     height: 2px;
     background: linear-gradient(90deg, transparent, #ffd700, transparent);
+
+    @media (max-width: 768px) {
+      width: 80px;
+      bottom: -8px;
+    }
   }
 `;
 
@@ -516,6 +595,10 @@ const GuidelinesList = styled.ul`
   list-style-type: none;
   padding: 0;
   margin-top: 2rem;
+
+  @media (max-width: 768px) {
+    margin-top: 1.5rem;
+  }
 `;
 
 const GuidelineItem = styled.li`
@@ -526,12 +609,23 @@ const GuidelineItem = styled.li`
   font-size: 1.2rem;
   line-height: 1.6;
 
+  @media (max-width: 768px) {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    padding-left: 1.5rem;
+    line-height: 1.5;
+  }
+
   &:before {
     content: "✦";
     position: absolute;
     left: 0;
     color: #ffd700;
     font-size: 1.1rem;
+
+    @media (max-width: 768px) {
+      font-size: 1rem;
+    }
   }
 
   &:last-child {
