@@ -40,7 +40,17 @@ const questBeginsStory = {
     "Welcome, brave soul, to Lord Smearington's Gallery of the Absurd. Before you embark on this journey through realms of imagination and wonder, you must first forge your identity. Who will you be in this land of artistic chaos? A curious explorer? A skeptical critic? Or perhaps a fellow creator seeking inspiration?\n\nDefine your character, and let your choices guide your experience through the twisted corridors and magnificent exhibits that await you in this interdimensional gallery.",
 };
 
-const data = questBeginsStory;
+const theAbsurdAwaitsStory = {
+  title: "The Gallery of the Absurd",
+  description: "You have found the gallery of the absurd, enter if you dare",
+  slug: "gallery-of-the-absurd",
+  videoUrl:
+    "https://dpop.nyc3.digitaloceanspaces.com/uploads/YWKVNNmedKCYVKfVgf2wVpGt5wl2gGr6k80QWcd7.mp4",
+  script:
+    "Congratulations, intrepid wanderer. You have discovered the entrance to Lord Smearington's Gallery of the Absurd. Beyond this threshold lies a realm where reality bends and imagination reigns supreme. The exhibits within defy explanation, challenge perception, and may forever alter your understanding of art itself. Do you possess the courage to step inside? The bizarre wonders await, but be warned - those who enter may never see the world the same way again. Enter if you dare, curious soul, and prepare to be transformed.",
+};
+
+const data = theAbsurdAwaitsStory;
 
 
 const CreateStoryPage: React.FC = () => {
