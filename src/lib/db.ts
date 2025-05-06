@@ -90,6 +90,23 @@ export async function getStoryById(id: string) {
 }
 
 /**
+ * Get a story by its slug
+ */
+export async function getStoryBySlug(slug: string) {
+  try {
+    const story = await db('stories')
+      .select('*')
+      .where('slug', slug)
+      .first();
+    
+    return { success: true, data: story };
+  } catch (error) {
+    console.error('Error fetching story:', error);
+    return { success: false, error };
+  }
+}
+
+/**
  * Create a new story
  */
 export async function createStory(data: Story) {

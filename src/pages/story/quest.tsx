@@ -8,18 +8,17 @@ import { useWallet } from '@suiet/wallet-kit';
 import { keyframes } from '@emotion/react';
 import { Story as StoryInterface } from '@/lib/interfaces';
 import Story from '@/components/Story';
+import BuildCharacter from '@/components/BuildCharacter';
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const { story } = context.params || {};
-  
+export const getServerSideProps: GetServerSideProps = async (context) => {  
   return {
     props: {
-      storyId: story,
+      storyId: 'quest',
       metadata: {
         title: `Story | Lord Smearington's Absurd NFT Gallery`,
         description: "Experience an interactive story in this unique realm.",
         image: "/images/story-banner.jpg",
-        url: `https://smearington.theethical.ai/story/${story}`,
+        url: `https://smearington.theethical.ai/story/quest`,
       },
     },
   };
@@ -56,35 +55,6 @@ const StoryPage: React.FC<{ storyId: string }> = ({ storyId }) => {
       fetchStoryDetails();
     }
   }, [storyId]);
-
-  const handleResponseChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setResponse(e.target.value);
-  };
-
-  const handleSubmitResponse = async () => {
-    if (!response.trim()) {
-      return;
-    }
-
-    if (!wallet.connected) {
-      alert('Please connect your wallet to respond to this story');
-      return;
-    }
-
-    try {
-      // In a real implementation, this would submit the response to your API or blockchain
-      console.log('Submitting response:', response);
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      alert('Your response has been recorded!');
-      setResponse('');
-    } catch (err) {
-      console.error('Error submitting response:', err);
-      alert('Failed to submit your response. Please try again.');
-    }
-  };
 
   if (loading) {
     return (
@@ -126,18 +96,7 @@ const StoryPage: React.FC<{ storyId: string }> = ({ storyId }) => {
       </BackLink>
       
       <Story story={story}>
-        <ResponseSection>
-          <ResponseTitle>Your Response</ResponseTitle>
-          <ResponseTextarea 
-            value={response}
-            onChange={handleResponseChange}
-            placeholder="How would you respond to this story?"
-            rows={5}
-          />
-          <SubmitButton onClick={handleSubmitResponse}>
-            Submit Response
-          </SubmitButton>
-        </ResponseSection>
+        <BuildCharacter />
       </Story>
     </Container>
   );

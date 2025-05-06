@@ -99,7 +99,7 @@ export const UploadMedia: React.FC<UploadMediaProps> = ({
           {mediaType === 'image' ? (
             <PreviewImage src={preview} alt="Preview" />
           ) : (
-            <PreviewVideo controls autoPlay muted loop>
+            <PreviewVideo autoPlay muted loop playsInline>
               <source src={preview} type="video/mp4" />
               Your browser does not support the video tag.
             </PreviewVideo>

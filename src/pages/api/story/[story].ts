@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { getStoryById } from '@/lib/db';
+import { getStoryBySlug } from '@/lib/db';
 
 export default async function handler(
   req: NextApiRequest,
@@ -15,7 +15,7 @@ export default async function handler(
       }
 
       // Get the story from the database
-      const result = await getStoryById(story);
+      const result = await getStoryBySlug(story);
       
       if (!result.success) {
         return res.status(500).json({ error: 'Failed to fetch story' });

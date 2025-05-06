@@ -7,21 +7,24 @@ export default async function handler(
 ) {
   if (req.method === 'POST') {
     try {
-      const { title, description, videoUrl, script, realmId } = JSON.parse(req.body);
+      const { title, description, videoUrl, script, realmId, defaultSlug } = JSON.parse(req.body);
 
       // Validate required fields
       if (!title || !description || !videoUrl || !script || !realmId) {
         return res.status(400).json({ error: 'Missing required fields' });
       }
 
+      const slug = defaultSlug ? defaultSlug : title.toLowerCase().replace(/ /g, '-');
+
       // Create the story in the database
       const [createdStory] = await knex('stories')
         .insert({
           title,
+          slug,
           description,
           videoUrl,
           script,
-          realmId
+          realmId,
         })
         .returning('*');
 

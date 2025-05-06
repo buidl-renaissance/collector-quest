@@ -7,6 +7,7 @@ exports.up = function (knex) {
     .createTable("stories", function (table) {
       table.increments("id").primary();
       table.string("title").notNullable();
+      table.string("slug").notNullable();
       table.text("description").notNullable();
       table.string("videoUrl").notNullable();
       table.text("script").notNullable();
