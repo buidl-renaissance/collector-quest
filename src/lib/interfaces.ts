@@ -253,6 +253,7 @@ export interface Artifact {
 
 export interface Story {
   id: string;
+  slug: string;
   title: string;
   description: string;
   videoUrl: string;

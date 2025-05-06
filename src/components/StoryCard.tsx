@@ -9,7 +9,7 @@ interface StoryCardProps {
 
 const StoryCard: React.FC<StoryCardProps> = ({ story }) => {
   return (
-    <StoryCardWrapper href={`/story/${story.id}`}>
+    <StoryCardWrapper href={`/story/${story.slug}`}>
       <StoryCardContent>
         <StoryTitle>{story.title}</StoryTitle>
         <StoryDescription>{story.description}</StoryDescription>
