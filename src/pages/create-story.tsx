@@ -21,12 +21,12 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 };
 
 const data = {
-  title: "Lord Smearington Welcomes You to the Land of the Absurd",
-  description: "An invitation to the immersive art gallery experience.",
+  title: "Welcome to Lord Smearington's Gallery of the Absurd",
+  description: "Your quest begins here. Start by creating your character.",
   videoUrl:
     "https://dpop.nyc3.digitaloceanspaces.com/uploads/Md7C9BhGVsFplhuUbKGT8qVZHRimd6JcK7a7hzgh.mp4",
   script:
-    "Mortals and cosmic entities alike, I, Lord Smearington, invite you to traverse the boundaries of reality at my Inter-dimensional Art Gallery. Opening Saturday, May 17th, 2025, the veil between worlds will thin, allowing glimpses into realms beyond human comprehension.\n\nThis is not merely an exhibition but a journey through the absurd landscapes of my mind, where digital art, physical installations, and interactive experiences collide in a symphony of beautiful chaos.",
+    "Welcome, brave soul, to Lord Smearington's Gallery of the Absurd. Before you embark on this journey through realms of imagination and wonder, you must first forge your identity. Who will you be in this land of artistic chaos? A curious explorer? A skeptical critic? Or perhaps a fellow creator seeking inspiration?\n\nDefine your character, and let your choices guide your experience through the twisted corridors and magnificent exhibits that await you in this interdimensional gallery.",
 };
 
 const CreateStoryPage: React.FC = () => {
