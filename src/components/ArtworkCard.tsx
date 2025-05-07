@@ -1,7 +1,7 @@
 import { Artwork } from "@/lib/interfaces";
 import styled from "@emotion/styled";
 import { FaShoppingCart } from "react-icons/fa";
-
+import { convertTilesToResized } from "@/lib/image";
 type ArtworkCardProps = {
   artwork: Artwork;
   openArtworkModal: (artwork: Artwork) => void;
@@ -17,7 +17,7 @@ export const ArtworkCard = ({
       onClick={() => openArtworkModal(artwork)}
     >
       <ArtworkImageContainer>
-        <ArtworkImage src={artwork.data.image} alt={artwork.title} />
+        <ArtworkImage src={convertTilesToResized(artwork.data.image || '')} alt={artwork.title} />
         {artwork.data.is_for_sale && (
           <ForSaleBadge>
             <FaShoppingCart /> For Sale
