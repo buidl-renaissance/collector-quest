@@ -5,6 +5,7 @@ export interface Race {
     image?: string;
     description?: string;
     accessory?: string;
+    isGeneratingImage?: boolean;
 }
 
 export const coreRaces: Race[] = [

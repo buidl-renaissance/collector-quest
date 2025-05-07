@@ -7,15 +7,20 @@ import Link from "next/link";
 import { GetServerSideProps } from "next";
 import { Race, coreRaces, expandedRaces } from "@/data/races";
 import { GetServerSidePropsContext } from "next";
-import { getRaceById } from "@/db/races";
+import { getRaceById, saveRace } from "@/db/races";
+import { uploadImage, generateImage } from "@/lib/image";
 
-export const getServerSideProps = async (context: GetServerSidePropsContext) => {
+export const getServerSideProps = async (
+  context: GetServerSidePropsContext
+) => {
   const race = context.params?.race as string;
-  
+
   let raceData = await getRaceById(race);
 
   if (!raceData) {
-    raceData = coreRaces.find((r) => r.id === race) || expandedRaces.find((r) => r.id === race) as Race;
+    raceData =
+      coreRaces.find((r) => r.id === race) ||
+      (expandedRaces.find((r) => r.id === race) as Race);
   }
 
   if (!raceData) {
@@ -46,9 +51,11 @@ const CharacterImagesPage: React.FC<CharacterImagesPageProps> = ({ race }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [generatedImage, setGeneratedImage] = useState(race.image || "");
-  const [prompt, setPrompt] = useState(`${race.name}, a ${race.description}, replace the staff with a ${race.accessory}`);
+  const [prompt, setPrompt] = useState(
+    `${race.name}, a ${race.description}, replace the staff with a ${race.accessory}`
+  );
 
-  const generateImage = async () => {
+  const handleGenerateImage = async () => {
     if (!prompt) {
       setError("Please enter a description for your character");
       return;
@@ -58,23 +65,11 @@ const CharacterImagesPage: React.FC<CharacterImagesPageProps> = ({ race }) => {
     setError("");
 
     try {
-      const response = await fetch("/api/ai/generate-image", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ prompt, image: race.image }),
-      });
-
-      if (!response.ok) {
+      const image = await generateImage(prompt, generatedImage);
+      if (!image) {
         throw new Error("Failed to generate image");
       }
-
-      const data = await response.json();
-      const image = `data:image/png;base64,${data.b64_json}`;
-      setGeneratedImage(image);
-
-      const imageData = await uploadImage(image);
+      const imageData = await uploadRaceImage(image);
       console.log(imageData);
       setGeneratedImage(imageData.url);
     } catch (err) {
@@ -85,26 +80,13 @@ const CharacterImagesPage: React.FC<CharacterImagesPageProps> = ({ race }) => {
     }
   };
 
-  const uploadImage = async (image: string) => {
-    const response = await fetch("/api/image-upload", {
-      method: "POST",
-      body: JSON.stringify({ image }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error("Failed to upload image");
-    }
-
-    const data = await response.json();
-    console.log(data);
+  const uploadRaceImage = async (image: string) => {
+    const data = await uploadImage(image);
     setGeneratedImage(data.url);
     return data;
   };
 
-  const saveImage = async () => {
+  const handleSaveRace = async () => {
     if (!generatedImage) {
       setError("Please generate an image first");
       return;
@@ -114,54 +96,39 @@ const CharacterImagesPage: React.FC<CharacterImagesPageProps> = ({ race }) => {
     setError("");
 
     try {
-      // Save both the race info and the generated image
-      const response = await fetch("/api/races", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          id: race.id,
-          name: race.name,
-          source: race.source,
-          description: race.description,
-          image: generatedImage
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to save race and image");
-      }
-
+      race.image = generatedImage;
+      await saveRace(race);
       // Redirect to next step or character profile
       router.push("/character/race/admin");
     } catch (err) {
       console.error("Error saving race and image:", err);
-      setError("Failed to save your character race and image. Please try again.");
+      setError(
+        "Failed to save your character race and image. Please try again."
+      );
       setLoading(false);
     }
   };
 
-//   if (loading) {
-//     return (
-//       <Container>
-//         <LoadingMessage>
-//           <CrownIcon><FaCrown /></CrownIcon>
-//           {generatedImage ? "Saving your character image..." : "Generating your character image..."}
-//         </LoadingMessage>
-//       </Container>
-//     );
-//   }
+  //   if (loading) {
+  //     return (
+  //       <Container>
+  //         <LoadingMessage>
+  //           <CrownIcon><FaCrown /></CrownIcon>
+  //           {generatedImage ? "Saving your character image..." : "Generating your character image..."}
+  //         </LoadingMessage>
+  //       </Container>
+  //     );
+  //   }
 
   return (
     <Container>
       <BackLink href="/character/race">
         <FaArrowLeft /> Back to Character Creation
       </BackLink>
-      
+
       <Title>Character Image Generator</Title>
       <Subtitle>Bring your character to life with a unique image</Subtitle>
-      
+
       {error && <ErrorMessage>{error}</ErrorMessage>}
 
       <RaceDescription>
@@ -169,35 +136,41 @@ const CharacterImagesPage: React.FC<CharacterImagesPageProps> = ({ race }) => {
         <RaceSource>{race.source}</RaceSource>
         <RaceDescriptionText>{race.description}</RaceDescriptionText>
       </RaceDescription>
-      
+
       <GeneratorSection>
         <PromptInput
           placeholder="Describe your character in detail (appearance, clothing, pose, background, etc.)"
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
         />
-        
-        <GenerateButton onClick={generateImage} disabled={loading || !prompt}>
+
+        <GenerateButton
+          onClick={handleGenerateImage}
+          disabled={loading || !prompt}
+        >
           <FaImage /> Generate Image
         </GenerateButton>
-        
+
         {generatedImage && (
           <ImagePreviewContainer>
             <ImagePreview src={generatedImage} alt="Generated character" />
-            <SaveButton onClick={saveImage}>
-              Save
-            </SaveButton>
+            <SaveButton onClick={handleSaveRace}>Save</SaveButton>
           </ImagePreviewContainer>
         )}
       </GeneratorSection>
-      
+
       <Tips>
         <TipsTitle>Tips for great results:</TipsTitle>
         <TipsList>
-          <TipsItem>Be specific about physical features (hair color, eye color, skin tone)</TipsItem>
+          <TipsItem>
+            Be specific about physical features (hair color, eye color, skin
+            tone)
+          </TipsItem>
           <TipsItem>Describe clothing and accessories in detail</TipsItem>
           <TipsItem>Mention the character&apos;s pose and expression</TipsItem>
-          <TipsItem>Include background elements that reflect your character&apos;s story</TipsItem>
+          <TipsItem>
+            Include background elements that reflect your character&apos;s story
+          </TipsItem>
         </TipsList>
       </Tips>
     </Container>
@@ -213,7 +186,7 @@ const Container = styled.div`
   max-width: 800px;
   margin: 0 auto;
   padding: 2rem;
-  font-family: 'Cormorant Garamond', serif;
+  font-family: "Cormorant Garamond", serif;
   animation: ${fadeIn} 0.5s ease-in;
 `;
 
@@ -224,7 +197,7 @@ const BackLink = styled(Link)`
   color: #bb8930;
   text-decoration: none;
   transition: color 0.3s;
-  
+
   &:hover {
     color: #d4a959;
   }
@@ -239,7 +212,7 @@ const Title = styled.h1`
 
 const Subtitle = styled.p`
   font-size: 1.2rem;
-  color: #C7BFD4;
+  color: #c7bfd4;
   margin-bottom: 2rem;
   text-align: center;
 `;
@@ -256,7 +229,7 @@ const ErrorMessage = styled.div`
 const LoadingMessage = styled.div`
   text-align: center;
   font-size: 1.2rem;
-  color: #C7BFD4;
+  color: #c7bfd4;
   margin: 2rem 0;
   display: flex;
   align-items: center;
@@ -287,18 +260,15 @@ const RaceName = styled.h2`
 
 const RaceSource = styled.p`
   font-size: 1rem;
-  color: #C7BFD4;
+  color: #c7bfd4;
   margin-bottom: 0.5rem;
 `;
 
 const RaceDescriptionText = styled.p`
   font-size: 1rem;
-  color: #C7BFD4;
+  color: #c7bfd4;
   margin-bottom: 0.5rem;
 `;
-
-
-
 
 const PromptInput = styled.textarea`
   width: 100%;
@@ -309,13 +279,13 @@ const PromptInput = styled.textarea`
   border: 1px solid #bb8930;
   border-radius: 4px;
   color: #e6e6e6;
-  font-family: 'Cormorant Garamond', serif;
+  font-family: "Cormorant Garamond", serif;
   resize: vertical;
-  
+
   &::placeholder {
     color: rgba(199, 191, 212, 0.5);
   }
-  
+
   &:focus {
     outline: none;
     border-color: #d4a959;
@@ -336,11 +306,11 @@ const GenerateButton = styled.button`
   font-weight: bold;
   cursor: pointer;
   transition: background 0.3s;
-  
+
   &:hover {
     background: #d4a959;
   }
-  
+
   &:disabled {
     background: #6c5a30;
     cursor: not-allowed;
@@ -372,7 +342,7 @@ const SaveButton = styled.button`
   font-weight: bold;
   cursor: pointer;
   transition: background 0.3s;
-  
+
   &:hover {
     background: #388e3c;
   }
@@ -396,7 +366,7 @@ const TipsList = styled.ul`
 `;
 
 const TipsItem = styled.li`
-  color: #C7BFD4;
+  color: #c7bfd4;
   margin-bottom: 0.5rem;
 `;
 

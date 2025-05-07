@@ -7,6 +7,8 @@ import { keyframes } from "@emotion/react";
 import { FaArrowLeft, FaCrown, FaEdit, FaTrash, FaPlus, FaImage } from "react-icons/fa";
 import { coreRaces, expandedRaces, Race } from "@/data/races";
 import { getAllRaces } from "@/db/races";
+import { saveRace } from "@/lib/character";
+import { generateImage, uploadImage } from "@/lib/image";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   // Fetch races from API or database
@@ -60,6 +62,47 @@ const AdminPage: React.FC<AdminPageProps> = ({ races: initialRaces }) => {
     router.push(`/character/race/${raceId}/modify`);
   };
 
+  const handleGenerateImages = async () => {
+    setLoading(true);
+    setError("");
+    
+    try {
+      // Process races in sequence to avoid overwhelming the API
+      for (const race of races) {
+        if (!race.image) {
+          console.log(`Generating image for ${race.name}...`);
+          
+          // Generate the image
+          const image = await generateImage(`${race.name}, a ${race.description}`, race.image);
+          if (!image) {
+            throw new Error(`Failed to generate image for ${race.name}`);
+          }
+          
+          // Upload the generated image
+          const imageData = await uploadImage(image);
+          
+          // Update race with new image URL
+          const updatedRace = { ...race, image: imageData.url };
+          
+          // Save the race to the database
+          await saveRace(updatedRace);
+          
+          // Update the race in the local state
+          setRaces(prevRaces => 
+            prevRaces.map(r => r.id === race.id ? updatedRace : r)
+          );
+        }
+      }
+      
+      console.log("All images generated successfully");
+    } catch (err) {
+      console.error("Error generating images:", err);
+      setError("Failed to generate images. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleDeleteRace = async (raceId: string) => {
     if (!confirm("Are you sure you want to delete this race?")) {
       return;
@@ -91,10 +134,6 @@ const AdminPage: React.FC<AdminPageProps> = ({ races: initialRaces }) => {
     router.push("/character/race/new");
   };
 
-  const handleGenerateImage = (raceId: string) => {
-    router.push(`/character/race/${raceId}/modify`);
-  };
-
   if (loading) {
     return (
       <Container>
@@ -120,6 +159,10 @@ const AdminPage: React.FC<AdminPageProps> = ({ races: initialRaces }) => {
       <ActionButton onClick={handleCreateRace}>
         <FaPlus /> Create New Race
       </ActionButton>
+
+      <ActionButton onClick={handleGenerateImages}>
+        <FaImage /> Generate Images
+      </ActionButton>
       
       <RacesList>
         {races.length === 0 ? (
@@ -143,9 +186,9 @@ const AdminPage: React.FC<AdminPageProps> = ({ races: initialRaces }) => {
                 <ActionButton onClick={() => handleEditRace(race.id)}>
                   <FaEdit /> Edit
                 </ActionButton>
-                {!race.image && (
-                  <ActionButton onClick={() => handleGenerateImage(race.id)}>
-                    <FaImage /> Generate Image
+                {race.isGeneratingImage && (
+                  <ActionButton>
+                    <FaImage /> Generating Image
                   </ActionButton>
                 )}
                 <DeleteButton onClick={() => handleDeleteRace(race.id)}>

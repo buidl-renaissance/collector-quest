@@ -143,19 +143,6 @@ const Container = styled.div`
   padding-bottom: 80px; /* Make room for the footer */
 `;
 
-const BackLink = styled(Link)`
-  display: inline-flex;
-  align-items: center;
-  margin-bottom: 2rem;
-  color: #bb8930;
-  text-decoration: none;
-  transition: color 0.3s;
-  
-  &:hover {
-    color: #d4a959;
-  }
-`;
-
 const Title = styled.h1`
   font-size: 2.5rem;
   color: #bb8930;
@@ -254,97 +241,6 @@ const NextButton = styled.button`
   
   &:hover {
     background-color: #d4a959;
-  }
-`;
-
-const ImageGeneratorSection = styled.div`
-  margin: 2rem 0;
-  padding: 1.5rem;
-  background-color: rgba(187, 137, 48, 0.1);
-  border-radius: 8px;
-`;
-
-const SectionTitle = styled.h3`
-  color: #bb8930;
-  margin-bottom: 1rem;
-  font-size: 1.5rem;
-`;
-
-const ImagePromptInput = styled.input`
-  width: 100%;
-  padding: 0.8rem;
-  margin-bottom: 1rem;
-  border: 1px solid #bb8930;
-  border-radius: 4px;
-  background-color: rgba(0, 0, 0, 0.2);
-  color: #C7BFD4;
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 1rem;
-  
-  &:focus {
-    outline: none;
-    border-color: #d4a959;
-    box-shadow: 0 0 0 2px rgba(212, 169, 89, 0.2);
-  }
-`;
-
-const GenerateImageButton = styled.button`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  padding: 0.8rem 1.5rem;
-  background-color: #bb8930;
-  color: #1a1a2e;
-  border: none;
-  border-radius: 4px;
-  font-family: 'Cormorant Garamond', serif;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background-color 0.3s;
-  
-  &:hover {
-    background-color: #d4a959;
-  }
-  
-  &:disabled {
-    background-color: #6c5a30;
-    cursor: not-allowed;
-  }
-`;
-
-const CharacterImagePreview = styled.div`
-  margin: 2rem 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-`;
-
-const CharacterPortrait = styled.img`
-  max-width: 300px;
-  max-height: 400px;
-  border: 3px solid #bb8930;
-  border-radius: 8px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-`;
-
-const ChangeImageButton = styled.button`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  margin-top: 1rem;
-  padding: 0.6rem 1.2rem;
-  background-color: rgba(187, 137, 48, 0.2);
-  color: #bb8930;
-  border: 1px solid #bb8930;
-  border-radius: 4px;
-  font-family: 'Cormorant Garamond', serif;
-  cursor: pointer;
-  transition: all 0.3s;
-  
-  &:hover {
-    background-color: rgba(187, 137, 48, 0.3);
   }
 `;
 

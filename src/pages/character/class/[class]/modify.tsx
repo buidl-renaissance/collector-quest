@@ -5,22 +5,11 @@ import { keyframes } from '@emotion/react';
 import { FaArrowLeft, FaPlus, FaTrash, FaSave, FaTimes } from 'react-icons/fa';
 import { useAuth } from '../../../../hooks/useAuth';
 import { getClassById } from '@/db/classes';
-import { characterClasses } from '@/data/classes';
+import { characterClasses, CharacterClass, CharacterClassAbility } from '@/data/classes';
 
-interface CharacterClass {
-  id: string;
-  name: string;
-  description: string;
-  tags: string[];
-  abilities: {
-    name: string;
-    description: string;
-    level: number;
-  }[];
-  image?: string;
-}
 
-export async function getServerSideProps({ params }) {
+
+export async function getServerSideProps({ params }: { params: { class: string } }) {
   const classId = params.class;
   try {
     // First try to get from database
@@ -61,7 +50,15 @@ export async function getServerSideProps({ params }) {
   }
 }
 
-export default function CharacterClassModify({ characterClass: initialClass, fromDatabase, error: serverError }) {
+export default function CharacterClassModify({ 
+  characterClass: initialClass, 
+  fromDatabase, 
+  error: serverError 
+}: { 
+  characterClass: CharacterClass, 
+  fromDatabase: boolean, 
+  error?: string 
+}) {
   const router = useRouter();
   const { isAdmin } = useAuth();
   const [loading, setLoading] = useState(false);
@@ -76,7 +73,7 @@ export default function CharacterClassModify({ characterClass: initialClass, fro
     abilities: [],
   });
   const [newTag, setNewTag] = useState('');
-  const [newAbility, setNewAbility] = useState({
+  const [newAbility, setNewAbility] = useState<CharacterClassAbility>({
     name: '',
     description: '',
     level: 1,
@@ -118,28 +115,13 @@ export default function CharacterClassModify({ characterClass: initialClass, fro
     }
   };
 
-  const handleAddTag = () => {
-    if (newTag && !characterClass.tags.includes(newTag)) {
-      setCharacterClass({
-        ...characterClass,
-        tags: [...characterClass.tags, newTag],
-      });
-      setNewTag('');
-    }
-  };
-
-  const handleRemoveTag = (tagToRemove: string) => {
-    setCharacterClass({
-      ...characterClass,
-      tags: characterClass.tags.filter((tag: string) => tag !== tagToRemove),
-    });
-  };
-
   const handleAddAbility = () => {
     if (newAbility.name && newAbility.description) {
       setCharacterClass({
         ...characterClass,
-        abilities: [...characterClass.abilities, { ...newAbility }],
+        abilities: Array.isArray(characterClass.abilities) 
+          ? [...characterClass.abilities, { ...newAbility }]
+          : [{ ...newAbility }],
       });
       setNewAbility({
         name: '',
@@ -200,34 +182,6 @@ export default function CharacterClassModify({ characterClass: initialClass, fro
               placeholder="Describe this character class"
             />
           </FormField>
-
-          <FormSection>
-            <SectionTitle>Tags</SectionTitle>
-            <TagsContainer>
-              {characterClass.tags.map((tag: string) => (
-                <Tag key={tag}>
-                  {tag}
-                  <TagDeleteButton onClick={() => handleRemoveTag(tag)}>
-                    <FaTrash />
-                  </TagDeleteButton>
-                </Tag>
-              ))}
-            </TagsContainer>
-            <TagInputRow>
-              <Input
-                value={newTag}
-                onChange={(e) => setNewTag(e.target.value)}
-                placeholder="New tag"
-                style={{ flex: 1 }}
-              />
-              <AddButton
-                onClick={handleAddTag}
-                disabled={!newTag}
-              >
-                <FaPlus /> Add Tag
-              </AddButton>
-            </TagInputRow>
-          </FormSection>
 
           <FormSection>
             <SectionTitle>Abilities</SectionTitle>
@@ -319,6 +273,10 @@ const Container = styled.div`
   margin: 0 auto;
   padding: 2rem 1rem;
   animation: ${fadeIn} 0.3s ease-in;
+  background-color: #f8f3e6;
+  background-image: url('/textures/parchment.png');
+  font-family: 'EB Garamond', serif;
+  color: #3a2606;
 `;
 
 const LoadingContainer = styled.div`
@@ -326,6 +284,8 @@ const LoadingContainer = styled.div`
   justify-content: center;
   align-items: center;
   min-height: 60vh;
+  background-color: #f8f3e6;
+  background-image: url('/textures/parchment.png');
 `;
 
 const Spinner = styled.div<{ small?: boolean }>`
@@ -338,17 +298,22 @@ const Spinner = styled.div<{ small?: boolean }>`
 `;
 
 const Title = styled.h1`
-  font-size: 2rem;
+  font-size: 2.5rem;
   margin-bottom: 1.5rem;
-  color: #333;
+  color: #b6551c;
+  font-family: 'Cinzel', serif;
+  font-weight: 700;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+  letter-spacing: 0.05em;
 `;
 
 const FormPaper = styled.div`
-  background: white;
+  background: #fffaed;
   border-radius: 8px;
   padding: 2rem;
   margin-bottom: 2rem;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  border: 1px solid #d9c8a0;
 `;
 
 const FormStack = styled.div`
@@ -364,15 +329,19 @@ const FormField = styled.div`
 `;
 
 const Label = styled.label`
-  font-weight: 500;
-  color: #555;
+  font-weight: 600;
+  color: #3a2606;
+  font-size: 1.1rem;
 `;
 
 const Input = styled.input`
   padding: 0.75rem;
-  border: 1px solid #ddd;
+  border: 1px solid #d9c8a0;
   border-radius: 4px;
   font-size: 1rem;
+  font-family: 'EB Garamond', serif;
+  background-color: #fffdf7;
+  color: #3a2606;
   
   &:focus {
     outline: none;
@@ -383,10 +352,13 @@ const Input = styled.input`
 
 const TextArea = styled.textarea`
   padding: 0.75rem;
-  border: 1px solid #ddd;
+  border: 1px solid #d9c8a0;
   border-radius: 4px;
   font-size: 1rem;
   resize: vertical;
+  font-family: 'EB Garamond', serif;
+  background-color: #fffdf7;
+  color: #3a2606;
   
   &:focus {
     outline: none;
@@ -402,9 +374,13 @@ const FormSection = styled.div`
 `;
 
 const SectionTitle = styled.h2`
-  font-size: 1.25rem;
-  color: #333;
+  font-size: 1.5rem;
+  color: #b6551c;
   margin-bottom: 0.5rem;
+  font-family: 'Cinzel', serif;
+  font-weight: 600;
+  border-bottom: 2px solid #d9c8a0;
+  padding-bottom: 0.5rem;
 `;
 
 const TagsContainer = styled.div`
@@ -416,23 +392,25 @@ const TagsContainer = styled.div`
 const Tag = styled.div`
   display: flex;
   align-items: center;
-  background: #f0f0f0;
+  background: #e9dfc3;
   padding: 0.5rem 0.75rem;
   border-radius: 16px;
   font-size: 0.875rem;
+  color: #3a2606;
+  border: 1px solid #d9c8a0;
 `;
 
 const TagDeleteButton = styled.button`
   background: none;
   border: none;
-  color: #888;
+  color: #4a3f30;
   cursor: pointer;
   margin-left: 0.5rem;
   padding: 0;
   font-size: 0.75rem;
   
   &:hover {
-    color: #d32f2f;
+    color: #9f3515;
   }
 `;
 
@@ -451,10 +429,11 @@ const AbilityCard = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #f9f9f9;
+  background: #f0e9d6;
   border-radius: 6px;
   padding: 1rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  border: 1px solid #d9c8a0;
 `;
 
 const AbilityContent = styled.div`
@@ -462,32 +441,35 @@ const AbilityContent = styled.div`
 `;
 
 const AbilityName = styled.h3`
-  font-size: 1.1rem;
+  font-size: 1.2rem;
   margin: 0 0 0.5rem 0;
-  color: #333;
+  color: #b6551c;
+  font-family: 'Cinzel', serif;
+  font-weight: 600;
 `;
 
 const AbilityDescription = styled.p`
-  font-size: 0.9rem;
-  color: #666;
+  font-size: 1rem;
+  color: #3a2606;
   margin: 0 0 0.5rem 0;
+  line-height: 1.4;
 `;
 
 const AbilityLevel = styled.span`
-  font-size: 0.8rem;
-  color: #888;
+  font-size: 0.9rem;
+  color: #4a3f30;
   font-style: italic;
 `;
 
 const DeleteButton = styled.button`
   background: none;
   border: none;
-  color: #888;
+  color: #4a3f30;
   cursor: pointer;
   padding: 0.5rem;
   
   &:hover {
-    color: #d32f2f;
+    color: #9f3515;
   }
 `;
 
@@ -497,7 +479,7 @@ const AbilityForm = styled.div`
   gap: 1rem;
   margin-top: 1rem;
   padding-top: 1rem;
-  border-top: 1px solid #eee;
+  border-top: 1px solid #d9c8a0;
 `;
 
 const ButtonRow = styled.div`
@@ -515,6 +497,8 @@ const Button = styled.button`
   font-size: 1rem;
   cursor: pointer;
   transition: all 0.2s;
+  font-family: 'Cinzel', serif;
+  font-weight: 600;
   
   &:disabled {
     opacity: 0.6;
@@ -523,12 +507,12 @@ const Button = styled.button`
 `;
 
 const AddButton = styled(Button)`
-  background: #4caf50;
+  background: #1b3a54;
   color: white;
   border: none;
   
   &:hover:not(:disabled) {
-    background: #388e3c;
+    background: #142c40;
   }
 `;
 
@@ -538,17 +522,17 @@ const SaveButton = styled(Button)`
   border: none;
   
   &:hover:not(:disabled) {
-    background: #e6a93b;
+    background: #9f7428;
   }
 `;
 
 const CancelButton = styled(Button)`
-  background: white;
-  color: #666;
-  border: 1px solid #ddd;
+  background: #f0e9d6;
+  color: #3a2606;
+  border: 1px solid #d9c8a0;
   
   &:hover:not(:disabled) {
-    background: #f5f5f5;
+    background: #e9dfc3;
   }
 `;
 
@@ -557,16 +541,17 @@ const Alert = styled.div`
   border-radius: 4px;
   margin-bottom: 1rem;
   animation: ${fadeIn} 0.3s ease-in;
+  font-family: 'EB Garamond', serif;
 `;
 
 const ErrorAlert = styled(Alert)`
-  background-color: #ffebee;
-  color: #c62828;
-  border-left: 4px solid #c62828;
+  background-color: #f8e7e7;
+  color: #9f3515;
+  border-left: 4px solid #9f3515;
 `;
 
 const SuccessAlert = styled(Alert)`
-  background-color: #e8f5e9;
-  color: #2e7d32;
-  border-left: 4px solid #2e7d32;
+  background-color: #e8f0e7;
+  color: #3a5a28;
+  border-left: 4px solid #3a5a28;
 `;
