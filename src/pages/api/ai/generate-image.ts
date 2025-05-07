@@ -21,8 +21,9 @@ export default async function handler(
       return res.status(400).json({ error: "Prompt is required" });
     }
 
+
     let imageFile: File = new File([], "image.png", { type: "image/png" });
-    const maskPath = "public/images/mask.png";
+    const maskPath = "images/mask.png";
     const maskBuffer = fs.readFileSync(maskPath);
     const mask = new File([maskBuffer], "mask.png", { type: "image/png" });
 
@@ -42,7 +43,7 @@ export default async function handler(
       }
     } else {
       // Use default image if no image is provided
-      const imagePath = "public/images/COLLECTOR-quest-intro-1024.png";
+      const imagePath = "images/COLLECTOR-quest-intro-1024.png";
       const imageBuffer = fs.readFileSync(imagePath);
       imageFile = new File([imageBuffer], "image.png", { type: "image/png" });
     }

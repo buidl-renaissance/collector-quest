@@ -9,6 +9,7 @@ exports.up = function(knex) {
     table.string('source').notNullable();
     table.text('image');
     table.text('description');
+    table.text('accessory');
     table.timestamps(true, true);
   });
 };
@@ -20,3 +21,4 @@ exports.up = function(knex) {
 exports.down = function(knex) {
   return knex.schema.dropTable('races');
 };
+
