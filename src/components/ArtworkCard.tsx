@@ -2,6 +2,7 @@ import { Artwork } from "@/lib/interfaces";
 import styled from "@emotion/styled";
 import { FaShoppingCart } from "react-icons/fa";
 import { convertTilesToResized } from "@/lib/image";
+
 type ArtworkCardProps = {
   artwork: Artwork;
   openArtworkModal: (artwork: Artwork) => void;
