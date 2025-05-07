@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import styled from '@emotion/styled';
 import { keyframes } from '@emotion/react';
-import { FaCrown, FaUserAlt, FaCheck } from 'react-icons/fa';
+import { FaCrown, FaUserAlt, FaCheck, FaArrowRight } from 'react-icons/fa';
 
-interface Character {
+export interface Character {
   name: string;
   archetype: string;
   traits: string[];

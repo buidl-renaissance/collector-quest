@@ -8,7 +8,7 @@ import { useWallet } from '@suiet/wallet-kit';
 import { keyframes } from '@emotion/react';
 import { Story as StoryInterface } from '@/lib/interfaces';
 import Story from '@/components/Story';
-import BuildCharacter from '@/components/BuildCharacter';
+import BuildCharacter, { Character } from '@/components/BuildCharacter';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {  
   return {
@@ -56,6 +56,11 @@ const StoryPage: React.FC<{ storyId: string }> = ({ storyId }) => {
     }
   }, [storyId]);
 
+  const handleCharacterCreated = (character: Character) => {
+    console.log('Character created:', character);
+    router.push('/explore');
+  };
+
   if (loading) {
     return (
       <Container>
@@ -96,7 +101,7 @@ const StoryPage: React.FC<{ storyId: string }> = ({ storyId }) => {
       </BackLink>
       
       <Story story={story}>
-        <BuildCharacter />
+        <BuildCharacter onCharacterCreated={handleCharacterCreated} />
       </Story>
     </Container>
   );

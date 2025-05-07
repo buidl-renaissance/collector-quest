@@ -43,7 +43,7 @@ const theAbsurdAwaitsStory = {
 const questBeginsStory = {
   title: "Welcome to Lord Smearington's Gallery of the Absurd",
   description: "Your quest begins here. Start by creating your character.",
-  slug: "your-quest-begins",
+  slug: "quest",
   videoUrl:
     "https://dpop.nyc3.digitaloceanspaces.com/uploads/YWKVNNmedKCYVKfVgf2wVpGt5wl2gGr6k80QWcd7.mp4",
   script:
