@@ -183,10 +183,10 @@ const VideoLoadingOverlay = styled.div`
   background-size: cover;
   background-position: center;
   z-index: 10;
-  opacity: 0.5;
+  opacity: 0.25;
   max-height: 200px;
 
-  @media (min-width: 768px) {
+  @media (max-width: 768px) {
     max-height: auto;
   }
 `;
