@@ -7,9 +7,9 @@ import Link from "next/link";
 import { GetServerSideProps } from "next";
 import { Race, coreRaces, expandedRaces } from "@/data/races";
 import { GetServerSidePropsContext } from "next";
-import { getRaceById, saveRace } from "@/db/races";
+import { getRaceById } from "@/db/races";
 import { uploadImage, generateImage } from "@/lib/image";
-
+import { saveRace } from "@/lib/character";
 export const getServerSideProps = async (
   context: GetServerSidePropsContext
 ) => {
