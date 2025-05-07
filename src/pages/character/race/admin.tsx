@@ -73,7 +73,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ races: initialRaces }) => {
           console.log(`Generating image for ${race.name}...`);
           
           // Generate the image
-          const image = await generateImage(`${race.name}, a ${race.description}`, race.image);
+          const image = await generateImage(`${race.name}, a ${race.description}, replace the staff with a ${race.accessory}`, race.image);
           if (!image) {
             throw new Error(`Failed to generate image for ${race.name}`);
           }
