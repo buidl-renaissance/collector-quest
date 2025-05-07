@@ -4,12 +4,12 @@ import styled from "@emotion/styled";
 import { keyframes } from "@emotion/react";
 import { FaArrowLeft, FaCrown, FaImage } from "react-icons/fa";
 import Link from "next/link";
-import { GetServerSideProps } from "next";
 import { Race, coreRaces, expandedRaces } from "@/data/races";
 import { GetServerSidePropsContext } from "next";
 import { getRaceById } from "@/db/races";
 import { uploadImage, generateImage } from "@/lib/image";
 import { saveRace } from "@/lib/character";
+
 export const getServerSideProps = async (
   context: GetServerSidePropsContext
 ) => {
