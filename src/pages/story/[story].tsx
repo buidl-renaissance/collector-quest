@@ -8,6 +8,8 @@ import { useWallet } from '@suiet/wallet-kit';
 import { keyframes } from '@emotion/react';
 import { Story as StoryInterface } from '@/lib/interfaces';
 import Story from '@/components/Story';
+import { ArtworkCard } from '@/components/ArtworkCard';
+import ArtworkGrid from '@/components/ArtworkGrid';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const { story } = context.params || {};
@@ -32,7 +34,7 @@ const StoryPage: React.FC<{ storyId: string }> = ({ storyId }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [response, setResponse] = useState('');
-
+  const [artwork, setArtwork] = useState<any[]>([]);
   useEffect(() => {
     const fetchStoryDetails = async () => {
       try {
@@ -43,6 +45,14 @@ const StoryPage: React.FC<{ storyId: string }> = ({ storyId }) => {
         
         // Mock data
         setStory(storyData);
+
+        if (storyData.artwork) {
+          fetch(`https://api.detroiter.network/api/artwork?ids=${storyData.artwork}`)
+            .then(res => res.json())
+            .then(result => {
+              setArtwork(result.data);
+            });
+        }
         
         setLoading(false);
       } catch (err) {
@@ -126,6 +136,14 @@ const StoryPage: React.FC<{ storyId: string }> = ({ storyId }) => {
       </BackLink>
       
       <Story story={story}>
+
+        {artwork.length > 0 && (
+          <ArtworkSection>  
+            <ArtworkTitle>Featured Artwork</ArtworkTitle>
+            <ArtworkGrid artworks={artwork} orientation="vertical" />
+          </ArtworkSection>
+        )}
+
         <ResponseSection>
           <ResponseTitle>Your Response</ResponseTitle>
           <ResponseTextarea 
@@ -165,6 +183,17 @@ const Container = styled.div`
   @media (min-width: 768px) {
     padding: 2rem;
   }
+`;
+
+const ArtworkSection = styled.div`
+  margin-bottom: 2rem;
+`;
+
+const ArtworkTitle = styled.h2`
+  font-size: 1.5rem;
+  margin-bottom: 0.75rem;
+  color: #FFD700;
+  margin-bottom: 1.5rem;
 `;
 
 const LoadingMessage = styled.div`

@@ -45,6 +45,7 @@ const Story: React.FC<StoryProps> = ({ story, children }) => {
         </ScriptContainer>
         
         {children}
+
       </ContentSection>
     </StoryContainer>
   );

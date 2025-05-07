@@ -22,7 +22,7 @@ const StoryCard: React.FC<StoryCardProps> = ({ story }) => {
 const StoryCardWrapper = styled(Link)`
   text-decoration: none;
   color: inherit;
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(28, 28, 28, 0.2);
   border-radius: 8px;
   overflow: hidden;
   transition: all 0.3s ease;

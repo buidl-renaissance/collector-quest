@@ -259,6 +259,7 @@ export interface Story {
   videoUrl: string;
   script: string;
   realmId: string;
+  artwork: string;
   createdAt: string;
 }
 

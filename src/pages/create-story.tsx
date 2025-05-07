@@ -30,6 +30,16 @@ const welcomeStory = {
     "Mortals and cosmic entities alike, I, Lord Smearington, invite you to traverse the boundaries of reality at my Inter-dimensional Art Gallery. Opening Saturday, May 17th, 2025, the veil between worlds will thin, allowing glimpses into realms beyond human comprehension.\n\nThis is not merely an exhibition but a journey through the absurd landscapes of my mind, where digital art, physical installations, and interactive experiences collide in a symphony of beautiful chaos.",
 };
 
+const theAbsurdAwaitsStory = {
+  title: "The Gallery of the Absurd",
+  description: "You have found the gallery of the absurd, enter if you dare",
+  slug: "gallery-of-the-absurd",
+  videoUrl:
+    "https://dpop.nyc3.digitaloceanspaces.com/uploads/4CooIY6wjYnOJ839CWXwFB1c7L4F6YiSLhPtADHA.mp4",
+  script:
+    "Congratulations, intrepid wanderer. You have discovered the entrance to Lord Smearington's Gallery of the Absurd. Beyond this threshold lies a realm where reality bends and imagination reigns supreme. The exhibits within defy explanation, challenge perception, and may forever alter your understanding of art itself. Do you possess the courage to step inside? The bizarre wonders await, but be warned - those who enter may never see the world the same way again. Enter if you dare, curious soul, and prepare to be transformed.",
+};
+
 const questBeginsStory = {
   title: "Welcome to Lord Smearington's Gallery of the Absurd",
   description: "Your quest begins here. Start by creating your character.",
@@ -40,17 +50,7 @@ const questBeginsStory = {
     "Welcome, brave soul, to Lord Smearington's Gallery of the Absurd. Before you embark on this journey through realms of imagination and wonder, you must first forge your identity. Who will you be in this land of artistic chaos? A curious explorer? A skeptical critic? Or perhaps a fellow creator seeking inspiration?\n\nDefine your character, and let your choices guide your experience through the twisted corridors and magnificent exhibits that await you in this interdimensional gallery.",
 };
 
-const theAbsurdAwaitsStory = {
-  title: "The Gallery of the Absurd",
-  description: "You have found the gallery of the absurd, enter if you dare",
-  slug: "gallery-of-the-absurd",
-  videoUrl:
-    "https://dpop.nyc3.digitaloceanspaces.com/uploads/YWKVNNmedKCYVKfVgf2wVpGt5wl2gGr6k80QWcd7.mp4",
-  script:
-    "Congratulations, intrepid wanderer. You have discovered the entrance to Lord Smearington's Gallery of the Absurd. Beyond this threshold lies a realm where reality bends and imagination reigns supreme. The exhibits within defy explanation, challenge perception, and may forever alter your understanding of art itself. Do you possess the courage to step inside? The bizarre wonders await, but be warned - those who enter may never see the world the same way again. Enter if you dare, curious soul, and prepare to be transformed.",
-};
-
-const data = theAbsurdAwaitsStory;
+const data = questBeginsStory;
 
 
 const CreateStoryPage: React.FC = () => {
@@ -101,7 +101,7 @@ const CreateStoryPage: React.FC = () => {
         <FaArrowLeft /> Back to Realm
       </BackLink>
 
-      <PageTitle>Create a New Story</PageTitle>
+      <PageTitle>Create a Story</PageTitle>
 
       <FormContainer>
         {error && <ErrorMessage>{error}</ErrorMessage>}

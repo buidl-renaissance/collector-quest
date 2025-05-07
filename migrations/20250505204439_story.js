@@ -12,6 +12,7 @@ exports.up = function (knex) {
       table.string("videoUrl").notNullable();
       table.text("script").notNullable();
       table.string("realmId").notNullable();
+      table.string("artwork").notNullable();
       table.timestamp("createdAt").defaultTo(knex.fn.now());
     })
     .createTable("story_responses", function (table) {
