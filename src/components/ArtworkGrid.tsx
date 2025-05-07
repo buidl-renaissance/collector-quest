@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from '@emotion/styled';
 import { Artwork } from '@/lib/interfaces';
 import { ArtworkCard } from './ArtworkCard';
+import ModalContainer from './ModalContainer';
+import ArtworkFullDisplay from './ArtworkFullDisplay';
 
 interface ArtworkGridProps {
   artworks: Artwork[];
@@ -14,6 +16,9 @@ const ArtworkGrid: React.FC<ArtworkGridProps> = ({
   orientation = 'vertical',
   openArtworkModal: propOpenArtworkModal,
 }) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedArtwork, setSelectedArtwork] = useState<Artwork | null>(null);
+
   if (!artworks || artworks.length === 0) {
     return <EmptyMessage>No artwork available to display.</EmptyMessage>;
   }
@@ -22,8 +27,25 @@ const ArtworkGrid: React.FC<ArtworkGridProps> = ({
     if (propOpenArtworkModal) {
       propOpenArtworkModal(artwork);
     } else {
-      console.log(artwork);
+      setSelectedArtwork(artwork);
+      setIsModalOpen(true);
     }
+  }
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  }
+
+  const navigateToNextArtwork = () => { 
+    const currentIndex = artworks.findIndex(a => a.id === selectedArtwork?.id);
+    const nextIndex = (currentIndex + 1) % artworks.length;
+    setSelectedArtwork(artworks[nextIndex]);
+  }
+
+  const navigateToPreviousArtwork = () => {
+    const currentIndex = artworks.findIndex(a => a.id === selectedArtwork?.id);
+    const previousIndex = (currentIndex - 1 + artworks.length) % artworks.length;
+    setSelectedArtwork(artworks[previousIndex]);
   }
 
   return (
@@ -37,6 +59,20 @@ const ArtworkGrid: React.FC<ArtworkGridProps> = ({
           />
         ))}
       </ScrollableContent>
+      {isModalOpen && selectedArtwork && (
+        <ModalContainer
+          onClose={closeModal}
+          onNext={navigateToNextArtwork}
+          onPrevious={navigateToPreviousArtwork}
+          showNavigation={true}
+        >
+          <ArtworkFullDisplay
+            artwork={selectedArtwork}
+            onClose={closeModal}
+            onPurchase={() => {}}
+          />
+        </ModalContainer>
+      )}
     </GridContainer>
   );
 };
