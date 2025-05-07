@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from '@emotion/styled';
 import { keyframes } from '@emotion/react';
-import { FaCrown } from 'react-icons/fa';
+import { FaCrown, FaSpinner } from 'react-icons/fa';
 import { Story as StoryInterface } from '@/lib/interfaces';
 
 interface StoryProps {
@@ -10,9 +10,15 @@ interface StoryProps {
 }
 
 const Story: React.FC<StoryProps> = ({ story, children }) => {
+  const [isVideoLoading, setIsVideoLoading] = useState(true);
+
   if (!story) {
     return <ErrorMessage>Story not found</ErrorMessage>;
   }
+
+  const handleVideoLoaded = () => {
+    setIsVideoLoading(false);
+  };
 
   return (
     <StoryContainer>
@@ -26,6 +32,14 @@ const Story: React.FC<StoryProps> = ({ story, children }) => {
       
       <ContentSection>
         <VideoContainer>
+          {isVideoLoading && (
+            <VideoLoadingOverlay>
+              <LoadingSpinner>
+                <FaSpinner />
+              </LoadingSpinner>
+              <LoadingText>Loading video...</LoadingText>
+            </VideoLoadingOverlay>
+          )}
           <video 
             width="100%" 
             poster="/images/lord-smearington.jpg"
@@ -34,6 +48,7 @@ const Story: React.FC<StoryProps> = ({ story, children }) => {
             loop
             muted
             playsInline
+            onLoadedData={handleVideoLoaded}
           >
             Your browser does not support the video tag.
           </video>
@@ -56,6 +71,11 @@ const pulse = keyframes`
   0% { transform: scale(1); box-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
   50% { transform: scale(1.05); box-shadow: 0 0 20px rgba(255, 215, 0, 0.7); }
   100% { transform: scale(1); box-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
+`;
+
+const spin = keyframes`
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 `;
 
 const StoryContainer = styled.div`
@@ -141,11 +161,47 @@ const VideoContainer = styled.div`
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
   border: 2px solid #FFD700;
   grid-column: 1;
+  position: relative;
   
   @media (min-width: 768px) {
     border-radius: 12px;
     grid-column: 1 / 3;
   }
+`;
+
+const VideoLoadingOverlay = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-image: url('/images/lord-smearington.jpg');
+  background-size: cover;
+  background-position: center;
+  z-index: 10;
+  opacity: 0.5;
+  max-height: 200px;
+
+  @media (min-width: 768px) {
+    max-height: auto;
+  }
+`;
+
+const LoadingSpinner = styled.div`
+  color: #FFD700;
+  font-size: 2rem;
+  animation: ${spin} 1.5s linear infinite;
+  margin-bottom: 1rem;
+`;
+
+const LoadingText = styled.p`
+  color: #FFD700;
+  font-size: 1.2rem;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
 `;
 
 const ScriptContainer = styled.div`
