@@ -4,6 +4,7 @@ import { WalletProvider } from "@suiet/wallet-kit";
 import "@suiet/wallet-kit/style.css";
 import { Analytics } from "@vercel/analytics/react";
 import { NextSeo } from "next-seo";
+import { AuthProvider } from "@/hooks/useAuth";
 
 export default function App({ Component, pageProps }: AppProps) {
   const metadata = pageProps.metadata || {};
@@ -21,7 +22,9 @@ export default function App({ Component, pageProps }: AppProps) {
         }}
       />
       <WalletProvider>
-        <Component {...pageProps} />
+        <AuthProvider>
+          <Component {...pageProps} />
+        </AuthProvider>
       </WalletProvider>
       <Analytics />
     </>
