@@ -7,10 +7,16 @@ import Link from "next/link";
 import { GetServerSideProps } from "next";
 import { Race, coreRaces, expandedRaces } from "@/data/races";
 import { GetServerSidePropsContext } from "next";
+import { getRaceById } from "@/db/races";
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
   const race = context.params?.race as string;
-  const raceData = coreRaces.find((r) => r.id === race) || expandedRaces.find((r) => r.id === race);
+  
+  let raceData = await getRaceById(race);
+
+  if (!raceData) {
+    raceData = coreRaces.find((r) => r.id === race) || expandedRaces.find((r) => r.id === race) as Race;
+  }
 
   if (!raceData) {
     return {
@@ -39,8 +45,8 @@ const CharacterImagesPage: React.FC<CharacterImagesPageProps> = ({ race }) => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [generatedImage, setGeneratedImage] = useState("");
-  const [prompt, setPrompt] = useState(`${race.name}, a ${race.description}`);
+  const [generatedImage, setGeneratedImage] = useState(race.image || "");
+  const [prompt, setPrompt] = useState(`${race.name}, a ${race.description}, replace the staff with a ${race.accessory}`);
 
   const generateImage = async () => {
     if (!prompt) {
@@ -57,7 +63,7 @@ const CharacterImagesPage: React.FC<CharacterImagesPageProps> = ({ race }) => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ prompt }),
+        body: JSON.stringify({ prompt, image: race.image }),
       });
 
       if (!response.ok) {
@@ -65,13 +71,37 @@ const CharacterImagesPage: React.FC<CharacterImagesPageProps> = ({ race }) => {
       }
 
       const data = await response.json();
-      setGeneratedImage(`data:image/png;base64,${data.b64_json}`);
+      const image = `data:image/png;base64,${data.b64_json}`;
+      setGeneratedImage(image);
+
+      const imageData = await uploadImage(image);
+      console.log(imageData);
+      setGeneratedImage(imageData.url);
     } catch (err) {
       console.error("Error generating image:", err);
       setError("Failed to generate your character image. Please try again.");
     } finally {
       setLoading(false);
     }
+  };
+
+  const uploadImage = async (image: string) => {
+    const response = await fetch("/api/image-upload", {
+      method: "POST",
+      body: JSON.stringify({ image }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to upload image");
+    }
+
+    const data = await response.json();
+    console.log(data);
+    setGeneratedImage(data.url);
+    return data;
   };
 
   const saveImage = async () => {
@@ -84,38 +114,44 @@ const CharacterImagesPage: React.FC<CharacterImagesPageProps> = ({ race }) => {
     setError("");
 
     try {
-      // Here you would typically save the image to your character profile
-      const response = await fetch("/api/character/save-image", {
+      // Save both the race info and the generated image
+      const response = await fetch("/api/races", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ imageUrl: generatedImage }),
+        body: JSON.stringify({
+          id: race.id,
+          name: race.name,
+          source: race.source,
+          description: race.description,
+          image: generatedImage
+        }),
       });
 
       if (!response.ok) {
-        throw new Error("Failed to save image");
+        throw new Error("Failed to save race and image");
       }
 
       // Redirect to next step or character profile
-      router.push("/explore");
+      router.push("/character/race/admin");
     } catch (err) {
-      console.error("Error saving image:", err);
-      setError("Failed to save your character image. Please try again.");
+      console.error("Error saving race and image:", err);
+      setError("Failed to save your character race and image. Please try again.");
       setLoading(false);
     }
   };
 
-  if (loading) {
-    return (
-      <Container>
-        <LoadingMessage>
-          <CrownIcon><FaCrown /></CrownIcon>
-          {generatedImage ? "Saving your character image..." : "Generating your character image..."}
-        </LoadingMessage>
-      </Container>
-    );
-  }
+//   if (loading) {
+//     return (
+//       <Container>
+//         <LoadingMessage>
+//           <CrownIcon><FaCrown /></CrownIcon>
+//           {generatedImage ? "Saving your character image..." : "Generating your character image..."}
+//         </LoadingMessage>
+//       </Container>
+//     );
+//   }
 
   return (
     <Container>
@@ -149,7 +185,7 @@ const CharacterImagesPage: React.FC<CharacterImagesPageProps> = ({ race }) => {
           <ImagePreviewContainer>
             <ImagePreview src={generatedImage} alt="Generated character" />
             <SaveButton onClick={saveImage}>
-              Save This Image
+              Save
             </SaveButton>
           </ImagePreviewContainer>
         )}

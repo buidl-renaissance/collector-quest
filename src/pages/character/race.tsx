@@ -1,16 +1,22 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import styled from "@emotion/styled";
 import { keyframes } from "@emotion/react";
-import { FaArrowLeft, FaCrown, FaCheck, FaRandom } from "react-icons/fa";
+import { FaArrowLeft, FaCrown, FaCheck, FaRandom, FaImage, FaArrowRight } from "react-icons/fa";
 import BuildCharacter, { Character } from "@/components/BuildCharacter";
 import CharacterRaces from "@/components/CharacterRaces";
+import { getAllRaces } from "@/db/races";
+import { Race } from "@/data/races";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
+
+  const races = await getAllRaces();
+
   return {
     props: {
+      races,
       metadata: {
         title: `Create Character | Lord Smearington's Absurd NFT Gallery`,
         description: "Craft your character for an immersive journey through the gallery.",
@@ -21,10 +27,12 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   };
 };
 
-const CharacterCreatePage: React.FC = () => {
+const CharacterCreatePage: React.FC<{ races: Race[] }> = ({ races }) => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [characterImage, setCharacterImage] = useState<string>("");
+  const [selectedRace, setSelectedRace] = useState<Race | null>(null);
 
   const handleCharacterCreated = async (character: Character) => {
     setLoading(true);
@@ -37,7 +45,10 @@ const CharacterCreatePage: React.FC = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(character),
+        body: JSON.stringify({
+          ...character,
+          image: characterImage
+        }),
       });
       
       if (!response.ok) {
@@ -55,12 +66,23 @@ const CharacterCreatePage: React.FC = () => {
     }
   };
 
+  const handleRaceSelect = (race: Race) => {
+    setSelectedRace(race);
+  };
+
+  const handleNext = () => {
+    if (selectedRace) {
+      // Navigate to the next step or process the selected race
+      router.push(`/character/class?race=${selectedRace.id}`);
+    }
+  };
+
   if (loading) {
     return (
       <Container>
         <LoadingMessage>
           <CrownIcon><FaCrown /></CrownIcon>
-          Creating your character...
+          {characterImage ? "Saving your character..." : "Creating your character..."}
         </LoadingMessage>
       </Container>
     );
@@ -68,20 +90,36 @@ const CharacterCreatePage: React.FC = () => {
 
   return (
     <Container>
-      <BackLink href="/explore">
+      {/* <BackLink href="/explore">
         <FaArrowLeft /> Back to Gallery
-      </BackLink>
+      </BackLink> */}
       
       <Title>Craft Your Character</Title>
       <Subtitle>Who will you be in Lord Smearington&apos;s Gallery of the Absurd?</Subtitle>
       
       {error && <ErrorMessage>{error}</ErrorMessage>}
       
-      <CharacterRaces />
+      <CharacterRaces 
+        races={races} 
+        onSelectRace={handleRaceSelect} 
+        selectedRace={selectedRace?.name}
+      />
       
       <Quote>
         &quot;The character you create will shape your journey through the twisted corridors and magnificent exhibits of this interdimensional gallery.&quot;
       </Quote>
+
+      {selectedRace && (
+        <SelectionFooter>
+          <SelectedRaceInfo>
+            <SelectedRaceLabel>Selected Race:</SelectedRaceLabel>
+            <SelectedRaceName>{selectedRace.name}</SelectedRaceName>
+          </SelectedRaceInfo>
+          <NextButton onClick={handleNext}>
+            Next Step <FaArrowRight />
+          </NextButton>
+        </SelectionFooter>
+      )}
     </Container>
   );
 };
@@ -91,12 +129,18 @@ const fadeIn = keyframes`
   to { opacity: 1; }
 `;
 
+const slideUp = keyframes`
+  from { transform: translateY(100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+`;
+
 const Container = styled.div`
   max-width: 800px;
   margin: 0 auto;
   padding: 2rem;
   font-family: 'Cormorant Garamond', serif;
   animation: ${fadeIn} 0.5s ease-in;
+  padding-bottom: 80px; /* Make room for the footer */
 `;
 
 const BackLink = styled(Link)`
@@ -160,6 +204,148 @@ const Quote = styled.blockquote`
   padding: 1rem;
   border-left: 3px solid #bb8930;
   background-color: rgba(187, 137, 48, 0.1);
+`;
+
+const SelectionFooter = styled.div`
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(26, 26, 46, 0.95);
+  border-top: 2px solid #bb8930;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  animation: ${slideUp} 0.3s ease-out;
+  z-index: 100;
+`;
+
+const SelectedRaceInfo = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+`;
+
+const SelectedRaceLabel = styled.span`
+  color: #C7BFD4;
+`;
+
+const SelectedRaceName = styled.span`
+  color: #bb8930;
+  font-weight: bold;
+  font-size: 1.1rem;
+`;
+
+const NextButton = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.8rem 1.5rem;
+  background-color: #bb8930;
+  color: #1a1a2e;
+  border: none;
+  border-radius: 4px;
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: bold;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  
+  &:hover {
+    background-color: #d4a959;
+  }
+`;
+
+const ImageGeneratorSection = styled.div`
+  margin: 2rem 0;
+  padding: 1.5rem;
+  background-color: rgba(187, 137, 48, 0.1);
+  border-radius: 8px;
+`;
+
+const SectionTitle = styled.h3`
+  color: #bb8930;
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+`;
+
+const ImagePromptInput = styled.input`
+  width: 100%;
+  padding: 0.8rem;
+  margin-bottom: 1rem;
+  border: 1px solid #bb8930;
+  border-radius: 4px;
+  background-color: rgba(0, 0, 0, 0.2);
+  color: #C7BFD4;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1rem;
+  
+  &:focus {
+    outline: none;
+    border-color: #d4a959;
+    box-shadow: 0 0 0 2px rgba(212, 169, 89, 0.2);
+  }
+`;
+
+const GenerateImageButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.8rem 1.5rem;
+  background-color: #bb8930;
+  color: #1a1a2e;
+  border: none;
+  border-radius: 4px;
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  
+  &:hover {
+    background-color: #d4a959;
+  }
+  
+  &:disabled {
+    background-color: #6c5a30;
+    cursor: not-allowed;
+  }
+`;
+
+const CharacterImagePreview = styled.div`
+  margin: 2rem 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+
+const CharacterPortrait = styled.img`
+  max-width: 300px;
+  max-height: 400px;
+  border: 3px solid #bb8930;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+`;
+
+const ChangeImageButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  padding: 0.6rem 1.2rem;
+  background-color: rgba(187, 137, 48, 0.2);
+  color: #bb8930;
+  border: 1px solid #bb8930;
+  border-radius: 4px;
+  font-family: 'Cormorant Garamond', serif;
+  cursor: pointer;
+  transition: all 0.3s;
+  
+  &:hover {
+    background-color: rgba(187, 137, 48, 0.3);
+  }
 `;
 
 export default CharacterCreatePage;

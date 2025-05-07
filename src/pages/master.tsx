@@ -8,13 +8,9 @@ import {
   FaDice,
   FaScroll,
   FaBook,
-  FaUserAlt,
-  FaArrowRight,
   FaVolumeUp,
   FaVolumeMute,
 } from "react-icons/fa";
-import CraftChampion from "@/components/CraftChampion";
-import { Character } from "@/components/BuildCharacter";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   return {
@@ -175,7 +171,7 @@ const MasterPage: React.FC = () => {
         </Section>
 
         <DiscoverSection>
-          <SectionTitle>What You'll Discover</SectionTitle>
+          <SectionTitle>What You&apos;ll Discover</SectionTitle>
           <CollectiblesGrid>
             <CollectibleItem>
               <CollectibleIcon><FaScroll /></CollectibleIcon>
@@ -288,7 +284,9 @@ const MasterPage: React.FC = () => {
             </video>
             <VideoOverlay>
               <PlayButton>
-                <span>PRESS START</span>
+                <Link href="/character/race">
+                  <span>PRESS START</span>
+                </Link>
               </PlayButton>
             </VideoOverlay>
           </VideoContainer>

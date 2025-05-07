@@ -1,14 +1,15 @@
 import React from 'react';
 import styled from '@emotion/styled';
 import { FaUser, FaHatWizard } from 'react-icons/fa';
-import { Race, coreRaces, expandedRaces } from '@/data/races';
+import { Race } from '@/data/races';
 
 interface CharacterRacesProps {
+  races: Race[];
   onSelectRace?: (race: Race) => void;
   selectedRace?: string;
 }
   
-const CharacterRaces: React.FC<CharacterRacesProps> = ({ onSelectRace, selectedRace }) => {
+const CharacterRaces: React.FC<CharacterRacesProps> = ({ races, onSelectRace, selectedRace }) => {
   
   const handleRaceSelect = (race: Race) => {
     if (onSelectRace) {
@@ -28,35 +29,32 @@ const CharacterRaces: React.FC<CharacterRacesProps> = ({ onSelectRace, selectedR
         Core Races (Player&apos;s Handbook)
       </RacesCategoryTitle>
       <RacesGrid>
-        {coreRaces.map((race) => (
+        {races.map((race) => (
           <RaceCard 
             key={race.name}
             isSelected={selectedRace === race.name}
             onClick={() => handleRaceSelect(race)}
           >
+            {race.image && (
+              <RaceImageContainer>
+                <RaceImage src={race.image} alt={race.name} />
+              </RaceImageContainer>
+            )}
             <RaceName>{race.name}</RaceName>
             <RaceSource>{race.source}</RaceSource>
             <RaceBio>
-              {race.name === "Human" && "Versatile and ambitious, humans adapt to any environment and excel through determination."}
-              {race.name === "Elf" && "Ancient and graceful, elves live in harmony with nature, mastering magic and archery over their long lives."}
-              {race.name === "Dwarf" && "Stout and sturdy, dwarves are master craftsmen with unmatched resilience and a deep connection to stone."}
-              {race.name === "Halfling" && "Small in stature but big in heart, halflings value comfort, community, and have extraordinary luck."}
-              {race.name === "Dragonborn" && "Proud draconic humanoids with breath weapons and scales, honoring their ancient heritage."}
-              {race.name === "Gnome" && "Curious and clever tinkerers with boundless enthusiasm and a natural affinity for illusion magic."}
-              {race.name === "Half-Elf" && "Blending elven grace with human versatility, half-elves excel as diplomats between worlds."}
-              {race.name === "Half-Orc" && "Combining human adaptability with orcish strength, half-orcs are formidable warriors with indomitable endurance."}
-              {race.name === "Tiefling" && "Bearing infernal heritage, tieflings overcome prejudice with cunning intellect and arcane talent."}
+              {race.description}
             </RaceBio>
           </RaceCard>
         ))}
       </RacesGrid>
 
-      <RacesCategoryTitle>
+      {/* <RacesCategoryTitle>
         <CategoryIcon><FaHatWizard /></CategoryIcon>
         Expanded Races (Other Official Sourcebooks)
       </RacesCategoryTitle>
       <RacesGrid>
-        {expandedRaces.map((race) => (
+        {races.map((race) => (
           <RaceCard 
             key={race.name}
             isSelected={selectedRace === race.name}
@@ -66,7 +64,7 @@ const CharacterRaces: React.FC<CharacterRacesProps> = ({ onSelectRace, selectedR
             <RaceSource>{race.source}</RaceSource>
           </RaceCard>
         ))}
-      </RacesGrid>
+      </RacesGrid> */}
     </RacesContainer>
   );
 };
@@ -117,22 +115,41 @@ const RacesCategoryTitle = styled.h3`
   padding-bottom: 0.5rem;
 `;
 
-const RaceBio = styled.div`
-  font-size: 0.8rem;
-  color: #bb8930;
-  font-style: italic;
-`;
-
 const CategoryIcon = styled.span`
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: #bb8930;
-  font-size: 1rem;
 `;
 
 const RacesGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 1rem;
   margin-bottom: 1.5rem;
+`;
+
+const RaceImageContainer = styled.div`
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+`;
+
+const RaceImage = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+`;
+
+const RaceBio = styled.div`
+  font-size: 0.8rem;
+  color: #bb8930;
+  font-style: italic;
+  &:hover {
+    transform: scale(1.05);
+  }
 `;
 
 const RaceCard = styled.div<{ isSelected?: boolean }>`
