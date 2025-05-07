@@ -12,11 +12,13 @@ import {
   FaCog,
   FaUser,
   FaUsers,
+  FaUserPlus,
 } from "react-icons/fa";
 import { useWallet } from "@suiet/wallet-kit";
 import { keyframes } from "@emotion/react";
 import { Story } from "@/lib/interfaces";
 import StoryCard from "@/components/StoryCard";
+import Modal from "@/components/Modal";
 
 // Define the Realm type based on the RealmData interface
 interface Realm {
@@ -53,6 +55,10 @@ const RealmDetailPage: React.FC = () => {
   const [stories, setStories] = useState<Story[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [showAddGuardianModal, setShowAddGuardianModal] = useState(false);
+  const [newGuardian, setNewGuardian] = useState("");
+  const [addingGuardian, setAddingGuardian] = useState(false);
+  const [guardianError, setGuardianError] = useState("");
 
   useEffect(() => {
     const fetchRealmDetails = async () => {
@@ -90,6 +96,33 @@ const RealmDetailPage: React.FC = () => {
     fetchRealmDetails();
   }, []);
 
+  const handleAddGuardian = async () => {
+    try {
+      setAddingGuardian(true);
+      setGuardianError("");
+
+      // TODO: Implement actual guardian addition logic
+      // For now, just log the new guardian address
+      console.log("Adding guardian:", newGuardian);
+
+      // Update the realm state
+      // setRealm({
+      //   ...realm,
+      //   guardians: [...realm.guardians, newGuardian],
+      // });
+
+      // Close the modal
+      setShowAddGuardianModal(false);
+      setNewGuardian("");
+    } catch (err) {
+      console.error("Error adding guardian:", err);
+      setGuardianError("Failed to add guardian. Please try again.");
+    } finally {
+      setAddingGuardian(false);
+    }
+  };
+  
+
   if (loading) {
     return (
       <Container>
@@ -107,8 +140,8 @@ const RealmDetailPage: React.FC = () => {
     return (
       <Container>
         <ErrorMessage>{error}</ErrorMessage>
-        <BackLink href="/realms">
-          <FaArrowLeft /> Back to Realms
+        <BackLink href="/">
+          <FaArrowLeft /> Back to Home
         </BackLink>
       </Container>
     );
@@ -118,8 +151,8 @@ const RealmDetailPage: React.FC = () => {
     return (
       <Container>
         <ErrorMessage>Realm not found</ErrorMessage>
-        <BackLink href="/realms">
-          <FaArrowLeft /> Back to Realms
+        <BackLink href="/">
+          <FaArrowLeft /> Back to Home
         </BackLink>
       </Container>
     );
@@ -141,20 +174,20 @@ const RealmDetailPage: React.FC = () => {
       ))}
 
       <Container>
-        <BackLink href="/realms">
+        {/* <BackLink href="/realms">
           <FaArrowLeft /> Back to Realms
-        </BackLink>
+        </BackLink> */}
 
         <RealmHeader>
+          <CrownDivider>
+            <FaCrown />
+          </CrownDivider>
+          <RealmTitle>{realm.name}</RealmTitle>
           {realm.imageUrl && (
             <RealmImageWrapper>
               <RealmImage src={realm.imageUrl} alt={realm.name} />
             </RealmImageWrapper>
           )}
-          <CrownDivider>
-            <FaCrown />
-          </CrownDivider>
-          <RealmTitle>{realm.name}</RealmTitle>
         </RealmHeader>
 
         <RealmInfo>
@@ -178,7 +211,7 @@ const RealmDetailPage: React.FC = () => {
             </InfoSection>
           )}
 
-          <InfoSection>
+          {/* <InfoSection>
             <SectionTitle>
               <SectionTitleGlow>
                 <FaCog /> <span>Realm Settings</span>
@@ -194,20 +227,49 @@ const RealmDetailPage: React.FC = () => {
                 {realm.requiresVerification ? "Yes" : "No"}
               </SettingValue>
             </SettingItem>
-          </InfoSection>
+          </InfoSection> */}
 
-          <InfoSection>
+          {/* <InfoSection>
             <SectionTitle>
               <SectionTitleGlow>
                 <FaUsers /> <span>Guardians</span>
               </SectionTitleGlow>
             </SectionTitle>
             <GuardiansList>
-              {realm.guardians.map((guardian, index) => (
-                <GuardianItem key={index}>{guardian}</GuardianItem>
-              ))}
+              {realm.guardians && realm.guardians.length > 0 ? (
+                realm.guardians.map((guardian, index) => (
+                  <GuardianItem key={index}>{guardian}</GuardianItem>
+                ))
+              ) : (
+                <EmptyMessage>No guardians assigned to this realm yet.</EmptyMessage>
+              )}
             </GuardiansList>
-          </InfoSection>
+            {wallet.connected && (
+              <AddGuardianButton onClick={() => setShowAddGuardianModal(true)}>
+                <FaUserPlus /> Add Guardian
+              </AddGuardianButton>
+            )}
+            {showAddGuardianModal && (
+              <Modal onClose={() => setShowAddGuardianModal(false)}>
+                <ModalTitle>Add Realm Guardian</ModalTitle>
+                <GuardianInput>
+                  <Input
+                    type="text"
+                    value={newGuardian}
+                    onChange={(e) => setNewGuardian(e.target.value)}
+                    placeholder="Enter guardian address"
+                  />
+                  <AddButton 
+                    onClick={handleAddGuardian}
+                    disabled={addingGuardian || !newGuardian}
+                  >
+                    {addingGuardian ? "Adding..." : "Add"}
+                  </AddButton>
+                </GuardianInput>
+                {guardianError && <ErrorMessage>{guardianError}</ErrorMessage>}
+              </Modal>
+            )}
+          </InfoSection> */}
 
           <InfoSection>
             <SectionTitle>
@@ -395,12 +457,13 @@ const RealmImage = styled.img`
 `;
 
 const RealmTitle = styled.h1`
-  font-size: 2rem;
+  font-size: 1.8rem;
   text-align: center;
   margin: 0;
   color: #fff;
   font-family: "Cinzel Decorative", "Playfair Display SC", serif;
   text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+  margin-bottom: 1rem;
 
   @media (min-width: 768px) {
     font-size: 3rem;
@@ -438,7 +501,7 @@ const InfoSection = styled.div`
 `;
 
 const SectionTitle = styled.h2`
-  font-size: 1.4rem;
+  font-size: 1rem;
   margin: 0 0 0.75rem 0;
   color: #ffd700;
   font-family: "Cinzel Decorative", "Playfair Display SC", serif;
@@ -472,7 +535,7 @@ const SectionTitleGlow = styled.span`
 const Description = styled.p`
   font-size: 1rem;
   line-height: 1.6;
-  color: #c7bfd4;
+  color: #fff;
 
   @media (min-width: 768px) {
     font-size: 1.2rem;
@@ -482,7 +545,7 @@ const Description = styled.p`
 
 const InfoText = styled.p`
   font-size: 1rem;
-  color: #c7bfd4;
+  color: #fff;
   margin: 0;
 
   @media (min-width: 768px) {
@@ -530,6 +593,54 @@ const GuardianItem = styled.li`
 
   @media (min-width: 768px) {
     font-size: 1rem;
+  }
+`;
+
+const ModalTitle = styled.h3`
+  font-size: 1.5rem;
+  margin: 0;
+  color: #ffd700;
+  font-family: "Cinzel Decorative", "Playfair Display SC", serif;
+`;
+
+const EmptyMessage = styled.p`
+  color: #c7bfd4;
+  font-size: 0.9rem;
+`;
+
+const AddGuardianButton = styled.button`
+  background: none;
+  border: none;
+  color: #ffd700;
+  cursor: pointer;
+  font-size: 0.9rem;
+`;
+
+const GuardianInput = styled.div`
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+`;
+
+const Input = styled.input`
+  flex: 1;
+  padding: 0.5rem;
+  border-radius: 4px;
+  border: none;
+`;
+
+const AddButton = styled.button`
+  background: #ffd700;
+  color: #000;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: #ffd700;
+    transform: translateY(-2px);
   }
 `;
 

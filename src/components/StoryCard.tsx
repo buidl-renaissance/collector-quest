@@ -53,7 +53,7 @@ const StoryTitle = styled.h3`
 
 const StoryDescription = styled.p`
   font-size: 1rem;
-  color: #c7bfd4;
+  color: #fff;
   margin: 0 0 1rem 0;
   flex-grow: 1;
 `;
