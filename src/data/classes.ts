@@ -1,3 +1,5 @@
+import { getClassById } from "@/db/classes";
+
 export interface CharacterClass {
   id: string;
   name: string;
@@ -7,7 +9,11 @@ export interface CharacterClass {
   isActive?: boolean;
 }
 
-export const getCharacterClassById = (id: string): CharacterClass | undefined => {
+export const getCharacterClassById = async (id: string): Promise<CharacterClass | undefined> => {
+  const characterClass = await getClassById(id);
+  if (characterClass) {
+    return characterClass;
+  }
   return characterClasses.find(c => c.id === id);
 }
 

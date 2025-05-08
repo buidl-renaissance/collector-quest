@@ -1,85 +1,211 @@
-import React, { useState } from 'react';
-import { useRouter } from 'next/router';
-import styled from '@emotion/styled';
-import { keyframes } from '@emotion/react';
-import { FaArrowLeft, FaArrowRight, FaCopy, FaRandom, FaMoon, FaSun } from 'react-icons/fa';
-import PageTransition from '@/components/PageTransition';
-import { GetServerSidePropsContext } from 'next';
-import { getRaceById } from '@/db/races';
-import { getClassById } from '@/db/classes';
-import { CharacterClass, getCharacterClassById } from '@/data/classes';
-import { Race } from '@/data/races';
+import React, { useState } from "react";
+import { useRouter } from "next/router";
+import styled from "@emotion/styled";
+import { keyframes } from "@emotion/react";
+import {
+  FaArrowLeft,
+  FaArrowRight,
+  FaCopy,
+  FaRandom,
+  FaMoon,
+  FaSun,
+  FaPlus,
+} from "react-icons/fa";
+import PageTransition from "@/components/PageTransition";
+import { GetServerSidePropsContext } from "next";
+import { getRaceById } from "@/db/races";
+import { CharacterClass, getCharacterClassById } from "@/data/classes";
+import { Race } from "@/data/races";
+import CharacterImage from "@/components/CharacterImage";
+import CharacterDescription from "@/components/CharacterDescription";
 
-
-export const getServerSideProps = async (context: GetServerSidePropsContext) => {
-  const { race, class: selectedClass } = context.query;
+export const getServerSideProps = async (
+  context: GetServerSidePropsContext
+) => {
+  const { race, class: characterClass } = context.query;
 
   const dbRace = await getRaceById(race as string);
-  const dbClass = await getClassById(selectedClass as string);
-  if (!dbClass) {
-    return {
-      props: {
-        race: dbRace,
-        class: getCharacterClassById(selectedClass as string)
-      }
-    };
-  }
-  
+  const dbClass = await getCharacterClassById(characterClass as string);
+
   return {
     props: { race: dbRace, class: dbClass },
   };
 };
 
-const CharacterBioPage: React.FC<{ race: Race, class: CharacterClass }> = ({ race, class: selectedClass }) => {
+const CharacterBioPage: React.FC<{ race: Race; class: CharacterClass }> = ({
+  race,
+  class: selectedClass,
+}) => {
   const router = useRouter();
   const [darkMode, setDarkMode] = useState(true);
   const [isFirstPerson, setIsFirstPerson] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [characterBio, setCharacterBio] = useState('');
-  
+  const [characterBio, setCharacterBio] = useState("");
+
+  // State for custom options
+  const [customPersonality, setCustomPersonality] = useState("");
+  const [customMotivation, setCustomMotivation] = useState("");
+  const [customFear, setCustomFear] = useState("");
+
+  // State for option arrays
+  const [personalityOptions, setPersonalityOptions] = useState([
+    "Brooding",
+    "Cheerful",
+    "Suspicious",
+    "Bold",
+    "Cautious",
+    "Eccentric",
+    "Honorable",
+    "Mischievous",
+  ]);
+  const [motivationOptions, setMotivationOptions] = useState([
+    "Revenge",
+    "Knowledge",
+    "Wealth",
+    "Glory",
+    "Power",
+    "Justice",
+    "Freedom",
+    "Love",
+  ]);
+  const [fearOptions, setFearOptions] = useState([
+    "Darkness",
+    "Failure",
+    "Betrayal",
+    "Loss",
+    "Confinement",
+    "The Unknown",
+    "Death",
+    "Being Forgotten",
+  ]);
+
   const [formData, setFormData] = useState({
-    name: '',
-    race: race.name,
-    class: selectedClass.name,
-    personality: '',
-    motivation: '',
-    fear: '',
-    hauntingMemory: '',
-    treasuredPossession: ''
+    name: "",
+    personality: [] as string[],
+    motivation: [] as string[],
+    fear: [] as string[],
+    hauntingMemory: "",
+    treasuredPossession: "",
   });
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
+  ) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleAddCustomOption = (
+    type: "personality" | "motivation" | "fear"
+  ) => {
+    if (type === "personality" && customPersonality.trim()) {
+      setPersonalityOptions((prev) => [...prev, customPersonality.trim()]);
+      setFormData((prev) => ({
+        ...prev,
+        personality: [...prev.personality, customPersonality.trim()],
+      }));
+      setCustomPersonality("");
+    } else if (type === "motivation" && customMotivation.trim()) {
+      setMotivationOptions((prev) => [...prev, customMotivation.trim()]);
+      setFormData((prev) => ({
+        ...prev,
+        motivation: [...prev.motivation, customMotivation.trim()],
+      }));
+      setCustomMotivation("");
+    } else if (type === "fear" && customFear.trim()) {
+      setFearOptions((prev) => [...prev, customFear.trim()]);
+      setFormData((prev) => ({
+        ...prev,
+        fear: [...prev.fear, customFear.trim()],
+      }));
+      setCustomFear("");
+    }
+  };
+
+  const handleSelectChip = (
+    type: "personality" | "motivation" | "fear",
+    value: string
+  ) => {
+    setFormData((prev) => {
+      const currentValues = prev[type] as string[];
+      if (currentValues.includes(value)) {
+        return {
+          ...prev,
+          [type]: currentValues.filter((item) => item !== value),
+        };
+      } else {
+        return {
+          ...prev,
+          [type]: [...currentValues, value],
+        };
+      }
+    });
   };
 
   const handleRandomize = () => {
     // This would be expanded with actual random options
+    const randomPersonality = [
+      personalityOptions[Math.floor(Math.random() * personalityOptions.length)],
+    ];
+    const randomMotivation = [
+      motivationOptions[Math.floor(Math.random() * motivationOptions.length)],
+    ];
+    const randomFear = [
+      fearOptions[Math.floor(Math.random() * fearOptions.length)],
+    ];
+
     setFormData({
-      name: ['Thorne Blackwood', 'Lyra Stormwhisper', 'Galen Fireheart'][Math.floor(Math.random() * 3)],
-      race: race.name,
-      class: selectedClass.name,
-      personality: ['Brooding', 'Cheerful', 'Suspicious', 'Bold'][Math.floor(Math.random() * 4)],
-      motivation: ['Revenge', 'Knowledge', 'Wealth', 'Glory'][Math.floor(Math.random() * 4)],
-      fear: ['Darkness', 'Failure', 'Betrayal', 'Loss'][Math.floor(Math.random() * 4)],
-      hauntingMemory: ['A village burning', 'A lost love', 'A broken promise', 'A mysterious stranger'][Math.floor(Math.random() * 4)],
-      treasuredPossession: ['A family heirloom', 'A mysterious map', 'A mentor\'s gift', 'A token of victory'][Math.floor(Math.random() * 4)]
+      name: ["Thorne Blackwood", "Lyra Stormwhisper", "Galen Fireheart"][
+        Math.floor(Math.random() * 3)
+      ],
+      personality: randomPersonality,
+      motivation: randomMotivation,
+      fear: randomFear,
+      hauntingMemory: [
+        "A village burning",
+        "A lost love",
+        "A broken promise",
+        "A mysterious stranger",
+      ][Math.floor(Math.random() * 4)],
+      treasuredPossession: [
+        "A family heirloom",
+        "A mysterious map",
+        "A mentor's gift",
+        "A token of victory",
+      ][Math.floor(Math.random() * 4)],
     });
   };
 
   const handleBack = () => {
-    router.push('/character/class');
+    router.push("/character/class");
   };
 
   const generateBio = () => {
     setIsLoading(true);
-    
+
     // Simulate API call or processing time
     setTimeout(() => {
-      const firstPersonBio = `I am ${formData.name}, a ${formData.personality} ${formData.race} ${formData.class}. My quest for ${formData.motivation} drives me forward, though I am haunted by ${formData.hauntingMemory}. Above all, I fear ${formData.fear}, yet I find comfort in my most treasured possession: ${formData.treasuredPossession}.`;
-      
-      const thirdPersonBio = `${formData.name} is a ${formData.personality} ${formData.race} ${formData.class}. Driven by a desire for ${formData.motivation}, they push forward despite being haunted by ${formData.hauntingMemory}. Though they deeply fear ${formData.fear}, they find solace in their most treasured possession: ${formData.treasuredPossession}.`;
-      
+      const personalityText =
+        formData.personality.length > 0
+          ? formData.personality.join(", ").replace(/, ([^,]*)$/, " and $1")
+          : "mysterious";
+
+      const motivationText =
+        formData.motivation.length > 0
+          ? formData.motivation.join(", ").replace(/, ([^,]*)$/, " and $1")
+          : "survival";
+
+      const fearText =
+        formData.fear.length > 0
+          ? formData.fear.join(", ").replace(/, ([^,]*)$/, " and $1")
+          : "the unknown";
+
+      const firstPersonBio = `I am ${formData.name}, a ${personalityText} ${race.name} ${selectedClass.name}. My quest for ${motivationText} drives me forward, though I am haunted by ${formData.hauntingMemory}. Above all, I fear ${fearText}, yet I find comfort in my most treasured possession: ${formData.treasuredPossession}.`;
+
+      const thirdPersonBio = `${formData.name} is a ${personalityText} ${race.name} ${selectedClass.name}. Driven by a desire for ${motivationText}, they push forward despite being haunted by ${formData.hauntingMemory}. Though they deeply fear ${fearText}, they find solace in their most treasured possession: ${formData.treasuredPossession}.`;
+
       setCharacterBio(isFirstPerson ? firstPersonBio : thirdPersonBio);
       setIsLoading(false);
     }, 1500);
@@ -104,108 +230,144 @@ const CharacterBioPage: React.FC<{ race: Race, class: CharacterClass }> = ({ rac
 
         <HeroSection>
           <Title>Forge Your Legend in Seconds</Title>
-          <Subtitle>Answer a few questions. Get a rich character backstory.</Subtitle>
+          <Subtitle>
+            Answer a few questions. Get a rich character backstory.
+          </Subtitle>
         </HeroSection>
 
-        <RandomizeButton onClick={handleRandomize}>
-          <FaRandom /> Randomize All
-        </RandomizeButton>
-
         <StepTitle>Create Your Character</StepTitle>
+
+        <CharacterImage
+          race={race}
+          characterClass={selectedClass}
+          size="large"
+        />
+
+        <CharacterDescription
+          race={race}
+          characterClass={selectedClass}
+          size="large"
+        />
 
         <FormSection>
           <FormGroup>
             <Label htmlFor="name">Character Name</Label>
-            <Input 
-              type="text" 
-              id="name" 
-              name="name" 
-              value={formData.name} 
-              onChange={handleInputChange} 
+            <Input
+              type="text"
+              id="name"
+              name="name"
+              value={formData.name}
+              onChange={handleInputChange}
               placeholder="Enter your character's name"
             />
           </FormGroup>
-          <FormRow>
-            <FormGroup>
-              <Label htmlFor="race">Race</Label>
-              <Input 
-                type="text" 
-                id="race" 
-                name="race" 
-                value={formData.race} 
-                readOnly 
-              />
-            </FormGroup>
-            <FormGroup>
-              <Label htmlFor="class">Class</Label>
-              <Input 
-                type="text" 
-                id="class" 
-                name="class" 
-                value={formData.class} 
-                readOnly 
-              />
-            </FormGroup>
-          </FormRow>
+
+          <RandomizeButton onClick={handleRandomize}>
+            <FaRandom /> Randomize All
+          </RandomizeButton>
+
           <FormGroup>
-            <Label htmlFor="personality">Personality Trait</Label>
-            <Select id="personality" name="personality" value={formData.personality} onChange={handleInputChange}>
-              <option value="">Select a personality trait</option>
-              <option value="Brooding">Brooding</option>
-              <option value="Cheerful">Cheerful</option>
-              <option value="Suspicious">Suspicious</option>
-              <option value="Bold">Bold</option>
-              <option value="Cautious">Cautious</option>
-              <option value="Eccentric">Eccentric</option>
-              <option value="Honorable">Honorable</option>
-              <option value="Mischievous">Mischievous</option>
-            </Select>
+            <Label htmlFor="personality">
+              Personality Traits (select multiple)
+            </Label>
+            <ChipsContainer>
+              {personalityOptions.map((option, index) => (
+                <Chip
+                  key={index}
+                  selected={formData.personality.includes(option)}
+                  onClick={() => handleSelectChip("personality", option)}
+                >
+                  {option}
+                </Chip>
+              ))}
+              <CustomChipInput>
+                <CustomInput
+                  type="text"
+                  value={customPersonality}
+                  onChange={(e) => setCustomPersonality(e.target.value)}
+                  placeholder="Add custom trait"
+                />
+                <AddChipButton
+                  onClick={() => handleAddCustomOption("personality")}
+                >
+                  <FaPlus />
+                </AddChipButton>
+              </CustomChipInput>
+            </ChipsContainer>
           </FormGroup>
           <FormGroup>
-            <Label htmlFor="motivation">Primary Motivation</Label>
-            <Select id="motivation" name="motivation" value={formData.motivation} onChange={handleInputChange}>
-              <option value="">Select a motivation</option>
-              <option value="Revenge">Revenge</option>
-              <option value="Knowledge">Knowledge</option>
-              <option value="Wealth">Wealth</option>
-              <option value="Glory">Glory</option>
-              <option value="Power">Power</option>
-              <option value="Justice">Justice</option>
-              <option value="Freedom">Freedom</option>
-              <option value="Love">Love</option>
-            </Select>
+            <Label htmlFor="motivation">
+              Primary Motivations (select multiple)
+            </Label>
+            <ChipsContainer>
+              {motivationOptions.map((option, index) => (
+                <Chip
+                  key={index}
+                  selected={formData.motivation.includes(option)}
+                  onClick={() => handleSelectChip("motivation", option)}
+                >
+                  {option}
+                </Chip>
+              ))}
+              <CustomChipInput>
+                <CustomInput
+                  type="text"
+                  value={customMotivation}
+                  onChange={(e) => setCustomMotivation(e.target.value)}
+                  placeholder="Add custom motivation"
+                />
+                <AddChipButton
+                  onClick={() => handleAddCustomOption("motivation")}
+                >
+                  <FaPlus />
+                </AddChipButton>
+              </CustomChipInput>
+            </ChipsContainer>
           </FormGroup>
           <FormGroup>
-            <Label htmlFor="fear">Greatest Fear</Label>
-            <Select id="fear" name="fear" value={formData.fear} onChange={handleInputChange}>
-              <option value="">Select a fear</option>
-              <option value="Darkness">Darkness</option>
-              <option value="Failure">Failure</option>
-              <option value="Betrayal">Betrayal</option>
-              <option value="Loss">Loss</option>
-              <option value="Confinement">Confinement</option>
-              <option value="The Unknown">The Unknown</option>
-              <option value="Death">Death</option>
-              <option value="Being Forgotten">Being Forgotten</option>
-            </Select>
+            <Label htmlFor="fear">Greatest Fears (select multiple)</Label>
+            <ChipsContainer>
+              {fearOptions.map((option, index) => (
+                <Chip
+                  key={index}
+                  selected={formData.fear.includes(option)}
+                  onClick={() => handleSelectChip("fear", option)}
+                >
+                  {option}
+                </Chip>
+              ))}
+              <CustomChipInput>
+                <CustomInput
+                  type="text"
+                  value={customFear}
+                  onChange={(e) => setCustomFear(e.target.value)}
+                  placeholder="Add custom fear"
+                />
+                <AddChipButton onClick={() => handleAddCustomOption("fear")}>
+                  <FaPlus />
+                </AddChipButton>
+              </CustomChipInput>
+            </ChipsContainer>
           </FormGroup>
           <FormGroup>
             <Label htmlFor="hauntingMemory">A Memory That Haunts You</Label>
-            <TextArea 
-              id="hauntingMemory" 
-              name="hauntingMemory" 
-              value={formData.hauntingMemory} 
-              onChange={handleInputChange} 
+            <TextArea
+              id="hauntingMemory"
+              name="hauntingMemory"
+              value={formData.hauntingMemory}
+              onChange={handleInputChange}
               placeholder="Describe a memory that haunts your character..."
             />
           </FormGroup>
           <FormGroup>
-            <Label htmlFor="treasuredPossession">Most Treasured Possession</Label>
-            <TextArea 
-              id="treasuredPossession" 
-              name="treasuredPossession" 
-              value={formData.treasuredPossession} 
-              onChange={handleInputChange} 
+            <Label htmlFor="treasuredPossession">
+              Most Treasured Possession
+            </Label>
+            <TextArea
+              id="treasuredPossession"
+              name="treasuredPossession"
+              value={formData.treasuredPossession}
+              onChange={handleInputChange}
               placeholder="Describe your character's most treasured possession..."
             />
           </FormGroup>
@@ -213,15 +375,18 @@ const CharacterBioPage: React.FC<{ race: Race, class: CharacterClass }> = ({ rac
 
         {!characterBio ? (
           <NavigationFooter>
-            <NextButton 
+            <NextButton
               onClick={generateBio}
               disabled={
-                !formData.name || !formData.race || !formData.class || 
-                !formData.personality || !formData.motivation || !formData.fear || 
-                !formData.hauntingMemory || !formData.treasuredPossession
+                !formData.name ||
+                formData.personality.length === 0 ||
+                formData.motivation.length === 0 ||
+                formData.fear.length === 0 ||
+                !formData.hauntingMemory ||
+                !formData.treasuredPossession
               }
             >
-              Generate Bio <FaArrowRight />
+              Create Bio <FaArrowRight />
             </NextButton>
           </NavigationFooter>
         ) : (
@@ -237,21 +402,21 @@ const CharacterBioPage: React.FC<{ race: Race, class: CharacterClass }> = ({ rac
                   <BioContent>{characterBio}</BioContent>
                 </BioScroll>
                 <ActionButtons>
-                  <ActionButton onClick={copyToClipboard}>
+                  {/* <ActionButton onClick={copyToClipboard}>
                     <FaCopy /> Copy
-                  </ActionButton>
-                  <ActionButton onClick={() => setCharacterBio('')}>
-                    Create Another
+                  </ActionButton> */}
+                  <ActionButton onClick={() => router.push("/character/backstory")}>
+                    Generate Backstory
                   </ActionButton>
                   <ViewToggle>
                     <ToggleLabel>
-                      <input 
-                        type="checkbox" 
-                        checked={isFirstPerson} 
+                      <input
+                        type="checkbox"
+                        checked={isFirstPerson}
                         onChange={() => {
                           setIsFirstPerson(!isFirstPerson);
                           if (characterBio) generateBio();
-                        }} 
+                        }}
                       />
                       {isFirstPerson ? "First Person" : "Third Person"}
                     </ToggleLabel>
@@ -299,11 +464,11 @@ const Container = styled.div<{ darkMode: boolean }>`
   max-width: 800px;
   margin: 0 auto;
   padding: 2rem;
-  font-family: 'Cormorant Garamond', serif;
+  font-family: "Cormorant Garamond", serif;
   animation: ${fadeIn} 0.5s ease-in;
   padding-bottom: 80px;
-  color: ${props => props.darkMode ? '#E0DDE5' : '#333'};
-  background-color: ${props => props.darkMode ? '#1a1a2e' : '#f5f5f7'};
+  color: ${(props) => (props.darkMode ? "#E0DDE5" : "#333")};
+  background-color: ${(props) => (props.darkMode ? "#1a1a2e" : "#f5f5f7")};
   min-height: 100vh;
   transition: background-color 0.3s, color 0.3s;
 `;
@@ -325,7 +490,7 @@ const BackButton = styled.button`
   cursor: pointer;
   font-size: 1rem;
   transition: color 0.3s;
-  
+
   &:hover {
     color: #d4a959;
   }
@@ -338,7 +503,7 @@ const ThemeToggle = styled.button`
   font-size: 1.2rem;
   cursor: pointer;
   transition: color 0.3s;
-  
+
   &:hover {
     color: #d4a959;
   }
@@ -358,7 +523,7 @@ const Title = styled.h1`
 
 const Subtitle = styled.p`
   font-size: 1.2rem;
-  color: #C7BFD4;
+  color: #c7bfd4;
   margin-bottom: 2rem;
 `;
 
@@ -373,11 +538,11 @@ const RandomizeButton = styled.button`
   color: #bb8930;
   border: 1px solid #bb8930;
   border-radius: 4px;
-  font-family: 'Cormorant Garamond', serif;
+  font-family: "Cormorant Garamond", serif;
   font-size: 1rem;
   cursor: pointer;
   transition: all 0.3s;
-  
+
   &:hover {
     background-color: rgba(187, 137, 48, 0.3);
   }
@@ -402,7 +567,7 @@ const FormGroup = styled.div`
 const FormRow = styled.div`
   display: flex;
   gap: 1rem;
-  
+
   @media (max-width: 768px) {
     flex-direction: column;
     gap: 0;
@@ -413,7 +578,7 @@ const Label = styled.label`
   display: block;
   margin-bottom: 0.5rem;
   font-size: 1.1rem;
-  color: #C7BFD4;
+  color: #c7bfd4;
 `;
 
 const Input = styled.input`
@@ -423,12 +588,82 @@ const Input = styled.input`
   border: 1px solid #3a3347;
   border-radius: 4px;
   color: inherit;
-  font-family: 'Cormorant Garamond', serif;
+  font-family: "Cormorant Garamond", serif;
   font-size: 1rem;
-  
+
   &:focus {
     border-color: #bb8930;
     outline: none;
+  }
+`;
+
+const ChipsContainer = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+`;
+
+const CustomChipInput = styled.div`
+  display: flex;
+  align-items: center;
+  background-color: rgba(58, 51, 71, 0.3);
+  border: 1px solid #3a3347;
+  border-radius: 20px;
+  overflow: hidden;
+  transition: all 0.2s;
+
+  &:focus-within {
+    border-color: #bb8930;
+  }
+`;
+
+const CustomInput = styled.input`
+  background: transparent;
+  border: none;
+  padding: 0.5rem 0.8rem;
+  font-size: 0.9rem;
+  color: inherit;
+  font-family: "Cormorant Garamond", serif;
+  width: 150px;
+
+  &:focus {
+    outline: none;
+  }
+`;
+
+const AddChipButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #bb8930;
+  color: #1a1a2e;
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  margin-right: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    background-color: #d4a959;
+  }
+`;
+
+const Chip = styled.div<{ selected: boolean }>`
+  padding: 0.5rem 1rem;
+  background-color: ${(props) =>
+    props.selected ? "rgba(187, 137, 48, 0.4)" : "rgba(58, 51, 71, 0.3)"};
+  border: 1px solid ${(props) => (props.selected ? "#bb8930" : "#3a3347")};
+  border-radius: 20px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    background-color: rgba(187, 137, 48, 0.3);
+    border-color: #bb8930;
   }
 `;
 
@@ -439,9 +674,9 @@ const Select = styled.select`
   border: 1px solid #3a3347;
   border-radius: 4px;
   color: inherit;
-  font-family: 'Cormorant Garamond', serif;
+  font-family: "Cormorant Garamond", serif;
   font-size: 1rem;
-  
+
   &:focus {
     border-color: #bb8930;
     outline: none;
@@ -455,11 +690,11 @@ const TextArea = styled.textarea`
   border: 1px solid #3a3347;
   border-radius: 4px;
   color: inherit;
-  font-family: 'Cormorant Garamond', serif;
+  font-family: "Cormorant Garamond", serif;
   font-size: 1rem;
   min-height: 100px;
   resize: vertical;
-  
+
   &:focus {
     border-color: #bb8930;
     outline: none;
@@ -481,16 +716,16 @@ const NextButton = styled.button`
   color: #1a1a2e;
   border: none;
   border-radius: 4px;
-  font-family: 'Cormorant Garamond', serif;
+  font-family: "Cormorant Garamond", serif;
   font-weight: bold;
   font-size: 1rem;
   cursor: pointer;
   transition: background-color 0.3s;
-  
+
   &:hover {
     background-color: #d4a959;
   }
-  
+
   &:disabled {
     background-color: #3a3347;
     cursor: not-allowed;
@@ -520,21 +755,22 @@ const ScrollAnimation = styled.div`
   position: relative;
   margin-bottom: 1rem;
   animation: ${float} 2s infinite ease-in-out;
-  
-  &:before, &:after {
-    content: '';
+
+  &:before,
+  &:after {
+    content: "";
     position: absolute;
     background-color: rgba(187, 137, 48, 0.3);
     border-radius: 4px;
   }
-  
+
   &:before {
     width: 40px;
     height: 6px;
     top: 20px;
     left: 10px;
   }
-  
+
   &:after {
     width: 40px;
     height: 6px;
@@ -582,11 +818,11 @@ const ActionButton = styled.button`
   color: #bb8930;
   border: 1px solid #bb8930;
   border-radius: 4px;
-  font-family: 'Cormorant Garamond', serif;
+  font-family: "Cormorant Garamond", serif;
   font-size: 1rem;
   cursor: pointer;
   transition: all 0.3s;
-  
+
   &:hover {
     background-color: rgba(187, 137, 48, 0.3);
   }
@@ -602,8 +838,8 @@ const ToggleLabel = styled.label`
   align-items: center;
   gap: 0.5rem;
   cursor: pointer;
-  color: #C7BFD4;
-  
+  color: #c7bfd4;
+
   input {
     margin: 0;
   }

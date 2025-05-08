@@ -136,13 +136,13 @@ const ClassSelectionPage: React.FC<ClassSelectionPageProps> = ({ selectedRace, c
               selected={selectedClass?.id === characterClass.id}
               onClick={() => handleClassSelect(characterClass)}
             >
-              <ClassImage 
+              {/* <ClassImage 
                 src={characterClass.image} 
                 alt={characterClass.name} 
                 onError={(e) => {
                   (e.target as HTMLImageElement).src = "/images/classes/default.jpg";
                 }}
-              />
+              /> */}
               <ClassInfo>
                 <ClassName>{characterClass.name}</ClassName>
                 <ClassDescription>{characterClass.description}</ClassDescription>

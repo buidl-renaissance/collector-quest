@@ -31,7 +31,11 @@ export const uploadImage = async (image: string) => {
  */
 export const generateImage = async (prompt: string, image?: string) => {
   try {
-    const response = await fetch("/api/ai/generate-image", {
+    // Determine if we're in a server context (Inngest) or client context
+    const isServer = typeof window === 'undefined';
+    const baseUrl = isServer ? process.env.NEXT_PUBLIC_BASE_URL || 'https://smearington.theethical.ai' : '';
+    
+    const response = await fetch(`${baseUrl}/api/ai/generate-image`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

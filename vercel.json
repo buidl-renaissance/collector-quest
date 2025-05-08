@@ -1,0 +1,10 @@
+{
+    "functions": {
+      "api/ai/**/*.ts": {
+        "maxDuration": 60
+      }
+    },
+    "env": {
+      "NEXT_PUBLIC_BASE_URL": "https://smearington.theethical.ai"
+    }
+}

@@ -269,3 +269,5 @@ export interface StoryResponse {
   response: string;
   createdAt: string;
 }
+
+// Types
