@@ -209,7 +209,11 @@ const ArchetypeButton = styled.button<{ selected: boolean }>`
   }
 `;
 
-const MotivationalFusion: React.FC = () => {
+interface MotivationalFusionProps {
+  onMotivationGenerated: (motivation: string) => void;
+}
+
+const MotivationalFusion: React.FC<MotivationalFusionProps> = ({ onMotivationGenerated }) => {
   // Predefined options
   const actions: Action[] = [
     { id: 'kill', label: 'Kill' },
@@ -253,14 +257,59 @@ const MotivationalFusion: React.FC = () => {
   const [forceIntensities, setForceIntensities] = useState<Record<string, number>>({});
   const [selectedArchetype, setSelectedArchetype] = useState<string | null>(null);
   
+  // Load saved state from localStorage
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedAction = localStorage.getItem('motivationalFusion_selectedAction');
+      if (savedAction) setSelectedAction(savedAction);
+      
+      const savedCustomAction = localStorage.getItem('motivationalFusion_customAction');
+      if (savedCustomAction) setCustomAction(savedCustomAction);
+      
+      const savedForces = localStorage.getItem('motivationalFusion_selectedForces');
+      if (savedForces) setSelectedForces(JSON.parse(savedForces));
+      
+      const savedCustomForce = localStorage.getItem('motivationalFusion_customForce');
+      if (savedCustomForce) setCustomForce(savedCustomForce);
+      
+      const savedMotive = localStorage.getItem('motivationalFusion_generatedMotive');
+      if (savedMotive) setGeneratedMotive(savedMotive);
+      
+      const savedAdvancedMode = localStorage.getItem('motivationalFusion_showAdvancedMode');
+      if (savedAdvancedMode) setShowAdvancedMode(JSON.parse(savedAdvancedMode));
+      
+      const savedIntensities = localStorage.getItem('motivationalFusion_forceIntensities');
+      if (savedIntensities) setForceIntensities(JSON.parse(savedIntensities));
+      
+      const savedArchetype = localStorage.getItem('motivationalFusion_selectedArchetype');
+      if (savedArchetype) setSelectedArchetype(savedArchetype);
+    }
+  }, []);
+  
   // Initialize force intensities
   useEffect(() => {
-    const intensities: Record<string, number> = {};
-    drivingForces.forEach(force => {
-      intensities[force.id] = 3;
-    });
-    setForceIntensities(intensities);
-  }, []);
+    if (Object.keys(forceIntensities).length === 0) {
+      const intensities: Record<string, number> = {};
+      drivingForces.forEach(force => {
+        intensities[force.id] = 3;
+      });
+      setForceIntensities(intensities);
+    }
+  }, [forceIntensities]);
+  
+  // Save state to localStorage when it changes
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('motivationalFusion_selectedAction', selectedAction || '');
+      localStorage.setItem('motivationalFusion_customAction', customAction);
+      localStorage.setItem('motivationalFusion_selectedForces', JSON.stringify(selectedForces));
+      localStorage.setItem('motivationalFusion_customForce', customForce);
+      localStorage.setItem('motivationalFusion_generatedMotive', generatedMotive);
+      localStorage.setItem('motivationalFusion_showAdvancedMode', JSON.stringify(showAdvancedMode));
+      localStorage.setItem('motivationalFusion_forceIntensities', JSON.stringify(forceIntensities));
+      localStorage.setItem('motivationalFusion_selectedArchetype', selectedArchetype || '');
+    }
+  }, [selectedAction, customAction, selectedForces, customForce, generatedMotive, showAdvancedMode, forceIntensities, selectedArchetype]);
   
   // Handle action selection
   const handleActionSelect = (actionId: string) => {
@@ -330,6 +379,7 @@ const MotivationalFusion: React.FC = () => {
     }
     
     setGeneratedMotive(finalMotive);
+    onMotivationGenerated(finalMotive);
   };
   
   // Add random nuance
@@ -350,7 +400,9 @@ const MotivationalFusion: React.FC = () => {
     ];
     
     const randomNuance = nuances[Math.floor(Math.random() * nuances.length)];
-    setGeneratedMotive(prev => `${prev} ${randomNuance}`);
+    const updatedMotive = `${generatedMotive} ${randomNuance}`;
+    setGeneratedMotive(updatedMotive);
+    onMotivationGenerated(updatedMotive);
   };
   
   return (

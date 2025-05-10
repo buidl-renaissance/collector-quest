@@ -1,107 +1,58 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { useRouter } from "next/router";
 import styled from "@emotion/styled";
 import { keyframes } from "@emotion/react";
 import { FaArrowLeft, FaArrowRight, FaCrown } from "react-icons/fa";
-import { GetServerSideProps } from "next";
-import { characterClasses, CharacterClass } from "@/data/classes";
-import { Race, coreRaces, expandedRaces } from "@/data/races";
-import { getRaceById } from "@/db/races";
-import { getAllClasses } from "@/db/classes";
+import { CharacterClass, characterClasses } from "@/data/classes";
+import { useRace } from "@/hooks/useRace";
+import { useCharacterClass } from "@/hooks/useCharacterClass";
 import PageTransition from "@/components/PageTransition";
+import { getAllClasses } from "@/db/classes";
+import { GetServerSideProps } from "next";
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const { race } = context.query;
-  
-  let raceData = null;
-  if (race) {
-    raceData = await getRaceById(race as string);
-    
-    if (!raceData) {
-      raceData = coreRaces.find((r) => r.id === race) || 
-                expandedRaces.find((r) => r.id === race);
-    }
-  }
+interface ClassSelectionPageProps {
+  classes: CharacterClass[];
+}
 
-  // Fetch classes from database
-  let classes: CharacterClass[] = [];
-  try {
-    const dbClasses = await getAllClasses();
-    
-    // Combine database classes with predefined classes
-    classes = [...characterClasses];
-    
-    // Add any additional classes from database
-    dbClasses.forEach(dbClass => {
-      const existingIndex = classes.findIndex(c => c.id === dbClass.id);
-      if (existingIndex >= 0) {
-        classes[existingIndex] = dbClass;
-      } else {
-        classes.push(dbClass);
-      }
-    });
-  } catch (error) {
-    console.error("Failed to fetch classes:", error);
-    classes = characterClasses;
-  }
-
+export const getServerSideProps: GetServerSideProps<ClassSelectionPageProps> = async () => {
+  const classes = await getAllClasses();
   return {
     props: {
-      selectedRace: raceData || null,
-      classes: classes,
-      metadata: {
-        title: `Choose Your Class | Lord Smearington's Absurd NFT Gallery`,
-        description: "Select a class for your character's journey through the gallery.",
-        image: "/images/character-class-selection.jpg",
-        url: `https://smearington.theethical.ai/character/class`,
-      },
+      classes,
     },
   };
 };
 
-interface ClassSelectionPageProps {
-  selectedRace: Race | null;
-  classes: CharacterClass[];
-  metadata: {
-    title: string;
-    description: string;
-    image: string;
-    url: string;
-  };
-}
-
-const ClassSelectionPage: React.FC<ClassSelectionPageProps> = ({ selectedRace, classes, metadata }) => {
+const ClassSelectionPage: React.FC<ClassSelectionPageProps> = ({
+  classes
+}) => {
   const router = useRouter();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [selectedClass, setSelectedClass] = useState<CharacterClass | null>(null);
+  const { selectedRace, loading: raceLoading } = useRace();
+  const { selectedClass, selectClass, loading: classLoading } = useCharacterClass();
 
-  useEffect(() => {
-    if (!router.query.race) {
-      router.push("/character/race");
+  // Redirect if no race is selected
+  React.useEffect(() => {
+    if (!raceLoading && !selectedRace) {
+      router.push('/character/race');
     }
-  }, [router]);
-
-  const handleClassSelect = (characterClass: CharacterClass) => {
-    setSelectedClass(characterClass);
-  };
+  }, [selectedRace, raceLoading, router]);
 
   const handleNext = () => {
     if (selectedClass) {
-      router.push(`/character/bio?race=${router.query.race}&class=${selectedClass.id}`);
+      router.push('/character/traits');
     }
   };
 
   const handleBack = () => {
-    router.push("/character/race");
+    router.push('/character/race');
   };
 
-  if (loading) {
+  if (raceLoading || classLoading) {
     return (
       <Container>
         <LoadingMessage>
           <CrownIcon><FaCrown /></CrownIcon>
-          Loading class selection...
+          Loading...
         </LoadingMessage>
       </Container>
     );
@@ -116,8 +67,6 @@ const ClassSelectionPage: React.FC<ClassSelectionPageProps> = ({ selectedRace, c
         
         <Title>Choose Your Class</Title>
         <Subtitle>What skills will you bring to Lord Smearington&apos;s Gallery?</Subtitle>
-        
-        {error && <ErrorMessage>{error}</ErrorMessage>}
         
         {selectedRace && (
           <SelectedRaceBanner>
@@ -134,21 +83,16 @@ const ClassSelectionPage: React.FC<ClassSelectionPageProps> = ({ selectedRace, c
             <ClassCard 
               key={characterClass.id}
               selected={selectedClass?.id === characterClass.id}
-              onClick={() => handleClassSelect(characterClass)}
+              onClick={() => selectClass(characterClass)}
             >
-              {/* <ClassImage 
-                src={characterClass.image} 
-                alt={characterClass.name} 
-                onError={(e) => {
-                  (e.target as HTMLImageElement).src = "/images/classes/default.jpg";
-                }}
-              /> */}
               <ClassInfo>
                 <ClassName>{characterClass.name}</ClassName>
                 <ClassDescription>{characterClass.description}</ClassDescription>
                 <AbilitiesList>
                   {characterClass.abilities.map((ability, index) => (
-                    <AbilityItem key={index}>{typeof ability === 'string' ? ability : ability.name}</AbilityItem>
+                    <AbilityItem key={index}>
+                      {typeof ability === 'string' ? ability : ability.name}
+                    </AbilityItem>
                   ))}
                 </AbilitiesList>
               </ClassInfo>
@@ -225,15 +169,6 @@ const Subtitle = styled.p`
   text-align: center;
 `;
 
-const ErrorMessage = styled.div`
-  background-color: rgba(220, 53, 69, 0.1);
-  color: #dc3545;
-  padding: 1rem;
-  border-radius: 4px;
-  margin-bottom: 1.5rem;
-  text-align: center;
-`;
-
 const SelectedRaceBanner = styled.div`
   display: flex;
   align-items: center;
@@ -288,13 +223,6 @@ const ClassCard = styled.div<{ selected: boolean }>`
     box-shadow: 0 6px 16px rgba(187, 137, 48, 0.3);
     border-color: #d4a959;
   }
-`;
-
-const ClassImage = styled.img`
-  width: 100%;
-  height: 160px;
-  object-fit: cover;
-  border-bottom: 1px solid #bb8930;
 `;
 
 const ClassInfo = styled.div`

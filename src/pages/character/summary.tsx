@@ -1,260 +1,324 @@
-import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
-import { NextPage } from 'next';
-import { NextSeo } from 'next-seo';
-import styled from '@emotion/styled';
-import { FaArrowLeft, FaDownload, FaShare } from 'react-icons/fa';
-import { Story } from '@/lib/interfaces';
+import React, { useState } from "react";
+import { useRouter } from "next/router";
+import styled from "@emotion/styled";
+import { keyframes } from "@emotion/react";
+import { FaArrowLeft, FaArrowRight, FaCrown, FaCopy } from "react-icons/fa";
+import PageTransition from "@/components/PageTransition";
+import { useRace } from "@/hooks/useRace";
+import { useCharacterClass } from "@/hooks/useCharacterClass";
+import CharacterImage from "@/components/CharacterImage";
+import CharacterDescription from "@/components/CharacterDescription";
 
-const CharacterSummaryPage: NextPage = () => {
+const SummaryPage: React.FC = () => {
   const router = useRouter();
-  const { race, class: characterClass } = router.query;
-  const [loading, setLoading] = useState(true);
-  const [character, setCharacter] = useState<{
-    race: string;
-    class: string;
-    name: string;
-    bio: string;
-    motivation: string;
-    image?: string;
-  } | null>(null);
+  const { selectedRace, loading: raceLoading } = useRace();
+  const { selectedClass, loading: classLoading } = useCharacterClass();
+  const [isFirstPerson, setIsFirstPerson] = useState(false);
+  const [characterBio, setCharacterBio] = useState("");
 
-  useEffect(() => {
-    // Redirect to race selection if no race is selected
-    if (!race || !characterClass) {
-      router.push('/character/race');
-      return;
+  // Redirect if no race or class is selected
+  React.useEffect(() => {
+    if (!raceLoading && !classLoading) {
+      if (!selectedRace) {
+        router.push('/character/race');
+      } else if (!selectedClass) {
+        router.push('/character/class');
+      }
     }
-
-    // In a real app, you would fetch the character data from an API or state management
-    // This is a mock implementation
-    setCharacter({
-      race: race as string,
-      class: characterClass as string,
-      name: localStorage.getItem('characterName') || 'Unnamed Character',
-      bio: localStorage.getItem('characterBio') || 'No biography provided.',
-      motivation: localStorage.getItem('characterMotivation') || 'Unknown motivation.',
-      image: localStorage.getItem('characterImage') || '/images/characters/default.jpg',
-    });
-    setLoading(false);
-  }, [race, characterClass, router]);
+  }, [selectedRace, selectedClass, raceLoading, classLoading, router]);
 
   const handleBack = () => {
-    router.push(`/character/motivation?race=${race}&class=${characterClass}`);
+    router.push('/character/motivation');
   };
 
-  const handleDownload = () => {
-    // In a real app, this would generate a PDF or image of the character sheet
-    alert('Character sheet download functionality would be implemented here.');
+  const handleNext = () => {
+    if (selectedRace && selectedClass) {
+      router.push('/character/complete');
+    }
   };
 
-  const handleShare = () => {
-    // In a real app, this would open a share dialog or copy a link to clipboard
-    alert('Character sharing functionality would be implemented here.');
+  const generateBio = () => {
+    if (!selectedRace || !selectedClass) return;
+
+    const personalityText = "mysterious"; // This would come from your form data
+    const motivationText = "survival"; // This would come from your form data
+    const fearText = "the unknown"; // This would come from your form data
+    const hauntingMemory = "a forgotten past"; // This would come from your form data
+    const treasuredPossession = "a family heirloom"; // This would come from your form data
+
+    const firstPersonBio = `I am a ${personalityText} ${selectedRace.name} ${selectedClass.name}. My quest for ${motivationText} drives me forward, though I am haunted by ${hauntingMemory}. Above all, I fear ${fearText}, yet I find comfort in my most treasured possession: ${treasuredPossession}.`;
+
+    const thirdPersonBio = `A ${personalityText} ${selectedRace.name} ${selectedClass.name}. Driven by a desire for ${motivationText}, they push forward despite being haunted by ${hauntingMemory}. Though they deeply fear ${fearText}, they find solace in their most treasured possession: ${treasuredPossession}.`;
+
+    setCharacterBio(isFirstPerson ? firstPersonBio : thirdPersonBio);
   };
 
-  if (loading) {
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(characterBio);
+    // Could add a toast notification here
+  };
+
+  if (raceLoading || classLoading) {
     return (
       <Container>
-        <LoadingMessage>Loading your character summary...</LoadingMessage>
+        <LoadingMessage>
+          <CrownIcon><FaCrown /></CrownIcon>
+          Loading...
+        </LoadingMessage>
       </Container>
     );
   }
 
+  if (!selectedRace || !selectedClass) {
+    return null; // Will redirect in useEffect
+  }
+
   return (
-    <>
-      <NextSeo
-        title="Character Summary | Lord Smearington's Gallery"
-        description="Review your character for Lord Smearington's Gallery"
-      />
+    <PageTransition>
       <Container>
         <BackButton onClick={handleBack}>
           <FaArrowLeft /> Back to Motivation
         </BackButton>
-        
-        <Title>Character Summary</Title>
-        <Subtitle>Review your character for Lord Smearington&apos;s Gallery</Subtitle>
-        
-        {character && (
-          <CharacterCard>
-            <CharacterHeader>
-              <CharacterName>{character.name}</CharacterName>
-              <CharacterDetails>
-                <DetailItem>{character.race}</DetailItem>
-                <DetailSeparator>•</DetailSeparator>
-                <DetailItem>{character.class}</DetailItem>
-              </CharacterDetails>
-            </CharacterHeader>
-            
-            {character.image && (
-              <CharacterImageContainer>
-                <CharacterImage src={character.image} alt={character.name} />
-              </CharacterImageContainer>
-            )}
-            
-            <CharacterSection>
-              <SectionTitle>Biography</SectionTitle>
-              <SectionContent>{character.bio}</SectionContent>
-            </CharacterSection>
-            
-            <CharacterSection>
-              <SectionTitle>Motivation</SectionTitle>
-              <SectionContent>{character.motivation}</SectionContent>
-            </CharacterSection>
-            
-            <ActionButtons>
-              <ActionButton onClick={handleDownload}>
-                <FaDownload /> Download Character Sheet
-              </ActionButton>
-              <ActionButton onClick={handleShare}>
-                <FaShare /> Share Character
-              </ActionButton>
-            </ActionButtons>
-          </CharacterCard>
-        )}
+
+        <Title>Your Character Summary</Title>
+        <Subtitle>Review and finalize your character's story</Subtitle>
+
+        <CharacterPreview>
+          <CharacterImage 
+            race={selectedRace}
+            characterClass={selectedClass}
+            size="large"
+          />
+          <CharacterDescription
+            race={selectedRace}
+            characterClass={selectedClass}
+            size="large"
+          />
+        </CharacterPreview>
+
+        <BioSection>
+          <BioHeader>
+            <BioTitle>Character Biography</BioTitle>
+            <ViewToggle>
+              <ToggleLabel>
+                <input
+                  type="checkbox"
+                  checked={isFirstPerson}
+                  onChange={() => {
+                    setIsFirstPerson(!isFirstPerson);
+                    if (characterBio) generateBio();
+                  }}
+                />
+                {isFirstPerson ? "First Person" : "Third Person"}
+              </ToggleLabel>
+            </ViewToggle>
+          </BioHeader>
+
+          {!characterBio ? (
+            <GenerateButton onClick={generateBio}>
+              Generate Biography
+            </GenerateButton>
+          ) : (
+            <>
+              <BioContent>{characterBio}</BioContent>
+              <ActionButtons>
+                <ActionButton onClick={copyToClipboard}>
+                  <FaCopy /> Copy to Clipboard
+                </ActionButton>
+              </ActionButtons>
+            </>
+          )}
+        </BioSection>
+
+        <NextButton onClick={handleNext}>
+          Complete Character <FaArrowRight />
+        </NextButton>
       </Container>
-    </>
+    </PageTransition>
   );
 };
 
-export default CharacterSummaryPage;
+// Animations
+const fadeIn = keyframes`
+  from { opacity: 0; }
+  to { opacity: 1; }
+`;
+
+const slideUp = keyframes`
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+`;
 
 // Styled Components
 const Container = styled.div`
-  max-width: 1000px;
+  max-width: 800px;
   margin: 0 auto;
   padding: 2rem;
+  font-family: "Cormorant Garamond", serif;
+  animation: ${fadeIn} 0.5s ease-in;
+  padding-bottom: 80px;
+  color: #333;
+  background-color: #f5f5f7;
+  min-height: 100vh;
+  transition: background-color 0.3s, color 0.3s;
+`;
+
+const BackButton = styled.button`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #bb8930;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: color 0.3s;
+
+  &:hover {
+    color: #d4a959;
+  }
 `;
 
 const Title = styled.h1`
   font-size: 2.5rem;
-  text-align: center;
-  margin-bottom: 1rem;
-  color: #2c3e50;
+  color: #bb8930;
+  margin-bottom: 0.5rem;
 `;
 
 const Subtitle = styled.p`
   font-size: 1.2rem;
-  text-align: center;
+  color: #c7bfd4;
   margin-bottom: 2rem;
-  color: #7f8c8d;
 `;
 
-const BackButton = styled.button`
+const CharacterPreview = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+`;
+
+const BioSection = styled.div`
+  background-color: rgba(187, 137, 48, 0.1);
+  border: 1px solid #bb8930;
+  border-radius: 8px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  animation: ${slideUp} 0.5s ease-out;
+`;
+
+const BioHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+`;
+
+const BioTitle = styled.h2`
+  font-size: 1.8rem;
+  color: #bb8930;
+  margin: 0;
+`;
+
+const ViewToggle = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
+const ToggleLabel = styled.label`
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background: none;
-  border: none;
-  color: #3498db;
-  font-size: 1rem;
   cursor: pointer;
-  margin-bottom: 1rem;
-  
-  &:hover {
-    text-decoration: underline;
+  color: #bb8930;
+
+  input {
+    margin: 0;
   }
 `;
 
-const LoadingMessage = styled.div`
-  text-align: center;
-  font-size: 1.2rem;
-  color: #7f8c8d;
-  margin: 3rem 0;
-`;
-
-const CharacterCard = styled.div`
-  background-color: white;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  padding: 2rem;
-  margin-top: 2rem;
-`;
-
-const CharacterHeader = styled.div`
-  margin-bottom: 1.5rem;
-  text-align: center;
-`;
-
-const CharacterName = styled.h2`
-  font-size: 2rem;
-  margin-bottom: 0.5rem;
-  color: #2c3e50;
-`;
-
-const CharacterDetails = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: #7f8c8d;
-`;
-
-const DetailItem = styled.span`
-  font-size: 1.1rem;
-`;
-
-const DetailSeparator = styled.span`
-  margin: 0 0.5rem;
-`;
-
-const CharacterImageContainer = styled.div`
+const GenerateButton = styled.button`
+  display: block;
   width: 100%;
-  display: flex;
-  justify-content: center;
-  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background-color: #bb8930;
+  color: #1a1a2e;
+  border: none;
+  border-radius: 4px;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+
+  &:hover {
+    background-color: #d4a959;
+  }
 `;
 
-const CharacterImage = styled.img`
-  max-width: 300px;
-  max-height: 300px;
-  border-radius: 8px;
-  object-fit: cover;
-`;
-
-const CharacterSection = styled.div`
-  margin-bottom: 1.5rem;
-`;
-
-const SectionTitle = styled.h3`
-  font-size: 1.3rem;
-  color: #2c3e50;
-  margin-bottom: 0.5rem;
-  border-bottom: 1px solid #ecf0f1;
-  padding-bottom: 0.5rem;
-`;
-
-const SectionContent = styled.p`
-  font-size: 1rem;
+const BioContent = styled.p`
+  font-size: 1.1rem;
   line-height: 1.6;
-  color: #34495e;
+  color: #333;
+  margin-bottom: 1.5rem;
+  font-style: italic;
 `;
 
 const ActionButtons = styled.div`
   display: flex;
-  justify-content: center;
   gap: 1rem;
-  margin-top: 2rem;
-  
-  @media (max-width: 600px) {
-    flex-direction: column;
-  }
+  justify-content: flex-end;
 `;
 
 const ActionButton = styled.button`
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: 0.5rem;
-  background-color: #3498db;
-  color: white;
+  padding: 0.8rem 1.5rem;
+  background-color: rgba(187, 137, 48, 0.2);
+  color: #bb8930;
+  border: 1px solid #bb8930;
+  border-radius: 4px;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s;
+
+  &:hover {
+    background-color: rgba(187, 137, 48, 0.3);
+  }
+`;
+
+const NextButton = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.8rem 1.5rem;
+  background-color: #bb8930;
+  color: #1a1a2e;
   border: none;
   border-radius: 4px;
-  padding: 0.75rem 1.5rem;
+  font-family: "Cormorant Garamond", serif;
+  font-weight: bold;
   font-size: 1rem;
   cursor: pointer;
   transition: background-color 0.3s;
-  
+
   &:hover {
-    background-color: #2980b9;
+    background-color: #d4a959;
   }
 `;
+
+const LoadingMessage = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+`;
+
+const CrownIcon = styled.div`
+  font-size: 2rem;
+  margin-bottom: 1rem;
+`;
+
+export default SummaryPage;
