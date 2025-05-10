@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import styled from 'styled-components';
 import { FaRedo, FaDice, FaChevronDown, FaChevronUp } from 'react-icons/fa';
 
@@ -217,7 +217,7 @@ const MotivationalFusion: React.FC<MotivationalFusionProps> = ({ onMotivationGen
     { id: 'rule', label: 'Rule' }
   ];
   
-  const drivingForces: DrivingForce[] = [
+  const drivingForces: DrivingForce[] = useMemo(() => [
     { id: 'love', label: 'Love' },
     { id: 'money', label: 'Money' },
     { id: 'revenge', label: 'Revenge' },
@@ -226,9 +226,11 @@ const MotivationalFusion: React.FC<MotivationalFusionProps> = ({ onMotivationGen
     { id: 'loyalty', label: 'Loyalty' },
     { id: 'justice', label: 'Justice' },
     { id: 'despair', label: 'Despair' },
-    { id: 'glory', label: 'Glory' }
-  ];
-  
+		{ id: 'glory', label: 'Glory' },
+	],
+	[],
+);
+
   const archetypes = [
     { id: 'heroic', label: 'Heroic' },
     { id: 'antihero', label: 'Anti-Hero' },
@@ -248,7 +250,6 @@ const MotivationalFusion: React.FC<MotivationalFusionProps> = ({ onMotivationGen
   
   // Load saved state from localStorage
   useEffect(() => {
-    if (typeof window !== 'undefined') {
       const savedAction = localStorage.getItem('motivationalFusion_selectedAction');
       if (savedAction) setSelectedAction(savedAction);
       
@@ -272,7 +273,6 @@ const MotivationalFusion: React.FC<MotivationalFusionProps> = ({ onMotivationGen
       
       const savedArchetype = localStorage.getItem('motivationalFusion_selectedArchetype');
       if (savedArchetype) setSelectedArchetype(savedArchetype);
-    }
   }, []);
   
   // Initialize force intensities
@@ -284,11 +284,10 @@ const MotivationalFusion: React.FC<MotivationalFusionProps> = ({ onMotivationGen
       });
       setForceIntensities(intensities);
     }
-  }, [forceIntensities]);
+  }, [forceIntensities, drivingForces]);
   
   // Save state to localStorage when it changes
   useEffect(() => {
-    if (typeof window !== 'undefined') {
       localStorage.setItem('motivationalFusion_selectedAction', selectedAction || '');
       localStorage.setItem('motivationalFusion_customAction', customAction);
       localStorage.setItem('motivationalFusion_selectedForces', JSON.stringify(selectedForces));
@@ -297,7 +296,6 @@ const MotivationalFusion: React.FC<MotivationalFusionProps> = ({ onMotivationGen
       localStorage.setItem('motivationalFusion_showAdvancedMode', JSON.stringify(showAdvancedMode));
       localStorage.setItem('motivationalFusion_forceIntensities', JSON.stringify(forceIntensities));
       localStorage.setItem('motivationalFusion_selectedArchetype', selectedArchetype || '');
-    }
   }, [selectedAction, customAction, selectedForces, customForce, generatedMotive, showAdvancedMode, forceIntensities, selectedArchetype]);
   
   // Handle action selection

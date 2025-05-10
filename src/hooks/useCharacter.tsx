@@ -78,7 +78,7 @@ export const useCharacter = () => {
     Object.entries(updates).forEach(([key, value]) => {
       if (key === 'traits' && value) {
         // Handle nested traits object
-        Object.entries(value as Record<string, string>).forEach(([traitKey, traitValue]) => {
+        Object.entries(value).forEach(([traitKey, traitValue]) => {
           localStorage.setItem(`character${traitKey.charAt(0).toUpperCase() + traitKey.slice(1)}`, traitValue);
         });
       } else if (typeof value === 'string') {
