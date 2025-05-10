@@ -9,7 +9,10 @@ interface PageProps {
   subtitle?: string;
   showNavigation?: boolean;
   darkMode?: boolean;
+  width?: PageWidth;
 }
+
+type PageWidth = 'narrow' | 'default' | 'wide';
 
 const Page: React.FC<PageProps> = ({
   children,
@@ -17,6 +20,7 @@ const Page: React.FC<PageProps> = ({
   subtitle,
   showNavigation = false,
   darkMode = true,
+  width = 'default',
 }) => {
   const pageVariants = {
     initial: {
@@ -43,6 +47,7 @@ const Page: React.FC<PageProps> = ({
         exit="exit"
         variants={pageVariants}
         transition={{ duration: 0.5 }}
+        width={width}
       >
         {title && <PageTitle>{title}</PageTitle>}
         {subtitle && <PageSubtitle>{subtitle}</PageSubtitle>}
@@ -60,8 +65,8 @@ const PageContainer = styled.div<{ darkMode: boolean }>`
   font-family: "Cormorant Garamond", serif;
 `;
 
-const PageContent = styled(motion.main)`
-  max-width: 1200px;
+const PageContent = styled(motion.main)<{ width: PageWidth }>`
+  max-width: ${props => props.width === 'narrow' ? '800px' : props.width === 'wide' ? '1200px' : '1000px'};
   margin: 0 auto;
   padding: 2rem;
   padding-bottom: 80px;

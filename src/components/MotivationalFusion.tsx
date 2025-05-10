@@ -13,17 +13,6 @@ interface DrivingForce {
   label: string;
 }
 
-// Styled Components
-const Container = styled.div`
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 2rem;
-  background-color: #1a1a2e;
-  border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-  color: #e6e6e6;
-`;
-
 const Title = styled.h2`
   font-size: 1.8rem;
   margin-bottom: 1.5rem;
@@ -406,7 +395,7 @@ const MotivationalFusion: React.FC<MotivationalFusionProps> = ({ onMotivationGen
   };
   
   return (
-    <Container>
+    <>
       <Title>Motivational Fusion Tool</Title>
       
       <StepContainer>
@@ -522,7 +511,7 @@ const MotivationalFusion: React.FC<MotivationalFusionProps> = ({ onMotivationGen
           </ArchetypeContainer>
         </AdvancedModeContainer>
       )}
-    </Container>
+    </>
   );
 };
 

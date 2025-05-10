@@ -1,20 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import styled from "styled-components";
+import styled from "@emotion/styled";
 import { FaEdit, FaDownload, FaShare } from "react-icons/fa";
 import { Submission } from "@/data/submissions";
 import CharacterImage from "./CharacterImage";
-import { Race } from "@/data/races";
-import { CharacterClass } from "@/data/classes";
+import { Character } from "@/hooks/useCharacter";
+
 interface CharacterSummaryProps {
-  character: {
-    race: Race;
-    class: CharacterClass;
-    name: string;
-    background: string;
-    motivation: string;
-    appearance: string;
-  };
+  character: Character | null;
   artwork?: Submission;
 }
 
@@ -33,7 +26,6 @@ const CharacterSummary: React.FC<CharacterSummaryProps> = ({
   }, [character]);
 
   const handleEditSection = (section: string) => {
-    const { race, class: characterClass } = router.query;
     switch (section) {
       case "race":
         router.push("/character/race");
@@ -42,12 +34,10 @@ const CharacterSummary: React.FC<CharacterSummaryProps> = ({
         router.push("/character/class");
         break;
       case "traits":
-        router.push(`/character/traits?race=${race}&class=${characterClass}`);
+        router.push("/character/traits");
         break;
       case "motivation":
-        router.push(
-          `/character/motivation?race=${race}&class=${characterClass}`
-        );
+        router.push("/character/motivation");
         break;
       default:
         break;
@@ -64,21 +54,21 @@ const CharacterSummary: React.FC<CharacterSummaryProps> = ({
     alert("Character sharing functionality will be implemented here");
   };
 
-  if (isLoading) {
+  if (isLoading || !character) {
     return <LoadingContainer>Loading character summary...</LoadingContainer>;
   }
 
   return (
     <Container>
       <Header>
-        <Title>{character?.name || "Unnamed Character"}</Title>
+        <Title>{character.name || "Unnamed Character"}</Title>
         <Subtitle>
-          {character?.race.name} {character?.class.name}
+          {character.race?.name} {character.class?.name}
         </Subtitle>
       </Header>
 
       <ContentGrid>
-        {character && character.race && character.class && (
+        {character.race && character.class && (
           <CharacterImage
             race={character.race}
             characterClass={character.class}
@@ -95,7 +85,7 @@ const CharacterSummary: React.FC<CharacterSummaryProps> = ({
               </EditButton>
             </SectionHeader>
             <SectionContent>
-              {character?.background || "No background information available."}
+              {character.background || "No background information available."}
             </SectionContent>
           </SectionCard>
 
@@ -107,19 +97,32 @@ const CharacterSummary: React.FC<CharacterSummaryProps> = ({
               </EditButton>
             </SectionHeader>
             <SectionContent>
-              {character?.motivation || "No motivation information available."}
+              {character.motivation || "No motivation information available."}
             </SectionContent>
           </SectionCard>
 
           <SectionCard>
             <SectionHeader>
-              <SectionTitle>Appearance</SectionTitle>
+              <SectionTitle>Traits</SectionTitle>
               <EditButton onClick={() => handleEditSection("traits")}>
                 <FaEdit /> Edit
               </EditButton>
             </SectionHeader>
             <SectionContent>
-              {character?.appearance || "No appearance information available."}
+              <TraitsList>
+                <TraitItem>
+                  <TraitLabel>Personality:</TraitLabel> {character.traits?.personality.join(", ") || "Unknown"}
+                </TraitItem>
+                <TraitItem>
+                  <TraitLabel>Fear:</TraitLabel> {character.traits?.fear.join(", ") || "Unknown"}
+                </TraitItem>
+                <TraitItem>
+                  <TraitLabel>Memory:</TraitLabel> {character.traits?.memory || "Unknown"}
+                </TraitItem>
+                <TraitItem>
+                  <TraitLabel>Possession:</TraitLabel> {character.traits?.possession || "Unknown"}
+                </TraitItem>
+              </TraitsList>
             </SectionContent>
           </SectionCard>
         </CharacterInfoSection>
@@ -144,6 +147,10 @@ const Container = styled.div`
   max-width: 1200px;
   margin: 0 auto;
   padding: 2rem;
+  
+  @media (max-width: 768px) {
+    padding: 1rem;
+  }
 `;
 
 const Header = styled.header`
@@ -154,13 +161,21 @@ const Header = styled.header`
 const Title = styled.h1`
   font-size: 2.5rem;
   margin-bottom: 0.5rem;
-  color: #2c3e50;
+  color: #bb8930;
+  
+  @media (max-width: 768px) {
+    font-size: 2rem;
+  }
 `;
 
 const Subtitle = styled.h2`
   font-size: 1.5rem;
-  color: #7f8c8d;
+  color: #c7bfd4;
   font-weight: normal;
+  
+  @media (max-width: 768px) {
+    font-size: 1.2rem;
+  }
 `;
 
 const ContentGrid = styled.div`
@@ -171,34 +186,30 @@ const ContentGrid = styled.div`
 
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
+    gap: 1.5rem;
   }
-`;
-
-const PlaceholderImage = styled.div`
-  width: 100%;
-  max-width: 300px;
-  height: 400px;
-  background-color: #f0f0f0;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  color: #7f8c8d;
-  padding: 1rem;
 `;
 
 const CharacterInfoSection = styled.div`
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  
+  @media (max-width: 768px) {
+    gap: 1rem;
+  }
 `;
 
 const SectionCard = styled.div`
-  background-color: #ffffff;
+  background-color: rgba(26, 26, 46, 0.7);
   border-radius: 8px;
   padding: 1.5rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  border: 1px solid #444;
+  
+  @media (max-width: 768px) {
+    padding: 1rem;
+  }
 `;
 
 const SectionHeader = styled.div`
@@ -206,26 +217,49 @@ const SectionHeader = styled.div`
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1rem;
-  border-bottom: 1px solid #ecf0f1;
+  border-bottom: 1px solid #444;
   padding-bottom: 0.5rem;
 `;
 
 const SectionTitle = styled.h3`
   font-size: 1.2rem;
-  color: #2c3e50;
+  color: #bb8930;
+  margin: 0;
+  
+  @media (max-width: 768px) {
+    font-size: 1.1rem;
+  }
+`;
+
+const SectionContent = styled.div`
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #c7bfd4;
+  
+  @media (max-width: 768px) {
+    font-size: 0.95rem;
+  }
+`;
+
+const TraitsList = styled.ul`
+  list-style: none;
+  padding: 0;
   margin: 0;
 `;
 
-const SectionContent = styled.p`
-  font-size: 1rem;
-  line-height: 1.6;
-  color: #34495e;
+const TraitItem = styled.li`
+  margin-bottom: 0.5rem;
+`;
+
+const TraitLabel = styled.span`
+  font-weight: bold;
+  color: #bb8930;
 `;
 
 const EditButton = styled.button`
   background: none;
   border: none;
-  color: #3498db;
+  color: #bb8930;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -233,7 +267,7 @@ const EditButton = styled.button`
   font-size: 0.9rem;
 
   &:hover {
-    text-decoration: underline;
+    color: #d4a959;
   }
 `;
 
@@ -246,6 +280,8 @@ const ActionButtons = styled.div`
   @media (max-width: 768px) {
     flex-direction: column;
     align-items: center;
+    gap: 0.75rem;
+    width: 100%;
   }
 `;
 
@@ -254,8 +290,8 @@ const ActionButton = styled.button`
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  background-color: #3498db;
-  color: white;
+  background-color: #bb8930;
+  color: #1a1a2e;
   border: none;
   border-radius: 4px;
   padding: 0.75rem 1.5rem;
@@ -264,7 +300,13 @@ const ActionButton = styled.button`
   transition: background-color 0.3s;
 
   &:hover {
-    background-color: #2980b9;
+    background-color: #d4a959;
+  }
+  
+  @media (max-width: 768px) {
+    width: 100%;
+    padding: 0.7rem 1rem;
+    font-size: 0.95rem;
   }
 `;
 
@@ -274,5 +316,10 @@ const LoadingContainer = styled.div`
   align-items: center;
   height: 400px;
   font-size: 1.2rem;
-  color: #7f8c8d;
+  color: #c7bfd4;
+  
+  @media (max-width: 768px) {
+    height: 300px;
+    font-size: 1.1rem;
+  }
 `;

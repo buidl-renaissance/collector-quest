@@ -10,6 +10,9 @@ import CharacterImage from "@/components/CharacterImage";
 import CharacterDescription from "@/components/CharacterDescription";
 import MotivationalFusion from "@/components/MotivationalFusion";
 import Page from "@/components/Page";
+import { BackButton, NextButton } from "@/components/styled/buttons";
+import { Container, LoadingMessage } from "@/components/styled/layout";
+import { Title, Subtitle } from "@/components/styled/typography";
 
 const MotivationPage: React.FC = () => {
   const router = useRouter();
@@ -75,18 +78,17 @@ const MotivationPage: React.FC = () => {
 
   return (
     <PageTransition>
-      <Page>
-        <Container>
-          <BackButton onClick={handleBack}>
-            <FaArrowLeft /> Back to Traits
-          </BackButton>
+      <Page width="narrow">
+        <BackButton onClick={handleBack}>
+          <FaArrowLeft /> Back to Traits
+        </BackButton>
 
-          <Title>What Drives Your Character?</Title>
-          <Subtitle>
-            Craft the perfect motivation for your character&apos;s journey
-          </Subtitle>
+        <Title>What Drives Your Character?</Title>
+        <Subtitle>
+          Craft the perfect motivation for your character&apos;s journey
+        </Subtitle>
 
-          {/* <CharacterPreview>
+        {/* <CharacterPreview>
             <CharacterImage
               race={selectedRace}
               characterClass={selectedClass}
@@ -99,116 +101,22 @@ const MotivationPage: React.FC = () => {
             />
           </CharacterPreview> */}
 
-          <MotivationalFusion
-            onMotivationGenerated={handleMotivationGenerated}
-          />
+        <MotivationalFusion onMotivationGenerated={handleMotivationGenerated} />
 
-          <NavigationFooter>
-            <NextButton onClick={handleNext} disabled={!generatedMotivation}>
-              Next Step <FaArrowRight />
-            </NextButton>
-          </NavigationFooter>
-        </Container>
+        <NavigationFooter>
+          <NextButton onClick={handleNext} disabled={!generatedMotivation}>
+            Next Step <FaArrowRight />
+          </NextButton>
+        </NavigationFooter>
       </Page>
     </PageTransition>
   );
 };
 
-// Animations
-const fadeIn = keyframes`
-  from { opacity: 0; }
-  to { opacity: 1; }
-`;
-
-const slideUp = keyframes`
-  from { transform: translateY(20px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
-`;
-
-// Styled Components
-const Container = styled.div`
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 2rem;
-  font-family: "Cormorant Garamond", serif;
-  animation: ${fadeIn} 0.5s ease-in;
-  padding-bottom: 80px;
-  color: #e0e0e0;
-  background-color: #1a1a2e;
-  min-height: 100vh;
-  transition: background-color 0.3s, color 0.3s;
-`;
-
-const BackButton = styled.button`
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  color: #bb8930;
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 1rem;
-  transition: color 0.3s;
-
-  &:hover {
-    color: #d4a959;
-  }
-`;
-
-const Title = styled.h1`
-  font-size: 2.5rem;
-  color: #bb8930;
-  margin-bottom: 0.5rem;
-`;
-
-const Subtitle = styled.p`
-  font-size: 1.2rem;
-  color: #c7bfd4;
-  margin-bottom: 2rem;
-`;
-
-const CharacterPreview = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 2rem;
-`;
-
 const NavigationFooter = styled.div`
   display: flex;
   justify-content: flex-end;
   margin-top: 2rem;
-`;
-
-const NextButton = styled.button`
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.8rem 1.5rem;
-  background-color: #bb8930;
-  color: #1a1a2e;
-  border: none;
-  border-radius: 4px;
-  font-family: "Cormorant Garamond", serif;
-  font-weight: bold;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background-color 0.3s;
-  opacity: ${(props) => (props.disabled ? 0.5 : 1)};
-  pointer-events: ${(props) => (props.disabled ? "none" : "auto")};
-
-  &:hover {
-    background-color: #d4a959;
-  }
-`;
-
-const LoadingMessage = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-  color: #e0e0e0;
 `;
 
 const CrownIcon = styled.div`
