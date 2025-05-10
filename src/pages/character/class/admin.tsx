@@ -13,7 +13,7 @@ interface CharacterClass {
   id: string;
   name: string;
   description: string;
-  abilities: string[];
+  abilities: Array<string | { name: string; description: string; level: number }>;
   image: string;
   isActive?: boolean;
 }
@@ -166,7 +166,9 @@ export default function CharacterClassAdmin({ classes, error: serverError }: {
                 <AbilitiesList>
                   {characterClass.abilities.slice(0, 3).map((ability, index) => (
                     <AbilityItem key={index}>
-                      {typeof ability === 'string' ? ability : ability}
+                      {typeof ability === 'string' 
+                        ? ability 
+                        : ability.name}
                     </AbilityItem>
                   ))}
                 </AbilitiesList>

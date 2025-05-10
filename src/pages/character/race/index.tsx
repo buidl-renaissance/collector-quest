@@ -1,79 +1,37 @@
-import React, { useState, useEffect } from "react";
-import { GetServerSideProps } from "next";
+import React from "react";
 import { useRouter } from "next/router";
-import Link from "next/link";
 import styled from "@emotion/styled";
 import { keyframes } from "@emotion/react";
-import { FaArrowLeft, FaCrown, FaCheck, FaRandom, FaImage, FaArrowRight } from "react-icons/fa";
-import BuildCharacter, { Character } from "@/components/BuildCharacter";
+import { FaCrown, FaArrowRight } from "react-icons/fa";
 import CharacterRaces from "@/components/CharacterRaces";
+import { useRace } from "@/hooks/useRace";
+import { coreRaces, expandedRaces, Race } from "@/data/races";
 import { getAllRaces } from "@/db/races";
-import { Race } from "@/data/races";
+import { GetServerSideProps } from "next";
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
+interface CharacterCreatePageProps {
+  races: Race[];
+}
 
+export const getServerSideProps: GetServerSideProps<CharacterCreatePageProps> = async () => {
   const races = await getAllRaces();
-
   return {
     props: {
       races,
-      metadata: {
-        title: `Create Character | Lord Smearington's Absurd NFT Gallery`,
-        description: "Craft your character for an immersive journey through the gallery.",
-        image: "/images/character-creation-banner.jpg",
-        url: `https://smearington.theethical.ai/character/create`,
-      },
     },
   };
 };
 
-const CharacterCreatePage: React.FC<{ races: Race[] }> = ({ races }) => {
+const CharacterCreatePage: React.FC<CharacterCreatePageProps> = ({
+  races
+}) => {
   const router = useRouter();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [characterImage, setCharacterImage] = useState<string>("");
-  const [selectedRace, setSelectedRace] = useState<Race | null>(null);
-
-  const handleCharacterCreated = async (character: Character) => {
-    setLoading(true);
-    setError("");
-    
-    try {
-      // Here you would typically save the character to your backend
-      const response = await fetch("/api/character", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          ...character,
-          image: characterImage
-        }),
-      });
-      
-      if (!response.ok) {
-        throw new Error("Failed to create character");
-      }
-      
-      const data = await response.json();
-      
-      // Redirect to the explore page or character detail page
-      router.push("/explore");
-    } catch (err) {
-      console.error("Error creating character:", err);
-      setError("Failed to create your character. Please try again.");
-      setLoading(false);
-    }
-  };
-
-  const handleRaceSelect = (race: Race) => {
-    setSelectedRace(race);
-  };
+  const { selectedRace, selectRace, loading } = useRace();
+  const [error, setError] = React.useState("");
 
   const handleNext = () => {
     if (selectedRace) {
-      // Navigate to the next step or process the selected race
-      router.push(`/character/class?race=${selectedRace.id}`);
+      router.push('/character/class');
     }
   };
 
@@ -82,7 +40,7 @@ const CharacterCreatePage: React.FC<{ races: Race[] }> = ({ races }) => {
       <Container>
         <LoadingMessage>
           <CrownIcon><FaCrown /></CrownIcon>
-          {characterImage ? "Saving your character..." : "Creating your character..."}
+          Loading...
         </LoadingMessage>
       </Container>
     );
@@ -90,10 +48,6 @@ const CharacterCreatePage: React.FC<{ races: Race[] }> = ({ races }) => {
 
   return (
     <Container>
-      {/* <BackLink href="/explore">
-        <FaArrowLeft /> Back to Gallery
-      </BackLink> */}
-      
       <Title>Craft Your Character</Title>
       <Subtitle>Who will you be in Lord Smearington&apos;s Gallery of the Absurd?</Subtitle>
       
@@ -101,7 +55,7 @@ const CharacterCreatePage: React.FC<{ races: Race[] }> = ({ races }) => {
       
       <CharacterRaces 
         races={races} 
-        onSelectRace={handleRaceSelect} 
+        onSelectRace={selectRace} 
         selectedRace={selectedRace?.name}
       />
       

@@ -1,13 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
-import styled from 'styled-components';
-import { FaEdit, FaDownload, FaShare } from 'react-icons/fa';
-import { Submission } from '@/data/submissions';
-
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/router";
+import styled from "styled-components";
+import { FaEdit, FaDownload, FaShare } from "react-icons/fa";
+import { Submission } from "@/data/submissions";
+import CharacterImage from "./CharacterImage";
+import { Race } from "@/data/races";
+import { CharacterClass } from "@/data/classes";
 interface CharacterSummaryProps {
-  character?: {
-    race: string;
-    class: string;
+  character: {
+    race: Race;
+    class: CharacterClass;
     name: string;
     background: string;
     motivation: string;
@@ -16,7 +18,10 @@ interface CharacterSummaryProps {
   artwork?: Submission;
 }
 
-const CharacterSummary: React.FC<CharacterSummaryProps> = ({ character, artwork }) => {
+const CharacterSummary: React.FC<CharacterSummaryProps> = ({
+  character,
+  artwork,
+}) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
 
@@ -30,17 +35,19 @@ const CharacterSummary: React.FC<CharacterSummaryProps> = ({ character, artwork 
   const handleEditSection = (section: string) => {
     const { race, class: characterClass } = router.query;
     switch (section) {
-      case 'race':
-        router.push('/character/race');
+      case "race":
+        router.push("/character/race");
         break;
-      case 'class':
-        router.push('/character/class');
+      case "class":
+        router.push("/character/class");
         break;
-      case 'bio':
-        router.push(`/character/bio?race=${race}&class=${characterClass}`);
+      case "traits":
+        router.push(`/character/traits?race=${race}&class=${characterClass}`);
         break;
-      case 'motivation':
-        router.push(`/character/motivation?race=${race}&class=${characterClass}`);
+      case "motivation":
+        router.push(
+          `/character/motivation?race=${race}&class=${characterClass}`
+        );
         break;
       default:
         break;
@@ -49,12 +56,12 @@ const CharacterSummary: React.FC<CharacterSummaryProps> = ({ character, artwork 
 
   const handleDownloadCharacterSheet = () => {
     // Implementation for downloading character sheet as PDF or image
-    alert('Character sheet download functionality will be implemented here');
+    alert("Character sheet download functionality will be implemented here");
   };
 
   const handleShareCharacter = () => {
     // Implementation for sharing character on social media or generating a link
-    alert('Character sharing functionality will be implemented here');
+    alert("Character sharing functionality will be implemented here");
   };
 
   if (isLoading) {
@@ -64,50 +71,56 @@ const CharacterSummary: React.FC<CharacterSummaryProps> = ({ character, artwork 
   return (
     <Container>
       <Header>
-        <Title>{character?.name || 'Unnamed Character'}</Title>
-        <Subtitle>{character?.race} {character?.class}</Subtitle>
+        <Title>{character?.name || "Unnamed Character"}</Title>
+        <Subtitle>
+          {character?.race.name} {character?.class.name}
+        </Subtitle>
       </Header>
 
       <ContentGrid>
-        <CharacterImageSection>
-          {artwork ? (
-            <CharacterImage src={artwork.imageUrl} alt={character?.name || 'Character'} />
-          ) : (
-            <PlaceholderImage>
-              <p>Character artwork will appear here</p>
-            </PlaceholderImage>
-          )}
-        </CharacterImageSection>
+        {character && character.race && character.class && (
+          <CharacterImage
+            race={character.race}
+            characterClass={character.class}
+            size="large"
+          />
+        )}
 
         <CharacterInfoSection>
           <SectionCard>
             <SectionHeader>
               <SectionTitle>Background</SectionTitle>
-              <EditButton onClick={() => handleEditSection('bio')}>
+              <EditButton onClick={() => handleEditSection("traits")}>
                 <FaEdit /> Edit
               </EditButton>
             </SectionHeader>
-            <SectionContent>{character?.background || 'No background information available.'}</SectionContent>
+            <SectionContent>
+              {character?.background || "No background information available."}
+            </SectionContent>
           </SectionCard>
 
           <SectionCard>
             <SectionHeader>
               <SectionTitle>Motivation</SectionTitle>
-              <EditButton onClick={() => handleEditSection('motivation')}>
+              <EditButton onClick={() => handleEditSection("motivation")}>
                 <FaEdit /> Edit
               </EditButton>
             </SectionHeader>
-            <SectionContent>{character?.motivation || 'No motivation information available.'}</SectionContent>
+            <SectionContent>
+              {character?.motivation || "No motivation information available."}
+            </SectionContent>
           </SectionCard>
 
           <SectionCard>
             <SectionHeader>
               <SectionTitle>Appearance</SectionTitle>
-              <EditButton onClick={() => handleEditSection('bio')}>
+              <EditButton onClick={() => handleEditSection("traits")}>
                 <FaEdit /> Edit
               </EditButton>
             </SectionHeader>
-            <SectionContent>{character?.appearance || 'No appearance information available.'}</SectionContent>
+            <SectionContent>
+              {character?.appearance || "No appearance information available."}
+            </SectionContent>
           </SectionCard>
         </CharacterInfoSection>
       </ContentGrid>
@@ -155,24 +168,10 @@ const ContentGrid = styled.div`
   grid-template-columns: 1fr 2fr;
   gap: 2rem;
   margin-bottom: 2rem;
-  
+
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
   }
-`;
-
-const CharacterImageSection = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-`;
-
-const CharacterImage = styled.img`
-  width: 100%;
-  max-width: 300px;
-  height: auto;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 `;
 
 const PlaceholderImage = styled.div`
@@ -232,7 +231,7 @@ const EditButton = styled.button`
   align-items: center;
   gap: 0.5rem;
   font-size: 0.9rem;
-  
+
   &:hover {
     text-decoration: underline;
   }
@@ -243,7 +242,7 @@ const ActionButtons = styled.div`
   justify-content: center;
   gap: 1rem;
   margin-top: 2rem;
-  
+
   @media (max-width: 768px) {
     flex-direction: column;
     align-items: center;
@@ -263,7 +262,7 @@ const ActionButton = styled.button`
   font-size: 1rem;
   cursor: pointer;
   transition: background-color 0.3s;
-  
+
   &:hover {
     background-color: #2980b9;
   }

@@ -1,10 +1,10 @@
 import { serve } from "inngest/next";
-import { inngest } from "@/inngest/client";
+import { inngestServer } from "@/inngest/server";
 import { helloWorld, generateImageFunction } from "@/inngest/functions";
 
 // Create an API that serves zero functions
 export default serve({
-  client: inngest,
+  client: inngestServer,
   functions: [
     helloWorld,
     generateImageFunction,

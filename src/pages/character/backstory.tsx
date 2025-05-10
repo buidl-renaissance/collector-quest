@@ -1,293 +1,125 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/router";
 import styled from "@emotion/styled";
 import { keyframes } from "@emotion/react";
-import { FaArrowLeft, FaArrowRight, FaSun, FaMoon, FaPlus, FaCopy } from "react-icons/fa";
-import { GetServerSideProps } from "next";
-import { Race } from "@/data/races";
-import { CharacterClass, getCharacterClassById } from "@/data/classes";
-import { getRaceById } from "@/db/races";
+import { FaArrowLeft, FaArrowRight, FaBook } from "react-icons/fa";
+import { useRace } from '@/hooks/useRace';
+import { useCharacterClass } from '@/hooks/useCharacterClass';
 import CharacterImage from "@/components/CharacterImage";
 import CharacterDescription from "@/components/CharacterDescription";
 import PageTransition from "@/components/PageTransition";
-import { generateImage } from "@/lib/image";
 
-interface BackstoryPageProps {
-  race: Race;
-  class: CharacterClass;
-}
-
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const { race, class: selectedClass } = context.query;
-
-  if (!race || !selectedClass) {
-    return {
-      redirect: {
-        destination: "/character/race",
-        permanent: false,
-      },
-    };
-  }
-
-  const dbRace = await getRaceById(race as string);
-  const dbClass = await getCharacterClassById(selectedClass as string);
-
-  return {
-    props: { race: dbRace, class: dbClass },
-  };
-};
-
-
-const BackstoryPage: React.FC<BackstoryPageProps> = ({ race, class: selectedClass }) => {
+const BackstoryPage: React.FC = () => {
   const router = useRouter();
-  const [darkMode, setDarkMode] = useState(true);
+  const { selectedRace, loading: raceLoading } = useRace();
+  const { selectedClass, loading: classLoading } = useCharacterClass();
   const [isLoading, setIsLoading] = useState(false);
-  const [characterBackstory, setCharacterBackstory] = useState<string>("");
-  const [isFirstPerson, setIsFirstPerson] = useState(false);
-  const [formData, setFormData] = useState({
-    childhoodEvent: "",
-    formativeExperience: "",
-    mentor: "",
-    goal: "",
-    secretOrRegret: "",
-  });
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+  // Redirect if no race or class is selected
+  React.useEffect(() => {
+    if (!raceLoading && !selectedRace) {
+      router.push('/character/race');
+    } else if (!classLoading && !selectedClass) {
+      router.push('/character/class');
+    }
+  }, [selectedRace, selectedClass, raceLoading, classLoading, router]);
+
+  const handleNext = () => {
+    router.push('/character/motivation');
   };
 
   const handleBack = () => {
-    router.push("/character/bio");
+    router.push('/character/traits');
   };
 
-  const generateBackstory = () => {
-    setIsLoading(true);
-
-    // Simulate API call or processing time
-    setTimeout(() => {
-      const { childhoodEvent, formativeExperience, mentor, goal, secretOrRegret } = formData;
-
-      const firstPersonBackstory = `
-        I was born into a world that would shape me in ways I never expected. As a young ${race.name}, ${childhoodEvent}. This early experience set me on a path that would eventually lead me to become a ${selectedClass.name}.
-
-        My journey truly began when ${formativeExperience}. It was during this time that I met ${mentor}, who saw potential in me that I hadn't yet recognized in myself. Under their guidance, I learned the ways of the ${selectedClass.name}, honing my skills and discovering my true calling.
-
-        Now, I travel the lands with a clear purpose: ${goal}. This drive pushes me forward, even when the path grows dark and uncertain.
-
-        Yet, there is something I keep hidden from those I meet along the way. ${secretOrRegret} This secret weighs on me, but perhaps one day I will find redemption or peace.
-      `;
-
-      const thirdPersonBackstory = `
-        Born into a world that would shape them in unexpected ways, this ${race.name} experienced a childhood where ${childhoodEvent}. This early experience set them on a path that would eventually lead to becoming a ${selectedClass.name}.
-
-        Their journey truly began when ${formativeExperience}. It was during this time that they met ${mentor}, who saw potential that hadn't yet been recognized. Under this guidance, they learned the ways of the ${selectedClass.name}, honing their skills and discovering their true calling.
-
-        Now, they travel the lands with a clear purpose: ${goal}. This drive pushes them forward, even when the path grows dark and uncertain.
-
-        Yet, there is something they keep hidden from those they meet along the way. ${secretOrRegret} This secret weighs heavily, but perhaps one day they will find redemption or peace.
-      `;
-
-      setCharacterBackstory(isFirstPerson ? firstPersonBackstory : thirdPersonBackstory);
-      setIsLoading(false);
-    }, 1500);
-  };
-
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(characterBackstory);
-    // Could add a toast notification here
-  };
-
-  const handleRandomize = () => {
-    const childhoodEvents = [
-      "I grew up in the shadow of a great war that devastated my homeland",
-      "I was raised by a community of scholars who valued knowledge above all else",
-      "My family was constantly on the move, never staying in one place for long",
-      "I was orphaned at a young age and raised by distant relatives who never truly accepted me"
-    ];
-
-    const formativeExperiences = [
-      "I witnessed a powerful display of magic that changed my understanding of the world",
-      "I survived a catastrophic event that claimed many lives around me",
-      "I discovered an ancient text that revealed secrets about my heritage",
-      "I was falsely accused of a crime and had to prove my innocence"
-    ];
-
-    const mentors = [
-      "a grizzled veteran who saw potential in my raw talent",
-      "an eccentric sage who taught me to see the world differently",
-      "a mysterious stranger who appeared when I needed guidance most",
-      "a childhood friend who pushed me to exceed my own limitations"
-    ];
-
-    const goals = [
-      "to uncover the truth about my family's mysterious past",
-      "to restore honor to a name that has been tarnished",
-      "to find a legendary artifact that is said to grant immense power",
-      "to protect the innocent from the darkness that threatens to consume the realm"
-    ];
-
-    const secrets = [
-      "I am responsible for a tragedy that cost innocent lives, and I've never confessed my role",
-      "I carry a cursed item that slowly corrupts my spirit, but I cannot part with it",
-      "I made a pact with an entity I don't fully understand, and the price may be more than I can bear",
-      "I am the last descendant of a bloodline thought extinct, and many would hunt me if they knew"
-    ];
-
-    setFormData({
-      childhoodEvent: childhoodEvents[Math.floor(Math.random() * childhoodEvents.length)],
-      formativeExperience: formativeExperiences[Math.floor(Math.random() * formativeExperiences.length)],
-      mentor: mentors[Math.floor(Math.random() * mentors.length)],
-      goal: goals[Math.floor(Math.random() * goals.length)],
-      secretOrRegret: secrets[Math.floor(Math.random() * secrets.length)],
-    });
-  };
+  if (raceLoading || classLoading || !selectedRace || !selectedClass) {
+    return (
+      <Container>
+        <LoadingMessage>
+          <BookIcon><FaBook /></BookIcon>
+          Loading...
+        </LoadingMessage>
+      </Container>
+    );
+  }
 
   return (
     <PageTransition>
-      <Container darkMode={darkMode}>
-        <Header>
-          <BackButton onClick={handleBack}>
-            <FaArrowLeft /> Back
-          </BackButton>
-          <ThemeToggle onClick={() => setDarkMode(!darkMode)}>
-            {darkMode ? <FaSun /> : <FaMoon />}
-          </ThemeToggle>
-        </Header>
+      <Container>
+        <BackButton onClick={handleBack}>
+          <FaArrowLeft /> Back to Traits
+        </BackButton>
 
-        <HeroSection>
-          <Title>Craft Your Character&apos;s Past</Title>
-          <Subtitle>
-            Define the events that shaped your hero&apos;s journey
-          </Subtitle>
-          <RandomizeButton onClick={handleRandomize}>
-            Randomize Answers
-          </RandomizeButton>
-        </HeroSection>
+        <Title>Character Backstory</Title>
+        <Subtitle>What shaped your character&apos;s past?</Subtitle>
 
-        <CharacterImage
-          race={race}
-          characterClass={selectedClass}
-          size="large"
-        />
-
-        <CharacterDescription
-          race={race}
-          characterClass={selectedClass}
-          size="large"
-        />
+        <CharacterPreview>
+          <CharacterImage 
+            race={selectedRace}
+            characterClass={selectedClass}
+            size="large"
+          />
+          <CharacterDescription
+            race={selectedRace}
+            characterClass={selectedClass}
+            size="large"
+          />
+        </CharacterPreview>
 
         <FormSection>
           <FormGroup>
-            <Label htmlFor="childhoodEvent">Childhood Event</Label>
+            <Label>Background</Label>
             <TextArea
-              id="childhoodEvent"
-              name="childhoodEvent"
-              value={formData.childhoodEvent}
-              onChange={handleInputChange}
-              placeholder="Describe a significant event from your character's childhood..."
+              placeholder="Describe your character's background and history..."
+              rows={6}
             />
           </FormGroup>
+
           <FormGroup>
-            <Label htmlFor="formativeExperience">Formative Experience</Label>
+            <Label>Personality Traits</Label>
             <TextArea
-              id="formativeExperience"
-              name="formativeExperience"
-              value={formData.formativeExperience}
-              onChange={handleInputChange}
-              placeholder="What experience shaped your character's path to their class?"
+              placeholder="What are your character's personality traits?"
+              rows={4}
             />
           </FormGroup>
+
           <FormGroup>
-            <Label htmlFor="mentor">Mentor or Influence</Label>
+            <Label>Ideals</Label>
             <TextArea
-              id="mentor"
-              name="mentor"
-              value={formData.mentor}
-              onChange={handleInputChange}
-              placeholder="Who taught or influenced your character the most?"
+              placeholder="What ideals drive your character?"
+              rows={4}
             />
           </FormGroup>
+
           <FormGroup>
-            <Label htmlFor="goal">Long-term Goal</Label>
+            <Label>Bonds</Label>
             <TextArea
-              id="goal"
-              name="goal"
-              value={formData.goal}
-              onChange={handleInputChange}
-              placeholder="What is your character's ultimate goal or purpose?"
+              placeholder="What bonds connect your character to others?"
+              rows={4}
             />
           </FormGroup>
+
           <FormGroup>
-            <Label htmlFor="secretOrRegret">Secret or Regret</Label>
+            <Label>Flaws</Label>
             <TextArea
-              id="secretOrRegret"
-              name="secretOrRegret"
-              value={formData.secretOrRegret}
-              onChange={handleInputChange}
-              placeholder="What secret or regret does your character carry?"
+              placeholder="What flaws or vices does your character have?"
+              rows={4}
             />
           </FormGroup>
         </FormSection>
 
-        {!characterBackstory ? (
-          <NavigationFooter>
-            <NextButton
-              onClick={generateBackstory}
-              disabled={
-                !formData.childhoodEvent ||
-                !formData.formativeExperience ||
-                !formData.mentor ||
-                !formData.goal ||
-                !formData.secretOrRegret
-              }
-            >
-              Create Backstory <FaArrowRight />
-            </NextButton>
-          </NavigationFooter>
-        ) : (
-          <ResultSection>
-            {isLoading ? (
-              <LoadingContainer>
-                <ScrollAnimation />
-                <LoadingText>Weaving your tale...</LoadingText>
-              </LoadingContainer>
-            ) : (
-              <>
-                <BackstoryScroll>
-                  <BackstoryContent>{characterBackstory}</BackstoryContent>
-                </BackstoryScroll>
-                <ActionButtons>
-                  <ActionButton onClick={copyToClipboard}>
-                    <FaCopy /> Copy
-                  </ActionButton>
-                  <ViewToggle>
-                    <ToggleLabel>
-                      <input
-                        type="checkbox"
-                        checked={isFirstPerson}
-                        onChange={() => {
-                          setIsFirstPerson(!isFirstPerson);
-                          if (characterBackstory) generateBackstory();
-                        }}
-                      />
-                      {isFirstPerson ? "First Person" : "Third Person"}
-                    </ToggleLabel>
-                  </ViewToggle>
-                </ActionButtons>
-              </>
-            )}
-          </ResultSection>
-        )}
+        <Navigation>
+          <BackButton onClick={handleBack}>
+            <FaArrowLeft /> Back
+          </BackButton>
+          <NextButton onClick={handleNext}>
+            Next <FaArrowRight />
+          </NextButton>
+        </Navigation>
       </Container>
     </PageTransition>
   );
 };
-
-export default BackstoryPage;
 
 // Animations
 const fadeIn = keyframes`
@@ -318,15 +150,15 @@ const unfurl = keyframes`
 `;
 
 // Styled Components
-const Container = styled.div<{ darkMode: boolean }>`
+const Container = styled.div`
   max-width: 800px;
   margin: 0 auto;
   padding: 2rem;
   font-family: "Cormorant Garamond", serif;
   animation: ${fadeIn} 0.5s ease-in;
   padding-bottom: 80px;
-  color: ${(props) => (props.darkMode ? "#E0DDE5" : "#333")};
-  background-color: ${(props) => (props.darkMode ? "#1A1A2E" : "#f5f5f7")};
+  color: #333;
+  background-color: #f5f5f7;
 `;
 
 const Header = styled.header`
@@ -587,4 +419,37 @@ const ToggleLabel = styled.label`
   input {
     margin: 0;
   }
+`;
+
+const LoadingMessage = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  height: 100vh;
+  font-size: 1.5rem;
+  color: #fff;
+`;
+
+const BookIcon = styled.div`
+  font-size: 3rem;
+  color: #4a90e2;
+  animation: float 3s ease-in-out infinite;
+`;
+
+const CharacterPreview = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  gap: 2rem;
+`;
+
+const Navigation = styled.div`
+  display: flex;
+  justify-content: space-between;
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid #444;
 `;
