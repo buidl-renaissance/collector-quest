@@ -1,10 +1,20 @@
 import { serve } from "inngest/next";
-import { inngestServer } from "@/inngest/server";
+import { inngest } from "@/inngest/client";
 import { helloWorld, generateImageFunction } from "@/inngest/functions";
+
+export const config = {
+  api: {
+    bodyParser: {
+      sizeLimit: '8mb',
+    },
+    responseLimit: '8mb',
+  },
+};
+
 
 // Create an API that serves zero functions
 export default serve({
-  client: inngestServer,
+  client: inngest,
   functions: [
     helloWorld,
     generateImageFunction,
