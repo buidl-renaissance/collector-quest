@@ -7,7 +7,8 @@ import Link from "next/link";
 import { Race, coreRaces, expandedRaces } from "@/data/races";
 import { GetServerSidePropsContext } from "next";
 import { getRaceById } from "@/db/races";
-import { uploadImage, generateImage } from "@/lib/image";
+import { uploadImage } from "@/lib/image";
+import { useImageGeneration } from "@/hooks/useImageGeneration";
 import { saveRace } from "@/lib/character";
 
 export const getServerSideProps = async (
@@ -52,8 +53,16 @@ const CharacterImagesPage: React.FC<CharacterImagesPageProps> = ({ race }) => {
   const [error, setError] = useState("");
   const [generatedImage, setGeneratedImage] = useState(race.image || "");
   const [prompt, setPrompt] = useState(
-    `${race.name}, a ${race.description}, replace the staff with a ${race.accessory}`
+    `${race.name}, a ${race.description}, replace the staff with a ${race.accessory || "wand"}`
   );
+
+  // Use our image generation hook
+  const {
+    generateImage,
+    isGenerating,
+    error: generationError,
+    progress
+  } = useImageGeneration();
 
   const handleGenerateImage = async () => {
     if (!prompt) {
@@ -61,22 +70,23 @@ const CharacterImagesPage: React.FC<CharacterImagesPageProps> = ({ race }) => {
       return;
     }
 
-    setLoading(true);
     setError("");
 
     try {
+      // Generate the image using our hook
       const image = await generateImage(prompt, generatedImage);
+
       if (!image) {
-        throw new Error("Failed to generate image");
+        throw new Error(generationError || "Failed to generate image");
       }
+
+      // Upload the generated image
       const imageData = await uploadRaceImage(image);
       console.log(imageData);
       setGeneratedImage(imageData.url);
     } catch (err) {
       console.error("Error generating image:", err);
       setError("Failed to generate your character image. Please try again.");
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -109,16 +119,28 @@ const CharacterImagesPage: React.FC<CharacterImagesPageProps> = ({ race }) => {
     }
   };
 
-  //   if (loading) {
-  //     return (
-  //       <Container>
-  //         <LoadingMessage>
-  //           <CrownIcon><FaCrown /></CrownIcon>
-  //           {generatedImage ? "Saving your character image..." : "Generating your character image..."}
-  //         </LoadingMessage>
-  //       </Container>
-  //     );
-  //   }
+  // Show loading state when generating image
+  if (isGenerating) {
+    return (
+      <Container>
+        <BackLink href="/character/race">
+          <FaArrowLeft /> Back to Character Creation
+        </BackLink>
+
+        <Title>Character Image Generator</Title>
+        <Subtitle>Bring your character to life with a unique image</Subtitle>
+
+        <LoadingContainer>
+          <CrownIcon><FaCrown /></CrownIcon>
+          <LoadingText>Generating your character image...</LoadingText>
+          <ProgressBar>
+            <ProgressFill style={{ width: `${progress}%` }} />
+          </ProgressBar>
+          <ProgressText>{progress}%</ProgressText>
+        </LoadingContainer>
+      </Container>
+    );
+  }
 
   return (
     <Container>
@@ -146,15 +168,20 @@ const CharacterImagesPage: React.FC<CharacterImagesPageProps> = ({ race }) => {
 
         <GenerateButton
           onClick={handleGenerateImage}
-          disabled={loading || !prompt}
+          disabled={isGenerating || loading || !prompt}
         >
-          <FaImage /> Generate Image
+          <FaImage /> {isGenerating ? `Generating... ${progress}%` : 'Generate Image'}
         </GenerateButton>
 
         {generatedImage && (
           <ImagePreviewContainer>
             <ImagePreview src={generatedImage} alt="Generated character" />
-            <SaveButton onClick={handleSaveRace}>Save</SaveButton>
+            <SaveButton
+              onClick={handleSaveRace}
+              disabled={loading}
+            >
+              {loading ? 'Saving...' : 'Save'}
+            </SaveButton>
           </ImagePreviewContainer>
         )}
       </GeneratorSection>
@@ -226,19 +253,45 @@ const ErrorMessage = styled.div`
   text-align: center;
 `;
 
-const LoadingMessage = styled.div`
+const LoadingContainer = styled.div`
   text-align: center;
+  padding: 2rem;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  margin: 2rem 0;
+`;
+
+const LoadingText = styled.div`
   font-size: 1.2rem;
   color: #c7bfd4;
-  margin: 2rem 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  margin: 1rem 0;
 `;
 
 const CrownIcon = styled.span`
   margin-right: 0.5rem;
+  font-size: 1.5rem;
+  color: #bb8930;
   animation: ${fadeIn} 1s infinite alternate;
+`;
+
+const ProgressBar = styled.div`
+  width: 100%;
+  height: 10px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 5px;
+  margin: 1rem 0;
+  overflow: hidden;
+`;
+
+const ProgressFill = styled.div`
+  height: 100%;
+  background: #bb8930;
+  transition: width 0.3s ease;
+`;
+
+const ProgressText = styled.div`
+  font-size: 1rem;
+  color: #c7bfd4;
 `;
 
 const GeneratorSection = styled.div`

@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { coreRaces, expandedRaces } from '@/data/races';
-import db from '@/lib/db';
+import db from '@/db/client';
 
 export default async function handler(
   req: NextApiRequest,

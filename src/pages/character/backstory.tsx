@@ -9,7 +9,7 @@ import CharacterImage from "@/components/CharacterImage";
 import CharacterDescription from "@/components/CharacterDescription";
 import PageTransition from "@/components/PageTransition";
 
-const BackstoryPage: React.FC = () => {
+export default function BackstoryPage() {
   const router = useRouter();
   const { selectedRace, loading: raceLoading } = useRace();
   const { selectedClass, loading: classLoading } = useCharacterClass();

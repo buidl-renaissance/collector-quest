@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import knex from '@/lib/db';
+import db from '@/db/client';
 
 export default async function handler(
   req: NextApiRequest,
@@ -17,7 +17,7 @@ export default async function handler(
       const slug = defaultSlug ? defaultSlug : title.toLowerCase().replace(/ /g, '-');
 
       // Create the story in the database
-      const [createdStory] = await knex('stories')
+      const [createdStory] = await db('stories')
         .insert({
           title,
           slug,
@@ -36,7 +36,7 @@ export default async function handler(
     }
   } else if (req.method === 'GET') {
     try {
-      const stories = await knex('stories').select('*');
+      const stories = await db('stories').select('*');
       return res.status(200).json(stories);
     } catch (error) {
       console.error('Error fetching stories:', error);

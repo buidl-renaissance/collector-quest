@@ -1,12 +1,11 @@
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
 import { NextPage } from 'next';
 import { NextSeo } from 'next-seo';
 import styled from 'styled-components';
 import { FaCrown, FaCoins, FaImage, FaVoteYea } from 'react-icons/fa';
 import { useWallet } from '@suiet/wallet-kit';
 import { useAuth } from '@/hooks/useAuth';
-import { inngest } from '@/inngest/client';
+import { useImageGeneration } from '@/hooks/useImageGeneration';
 import { Submission } from '@/data/submissions';
 
 interface CompetitionPhase {
@@ -28,15 +27,16 @@ interface CompetitionVenue {
   };
 }
 
-interface ArtSubmissionRequirements {
-  maxFileSize: number; // in MB
-  allowedFormats: string[];
-  minDimensions: {
-    width: number;
-    height: number;
-  };
-  printable: boolean;
-}
+// Interface for submission requirements (commented out as not currently used)
+// interface ArtSubmissionRequirements {
+//   maxFileSize: number; // in MB
+//   allowedFormats: string[];
+//   minDimensions: {
+//     width: number;
+//     height: number;
+//   };
+//   printable: boolean;
+// }
 
 interface Competition {
   id: string;
@@ -79,7 +79,7 @@ const PhaseIndicator = styled.div`
   justify-content: space-between;
   margin: 2rem 0;
   position: relative;
-  
+
   &::after {
     content: '';
     position: absolute;
@@ -141,7 +141,7 @@ const SubmissionCard = styled.div`
   overflow: hidden;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease;
-  
+
   &:hover {
     transform: translateY(-5px);
   }
@@ -181,7 +181,7 @@ const StakeAmount = styled.div`
   align-items: center;
   color: #f1fa8c;
   font-weight: bold;
-  
+
   svg {
     margin-right: 0.5rem;
   }
@@ -192,7 +192,7 @@ const VoteCount = styled.div`
   align-items: center;
   color: #8be9fd;
   font-weight: bold;
-  
+
   svg {
     margin-right: 0.5rem;
   }
@@ -207,11 +207,11 @@ const Button = styled.button`
   font-weight: bold;
   cursor: pointer;
   transition: background 0.3s ease;
-  
+
   &:hover {
     background: #ff79c6;
   }
-  
+
   &:disabled {
     background: #6272a4;
     cursor: not-allowed;
@@ -294,9 +294,9 @@ const ScheduleContent = styled.div`
 `;
 
 const CompetitionPage: NextPage = () => {
-  const router = useRouter();
   const { user } = useAuth();
   const wallet = useWallet();
+  const { generateImage } = useImageGeneration();
   const [competition, setCompetition] = useState<Competition | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -364,7 +364,7 @@ const CompetitionPage: NextPage = () => {
         }
       ]
     };
-    
+
     setCompetition(mockCompetition);
     setLoading(false);
   }, []);
@@ -379,32 +379,40 @@ const CompetitionPage: NextPage = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!user || !wallet.connected) {
       setError('You must be logged in and have your wallet connected to submit artwork');
       return;
     }
-    
+
     if (!submissionForm.title || !submissionForm.description || !submissionForm.imageUrl) {
       setError('Please fill out all fields');
       return;
     }
-    
+
     setLoading(true);
-    
+
     try {
       // In a real app, this would be an API call to submit the artwork
       // and handle the token staking transaction
-      
-      // Trigger image generation with Inngest (if needed)
-      await inngest.send({
-        name: "test/generate.image",
-        data: {
-          prompt: submissionForm.description,
-          image: submissionForm.imageUrl
+
+      // Generate image using the hook
+      if (submissionForm.description && submissionForm.imageUrl) {
+        try {
+          const generatedImage = await generateImage(
+            submissionForm.description,
+            submissionForm.imageUrl
+          );
+
+          if (generatedImage) {
+            submissionForm.imageUrl = generatedImage;
+          }
+        } catch (error) {
+          console.error('Error generating image:', error);
+          // Continue with submission even if image generation fails
         }
-      });
-      
+      }
+
       // Mock successful submission
       const newSubmission: Submission = {
         id: Date.now().toString(),
@@ -417,7 +425,7 @@ const CompetitionPage: NextPage = () => {
         votes: 0,
         createdAt: new Date().toISOString()
       };
-      
+
       setCompetition(prev => {
         if (!prev) return prev;
         return {
@@ -426,7 +434,7 @@ const CompetitionPage: NextPage = () => {
           submissions: [...prev.submissions, newSubmission]
         };
       });
-      
+
       // Reset form
       setSubmissionForm({
         title: '',
@@ -434,7 +442,7 @@ const CompetitionPage: NextPage = () => {
         imageUrl: '',
         stakeAmount: 5
       });
-      
+
       setError('');
     } catch (err) {
       console.error('Error submitting artwork:', err);
@@ -449,28 +457,28 @@ const CompetitionPage: NextPage = () => {
       setError('You must be logged in and have your wallet connected to vote');
       return;
     }
-    
+
     if (competition?.currentPhase !== 'voting') {
       setError('Voting is not currently open');
       return;
     }
-    
+
     setLoading(true);
-    
+
     try {
       // In a real app, this would be an API call to record the vote
       // and potentially handle any token transactions
-      
+
       setCompetition(prev => {
         if (!prev) return prev;
         return {
           ...prev,
-          submissions: prev.submissions.map(sub => 
+          submissions: prev.submissions.map(sub =>
             sub.id === submissionId ? { ...sub, votes: sub.votes + 1 } : sub
           )
         };
       });
-      
+
       setError('');
     } catch (err) {
       console.error('Error voting:', err);
@@ -508,13 +516,13 @@ const CompetitionPage: NextPage = () => {
           url: "https://smearington.theethical.ai/competition",
         }}
       />
-      
+
       <Container>
         <Header>
           <Title>{competition.title}</Title>
           <Description>{competition.description}</Description>
         </Header>
-        
+
         <PhaseIndicator>
           <Phase active={competition.currentPhase === 'submission'}>
             <FaImage /> Submission Phase
@@ -526,7 +534,7 @@ const CompetitionPage: NextPage = () => {
             <FaCrown /> Prize Distribution
           </Phase>
         </PhaseIndicator>
-        
+
         <StatsBar>
           <Stat>
             <StatValue>{competition.submissions.length}</StatValue>
@@ -538,8 +546,8 @@ const CompetitionPage: NextPage = () => {
           </Stat>
           <Stat>
             <StatValue>
-              {competition.currentPhase === 'submission' 
-                ? new Date(competition.phases[0].endDate).toLocaleDateString() 
+              {competition.currentPhase === 'submission'
+                ? new Date(competition.phases[0].endDate).toLocaleDateString()
                 : competition.currentPhase === 'voting'
                 ? new Date(competition.phases[1].endDate).toLocaleDateString()
                 : 'Completed'}
@@ -547,11 +555,11 @@ const CompetitionPage: NextPage = () => {
             <StatLabel>Phase Ends</StatLabel>
           </Stat>
         </StatsBar>
-        
+
         <EventDetails>
           <EventTitle>Detroit x Movement Weekend (May 24-26)</EventTitle>
           <p>Join us for a special art competition and gallery activation during Movement Festival Weekend in Detroit! Selected works will be printed and showcased at a high-traffic location.</p>
-          
+
           <EventSchedule>
             <h3>Event Schedule:</h3>
             <ScheduleItem>
@@ -571,7 +579,7 @@ const CompetitionPage: NextPage = () => {
               <ScheduleContent>Winner Announcement + Community Celebration</ScheduleContent>
             </ScheduleItem>
           </EventSchedule>
-          
+
           <div style={{ marginTop: '1.5rem' }}>
             <h3>Exhibition Details:</h3>
             <p>• High-quality prints by Luxson One</p>
@@ -580,54 +588,54 @@ const CompetitionPage: NextPage = () => {
             <p>• Open to artists from Detroit, Chicago, Ohio, and beyond</p>
           </div>
         </EventDetails>
-        
+
         {error && <ErrorMessage>{error}</ErrorMessage>}
-        
+
         {competition.currentPhase === 'submission' && (
           <SubmissionForm onSubmit={handleSubmit}>
             <h2>Submit Your Artwork</h2>
             <FormGroup>
               <Label htmlFor="title">Title</Label>
-              <Input 
-                type="text" 
-                id="title" 
-                name="title" 
-                value={submissionForm.title} 
-                onChange={handleSubmissionChange} 
-                required 
+              <Input
+                type="text"
+                id="title"
+                name="title"
+                value={submissionForm.title}
+                onChange={handleSubmissionChange}
+                required
               />
             </FormGroup>
             <FormGroup>
               <Label htmlFor="description">Description</Label>
-              <TextArea 
-                id="description" 
-                name="description" 
-                value={submissionForm.description} 
-                onChange={handleSubmissionChange} 
-                required 
+              <TextArea
+                id="description"
+                name="description"
+                value={submissionForm.description}
+                onChange={handleSubmissionChange}
+                required
               />
             </FormGroup>
             <FormGroup>
               <Label htmlFor="imageUrl">Image URL</Label>
-              <Input 
-                type="text" 
-                id="imageUrl" 
-                name="imageUrl" 
-                value={submissionForm.imageUrl} 
-                onChange={handleSubmissionChange} 
-                required 
+              <Input
+                type="text"
+                id="imageUrl"
+                name="imageUrl"
+                value={submissionForm.imageUrl}
+                onChange={handleSubmissionChange}
+                required
               />
             </FormGroup>
             <FormGroup>
               <Label htmlFor="stakeAmount">Stake Amount (tokens)</Label>
-              <Input 
-                type="number" 
-                id="stakeAmount" 
-                name="stakeAmount" 
-                min="5" 
-                value={submissionForm.stakeAmount} 
-                onChange={handleSubmissionChange} 
-                required 
+              <Input
+                type="number"
+                id="stakeAmount"
+                name="stakeAmount"
+                min="5"
+                value={submissionForm.stakeAmount}
+                onChange={handleSubmissionChange}
+                required
               />
             </FormGroup>
             <Button type="submit" disabled={loading || !user || !wallet.connected}>
@@ -637,7 +645,7 @@ const CompetitionPage: NextPage = () => {
             {!wallet.connected && <p>Please connect your wallet to submit artwork</p>}
           </SubmissionForm>
         )}
-        
+
         <h2>Current Submissions</h2>
         <SubmissionGrid>
           {competition.submissions.map(submission => (
@@ -656,7 +664,7 @@ const CompetitionPage: NextPage = () => {
                   </VoteCount>
                 </SubmissionStats>
                 {competition.currentPhase === 'voting' && (
-                  <Button 
+                  <Button
                     onClick={() => handleVote(submission.id)}
                     disabled={loading || !user || !wallet.connected}
                   >

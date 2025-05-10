@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { getStoryBySlug } from '@/lib/db';
+import { getStoryBySlug } from '@/db/client';
 
 export default async function handler(
   req: NextApiRequest,

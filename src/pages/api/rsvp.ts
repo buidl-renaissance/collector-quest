@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { saveRsvp } from "@/lib/db";
+import { saveRsvp } from "@/db/client";
 import { TimeSlot } from "@/lib/interfaces";
 
 type FormData = {
