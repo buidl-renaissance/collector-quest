@@ -1,10 +1,17 @@
+
+interface UploadResponse {
+  success: boolean;
+  url: string;
+  key: string;
+}
+
 /**
  * Uploads an image to the server
  *
  * @param image The image to upload
  * @returns The uploaded image data
  */
-export const uploadImage = async (image: string) => {
+export const uploadImage = async (image: string): Promise<UploadResponse> => {
   const response = await fetch("/api/image-upload", {
     method: "POST",
     body: JSON.stringify({ image }),

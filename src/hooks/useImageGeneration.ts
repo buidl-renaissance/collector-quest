@@ -12,6 +12,15 @@ interface UseImageGenerationReturn {
   progress: number;
 }
 
+interface ImageGenerationStatus {
+  id: string;
+  status: 'pending' | 'completed' | 'error';
+  createdAt: string;
+  updatedAt: string;
+  result?: string;
+  error?: string;
+}
+
 /**
  * Hook for generating images with Inngest
  */
@@ -64,7 +73,7 @@ export const useImageGeneration = (options?: UseImageGenerationOptions): UseImag
           throw new Error('Failed to check image status');
         }
         
-        const statusData = await statusResponse.json();
+        const statusData = await statusResponse.json() as ImageGenerationStatus;
         
         if (statusData.status === 'completed' && statusData.result) {
           setIsGenerating(false);

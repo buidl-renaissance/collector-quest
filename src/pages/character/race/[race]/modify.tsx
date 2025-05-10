@@ -73,27 +73,20 @@ const CharacterImagesPage: React.FC<CharacterImagesPageProps> = ({ race }) => {
     setError("");
 
     try {
-      // Generate the image using our hook
       const image = await generateImage(prompt, generatedImage);
 
       if (!image) {
-        throw new Error(generationError || "Failed to generate image");
+       console.error(generationError || "Failed to generate image");
+       return;
       }
 
-      // Upload the generated image
-      const imageData = await uploadRaceImage(image);
-      console.log(imageData);
-      setGeneratedImage(imageData.url);
+      setGeneratedImage(image);
+      const data = await uploadImage(image);
+      console.log('Image uploaded:', data);
     } catch (err) {
       console.error("Error generating image:", err);
       setError("Failed to generate your character image. Please try again.");
     }
-  };
-
-  const uploadRaceImage = async (image: string) => {
-    const data = await uploadImage(image);
-    setGeneratedImage(data.url);
-    return data;
   };
 
   const handleSaveRace = async () => {
