@@ -5,9 +5,10 @@ import { Race } from '@/data/races';
 import { CharacterClass } from '@/data/classes';
 
 export interface Character {
-  race: Race | null;
-  class: CharacterClass | null;
+  race: Race;
+  class: CharacterClass;
   name: string;
+  level: number;
   background: string;
   motivation: string;
   appearance: string;

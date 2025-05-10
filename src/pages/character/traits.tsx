@@ -4,6 +4,8 @@ import styled from "@emotion/styled";
 import { keyframes } from "@emotion/react";
 import { FaArrowLeft, FaArrowRight, FaRandom, FaPlus } from "react-icons/fa";
 import PageTransition from "@/components/PageTransition";
+import { CharacterClass } from "@/data/classes";
+import { Race } from "@/data/races";
 import CharacterImage from "@/components/CharacterImage";
 import CharacterDescription from "@/components/CharacterDescription";
 import { useCharacterClass } from "@/hooks/useCharacterClass";
@@ -236,7 +238,13 @@ const CharacterBioPage: React.FC = () => {
   };
 
   const handleBack = () => {
-    router.push("/character/class");
+    router.push('/character/class');
+  };
+
+  const handleNext = () => {
+    if (characterBio) {
+      router.push('/character/summary');
+    }
   };
 
   const generateBio = () => {
@@ -273,17 +281,21 @@ const CharacterBioPage: React.FC = () => {
     }, 1500);
   };
 
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(characterBio);
-    // Could add a toast notification here
-  };
+  // Redirect if no race or class is selected
+  React.useEffect(() => {
+    if (!selectedRace) {
+      // router.push('/character/race');
+    } else if (!selectedClass) {
+      router.push('/character/class');
+    }
+  }, [selectedRace, selectedClass, router]);
 
   return (
     <PageTransition>
       <Page width="narrow">
         <Header>
           <BackButton onClick={handleBack}>
-            <FaArrowLeft /> Back
+            <FaArrowLeft /> Back to Class Selection
           </BackButton>
         </Header>
 
@@ -459,7 +471,6 @@ const CharacterBioPage: React.FC = () => {
             {isLoading ? (
               <LoadingContainer>
                 <ScrollAnimation />
-                <LoadingText>Crafting your legend...</LoadingText>
               </LoadingContainer>
             ) : (
               <>
@@ -467,16 +478,9 @@ const CharacterBioPage: React.FC = () => {
                   <BioContent>{characterBio}</BioContent>
                 </BioScroll>
                 <ActionButtons>
-                  {/* <ActionButton onClick={copyToClipboard}>
-                    <FaCopy /> Copy
-                  </ActionButton> */}
-                  {selectedRace && selectedClass && (
-                    <ActionButton
-                      onClick={() => router.push(`/character/motivation`)}
-                    >
-                      Generate Backstory
-                    </ActionButton>
-                  )}
+                  <ActionButton onClick={handleNext}>
+                    Next Step <FaArrowRight />
+                  </ActionButton>
                   <ViewToggle>
                     <ToggleLabel>
                       <input

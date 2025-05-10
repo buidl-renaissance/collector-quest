@@ -179,7 +179,7 @@ const ImageContainer = styled.div<{ size: string }>`
   justify-content: center;
   align-items: center;
   margin: 0 auto;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
   position: relative;
 `;
 
