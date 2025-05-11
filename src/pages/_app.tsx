@@ -5,32 +5,85 @@ import "@suiet/wallet-kit/style.css";
 import { Analytics } from "@vercel/analytics/react";
 import { NextSeo } from "next-seo";
 import { AuthProvider } from "@/hooks/useAuth";
-import { ThemeProvider } from "@/context/ThemeContext";
+import { ThemeProvider } from "@emotion/react";
+import { theme } from "@/styles/theme";
+import { Global, css } from "@emotion/react";
+import Head from "next/head";
 import { CharacterProvider } from "@/context/CharacterContext";
 
 export default function App({ Component, pageProps }: AppProps) {
   const metadata = pageProps.metadata || {};
   
   return (
-    <ThemeProvider>
-      <CharacterProvider>
-        <NextSeo
-          title={metadata.title || "Lord Smearington"}
-          description={metadata.description || "Interdimensional Art Prophet"}
-          openGraph={{
-            title: metadata.title,
-            description: metadata.description,
-            images: metadata.image ? [{ url: metadata.image }] : undefined,
-            url: metadata.url,
-          }}
+    <>
+      <Head>
+        <meta name="color-scheme" content="dark" />
+        <meta name="theme-color" content="#1a1a2e" />
+      </Head>
+      <ThemeProvider theme={theme}>
+        <Global
+          styles={css`
+            :root {
+              color-scheme: dark;
+            }
+            
+            html {
+              background-color: #1a1a2e;
+            }
+
+            body {
+              background-color: #1a1a2e;
+              color: #c7bfd4;
+              margin: 0;
+              padding: 0;
+              min-height: 100vh;
+            }
+
+            /* Prevent white flash during page load */
+            #__next {
+              background-color: #1a1a2e;
+              min-height: 100vh;
+            }
+
+            /* Force dark scrollbars */
+            ::-webkit-scrollbar {
+              width: 8px;
+              height: 8px;
+            }
+
+            ::-webkit-scrollbar-track {
+              background: #1a1a2e;
+            }
+
+            ::-webkit-scrollbar-thumb {
+              background: #3a3347;
+              border-radius: 4px;
+            }
+
+            ::-webkit-scrollbar-thumb:hover {
+              background: #4a4357;
+            }
+          `}
         />
-        <WalletProvider>
-          <AuthProvider>
-            <Component {...pageProps} />
-          </AuthProvider>
-        </WalletProvider>
-        <Analytics />
-      </CharacterProvider>
-    </ThemeProvider>
+        <CharacterProvider>
+          <NextSeo
+            title={metadata.title || "Lord Smearington"}
+            description={metadata.description || "Interdimensional Art Prophet"}
+            openGraph={{
+              title: metadata.title,
+              description: metadata.description,
+              images: metadata.image ? [{ url: metadata.image }] : undefined,
+              url: metadata.url,
+            }}
+          />
+          <WalletProvider>
+            <AuthProvider>
+              <Component {...pageProps} />
+            </AuthProvider>
+          </WalletProvider>
+          <Analytics />
+        </CharacterProvider>
+      </ThemeProvider>
+    </>
   );
 }
