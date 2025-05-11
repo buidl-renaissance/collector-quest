@@ -48,6 +48,7 @@ export const useCharacter = () => {
             race: selectedRace,
             class: selectedClass,
             name,
+            level: 1, // Adding the required level property
             background,
             motivation,
             appearance,
