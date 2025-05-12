@@ -533,67 +533,6 @@ const Section = styled.section`
   }
 `;
 
-const PartySection = styled(Section)`
-  background-image: url('/images/parchment-texture.jpg');
-  background-size: cover;
-  background-blend-mode: overlay;
-  background-color: rgba(58, 38, 6, 0.8);
-`;
-
-const CharacterCards = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1.5rem;
-  margin-top: 2rem;
-`;
-
-const CharacterCard = styled.div`
-  background: rgba(27, 58, 84, 0.1);
-  border: 1px solid #bb8930;
-  border-radius: 8px;
-  padding: 1.5rem;
-  text-align: center;
-  transition: all 0.3s ease;
-  
-  &:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 5px 15px rgba(187, 137, 48, 0.3);
-    background: rgba(27, 58, 84, 0.2);
-  }
-`;
-
-const CardIcon = styled.div`
-  font-size: 2rem;
-  color: #b6551c;
-  margin-bottom: 1rem;
-`;
-
-const CardTitle = styled.h4`
-  font-size: 1.2rem;
-  color: #bb8930;
-  margin-bottom: 0.5rem;
-  font-family: "Cinzel", serif;
-`;
-
-const CardDescription = styled.p`
-  font-size: 0.9rem;
-  margin-bottom: 1rem;
-`;
-
-const CardCTA = styled.button`
-  background: #9f3515;
-  color: #e6e6e6;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  
-  &:hover {
-    background: #b6551c;
-  }
-`;
-
 const DiscoverSection = styled(Section)`
   background: rgba(58, 38, 6, 0.7);
 `;
@@ -611,6 +550,10 @@ const CollectibleItem = styled.div`
   padding: 1rem;
   text-align: center;
   transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   
   &:hover {
     transform: scale(1.05);
@@ -621,7 +564,11 @@ const CollectibleItem = styled.div`
 const CollectibleIcon = styled.div`
   font-size: 1.8rem;
   color: #b6551c;
+  margin: 0 auto;
   margin-bottom: 0.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 const CollectibleTitle = styled.h4`
@@ -694,6 +641,9 @@ const SectionIcon = styled.div`
   color: #bb8930;
   margin-bottom: 1rem;
   text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 const SectionTitle = styled.h3`

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import styled from "@emotion/styled";
 import { keyframes } from "@emotion/react";
-import { FaArrowLeft, FaArrowRight, FaRandom, FaPlus } from "react-icons/fa";
+import { FaArrowLeft, FaArrowRight, FaRandom, FaPlus, FaMicrophone, FaPencilAlt } from "react-icons/fa";
 import PageTransition from "@/components/PageTransition";
 import { CharacterClass } from "@/data/classes";
 import { Race } from "@/data/races";
@@ -67,6 +67,8 @@ const CharacterBioPage: React.FC = () => {
     hauntingMemory: "",
     treasuredPossession: "",
   });
+
+  const [isRecording, setIsRecording] = useState(false);
 
   // Load data from localStorage on initial render
   useEffect(() => {
@@ -281,6 +283,16 @@ const CharacterBioPage: React.FC = () => {
     }, 1500);
   };
 
+  const handleStartRecording = () => {
+    setIsRecording(true);
+    // Add speech recognition logic here
+  };
+
+  const handleStopRecording = () => {
+    setIsRecording(false);
+    // Add stop recording logic here
+  };
+
   // Redirect if no race or class is selected
   React.useEffect(() => {
     if (!selectedRace) {
@@ -306,9 +318,9 @@ const CharacterBioPage: React.FC = () => {
           </Subtitle>
         </HeroSection>
 
-        <StepTitle>Create Your Character</StepTitle>
+        {/* <StepTitle>Create Your Character</StepTitle> */}
 
-        {selectedRace && selectedClass && (
+        {/* {selectedRace && selectedClass && (
           <>
             <CharacterImage
               race={selectedRace}
@@ -322,19 +334,29 @@ const CharacterBioPage: React.FC = () => {
               size="large"
             />
           </>
-        )}
+        )} */}
 
         <FormSection>
           <FormGroup>
             <Label htmlFor="name">Character Name</Label>
-            <Input
-              type="text"
-              id="name"
-              name="name"
-              value={formData.name}
-              onChange={handleInputChange}
-              placeholder="Enter your character's name"
-            />
+            <InputContainer>
+              <Input
+                type="text"
+                id="name"
+                name="name"
+                value={formData.name}
+                onChange={handleInputChange}
+                placeholder="Enter your character's name"
+              />
+              <InputButtons>
+                <InputButton onClick={handleStartRecording} isRecording={isRecording}>
+                  <FaMicrophone />
+                </InputButton>
+                <InputButton>
+                  <FaPencilAlt />
+                </InputButton>
+              </InputButtons>
+            </InputContainer>
           </FormGroup>
 
           <RandomizeButton onClick={handleRandomize}>
@@ -599,6 +621,40 @@ const Label = styled.label`
   margin-bottom: 0.5rem;
   font-size: 1.1rem;
   color: #c7bfd4;
+`;
+
+const InputContainer = styled.div`
+  position: relative;
+  display: flex;
+  align-items: center;
+`;
+
+const InputButtons = styled.div`
+  position: absolute;
+  right: 0.5rem;
+  display: flex;
+  gap: 0.5rem;
+`;
+
+const InputButton = styled.button<{ isRecording?: boolean }>`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: ${props => props.isRecording ? '#ff4444' : '#bb8930'};
+  padding: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  border-radius: 50%;
+
+  &:hover {
+    background-color: rgba(187, 137, 48, 0.1);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
 `;
 
 const Input = styled.input`
