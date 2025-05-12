@@ -2,9 +2,10 @@ import React from "react";
 import { useRouter } from "next/router";
 import styled from "@emotion/styled";
 import { keyframes } from "@emotion/react";
-import { FaCrown, FaArrowRight } from "react-icons/fa";
+import { FaCrown, FaArrowRight, FaArrowLeft } from "react-icons/fa";
 import CharacterRaces from "@/components/CharacterRaces";
 import { useRace } from "@/hooks/useRace";
+import { useSex } from "@/hooks/useSex";
 import { coreRaces, expandedRaces, Race } from "@/data/races";
 import { getAllRaces } from "@/db/races";
 import { GetServerSideProps } from "next";
@@ -26,8 +27,16 @@ const CharacterCreatePage: React.FC<CharacterCreatePageProps> = ({
   races
 }) => {
   const router = useRouter();
-  const { selectedRace, selectRace, loading } = useRace();
+  const { selectedRace, selectRace, loading: raceLoading } = useRace();
+  const { selectedSex, loading: sexLoading } = useSex();
   const [error, setError] = React.useState("");
+
+  // Redirect if no sex is selected
+  React.useEffect(() => {
+    if (!sexLoading && !selectedSex) {
+      router.push('/character/sex');
+    }
+  }, [selectedSex, sexLoading, router]);
 
   const handleNext = () => {
     if (selectedRace) {
@@ -35,7 +44,11 @@ const CharacterCreatePage: React.FC<CharacterCreatePageProps> = ({
     }
   };
 
-  if (loading) {
+  const handleBack = () => {
+    router.push('/character/sex');
+  };
+
+  if (raceLoading || sexLoading) {
     return (
       <Container>
         <LoadingMessage>
@@ -48,6 +61,10 @@ const CharacterCreatePage: React.FC<CharacterCreatePageProps> = ({
 
   return (
     <Container>
+      <BackButton onClick={handleBack}>
+        <FaArrowLeft /> Back to Sex Selection
+      </BackButton>
+
       <Title>Craft Your Character</Title>
       <Subtitle>Who will you be in Lord Smearington&apos;s Gallery of the Absurd?</Subtitle>
       
@@ -195,6 +212,25 @@ const NextButton = styled.button`
   
   &:hover {
     background-color: #d4a959;
+  }
+`;
+
+const BackButton = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.8rem 1.5rem;
+  background-color: transparent;
+  color: #bb8930;
+  border: 1px solid #bb8930;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  margin-bottom: 2rem;
+  
+  &:hover {
+    background-color: rgba(187, 137, 48, 0.1);
   }
 `;
 

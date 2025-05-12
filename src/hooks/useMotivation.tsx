@@ -1,7 +1,20 @@
 import { useState, useEffect } from 'react';
 
+interface MotivationState {
+  selectedActions: string[];
+  drivingForces: {
+    id: string;
+    intensity: number;
+  }[];
+  generatedMotivation: string | null;
+}
+
 export function useMotivation() {
-  const [selectedMotivation, setSelectedMotivation] = useState<string | null>(null);
+  const [motivationState, setMotivationState] = useState<MotivationState>({
+    selectedActions: [],
+    drivingForces: [],
+    generatedMotivation: null
+  });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -9,7 +22,7 @@ export function useMotivation() {
       try {
         const savedMotivation = localStorage.getItem('selectedMotivation');
         if (savedMotivation) {
-          setSelectedMotivation(savedMotivation);
+          setMotivationState(JSON.parse(savedMotivation));
         }
       } catch (error) {
         console.error('Error loading motivation:', error);
@@ -21,20 +34,60 @@ export function useMotivation() {
     loadMotivation();
   }, []);
 
-  const selectMotivation = (motivation: string) => {
-    setSelectedMotivation(motivation);
-    localStorage.setItem('selectedMotivation', motivation);
+  const selectAction = (actionId: string) => {
+    setMotivationState(prev => {
+      const newActions = prev.selectedActions.includes(actionId)
+        ? prev.selectedActions.filter(id => id !== actionId)
+        : prev.selectedActions.length < 2
+          ? [...prev.selectedActions, actionId]
+          : prev.selectedActions;
+      
+      const newState = {
+        ...prev,
+        selectedActions: newActions
+      };
+      localStorage.setItem('selectedMotivation', JSON.stringify(newState));
+      return newState;
+    });
+  };
+
+  const updateDrivingForces = (forces: { id: string; intensity: number }[]) => {
+    setMotivationState(prev => {
+      const newState = {
+        ...prev,
+        drivingForces: forces
+      };
+      localStorage.setItem('selectedMotivation', JSON.stringify(newState));
+      return newState;
+    });
+  };
+
+  const setGeneratedMotivation = (motivation: string) => {
+    setMotivationState(prev => {
+      const newState = {
+        ...prev,
+        generatedMotivation: motivation
+      };
+      localStorage.setItem('selectedMotivation', JSON.stringify(newState));
+      return newState;
+    });
   };
 
   const clearMotivation = () => {
-    setSelectedMotivation(null);
+    setMotivationState({
+      selectedActions: [],
+      drivingForces: [],
+      generatedMotivation: null
+    });
     localStorage.removeItem('selectedMotivation');
   };
 
   return {
-    selectedMotivation,
+    motivationState,
     loading,
-    selectMotivation,
+    selectAction,
+    updateDrivingForces,
+    setGeneratedMotivation,
     clearMotivation
   };
 }

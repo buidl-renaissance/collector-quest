@@ -13,20 +13,13 @@ import Page from "@/components/Page";
 import { BackButton, NextButton } from "@/components/styled/buttons";
 import { Container, LoadingMessage } from "@/components/styled/layout";
 import { Title, Subtitle } from "@/components/styled/typography";
+import { useMotivation } from "@/hooks/useMotivation";
 
 const MotivationPage: React.FC = () => {
   const router = useRouter();
   const { selectedRace, loading: raceLoading } = useRace();
   const { selectedClass, loading: classLoading } = useCharacterClass();
-  const [generatedMotivation, setGeneratedMotivation] = useState("");
-
-  // Load saved motivation from localStorage if it exists
-  useEffect(() => {
-    const savedMotivation = localStorage.getItem("characterMotivation");
-    if (savedMotivation) {
-      setGeneratedMotivation(savedMotivation);
-    }
-  }, []);
+  const { motivationState, loading: motivationLoading, setGeneratedMotivation } = useMotivation();
 
   // Redirect if no race or class is selected
   useEffect(() => {
@@ -41,10 +34,6 @@ const MotivationPage: React.FC = () => {
 
   const handleNext = () => {
     if (selectedRace && selectedClass) {
-      // Save the generated motivation to localStorage before navigating
-      if (generatedMotivation) {
-        localStorage.setItem("characterMotivation", generatedMotivation);
-      }
       router.push("/character/summary");
     }
   };
@@ -55,11 +44,9 @@ const MotivationPage: React.FC = () => {
 
   const handleMotivationGenerated = (motivation: string) => {
     setGeneratedMotivation(motivation);
-    // Ensure the motivation is saved immediately when generated
-    localStorage.setItem("characterMotivation", motivation);
   };
 
-  if (raceLoading || classLoading) {
+  if (raceLoading || classLoading || motivationLoading) {
     return (
       <Container>
         <LoadingMessage>
@@ -104,7 +91,7 @@ const MotivationPage: React.FC = () => {
         <MotivationalFusion onMotivationGenerated={handleMotivationGenerated} />
 
         <NavigationFooter>
-          <NextButton onClick={handleNext} disabled={!generatedMotivation}>
+          <NextButton onClick={handleNext} disabled={!motivationState.generatedMotivation}>
             Next Step <FaArrowRight />
           </NextButton>
         </NavigationFooter>

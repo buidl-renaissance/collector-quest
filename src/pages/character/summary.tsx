@@ -20,10 +20,9 @@ const SummaryPage: React.FC = () => {
   const { selectedRace, loading: raceLoading } = useRace();
   const { selectedClass, loading: classLoading } = useCharacterClass();
   const { selectedTraits, loading: traitsLoading } = useTraits();
-  const { selectedMotivation, loading: motivationLoading } = useMotivation();
+  const { motivationState, loading: motivationLoading } = useMotivation();
   const [isGeneratingBio, setIsGeneratingBio] = useState(false);
   const [characterBio, setCharacterBio] = useState("");
-  const [perspective, setPerspective] = useState<'first' | 'third'>('third');
   const { character, loading, updateCharacter } = useCharacter();
 
   // Redirect if no race or class is selected
@@ -39,7 +38,18 @@ const SummaryPage: React.FC = () => {
 
   // Generate bio when button is clicked
   const generateBio = async () => {
-    if (!selectedRace || !selectedClass || !selectedTraits || !selectedMotivation) return;
+    console.log("Generating bio");
+    console.log('selectedRace', selectedRace);
+    console.log('selectedClass', selectedClass);
+    console.log('selectedTraits', selectedTraits);
+    console.log('motivationState', motivationState);
+    console.log('character', character);
+    console.log('loading', loading);
+    console.log('raceLoading', raceLoading);
+    console.log('classLoading', classLoading);
+    console.log('traitsLoading', traitsLoading);
+    console.log('motivationLoading', motivationLoading);
+    if (!selectedRace || !selectedClass || !selectedTraits || !motivationState.generatedMotivation || !character) return;
     if (raceLoading || classLoading || traitsLoading || motivationLoading) return;
 
     setIsGeneratingBio(true);
@@ -50,22 +60,21 @@ const SummaryPage: React.FC = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          race: {
-            name: selectedRace.name,
-            description: selectedRace.description
-          },
-          class: {
-            name: selectedClass.name,
-            description: selectedClass.description
-          },
+          name: character.name || 'Unknown',
+          race: selectedRace.name,
+          class: selectedClass.name,
+          background: selectedClass.description || '',
           traits: {
-            personality: selectedTraits.personality,
-            ideals: selectedTraits.ideals,
-            bonds: selectedTraits.bonds,
-            flaws: selectedTraits.flaws
+            personality: selectedTraits.personality?.join(', ') || '',
+            fear: selectedTraits.flaws?.join(', ') || '',
+            memory: selectedTraits.bonds?.[0] || '',
+            possession: character.traits?.possession || '',
+            ideals: selectedTraits.ideals?.join(', ') || '',
+            bonds: selectedTraits.bonds?.join(', ') || '',
+            flaws: selectedTraits.flaws?.join(', ') || ''
           },
-          motivation: selectedMotivation,
-          perspective
+          motivation: motivationState.generatedMotivation,
+          sex: character.sex || 'unknown'
         }),
       });
 
@@ -75,6 +84,8 @@ const SummaryPage: React.FC = () => {
 
       const data = await response.json();
       setCharacterBio(data.bio);
+      // Save the generated bio to character state
+      updateCharacter({ bio: data.bio });
     } catch (error) {
       console.error('Error generating bio:', error);
       setCharacterBio("Failed to generate character bio. Please try again.");
@@ -129,17 +140,6 @@ const SummaryPage: React.FC = () => {
 
         <div className="mb-8">
           <h2 className="text-2xl font-bold mb-4">Character Biography</h2>
-          <div className="mb-4">
-            <label className="block text-sm font-medium mb-2">Perspective</label>
-            <select
-              value={perspective}
-              onChange={(e) => setPerspective(e.target.value as 'first' | 'third')}
-              className="w-full p-2 rounded bg-gray-800 border border-gray-700"
-            >
-              <option value="third">Third Person</option>
-              <option value="first">First Person</option>
-            </select>
-          </div>
           {isGeneratingBio ? (
             <div className="text-center py-4">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto"></div>

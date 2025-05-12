@@ -7,13 +7,21 @@ import PageTransition from "@/components/PageTransition";
 import Page from "@/components/Page";
 import { useCharacterClass } from "@/hooks/useCharacterClass";
 import { useRace } from "@/hooks/useRace";
+import { useTraits } from "@/hooks/useTraits";
+import { useMotivation } from "@/hooks/useMotivation";
+import { useCharacter } from "@/hooks/useCharacter";
 import CharacterImage from "@/components/CharacterImage";
 import CharacterDescription from "@/components/CharacterDescription";
+import { useSex } from "@/hooks/useSex";
 
 const CompletionPage: React.FC = () => {
   const router = useRouter();
   const { selectedClass } = useCharacterClass();
   const { selectedRace } = useRace();
+  const { selectedTraits } = useTraits();
+  const { motivationState } = useMotivation();
+  const { character } = useCharacter();
+  const { selectedSex } = useSex();
 
   const handleStartNew = () => {
     // Clear all localStorage data
@@ -36,13 +44,12 @@ const CompletionPage: React.FC = () => {
   const handleDownload = () => {
     // Create a text file with character details
     const characterData = {
-      name: localStorage.getItem('characterName'),
-      race: selectedRace?.name,
-      class: selectedClass?.name,
-      bio: localStorage.getItem('characterBio'),
-      personality: JSON.parse(localStorage.getItem('personality') || '[]'),
-      motivation: JSON.parse(localStorage.getItem('motivation') || '[]'),
-      fear: JSON.parse(localStorage.getItem('fear') || '[]'),
+      name: character?.name,
+      race: selectedRace,
+      class: selectedClass,
+      traits: selectedTraits,
+      motivation: motivationState,
+      bio: character?.bio,
     };
 
     const blob = new Blob([JSON.stringify(characterData, null, 2)], { type: 'application/json' });
@@ -80,6 +87,128 @@ const CompletionPage: React.FC = () => {
             />
           </CharacterSection>
         )}
+
+        <CharacterDetails>
+          {character?.name && (
+            <DetailSection>
+              <DetailTitle>Name</DetailTitle>
+              <DetailContent>{character.name}</DetailContent>
+            </DetailSection>
+          )}
+
+          {selectedRace && (
+            <DetailSection>
+              <DetailTitle>Race</DetailTitle>
+              <DetailContent>
+                <strong>{selectedRace.name}</strong>
+                <p>{selectedRace.description}</p>
+                {selectedRace.accessory && (
+                  <TraitGroup>
+                    <TraitLabel>Accessory:</TraitLabel>
+                    <TraitValue>{selectedRace.accessory}</TraitValue>
+                  </TraitGroup>
+                )}
+              </DetailContent>
+            </DetailSection>
+          )}
+
+          {selectedClass && (
+            <DetailSection>
+              <DetailTitle>Class</DetailTitle>
+              <DetailContent>
+                <strong>{selectedClass.name}</strong>
+                <p>{selectedClass.description}</p>
+                {selectedClass.abilities && selectedClass.abilities.length > 0 && (
+                  <TraitGroup>
+                    <TraitLabel>Class Abilities:</TraitLabel>
+                    <TraitValue>
+                      {selectedClass.abilities.map(ability => 
+                        `${ability.name} (Level ${ability.level})`
+                      ).join(", ")}
+                    </TraitValue>
+                  </TraitGroup>
+                )}
+              </DetailContent>
+            </DetailSection>
+          )}
+
+          {selectedSex && (
+            <DetailSection>
+              <DetailTitle>Sex</DetailTitle>
+              <DetailContent>
+                <strong>{selectedSex.charAt(0).toUpperCase() + selectedSex.slice(1)}</strong>
+              </DetailContent>
+            </DetailSection>
+          )}
+
+          {character?.traits && (
+            <DetailSection>
+              <DetailTitle>Traits</DetailTitle>
+              <DetailContent>
+                {character.traits.personality && character.traits.personality.length > 0 && (
+                  <TraitGroup>
+                    <TraitLabel>Personality:</TraitLabel>
+                    <TraitValue>{character.traits.personality.join(", ")}</TraitValue>
+                  </TraitGroup>
+                )}
+                {character.traits.fear && character.traits.fear.length > 0 && (
+                  <TraitGroup>
+                    <TraitLabel>Fears:</TraitLabel>
+                    <TraitValue>{character.traits.fear.join(", ")}</TraitValue>
+                  </TraitGroup>
+                )}
+                {character.traits.memory && (
+                  <TraitGroup>
+                    <TraitLabel>Haunting Memory:</TraitLabel>
+                    <TraitValue>{character.traits.memory}</TraitValue>
+                  </TraitGroup>
+                )}
+                {character.traits.possession && (
+                  <TraitGroup>
+                    <TraitLabel>Treasured Possession:</TraitLabel>
+                    <TraitValue>{character.traits.possession}</TraitValue>
+                  </TraitGroup>
+                )}
+                {selectedTraits?.ideals && selectedTraits.ideals.length > 0 && (
+                  <TraitGroup>
+                    <TraitLabel>Ideals:</TraitLabel>
+                    <TraitValue>{selectedTraits.ideals.join(", ")}</TraitValue>
+                  </TraitGroup>
+                )}
+                {selectedTraits?.bonds && selectedTraits.bonds.length > 0 && (
+                  <TraitGroup>
+                    <TraitLabel>Bonds:</TraitLabel>
+                    <TraitValue>{selectedTraits.bonds.join(", ")}</TraitValue>
+                  </TraitGroup>
+                )}
+                {selectedTraits?.flaws && selectedTraits.flaws.length > 0 && (
+                  <TraitGroup>
+                    <TraitLabel>Flaws:</TraitLabel>
+                    <TraitValue>{selectedTraits.flaws.join(", ")}</TraitValue>
+                  </TraitGroup>
+                )}
+              </DetailContent>
+            </DetailSection>
+          )}
+
+          {character?.motivation && (
+            <DetailSection>
+              <DetailTitle>Motivation</DetailTitle>
+              <DetailContent>
+                <p>{character.motivation}</p>
+              </DetailContent>
+            </DetailSection>
+          )}
+
+          {character?.bio && (
+            <DetailSection>
+              <DetailTitle>Biography</DetailTitle>
+              <DetailContent>
+                <BioText>{character.bio}</BioText>
+              </DetailContent>
+            </DetailSection>
+          )}
+        </CharacterDetails>
 
         <ActionSection>
           <ActionButton onClick={handleShare}>
@@ -174,6 +303,57 @@ const CharacterSection = styled.div`
   animation: ${fadeIn} 0.5s ease-in;
 `;
 
+const CharacterDetails = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin: 2rem 0;
+  animation: ${fadeIn} 0.5s ease-in;
+`;
+
+const DetailSection = styled.div`
+  background-color: rgba(26, 26, 46, 0.7);
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  border: 1px solid #444;
+`;
+
+const DetailTitle = styled.h3`
+  font-size: 1.2rem;
+  color: #bb8930;
+  margin: 0 0 1rem 0;
+  border-bottom: 1px solid #444;
+  padding-bottom: 0.5rem;
+`;
+
+const DetailContent = styled.div`
+  color: #c7bfd4;
+  line-height: 1.6;
+
+  p {
+    margin: 0.5rem 0;
+  }
+
+  strong {
+    color: #bb8930;
+  }
+`;
+
+const TraitGroup = styled.div`
+  margin: 0.5rem 0;
+`;
+
+const TraitLabel = styled.span`
+  color: #bb8930;
+  font-weight: 500;
+  margin-right: 0.5rem;
+`;
+
+const TraitValue = styled.span`
+  color: #c7bfd4;
+`;
+
 const ActionSection = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -235,6 +415,19 @@ const FireParticle = styled.div<{ delay: number }>`
   animation-delay: ${props => props.delay}s;
   filter: blur(1px);
   opacity: 0.8;
+`;
+
+const BioText = styled.p`
+  color: #c7bfd4;
+  line-height: 1.8;
+  font-size: 1.1rem;
+  white-space: pre-wrap;
+  text-align: justify;
+  margin: 0;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  border-left: 3px solid #bb8930;
 `;
 
 export default CompletionPage; 

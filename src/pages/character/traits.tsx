@@ -74,7 +74,7 @@ const CharacterBioPage: React.FC = () => {
   // Load data from localStorage on initial render
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const savedFormData = localStorage.getItem("characterTraits");
+      const savedFormData = localStorage.getItem("selectedTraits");
       if (savedFormData) {
         const parsedData = JSON.parse(savedFormData);
         // Transform old format to new format if needed
@@ -89,7 +89,7 @@ const CharacterBioPage: React.FC = () => {
             treasuredPossession: parsedData.treasuredPossession || ""
           };
           setFormData(transformedData);
-          localStorage.setItem("characterTraits", JSON.stringify(transformedData));
+          localStorage.setItem("selectedTraits", JSON.stringify(transformedData));
         } else {
           setFormData(parsedData);
         }
@@ -147,7 +147,7 @@ const CharacterBioPage: React.FC = () => {
     const { name, value } = e.target;
     setFormData((prev) => {
       const updatedData = { ...prev, [name]: value };
-      localStorage.setItem("characterTraits", JSON.stringify(updatedData));
+      localStorage.setItem("selectedTraits", JSON.stringify(updatedData));
       return updatedData;
     });
     if (name === "name") {
@@ -166,7 +166,7 @@ const CharacterBioPage: React.FC = () => {
           personality: [...prev.personality, customPersonality.trim()],
         };
         console.log(updatedData);
-        localStorage.setItem("characterTraits", JSON.stringify(updatedData));
+        localStorage.setItem("selectedTraits", JSON.stringify(updatedData));
         return updatedData;
       });
       setCustomPersonality("");
@@ -177,7 +177,7 @@ const CharacterBioPage: React.FC = () => {
           ...prev,
           ideals: [...prev.ideals, customIdeals.trim()],
         };
-        localStorage.setItem("characterTraits", JSON.stringify(updatedData));
+        localStorage.setItem("selectedTraits", JSON.stringify(updatedData));
         return updatedData;
       });
       setCustomIdeals("");
@@ -188,7 +188,7 @@ const CharacterBioPage: React.FC = () => {
           ...prev,
           flaws: [...prev.flaws, customFlaws.trim()],
         };
-        localStorage.setItem("characterTraits", JSON.stringify(updatedData));
+        localStorage.setItem("selectedTraits", JSON.stringify(updatedData));
         return updatedData;
       });
       setCustomFlaws("");
@@ -214,7 +214,7 @@ const CharacterBioPage: React.FC = () => {
         };
       }
       console.log(updatedData);
-      localStorage.setItem("characterTraits", JSON.stringify(updatedData));
+      localStorage.setItem("selectedTraits", JSON.stringify(updatedData));
       return updatedData;
     });
   };
@@ -255,7 +255,7 @@ const CharacterBioPage: React.FC = () => {
       ][Math.floor(Math.random() * 4)],
     };
 
-    localStorage.setItem("characterTraits", JSON.stringify(randomizedData));
+    localStorage.setItem("selectedTraits", JSON.stringify(randomizedData));
     setFormData(randomizedData);
   };
 

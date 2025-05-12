@@ -100,17 +100,18 @@ const ActionButton = styled.button`
   align-items: center;
   gap: 0.5rem;
   padding: 0.75rem 1.25rem;
-  background-color: #4a4ae4;
+  background-color: ${props => props.disabled ? '#2d2d42' : '#4a4ae4'};
   border: none;
   border-radius: 8px;
   color: #ffffff;
   font-weight: bold;
-  cursor: pointer;
+  cursor: ${props => props.disabled ? 'not-allowed' : 'pointer'};
   transition: all 0.2s ease;
+  opacity: ${props => props.disabled ? 0.7 : 1};
   
   &:hover {
-    background-color: #5a5af0;
-    transform: translateY(-2px);
+    background-color: ${props => props.disabled ? '#2d2d42' : '#5a5af0'};
+    transform: ${props => props.disabled ? 'none' : 'translateY(-2px)'};
   }
 `;
 
@@ -241,63 +242,42 @@ const MotivationalFusion: React.FC<MotivationalFusionProps> = ({ onMotivationGen
   
   // State
   const [selectedActions, setSelectedActions] = useState<string[]>([]);
-  const [customAction, setCustomAction] = useState('');
-  const [selectedForces, setSelectedForces] = useState<string[]>([]);
-  const [customForce, setCustomForce] = useState('');
-  const [generatedMotive, setGeneratedMotive] = useState('');
-  const [showAdvancedMode, setShowAdvancedMode] = useState(false);
-  const [forceIntensities, setForceIntensities] = useState<Record<string, number>>({});
+  const [selectedForces, setSelectedForces] = useState<{ id: string; intensity: number }[]>([]);
+  const [isAdvancedMode, setIsAdvancedMode] = useState(false);
   const [selectedArchetype, setSelectedArchetype] = useState<string | null>(null);
-  
+  const [generatedMotivation, setGeneratedMotivation] = useState<string | null>(null);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [selectedSex, setSelectedSex] = useState<string | null>(null);
+
   // Load saved state from localStorage
   useEffect(() => {
-      const savedActions = localStorage.getItem('motivationalFusion_selectedActions');
-      if (savedActions) setSelectedActions(JSON.parse(savedActions));
-      
-      const savedCustomAction = localStorage.getItem('motivationalFusion_customAction');
-      if (savedCustomAction) setCustomAction(savedCustomAction);
-      
-      const savedForces = localStorage.getItem('motivationalFusion_selectedForces');
-      if (savedForces) setSelectedForces(JSON.parse(savedForces));
-      
-      const savedCustomForce = localStorage.getItem('motivationalFusion_customForce');
-      if (savedCustomForce) setCustomForce(savedCustomForce);
-      
-      const savedMotive = localStorage.getItem('motivationalFusion_generatedMotive');
-      if (savedMotive) setGeneratedMotive(savedMotive);
-      
-      const savedAdvancedMode = localStorage.getItem('motivationalFusion_showAdvancedMode');
-      if (savedAdvancedMode) setShowAdvancedMode(JSON.parse(savedAdvancedMode));
-      
-      const savedIntensities = localStorage.getItem('motivationalFusion_forceIntensities');
-      if (savedIntensities) setForceIntensities(JSON.parse(savedIntensities));
-      
-      const savedArchetype = localStorage.getItem('motivationalFusion_selectedArchetype');
-      if (savedArchetype) setSelectedArchetype(savedArchetype);
+    const savedActions = localStorage.getItem('motivationalFusion_selectedActions');
+    if (savedActions) setSelectedActions(JSON.parse(savedActions));
+    
+    const savedForces = localStorage.getItem('motivationalFusion_selectedForces');
+    if (savedForces) setSelectedForces(JSON.parse(savedForces));
+    
+    const savedMotive = localStorage.getItem('motivationalFusion_generatedMotive');
+    if (savedMotive) setGeneratedMotivation(savedMotive);
+    
+    const savedAdvancedMode = localStorage.getItem('motivationalFusion_showAdvancedMode');
+    if (savedAdvancedMode) setIsAdvancedMode(JSON.parse(savedAdvancedMode));
+    
+    const savedArchetype = localStorage.getItem('motivationalFusion_selectedArchetype');
+    if (savedArchetype) setSelectedArchetype(savedArchetype);
+
+    const savedSex = localStorage.getItem('selectedSex');
+    if (savedSex) setSelectedSex(savedSex);
   }, []);
-  
-  // Initialize force intensities
+
+  // Save state to localStorage
   useEffect(() => {
-    if (Object.keys(forceIntensities).length === 0) {
-      const intensities: Record<string, number> = {};
-      drivingForces.forEach(force => {
-        intensities[force.id] = 3;
-      });
-      setForceIntensities(intensities);
-    }
-  }, [forceIntensities, drivingForces]);
-  
-  // Save state to localStorage when it changes
-  useEffect(() => {
-      localStorage.setItem('motivationalFusion_selectedActions', JSON.stringify(selectedActions));
-      localStorage.setItem('motivationalFusion_customAction', customAction);
-      localStorage.setItem('motivationalFusion_selectedForces', JSON.stringify(selectedForces));
-      localStorage.setItem('motivationalFusion_customForce', customForce);
-      localStorage.setItem('motivationalFusion_generatedMotive', generatedMotive);
-      localStorage.setItem('motivationalFusion_showAdvancedMode', JSON.stringify(showAdvancedMode));
-      localStorage.setItem('motivationalFusion_forceIntensities', JSON.stringify(forceIntensities));
-      localStorage.setItem('motivationalFusion_selectedArchetype', selectedArchetype || '');
-  }, [selectedActions, customAction, selectedForces, customForce, generatedMotive, showAdvancedMode, forceIntensities, selectedArchetype]);
+    localStorage.setItem('motivationalFusion_selectedActions', JSON.stringify(selectedActions));
+    localStorage.setItem('motivationalFusion_selectedForces', JSON.stringify(selectedForces));
+    localStorage.setItem('motivationalFusion_generatedMotive', generatedMotivation || '');
+    localStorage.setItem('motivationalFusion_showAdvancedMode', JSON.stringify(isAdvancedMode));
+    localStorage.setItem('motivationalFusion_selectedArchetype', selectedArchetype || '');
+  }, [selectedActions, selectedForces, generatedMotivation, isAdvancedMode, selectedArchetype]);
   
   // Handle action selection
   const handleActionSelect = (actionId: string) => {
@@ -306,7 +286,8 @@ const MotivationalFusion: React.FC<MotivationalFusionProps> = ({ onMotivationGen
         return prev.filter(id => id !== actionId);
       }
       if (prev.length >= 2) {
-        return [prev[1], actionId];
+        // Remove the last selected action and add the new one
+        return [prev[0], actionId];
       }
       return [...prev, actionId];
     });
@@ -315,32 +296,48 @@ const MotivationalFusion: React.FC<MotivationalFusionProps> = ({ onMotivationGen
   // Handle driving force selection
   const handleForceSelect = (forceId: string) => {
     setSelectedForces(prev => {
-      if (prev.includes(forceId)) {
-        return prev.filter(id => id !== forceId);
+      const exists = prev.find(f => f.id === forceId);
+      if (exists) {
+        return prev.filter(f => f.id !== forceId);
       }
       if (prev.length >= 2) {
-        return [prev[1], forceId];
+        // Remove the last selected force and add the new one
+        return [prev[0], { id: forceId, intensity: 50 }];
       }
-      return [...prev, forceId];
+      return [...prev, { id: forceId, intensity: 50 }];
     });
   };
   
   // Handle archetype selection
   const handleArchetypeSelect = (archetypeId: string) => {
-    setSelectedArchetype(archetypeId === selectedArchetype ? null : archetypeId);
+    setSelectedArchetype(archetypeId);
   };
   
   // Handle intensity change
   const handleIntensityChange = (forceId: string, value: number) => {
-    setForceIntensities(prev => ({
-      ...prev,
-      [forceId]: value
-    }));
+    setSelectedForces(prev => 
+      prev.map(f => f.id === forceId ? { ...f, intensity: value } : f)
+    );
   };
   
   // Generate motive
   const generateMotive = async () => {
     if (selectedActions.length === 0 || selectedForces.length === 0) return;
+
+    setIsGenerating(true);
+    const actionLabels = selectedActions.map(actionId => 
+      actions.find(a => a.id === actionId)?.label
+    ).filter(Boolean);
+    
+    const forceLabels = selectedForces.map(force => 
+      drivingForces.find(f => f.id === force.id)?.label
+    ).filter(Boolean);
+
+    // Create a mapping of force intensities
+    const forceIntensities = selectedForces.reduce((acc, force) => {
+      acc[force.id] = Math.round(force.intensity / 20); // Convert 0-100 to 0-5 scale
+      return acc;
+    }, {} as Record<string, number>);
 
     try {
       const response = await fetch('/api/character/generate-motivation', {
@@ -349,16 +346,11 @@ const MotivationalFusion: React.FC<MotivationalFusionProps> = ({ onMotivationGen
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          actions: selectedActions.map(actionId => {
-            const action = actions.find(a => a.id === actionId);
-            return action ? action.label : customAction;
-          }),
-          forces: selectedForces.map(forceId => {
-            const force = drivingForces.find(f => f.id === forceId);
-            return force ? force.label : customForce;
-          }),
+          actions: actionLabels,
+          forces: forceLabels,
           forceIntensities,
-          archetype: selectedArchetype
+          archetype: selectedArchetype,
+          sex: selectedSex
         }),
       });
 
@@ -367,33 +359,25 @@ const MotivationalFusion: React.FC<MotivationalFusionProps> = ({ onMotivationGen
       }
 
       const data = await response.json();
-      setGeneratedMotive(data.motivation);
+      setGeneratedMotivation(data.motivation);
       onMotivationGenerated(data.motivation);
     } catch (error) {
       console.error('Error generating motivation:', error);
-      // Fallback to basic motivation if AI generation fails
-      const actionLabels = selectedActions.map(actionId => {
-        const action = actions.find(a => a.id === actionId);
-        return action ? action.label : customAction;
-      });
-
-      const forceLabels = selectedForces.map(forceId => {
-        const force = drivingForces.find(f => f.id === forceId);
-        return force ? force.label : customForce;
-      });
-
-      const motive = `A character driven to ${actionLabels.join(' and ')} by ${forceLabels.join(' and ')}.`;
-      setGeneratedMotive(motive);
-      onMotivationGenerated(motive);
+      // Fallback to simple motivation if API call fails
+      const motivation = `Driven by ${forceLabels.join(' and ')}, they seek to ${actionLabels.join(' and ')}`;
+      setGeneratedMotivation(motivation);
+      onMotivationGenerated(motivation);
+    } finally {
+      setIsGenerating(false);
     }
   };
   
   return (
-    <>
-      <Title>Motivational Fusion Tool</Title>
-      
+    <div>
+      <Title>Create Your Character&apos;s Motivation</Title>
+
       <StepContainer>
-        <StepTitle>Select up to two actions that define your character&apos;s goals</StepTitle>
+        <StepTitle>What are their primary actions? (Select up to 2)</StepTitle>
         <OptionsGrid>
           {actions.map(action => (
             <OptionButton
@@ -405,104 +389,100 @@ const MotivationalFusion: React.FC<MotivationalFusionProps> = ({ onMotivationGen
             </OptionButton>
           ))}
         </OptionsGrid>
-        <CustomInput
-          type="text"
-          placeholder="Or enter a custom action..."
-          value={customAction}
-          onChange={(e) => setCustomAction(e.target.value)}
-        />
       </StepContainer>
-      
+
       <StepContainer>
-        <StepTitle>Select up to two driving forces behind your character&apos;s actions</StepTitle>
+        <StepTitle>What drives them? (Select up to 2)</StepTitle>
         <OptionsGrid>
           {drivingForces.map(force => (
             <OptionButton
               key={force.id}
-              selected={selectedForces.includes(force.id)}
+              selected={selectedForces.some(f => f.id === force.id)}
               onClick={() => handleForceSelect(force.id)}
             >
               {force.label}
             </OptionButton>
           ))}
         </OptionsGrid>
-        <CustomInput
-          type="text"
-          placeholder="Or enter a custom driving force..."
-          value={customForce}
-          onChange={(e) => setCustomForce(e.target.value)}
-        />
       </StepContainer>
-      
-      <StepContainer>
-        <StepTitle>Step 3: Generate Motive</StepTitle>
-        <ActionButton onClick={generateMotive}>
-          Generate Motivation
-        </ActionButton>
-        
-        {generatedMotive && (
-          <OutputContainer>
-            <OutputTitle>🧠 Output:</OutputTitle>
-            <OutputText>{`"${generatedMotive}"`}</OutputText>
-            <ButtonGroup>
-              <ActionButton onClick={generateMotive}>
-                <FaRedo /> Regenerate
-              </ActionButton>
-            </ButtonGroup>
-          </OutputContainer>
-        )}
-      </StepContainer>
-      
-      <AdvancedModeToggle onClick={() => setShowAdvancedMode(!showAdvancedMode)}>
-        {showAdvancedMode ? 'Hide Advanced Mode' : 'Show Advanced Mode'} 
-        {showAdvancedMode ? <FaChevronUp /> : <FaChevronDown />}
-      </AdvancedModeToggle>
-      
-      {showAdvancedMode && (
+
+      {selectedForces.length > 0 && (
         <AdvancedModeContainer>
-          <StepTitle>Advanced Options</StepTitle>
-          
-          {selectedForces.length > 0 && (
+          <AdvancedModeToggle onClick={() => setIsAdvancedMode(!isAdvancedMode)}>
+            {isAdvancedMode ? <FaChevronUp /> : <FaChevronDown />}
+            Advanced Options
+          </AdvancedModeToggle>
+
+          {isAdvancedMode && (
             <>
-              <StepTitle>Intensity Sliders</StepTitle>
-              {selectedForces.map(forceId => {
-                const force = drivingForces.find(f => f.id === forceId);
-                if (!force) return null;
-                
-                return (
-                  <SliderContainer key={force.id}>
-                    <SliderLabel>
-                      <span>{force.label}</span>
-                      <span>{forceIntensities[force.id]}/5</span>
-                    </SliderLabel>
-                    <Slider 
-                      type="range" 
-                      min="1" 
-                      max="5" 
-                      value={forceIntensities[force.id]} 
-                      onChange={(e) => handleIntensityChange(force.id, parseInt(e.target.value))}
-                    />
-                  </SliderContainer>
-                );
-              })}
+              {selectedForces.map(force => (
+                <SliderContainer key={force.id}>
+                  <SliderLabel>
+                    <span>{force.label}</span>
+                    <span>{selectedForces.find(f => f.id === force.id)?.intensity || 50}%</span>
+                  </SliderLabel>
+                  <Slider
+                    type="range"
+                    min="0"
+                    max="100"
+                    value={selectedForces.find(f => f.id === force.id)?.intensity || 50}
+                    onChange={(e) => handleIntensityChange(force.id, parseInt(e.target.value))}
+                  />
+                </SliderContainer>
+              ))}
+
+              <StepTitle>Character Archetype</StepTitle>
+              <ArchetypeContainer>
+                {archetypes.map(archetype => (
+                  <ArchetypeButton
+                    key={archetype.id}
+                    selected={selectedArchetype === archetype.id}
+                    onClick={() => handleArchetypeSelect(archetype.id)}
+                  >
+                    {archetype.label}
+                  </ArchetypeButton>
+                ))}
+              </ArchetypeContainer>
             </>
           )}
-          
-          <StepTitle>Archetype Filter</StepTitle>
-          <ArchetypeContainer>
-            {archetypes.map(archetype => (
-              <ArchetypeButton 
-                key={archetype.id}
-                selected={selectedArchetype === archetype.id}
-                onClick={() => handleArchetypeSelect(archetype.id)}
-              >
-                {archetype.label}
-              </ArchetypeButton>
-            ))}
-          </ArchetypeContainer>
         </AdvancedModeContainer>
       )}
-    </>
+
+      {selectedActions.length > 0 && selectedForces.length > 0 && (
+        <ButtonGroup>
+          <ActionButton onClick={generateMotive} disabled={isGenerating}>
+            {isGenerating ? (
+              <>
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                Generating...
+              </>
+            ) : (
+              <>
+                <FaDice /> Generate Motivation
+              </>
+            )}
+          </ActionButton>
+          <ActionButton 
+            onClick={() => {
+              setSelectedActions([]);
+              setSelectedForces([]);
+              setSelectedArchetype(null);
+              setGeneratedMotivation(null);
+            }}
+            disabled={isGenerating}
+          >
+            <FaRedo /> Reset
+          </ActionButton>
+        </ButtonGroup>
+      )}
+
+      {generatedMotivation && (
+        <OutputContainer>
+          <OutputTitle>Generated Motivation</OutputTitle>
+          <OutputText>{generatedMotivation}</OutputText>
+        </OutputContainer>
+      )}
+    </div>
   );
 };
 
