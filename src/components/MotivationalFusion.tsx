@@ -211,22 +211,23 @@ const MotivationalFusion: React.FC<MotivationalFusionProps> = ({ onMotivationGen
     { id: 'escape', label: 'Escape' },
     { id: 'inspire', label: 'Inspire' },
     { id: 'lead', label: 'Lead' },
-    { id: 'betray', label: 'Betray' },
-    { id: 'discover', label: 'Discover' },
-    { id: 'save', label: 'Save' },
+    { id: 'corruption', label: 'Corruption' },
+    { id: 'discovery', label: 'Discovery' },
+    { id: 'nomad-life', label: 'Nomad Life' },
     { id: 'rule', label: 'Rule' }
   ];
   
   const drivingForces: DrivingForce[] = useMemo(() => [
-    { id: 'love', label: 'Love' },
-    { id: 'money', label: 'Money' },
+    { id: 'romance', label: 'Romance' },
+    { id: 'gold', label: 'Gold' },
     { id: 'revenge', label: 'Revenge' },
     { id: 'fear', label: 'Fear' },
     { id: 'guilt', label: 'Guilt' },
     { id: 'loyalty', label: 'Loyalty' },
     { id: 'justice', label: 'Justice' },
-    { id: 'despair', label: 'Despair' },
+    { id: 'hatred', label: 'Hatred' },
 		{ id: 'glory', label: 'Glory' },
+    { id: 'pure-evil', label: 'Pure Evil' },
 	],
 	[],
 );
@@ -239,7 +240,7 @@ const MotivationalFusion: React.FC<MotivationalFusionProps> = ({ onMotivationGen
   ];
   
   // State
-  const [selectedAction, setSelectedAction] = useState<string | null>(null);
+  const [selectedActions, setSelectedActions] = useState<string[]>([]);
   const [customAction, setCustomAction] = useState('');
   const [selectedForces, setSelectedForces] = useState<string[]>([]);
   const [customForce, setCustomForce] = useState('');
@@ -250,8 +251,8 @@ const MotivationalFusion: React.FC<MotivationalFusionProps> = ({ onMotivationGen
   
   // Load saved state from localStorage
   useEffect(() => {
-      const savedAction = localStorage.getItem('motivationalFusion_selectedAction');
-      if (savedAction) setSelectedAction(savedAction);
+      const savedActions = localStorage.getItem('motivationalFusion_selectedActions');
+      if (savedActions) setSelectedActions(JSON.parse(savedActions));
       
       const savedCustomAction = localStorage.getItem('motivationalFusion_customAction');
       if (savedCustomAction) setCustomAction(savedCustomAction);
@@ -288,7 +289,7 @@ const MotivationalFusion: React.FC<MotivationalFusionProps> = ({ onMotivationGen
   
   // Save state to localStorage when it changes
   useEffect(() => {
-      localStorage.setItem('motivationalFusion_selectedAction', selectedAction || '');
+      localStorage.setItem('motivationalFusion_selectedActions', JSON.stringify(selectedActions));
       localStorage.setItem('motivationalFusion_customAction', customAction);
       localStorage.setItem('motivationalFusion_selectedForces', JSON.stringify(selectedForces));
       localStorage.setItem('motivationalFusion_customForce', customForce);
@@ -296,20 +297,32 @@ const MotivationalFusion: React.FC<MotivationalFusionProps> = ({ onMotivationGen
       localStorage.setItem('motivationalFusion_showAdvancedMode', JSON.stringify(showAdvancedMode));
       localStorage.setItem('motivationalFusion_forceIntensities', JSON.stringify(forceIntensities));
       localStorage.setItem('motivationalFusion_selectedArchetype', selectedArchetype || '');
-  }, [selectedAction, customAction, selectedForces, customForce, generatedMotive, showAdvancedMode, forceIntensities, selectedArchetype]);
+  }, [selectedActions, customAction, selectedForces, customForce, generatedMotive, showAdvancedMode, forceIntensities, selectedArchetype]);
   
   // Handle action selection
   const handleActionSelect = (actionId: string) => {
-    setSelectedAction(actionId === selectedAction ? null : actionId);
+    setSelectedActions(prev => {
+      if (prev.includes(actionId)) {
+        return prev.filter(id => id !== actionId);
+      }
+      if (prev.length >= 2) {
+        return [prev[1], actionId];
+      }
+      return [...prev, actionId];
+    });
   };
   
   // Handle driving force selection
   const handleForceSelect = (forceId: string) => {
-    setSelectedForces(prev => 
-      prev.includes(forceId) 
-        ? prev.filter(id => id !== forceId) 
-        : [...prev, forceId]
-    );
+    setSelectedForces(prev => {
+      if (prev.includes(forceId)) {
+        return prev.filter(id => id !== forceId);
+      }
+      if (prev.length >= 2) {
+        return [prev[1], forceId];
+      }
+      return [...prev, forceId];
+    });
   };
   
   // Handle archetype selection
@@ -326,70 +339,53 @@ const MotivationalFusion: React.FC<MotivationalFusionProps> = ({ onMotivationGen
   };
   
   // Generate motive
-  const generateMotive = () => {
-    const action = selectedAction ? actions.find(a => a.id === selectedAction)?.label : customAction;
-    
-    if (!action) {
-      setGeneratedMotive("Please select an action first.");
-      return;
+  const generateMotive = async () => {
+    if (selectedActions.length === 0 || selectedForces.length === 0) return;
+
+    try {
+      const response = await fetch('/api/character/generate-motivation', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          actions: selectedActions.map(actionId => {
+            const action = actions.find(a => a.id === actionId);
+            return action ? action.label : customAction;
+          }),
+          forces: selectedForces.map(forceId => {
+            const force = drivingForces.find(f => f.id === forceId);
+            return force ? force.label : customForce;
+          }),
+          forceIntensities,
+          archetype: selectedArchetype
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to generate motivation');
+      }
+
+      const data = await response.json();
+      setGeneratedMotive(data.motivation);
+      onMotivationGenerated(data.motivation);
+    } catch (error) {
+      console.error('Error generating motivation:', error);
+      // Fallback to basic motivation if AI generation fails
+      const actionLabels = selectedActions.map(actionId => {
+        const action = actions.find(a => a.id === actionId);
+        return action ? action.label : customAction;
+      });
+
+      const forceLabels = selectedForces.map(forceId => {
+        const force = drivingForces.find(f => f.id === forceId);
+        return force ? force.label : customForce;
+      });
+
+      const motive = `A character driven to ${actionLabels.join(' and ')} by ${forceLabels.join(' and ')}.`;
+      setGeneratedMotive(motive);
+      onMotivationGenerated(motive);
     }
-    
-    const forces = selectedForces.map(id => drivingForces.find(f => f.id === id)?.label || '');
-    if (customForce) forces.push(customForce);
-    
-    if (forces.length === 0) {
-      setGeneratedMotive("Please select at least one driving force.");
-      return;
-    }
-    
-    // Simple templates for motivation generation
-    const templates = [
-      `They chose to ${action.toLowerCase()}, not for hate—but to ${forces[0].toLowerCase()} the memory of a ${forces.length > 1 ? forces[1].toLowerCase() : 'passion'} that was taken from them.`,
-      `Driven by ${forces[0].toLowerCase()}, they must ${action.toLowerCase()} before time runs out and all is lost.`,
-      `When ${forces[0].toLowerCase()} wasn't enough, they turned to ${action.toLowerCase()} as the only path forward.`,
-      `The world taught them that ${forces[0].toLowerCase()} comes at a price—the willingness to ${action.toLowerCase()} when necessary.`,
-      `Not for glory, not for fame, but for pure ${forces[0].toLowerCase()}, they will ${action.toLowerCase()} until their last breath.`
-    ];
-    
-    // Add archetype influence if selected
-    let finalMotive = templates[Math.floor(Math.random() * templates.length)];
-    
-    if (selectedArchetype) {
-      const archetypeModifiers = {
-        'heroic': 'with honor and sacrifice',
-        'antihero': 'by any means necessary',
-        'villain': 'regardless of who stands in their way',
-        'tragic': 'knowing it may lead to their downfall'
-      };
-      
-      finalMotive += ` They'll do it ${archetypeModifiers[selectedArchetype as keyof typeof archetypeModifiers]}.`;
-    }
-    
-    setGeneratedMotive(finalMotive);
-    onMotivationGenerated(finalMotive);
-  };
-  
-  // Add random nuance
-  const addRandomNuance = () => {
-    if (!generatedMotive) {
-      generateMotive();
-      return;
-    }
-    
-    const nuances = [
-      "But deep down, they question if this path will truly bring them peace.",
-      "The irony is, their actions mirror those they once despised.",
-      "With each step, they lose a piece of who they once were.",
-      "What started as necessity has become an addiction they can't escape.",
-      "If only they knew the true cost of their choices.",
-      "The line between justice and vengeance grows thinner each day.",
-      "Their greatest fear is becoming exactly what they're fighting against."
-    ];
-    
-    const randomNuance = nuances[Math.floor(Math.random() * nuances.length)];
-    const updatedMotive = `${generatedMotive} ${randomNuance}`;
-    setGeneratedMotive(updatedMotive);
-    onMotivationGenerated(updatedMotive);
   };
   
   return (
@@ -397,31 +393,31 @@ const MotivationalFusion: React.FC<MotivationalFusionProps> = ({ onMotivationGen
       <Title>Motivational Fusion Tool</Title>
       
       <StepContainer>
-        <StepTitle>Step 1: What does your character want to do?</StepTitle>
+        <StepTitle>Select up to two actions that define your character&apos;s goals</StepTitle>
         <OptionsGrid>
           {actions.map(action => (
-            <OptionButton 
+            <OptionButton
               key={action.id}
-              selected={selectedAction === action.id}
+              selected={selectedActions.includes(action.id)}
               onClick={() => handleActionSelect(action.id)}
             >
               {action.label}
             </OptionButton>
           ))}
         </OptionsGrid>
-        <CustomInput 
-          type="text" 
-          placeholder="Or enter a custom action..." 
+        <CustomInput
+          type="text"
+          placeholder="Or enter a custom action..."
           value={customAction}
           onChange={(e) => setCustomAction(e.target.value)}
         />
       </StepContainer>
       
       <StepContainer>
-        <StepTitle>Step 2: Why do they do it?</StepTitle>
+        <StepTitle>Select up to two driving forces behind your character&apos;s actions</StepTitle>
         <OptionsGrid>
           {drivingForces.map(force => (
-            <OptionButton 
+            <OptionButton
               key={force.id}
               selected={selectedForces.includes(force.id)}
               onClick={() => handleForceSelect(force.id)}
@@ -430,9 +426,9 @@ const MotivationalFusion: React.FC<MotivationalFusionProps> = ({ onMotivationGen
             </OptionButton>
           ))}
         </OptionsGrid>
-        <CustomInput 
-          type="text" 
-          placeholder="Or enter a custom driving force..." 
+        <CustomInput
+          type="text"
+          placeholder="Or enter a custom driving force..."
           value={customForce}
           onChange={(e) => setCustomForce(e.target.value)}
         />
@@ -451,9 +447,6 @@ const MotivationalFusion: React.FC<MotivationalFusionProps> = ({ onMotivationGen
             <ButtonGroup>
               <ActionButton onClick={generateMotive}>
                 <FaRedo /> Regenerate
-              </ActionButton>
-              <ActionButton onClick={addRandomNuance}>
-                <FaDice /> Add Random Nuance
               </ActionButton>
             </ButtonGroup>
           </OutputContainer>

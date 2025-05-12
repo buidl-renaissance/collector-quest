@@ -19,13 +19,13 @@ const CharacterBioPage: React.FC = () => {
   const [isFirstPerson, setIsFirstPerson] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [characterBio, setCharacterBio] = useState("");
-  const { selectedClass } = useCharacterClass();
-  const { selectedRace } = useRace();
+  const { selectedClass, loading: classLoading } = useCharacterClass();
+  const { selectedRace, loading: raceLoading } = useRace();
 
   // State for custom options
   const [customPersonality, setCustomPersonality] = useState("");
-  const [customMotivation, setCustomMotivation] = useState("");
-  const [customFear, setCustomFear] = useState("");
+  const [customIdeals, setCustomIdeals] = useState("");
+  const [customFlaws, setCustomFlaws] = useState("");
 
   // State for option arrays
   const [personalityOptions, setPersonalityOptions] = useState([
@@ -38,7 +38,7 @@ const CharacterBioPage: React.FC = () => {
     "Honorable",
     "Mischievous",
   ]);
-  const [motivationOptions, setMotivationOptions] = useState([
+  const [idealsOptions, setIdealsOptions] = useState([
     "Revenge",
     "Knowledge",
     "Wealth",
@@ -48,7 +48,7 @@ const CharacterBioPage: React.FC = () => {
     "Freedom",
     "Love",
   ]);
-  const [fearOptions, setFearOptions] = useState([
+  const [flawsOptions, setFlawsOptions] = useState([
     "Darkness",
     "Failure",
     "Betrayal",
@@ -62,8 +62,9 @@ const CharacterBioPage: React.FC = () => {
   const [formData, setFormData] = useState({
     name: "",
     personality: [] as string[],
-    motivation: [] as string[],
-    fear: [] as string[],
+    ideals: [] as string[],
+    bonds: [] as string[],
+    flaws: [] as string[],
     hauntingMemory: "",
     treasuredPossession: "",
   });
@@ -75,7 +76,23 @@ const CharacterBioPage: React.FC = () => {
     if (typeof window !== "undefined") {
       const savedFormData = localStorage.getItem("characterTraits");
       if (savedFormData) {
-        setFormData(JSON.parse(savedFormData));
+        const parsedData = JSON.parse(savedFormData);
+        // Transform old format to new format if needed
+        if (parsedData.motivation || parsedData.fear) {
+          const transformedData = {
+            name: parsedData.name || "",
+            personality: parsedData.personality || [],
+            ideals: parsedData.motivation || [],
+            bonds: [parsedData.hauntingMemory].filter(Boolean),
+            flaws: parsedData.fear || [],
+            hauntingMemory: parsedData.hauntingMemory || "",
+            treasuredPossession: parsedData.treasuredPossession || ""
+          };
+          setFormData(transformedData);
+          localStorage.setItem("characterTraits", JSON.stringify(transformedData));
+        } else {
+          setFormData(parsedData);
+        }
       }
 
       const savedName = localStorage.getItem("characterName");
@@ -88,14 +105,14 @@ const CharacterBioPage: React.FC = () => {
         setPersonalityOptions(JSON.parse(savedPersonality));
       }
 
-      const savedMotivation = localStorage.getItem("motivation");
-      if (savedMotivation) {
-        setMotivationOptions(JSON.parse(savedMotivation));
+      const savedIdeals = localStorage.getItem("ideals");
+      if (savedIdeals) {
+        setIdealsOptions(JSON.parse(savedIdeals));
       }
 
-      const savedFear = localStorage.getItem("fear");
-      if (savedFear) {
-        setFearOptions(JSON.parse(savedFear));
+      const savedFlaws = localStorage.getItem("flaws");
+      if (savedFlaws) {
+        setFlawsOptions(JSON.parse(savedFlaws));
       }
 
       const savedBio = localStorage.getItem("characterBio");
@@ -139,7 +156,7 @@ const CharacterBioPage: React.FC = () => {
   };
 
   const handleAddCustomOption = (
-    type: "personality" | "motivation" | "fear"
+    type: "personality" | "ideals" | "flaws"
   ) => {
     if (type === "personality" && customPersonality.trim()) {
       setPersonalityOptions((prev) => [...prev, customPersonality.trim()]);
@@ -153,33 +170,33 @@ const CharacterBioPage: React.FC = () => {
         return updatedData;
       });
       setCustomPersonality("");
-    } else if (type === "motivation" && customMotivation.trim()) {
-      setMotivationOptions((prev) => [...prev, customMotivation.trim()]);
+    } else if (type === "ideals" && customIdeals.trim()) {
+      setIdealsOptions((prev) => [...prev, customIdeals.trim()]);
       setFormData((prev) => {
         const updatedData = {
           ...prev,
-          motivation: [...prev.motivation, customMotivation.trim()],
+          ideals: [...prev.ideals, customIdeals.trim()],
         };
         localStorage.setItem("characterTraits", JSON.stringify(updatedData));
         return updatedData;
       });
-      setCustomMotivation("");
-    } else if (type === "fear" && customFear.trim()) {
-      setFearOptions((prev) => [...prev, customFear.trim()]);
+      setCustomIdeals("");
+    } else if (type === "flaws" && customFlaws.trim()) {
+      setFlawsOptions((prev) => [...prev, customFlaws.trim()]);
       setFormData((prev) => {
         const updatedData = {
           ...prev,
-          fear: [...prev.fear, customFear.trim()],
+          flaws: [...prev.flaws, customFlaws.trim()],
         };
         localStorage.setItem("characterTraits", JSON.stringify(updatedData));
         return updatedData;
       });
-      setCustomFear("");
+      setCustomFlaws("");
     }
   };
 
   const handleSelectChip = (
-    type: "personality" | "motivation" | "fear",
+    type: "personality" | "ideals" | "flaws",
     value: string
   ) => {
     setFormData((prev) => {
@@ -207,11 +224,11 @@ const CharacterBioPage: React.FC = () => {
     const randomPersonality = [
       personalityOptions[Math.floor(Math.random() * personalityOptions.length)],
     ];
-    const randomMotivation = [
-      motivationOptions[Math.floor(Math.random() * motivationOptions.length)],
+    const randomIdeals = [
+      idealsOptions[Math.floor(Math.random() * idealsOptions.length)],
     ];
-    const randomFear = [
-      fearOptions[Math.floor(Math.random() * fearOptions.length)],
+    const randomFlaws = [
+      flawsOptions[Math.floor(Math.random() * flawsOptions.length)],
     ];
 
     const randomizedData = {
@@ -219,8 +236,11 @@ const CharacterBioPage: React.FC = () => {
         Math.floor(Math.random() * 3)
       ],
       personality: randomPersonality,
-      motivation: randomMotivation,
-      fear: randomFear,
+      ideals: randomIdeals,
+      bonds: [["A village burning", "A lost love", "A broken promise", "A mysterious stranger"][
+        Math.floor(Math.random() * 4)
+      ]],
+      flaws: randomFlaws,
       hauntingMemory: [
         "A village burning",
         "A lost love",
@@ -245,42 +265,82 @@ const CharacterBioPage: React.FC = () => {
 
   const handleNext = () => {
     if (characterBio) {
-      router.push('/character/summary');
+      router.push('/character/motivation');
     }
   };
 
-  const generateBio = () => {
+  const generateBio = async () => {
     setIsLoading(true);
 
-    // Simulate API call or processing time
-    setTimeout(() => {
-      const personalityText =
-        formData.personality.length > 0
-          ? formData.personality.join(", ").replace(/, ([^,]*)$/, " and $1")
-          : "mysterious";
-
-      const motivationText =
-        formData.motivation.length > 0
-          ? formData.motivation.join(", ").replace(/, ([^,]*)$/, " and $1")
-          : "survival";
-
-      const fearText =
-        formData.fear.length > 0
-          ? formData.fear.join(", ").replace(/, ([^,]*)$/, " and $1")
-          : "the unknown";
-
+    try {
       if (!selectedRace || !selectedClass) {
         setIsLoading(false);
         return;
       }
 
-      const firstPersonBio = `I am ${formData.name}, a ${personalityText} ${selectedRace.name} ${selectedClass.name}. My quest for ${motivationText} drives me forward, though I am haunted by ${formData.hauntingMemory}. Above all, I fear ${fearText}, yet I find comfort in my most treasured possession: ${formData.treasuredPossession}.`;
+      const response = await fetch('/api/character/generate-bio', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          race: {
+            name: selectedRace.name,
+            description: selectedRace.description || '',
+          },
+          class: {
+            name: selectedClass.name,
+            description: selectedClass.description || '',
+          },
+          personality: formData.personality,
+          motivation: formData.ideals,
+          fear: formData.flaws,
+          hauntingMemory: formData.hauntingMemory,
+          treasuredPossession: formData.treasuredPossession,
+          isFirstPerson,
+        }),
+      });
 
-      const thirdPersonBio = `${formData.name} is a ${personalityText} ${selectedRace.name} ${selectedClass.name}. Driven by a desire for ${motivationText}, they push forward despite being haunted by ${formData.hauntingMemory}. Though they deeply fear ${fearText}, they find solace in their most treasured possession: ${formData.treasuredPossession}.`;
+      if (!response.ok) {
+        throw new Error('Failed to generate bio');
+      }
+
+      const data = await response.json();
+      setCharacterBio(data.bio);
+    } catch (error) {
+      console.error('Error generating bio:', error);
+      // Fallback to the original bio generation if the API call fails
+      if (!selectedRace || !selectedClass) {
+        setIsLoading(false);
+        return;
+      }
+
+      const personalityText = formData.personality.length > 0
+        ? formData.personality.join(", ").replace(/, ([^,]*)$/, " and $1")
+        : "mysterious";
+
+      const motivationText = formData.ideals.length > 0
+        ? formData.ideals.join(", ").replace(/, ([^,]*)$/, " and $1")
+        : "survival";
+
+      const fearText = formData.flaws.length > 0
+        ? formData.flaws.join(", ").replace(/, ([^,]*)$/, " and $1")
+        : "the unknown";
+
+      const raceClassContext = `${selectedRace.name} ${selectedClass.name}`;
+      const raceDescription = selectedRace.description ? selectedRace.description.split('.')[0] : '';
+      const classDescription = selectedClass.description ? selectedClass.description.split('.')[0] : '';
+      const raceClassDescription = [raceDescription, classDescription].filter(Boolean).join('. ');
+
+      const firstPersonBio = `I am ${formData.name}, a ${personalityText} ${raceClassContext}. ${raceClassDescription} My quest for ${motivationText} drives me forward, though I am haunted by ${formData.hauntingMemory}. Above all, I fear ${fearText}, yet I find comfort in my most treasured possession: ${formData.treasuredPossession}.`;
+
+      const thirdPersonBio = `${formData.name} is a ${personalityText} ${raceClassContext}. ${raceClassDescription} Driven by a desire for ${motivationText}, they push forward despite being haunted by ${formData.hauntingMemory}. Though they deeply fear ${fearText}, they find solace in their most treasured possession: ${formData.treasuredPossession}.`;
 
       setCharacterBio(isFirstPerson ? firstPersonBio : thirdPersonBio);
+    } finally {
       setIsLoading(false);
-    }, 1500);
+    }
   };
 
   const handleStartRecording = () => {
@@ -295,12 +355,12 @@ const CharacterBioPage: React.FC = () => {
 
   // Redirect if no race or class is selected
   React.useEffect(() => {
-    if (!selectedRace) {
-      // router.push('/character/race');
-    } else if (!selectedClass) {
-      router.push('/character/class');
+    if (!raceLoading && !classLoading) {
+      if (!selectedRace) {
+        router.push('/character/race');
+      }
     }
-  }, [selectedRace, selectedClass, router]);
+  }, [selectedRace, raceLoading, classLoading, router]);
 
   return (
     <PageTransition>
@@ -393,15 +453,15 @@ const CharacterBioPage: React.FC = () => {
             </ChipsContainer>
           </FormGroup>
           <FormGroup>
-            <Label htmlFor="motivation">
+            <Label htmlFor="ideals">
               Primary Motivations (select multiple)
             </Label>
             <ChipsContainer>
-              {motivationOptions.map((option, index) => (
+              {idealsOptions.map((option, index) => (
                 <Chip
                   key={index}
-                  selected={formData.motivation.includes(option)}
-                  onClick={() => handleSelectChip("motivation", option)}
+                  selected={formData.ideals.includes(option)}
+                  onClick={() => handleSelectChip("ideals", option)}
                 >
                   {option}
                 </Chip>
@@ -409,12 +469,12 @@ const CharacterBioPage: React.FC = () => {
               <CustomChipInput>
                 <CustomInput
                   type="text"
-                  value={customMotivation}
-                  onChange={(e) => setCustomMotivation(e.target.value)}
+                  value={customIdeals}
+                  onChange={(e) => setCustomIdeals(e.target.value)}
                   placeholder="Add custom motivation"
                 />
                 <AddChipButton
-                  onClick={() => handleAddCustomOption("motivation")}
+                  onClick={() => handleAddCustomOption("ideals")}
                 >
                   <FaPlus />
                 </AddChipButton>
@@ -422,13 +482,13 @@ const CharacterBioPage: React.FC = () => {
             </ChipsContainer>
           </FormGroup>
           <FormGroup>
-            <Label htmlFor="fear">Greatest Fears (select multiple)</Label>
+            <Label htmlFor="flaws">Greatest Fears (select multiple)</Label>
             <ChipsContainer>
-              {fearOptions.map((option, index) => (
+              {flawsOptions.map((option, index) => (
                 <Chip
                   key={index}
-                  selected={formData.fear.includes(option)}
-                  onClick={() => handleSelectChip("fear", option)}
+                  selected={formData.flaws.includes(option)}
+                  onClick={() => handleSelectChip("flaws", option)}
                 >
                   {option}
                 </Chip>
@@ -436,11 +496,11 @@ const CharacterBioPage: React.FC = () => {
               <CustomChipInput>
                 <CustomInput
                   type="text"
-                  value={customFear}
-                  onChange={(e) => setCustomFear(e.target.value)}
+                  value={customFlaws}
+                  onChange={(e) => setCustomFlaws(e.target.value)}
                   placeholder="Add custom fear"
                 />
-                <AddChipButton onClick={() => handleAddCustomOption("fear")}>
+                <AddChipButton onClick={() => handleAddCustomOption("flaws")}>
                   <FaPlus />
                 </AddChipButton>
               </CustomChipInput>
@@ -477,8 +537,8 @@ const CharacterBioPage: React.FC = () => {
               disabled={
                 !formData.name ||
                 formData.personality.length === 0 ||
-                formData.motivation.length === 0 ||
-                formData.fear.length === 0 ||
+                formData.ideals.length === 0 ||
+                formData.flaws.length === 0 ||
                 !formData.hauntingMemory ||
                 !formData.treasuredPossession ||
                 !selectedRace ||

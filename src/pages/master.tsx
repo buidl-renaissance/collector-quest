@@ -49,7 +49,7 @@ const MasterPage: React.FC = () => {
     <PageWrapper>
       <ParallaxBackground style={{ transform: `translateY(${parallaxOffset}px)` }} />
       
-      {[...Array(5)].map((_, i) => (
+      {/* {[...Array(5)].map((_, i) => (
         <FloatingObject
           key={i}
           style={{
@@ -60,7 +60,7 @@ const MasterPage: React.FC = () => {
         >
           {i % 3 === 0 ? <FaDungeon /> : <FaDice />}
         </FloatingObject>
-      ))}
+      ))} */}
 
       <AudioToggle onClick={toggleAudio}>
         {audioEnabled ? <FaVolumeUp /> : <FaVolumeMute />}
@@ -283,10 +283,8 @@ const MasterPage: React.FC = () => {
               Your browser does not support the video tag.
             </video>
             <VideoOverlay>
-              <PlayButton>
-                <Link href="/character/race">
-                  <span>PRESS START</span>
-                </Link>
+              <PlayButton href="/character/race">
+                <span>PRESS START</span>
               </PlayButton>
             </VideoOverlay>
           </VideoContainer>
@@ -342,11 +340,26 @@ const unfurl = keyframes`
 // Styled Components
 const PageWrapper = styled.div`
   min-height: 100vh;
-  background: linear-gradient(135deg, #3a2606 0%, #6c3a14 50%, #3a2606 100%);
+  background: linear-gradient(135deg, rgba(58, 38, 6, 0.9) 0%, rgba(108, 58, 20, 0.9) 50%, rgba(58, 38, 6, 0.9) 100%);
   color: #e6e6e6;
   position: relative;
   overflow: hidden;
   font-family: "EB Garamond", "Merriweather", serif;
+
+  &::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('/images/collector-quest-background.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.15;
+    z-index: 0;
+  }
 `;
 
 const ParallaxBackground = styled.div`
@@ -358,7 +371,7 @@ const ParallaxBackground = styled.div`
   background-image: url('/images/parchment-texture.jpg');
   background-size: cover;
   opacity: 0.05;
-  z-index: 0;
+  z-index: 1;
 `;
 
 const AudioToggle = styled.button`
@@ -453,7 +466,7 @@ const VideoOverlay = styled.div`
   height: 100%;
 `;
 
-const PlayButton = styled.button`
+const PlayButton = styled(Link)`
   position: absolute;
   top: 50%;
   left: 50%;
@@ -465,6 +478,7 @@ const PlayButton = styled.button`
   cursor: pointer;
   transition: all 0.3s ease;
   animation: ${glow} 3s infinite ease-in-out;
+  text-decoration: none;
 
   &:hover {
     transform: translate(-50%, -50%) scale(1.1);

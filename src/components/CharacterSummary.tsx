@@ -77,7 +77,7 @@ const CharacterSummary: React.FC<CharacterSummaryProps> = ({
         )}
 
         <CharacterInfoSection>
-          <SectionCard>
+          {/* <SectionCard>
             <SectionHeader>
               <SectionTitle>Background</SectionTitle>
               <EditButton onClick={() => handleEditSection("traits")}>
@@ -87,7 +87,7 @@ const CharacterSummary: React.FC<CharacterSummaryProps> = ({
             <SectionContent>
               {character.background || "No background information available."}
             </SectionContent>
-          </SectionCard>
+          </SectionCard> */}
 
           <SectionCard>
             <SectionHeader>
