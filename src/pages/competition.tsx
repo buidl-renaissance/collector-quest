@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { NextPage } from 'next';
 import { NextSeo } from 'next-seo';
-import styled from 'styled-components';
+import styled from '@emotion/styled';
 import { FaCrown, FaCoins, FaImage, FaVoteYea } from 'react-icons/fa';
 import { useWallet } from '@suiet/wallet-kit';
 import { useAuth } from '@/hooks/useAuth';

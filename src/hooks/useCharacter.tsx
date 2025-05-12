@@ -20,6 +20,8 @@ export interface Character {
   motivation?: string;
   bio?: string;
   sex?: string;
+  creature?: string;
+  background?: string;
 }
 
 export const useCharacter = () => {

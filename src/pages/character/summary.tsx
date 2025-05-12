@@ -99,8 +99,8 @@ const SummaryPage: React.FC = () => {
   };
 
   const handleNext = () => {
-    if (selectedRace && selectedClass) {
-      router.push("/character/complete");
+    if (character && character.bio) {
+      router.push('/character/sheet');
     }
   };
 
@@ -174,8 +174,8 @@ const SummaryPage: React.FC = () => {
           )}
         </ActionButtons>
 
-        <NextButton onClick={handleNext}>
-          Complete Character <FaArrowRight />
+        <NextButton onClick={handleNext} disabled={!character || !character.bio}>
+          Continue to Character Sheet <FaArrowRight />
         </NextButton>
       </Page>
     </PageTransition>

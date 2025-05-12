@@ -1,7 +1,7 @@
 import { GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
-import styled, { keyframes } from 'styled-components';
+import styled, { keyframes } from '@emotion/styled';
 import { FaArrowLeft, FaCrown } from 'react-icons/fa';
 import { Race } from '@/data/races';
 import { getRaceById } from '@/db/races';

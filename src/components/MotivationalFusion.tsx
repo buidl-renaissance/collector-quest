@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import styled from 'styled-components';
+import styled from '@emotion/styled';
 import { FaRedo, FaDice, FaChevronDown, FaChevronUp } from 'react-icons/fa';
 
 // Types

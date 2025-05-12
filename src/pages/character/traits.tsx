@@ -4,14 +4,11 @@ import styled from "@emotion/styled";
 import { keyframes } from "@emotion/react";
 import { FaArrowLeft, FaArrowRight, FaRandom, FaPlus, FaMicrophone, FaPencilAlt } from "react-icons/fa";
 import PageTransition from "@/components/PageTransition";
-import { CharacterClass } from "@/data/classes";
-import { Race } from "@/data/races";
-import CharacterImage from "@/components/CharacterImage";
-import CharacterDescription from "@/components/CharacterDescription";
 import { useCharacterClass } from "@/hooks/useCharacterClass";
 import { useRace } from "@/hooks/useRace";
 import Page from "@/components/Page";
 import { BackButton, NextButton } from "@/components/styled/buttons";
+import { useCharacter } from "@/hooks/useCharacter";
 
 const CharacterBioPage: React.FC = () => {
   const router = useRouter();
@@ -19,6 +16,7 @@ const CharacterBioPage: React.FC = () => {
   const [isFirstPerson, setIsFirstPerson] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [characterBio, setCharacterBio] = useState("");
+  const { character } = useCharacter();
   const { selectedClass, loading: classLoading } = useCharacterClass();
   const { selectedRace, loading: raceLoading } = useRace();
 
@@ -293,6 +291,7 @@ const CharacterBioPage: React.FC = () => {
             name: selectedClass.name,
             description: selectedClass.description || '',
           },
+          sex: character?.sex || '',
           personality: formData.personality,
           motivation: formData.ideals,
           fear: formData.flaws,

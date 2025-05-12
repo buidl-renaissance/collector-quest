@@ -283,7 +283,7 @@ const MasterPage: React.FC = () => {
               Your browser does not support the video tag.
             </video>
             <VideoOverlay>
-              <PlayButton href="/character/race">
+              <PlayButton href="/character/sex">
                 <span>PRESS START</span>
               </PlayButton>
             </VideoOverlay>
