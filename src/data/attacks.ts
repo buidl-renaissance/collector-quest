@@ -937,6 +937,7 @@ export const attacks: Attack[] = [
     element: "Fire",
     attackType: "Curse",
     effect: "Summons a creature to fight for you",
+    type: "spell"
   },
   {
     name: "Dragon Holy Nova",
@@ -944,6 +945,7 @@ export const attacks: Attack[] = [
     element: "Holy",
     attackType: "Trap",
     effect: "Deals high single-target damage",
+    type: "spell"
   },
   {
     name: "Champion Shadow Shatter",
@@ -951,6 +953,7 @@ export const attacks: Attack[] = [
     element: "Shadow",
     attackType: "Buff",
     effect: "Creates a shield that blocks damage",
+    type: "spell"
   },
   {
     name: "Warlock Ash Pulse",
@@ -958,6 +961,7 @@ export const attacks: Attack[] = [
     element: "Ash",
     attackType: "Ranged",
     effect: "Slows enemy movement for 2 turns",
+    type: "attack"
   },
   {
     name: "Halfling Ice Blast",
@@ -965,6 +969,7 @@ export const attacks: Attack[] = [
     element: "Ice",
     attackType: "Buff",
     effect: "Poisons the target, dealing damage over time",
+    type: "spell"
   },
   {
     name: "Mystic Poison Flame",
@@ -972,6 +977,7 @@ export const attacks: Attack[] = [
     element: "Poison",
     attackType: "Trap",
     effect: "Creates a shield that blocks damage",
+    type: "spell"
   },
   {
     name: "Pyromancer Earth Touch",
@@ -979,6 +985,7 @@ export const attacks: Attack[] = [
     element: "Earth",
     attackType: "Debuff",
     effect: "Slows enemy movement for 2 turns",
+    type: "spell"
   },
   {
     name: "Halfling Light Touch",
@@ -986,6 +993,7 @@ export const attacks: Attack[] = [
     element: "Light",
     attackType: "Buff",
     effect: "Deals area-of-effect elemental damage",
+    type: "spell"
   },
   {
     name: "Seer Blood Surge",
@@ -993,6 +1001,7 @@ export const attacks: Attack[] = [
     element: "Blood",
     attackType: "Aura",
     effect: "Increases the target's physical defense for 3 turns",
+    type: "spell"
   },
   {
     name: "Rogue Radiant Pulse",
@@ -1000,6 +1009,7 @@ export const attacks: Attack[] = [
     element: "Radiant",
     attackType: "Aura",
     effect: "Increases the target's physical defense for 3 turns",
+    type: "spell"
   },
   {
     name: "Barbarian Holy Blast",
@@ -1007,6 +1017,7 @@ export const attacks: Attack[] = [
     element: "Holy",
     attackType: "Heal",
     effect: "Increases the target's physical defense for 3 turns",
+    type: "spell"
   },
   {
     name: "Elf Blood Flame",
@@ -1014,6 +1025,7 @@ export const attacks: Attack[] = [
     element: "Blood",
     attackType: "Trap",
     effect: "Stuns enemies in a small radius",
+    type: "spell"
   },
   {
     name: "Warlock Wind Blast",
@@ -1021,6 +1033,7 @@ export const attacks: Attack[] = [
     element: "Wind",
     attackType: "Summon",
     effect: "Stuns enemies in a small radius",
+    type: "spell"
   },
   {
     name: "Dwarf Holy Strike",
@@ -1028,6 +1041,7 @@ export const attacks: Attack[] = [
     element: "Holy",
     attackType: "Spell",
     effect: "Grants temporary invisibility to the caster",
+    type: "spell"
   },
   {
     name: "Necromancer Holy Touch",
@@ -1035,6 +1049,7 @@ export const attacks: Attack[] = [
     element: "Holy",
     attackType: "Ranged",
     effect: "Causes enemies to flee in fear for 1 turn",
+    type: "attack"
   },
   {
     name: "Knight Ash Beam",
@@ -1042,6 +1057,7 @@ export const attacks: Attack[] = [
     element: "Ash",
     attackType: "Heal",
     effect: "Reflects a portion of incoming damage",
+    type: "spell"
   },
   {
     name: "Dragonborn Blood Surge",
@@ -1049,6 +1065,7 @@ export const attacks: Attack[] = [
     element: "Blood",
     attackType: "Debuff",
     effect: "Freezes the enemy, preventing movement for 1 turn",
+    type: "spell"
   },
   {
     name: "Human Solar Wrath",
@@ -1056,6 +1073,7 @@ export const attacks: Attack[] = [
     element: "Solar",
     attackType: "Curse",
     effect: "Deals area-of-effect elemental damage",
+    type: "spell"
   },
   {
     name: "Dragon Earth Blast",
@@ -1063,6 +1081,7 @@ export const attacks: Attack[] = [
     element: "Earth",
     attackType: "Ranged",
     effect: "Stuns enemies in a small radius",
+    type: "attack"
   },
   {
     name: "Knight Plague Wail",
@@ -1070,6 +1089,7 @@ export const attacks: Attack[] = [
     element: "Plague",
     attackType: "Buff",
     effect: "Freezes the enemy, preventing movement for 1 turn",
+    type: "spell"
   },
   {
     name: "Warden Earth Flame",
@@ -1077,6 +1097,7 @@ export const attacks: Attack[] = [
     element: "Earth",
     attackType: "Debuff",
     effect: "Deals area-of-effect elemental damage",
+    type: "spell"
   },
   {
     name: "Human Solar Touch",
@@ -1084,6 +1105,7 @@ export const attacks: Attack[] = [
     element: "Solar",
     attackType: "Trap",
     effect: "Causes enemies to flee in fear for 1 turn",
+    type: "spell"
   },
   {
     name: "Dragonborn Holy Nova",
@@ -1091,6 +1113,7 @@ export const attacks: Attack[] = [
     element: "Holy",
     attackType: "Curse",
     effect: "Summons a creature to fight for you",
+    type: "spell"
   },
   {
     name: "Rogue Plague Pierce",
@@ -1098,6 +1121,7 @@ export const attacks: Attack[] = [
     element: "Plague",
     attackType: "Heal",
     effect: "Heals allies in a moderate radius",
+    type: "spell"
   },
   {
     name: "Paladin Light Beam",
@@ -1105,6 +1129,7 @@ export const attacks: Attack[] = [
     element: "Light",
     attackType: "Heal",
     effect: "Applies a burning effect over time",
+    type: "spell"
   },
   {
     name: "Fighter Holy Wail",
@@ -1112,6 +1137,7 @@ export const attacks: Attack[] = [
     element: "Holy",
     attackType: "Aura",
     effect: "Applies a burning effect over time",
+    type: "spell"
   },
   {
     name: "Seer Wind Storm",
@@ -1119,6 +1145,7 @@ export const attacks: Attack[] = [
     element: "Wind",
     attackType: "Spell",
     effect: "Applies a burning effect over time",
+    type: "spell"
   },
   {
     name: "Seer Steel Surge",
@@ -1126,6 +1153,7 @@ export const attacks: Attack[] = [
     element: "Steel",
     attackType: "Summon",
     effect: "Slows enemy movement for 2 turns",
+    type: "spell"
   },
   {
     name: "Oracle Fire Flame",
@@ -1133,6 +1161,7 @@ export const attacks: Attack[] = [
     element: "Fire",
     attackType: "Debuff",
     effect: "Stuns enemies in a small radius",
+    type: "spell"
   },
   {
     name: "Cleric Ice Surge",
@@ -1140,6 +1169,7 @@ export const attacks: Attack[] = [
     element: "Ice",
     attackType: "Heal",
     effect: "Deals high single-target damage",
+    type: "spell"
   },
   {
     name: "Gnome Earth Flame",
@@ -1147,6 +1177,7 @@ export const attacks: Attack[] = [
     element: "Earth",
     attackType: "Ranged",
     effect: "Applies a burning effect over time",
+    type: "attack"
   },
   {
     name: "Goblin Crystal Wrath",
@@ -1154,6 +1185,7 @@ export const attacks: Attack[] = [
     element: "Crystal",
     attackType: "Buff",
     effect: "Increases the target's physical defense for 3 turns",
+    type: "spell"
   },
   {
     name: "Sorcerer Holy Barrage",
@@ -1161,6 +1193,7 @@ export const attacks: Attack[] = [
     element: "Holy",
     attackType: "Melee",
     effect: "Heals allies in a moderate radius",
+    type: "attack"
   },
   {
     name: "Hunter Solar Pulse",
@@ -1168,6 +1201,7 @@ export const attacks: Attack[] = [
     element: "Solar",
     attackType: "Melee",
     effect: "Grants temporary invisibility to the caster",
+    type: "attack"
   },
   {
     name: "Monk Poison Shatter",
@@ -1175,6 +1209,7 @@ export const attacks: Attack[] = [
     element: "Poison",
     attackType: "Spell",
     effect: "Deals area-of-effect elemental damage",
+    type: "spell"
   },
   {
     name: "Elf Solar Echo",
@@ -1182,6 +1217,7 @@ export const attacks: Attack[] = [
     element: "Solar",
     attackType: "Buff",
     effect: "Deals high single-target damage",
+    type: "spell"
   },
   {
     name: "Necromancer Frost Fury",
@@ -1189,6 +1225,7 @@ export const attacks: Attack[] = [
     element: "Frost",
     attackType: "Curse",
     effect: "Creates a shield that blocks damage",
+    type: "spell"
   },
   {
     name: "Giant Ash Fury",
@@ -1196,6 +1233,7 @@ export const attacks: Attack[] = [
     element: "Ash",
     attackType: "Trap",
     effect: "Freezes the enemy, preventing movement for 1 turn",
+    type: "spell"
   },
   {
     name: "Orc Fire Scream",
@@ -1203,6 +1241,7 @@ export const attacks: Attack[] = [
     element: "Fire",
     attackType: "Summon",
     effect: "Increases the target's physical defense for 3 turns",
+    type: "spell"
   },
   {
     name: "Witch Necrotic Echo",
@@ -1210,6 +1249,7 @@ export const attacks: Attack[] = [
     element: "Necrotic",
     attackType: "Aura",
     effect: "Poisons the target, dealing damage over time",
+    type: "spell"
   },
   {
     name: "Barbarian Psychic Flame",
@@ -1217,6 +1257,7 @@ export const attacks: Attack[] = [
     element: "Psychic",
     attackType: "Ranged",
     effect: "Slows enemy movement for 2 turns",
+    type: "attack"
   },
   {
     name: "Wizard Earth Wail",
@@ -1224,6 +1265,7 @@ export const attacks: Attack[] = [
     element: "Earth",
     attackType: "Summon",
     effect: "Poisons the target, dealing damage over time",
+    type: "spell"
   },
   {
     name: "Troll Necrotic Grasp",
@@ -1231,6 +1273,7 @@ export const attacks: Attack[] = [
     element: "Necrotic",
     attackType: "Ranged",
     effect: "Deals high single-target damage",
+    type: "attack"
   },
   {
     name: "Dragon Holy Roar",
@@ -1238,6 +1281,7 @@ export const attacks: Attack[] = [
     element: "Holy",
     attackType: "Spell",
     effect: "Stuns enemies in a small radius",
+    type: "spell"
   },
   {
     name: "Druid Fire Slash",
@@ -1245,6 +1289,7 @@ export const attacks: Attack[] = [
     element: "Fire",
     attackType: "Aura",
     effect: "Creates a shield that blocks damage",
+    type: "spell"
   },
   {
     name: "Dragonborn Frost Scream",
@@ -1252,6 +1297,7 @@ export const attacks: Attack[] = [
     element: "Frost",
     attackType: "Curse",
     effect: "Creates a shield that blocks damage",
+    type: "spell"
   },
   {
     name: "Witch Holy Storm",
@@ -1259,6 +1305,7 @@ export const attacks: Attack[] = [
     element: "Holy",
     attackType: "Summon",
     effect: "Deals high single-target damage",
+    type: "spell"
   },
   {
     name: "Bard Arcane Wrath",
@@ -1266,6 +1313,7 @@ export const attacks: Attack[] = [
     element: "Arcane",
     attackType: "Aura",
     effect: "Poisons the target, dealing damage over time",
+    type: "spell"
   },
   {
     name: "Dwarf Ice Scream",
@@ -1273,6 +1321,7 @@ export const attacks: Attack[] = [
     element: "Ice",
     attackType: "Melee",
     effect: "Slows enemy movement for 2 turns",
+    type: "attack"
   },
   {
     name: "Shaman Solar Touch",
@@ -1280,6 +1329,7 @@ export const attacks: Attack[] = [
     element: "Solar",
     attackType: "Spell",
     effect: "Creates a shield that blocks damage",
+    type: "spell"
   },
   {
     name: "Orc Holy Barrage",
@@ -1287,6 +1337,7 @@ export const attacks: Attack[] = [
     element: "Holy",
     attackType: "Heal",
     effect: "Grants temporary invisibility to the caster",
+    type: "spell"
   },
   {
     name: "Wizard Holy Flame",
@@ -1294,6 +1345,7 @@ export const attacks: Attack[] = [
     element: "Holy",
     attackType: "Spell",
     effect: "Stuns enemies in a small radius",
+    type: "spell"
   },
   {
     name: "Orc Light Wrath",
@@ -1301,6 +1353,7 @@ export const attacks: Attack[] = [
     element: "Light",
     attackType: "Buff",
     effect: "Applies a burning effect over time",
+    type: "spell"
   },
   {
     name: "Knight Blood Blast",
@@ -1308,6 +1361,7 @@ export const attacks: Attack[] = [
     element: "Blood",
     attackType: "Debuff",
     effect: "Summons a creature to fight for you",
+    type: "spell"
   },
   {
     name: "Undead Light Wrath",
@@ -1315,6 +1369,7 @@ export const attacks: Attack[] = [
     element: "Light",
     attackType: "Heal",
     effect: "Reflects a portion of incoming damage",
+    type: "spell"
   },
   {
     name: "Rogue Arcane Slash",
@@ -1322,6 +1377,7 @@ export const attacks: Attack[] = [
     element: "Arcane",
     attackType: "Melee",
     effect: "Causes enemies to flee in fear for 1 turn",
+    type: "attack"
   },
   {
     name: "Undead Plague Pulse",
@@ -1329,6 +1385,7 @@ export const attacks: Attack[] = [
     element: "Plague",
     attackType: "Buff",
     effect: "Deals area-of-effect elemental damage",
+    type: "spell"
   },
   {
     name: "Halfling Earth Pulse",
@@ -1336,6 +1393,7 @@ export const attacks: Attack[] = [
     element: "Earth",
     attackType: "Heal",
     effect: "Increases the target's physical defense for 3 turns",
+    type: "spell"
   },
   {
     name: "Specter Lightning Roar",
@@ -1343,6 +1401,7 @@ export const attacks: Attack[] = [
     element: "Lightning",
     attackType: "Ranged",
     effect: "Prevents enemies from casting spells",
+    type: "attack"
   },
   {
     name: "Rogue Lightning Wrath",
@@ -1350,6 +1409,7 @@ export const attacks: Attack[] = [
     element: "Lightning",
     attackType: "Spell",
     effect: "Reflects a portion of incoming damage",
+    type: "spell"
   },
   {
     name: "Phantom Fire Barrage",
@@ -1357,6 +1417,7 @@ export const attacks: Attack[] = [
     element: "Fire",
     attackType: "Curse",
     effect: "Poisons the target, dealing damage over time",
+    type: "spell"
   },
   {
     name: "Demon Ash Flame",
@@ -1364,6 +1425,7 @@ export const attacks: Attack[] = [
     element: "Ash",
     attackType: "Heal",
     effect: "Slows enemy movement for 2 turns",
+    type: "spell"
   },
   {
     name: "Necromancer Steel Scream",
@@ -1371,6 +1433,7 @@ export const attacks: Attack[] = [
     element: "Steel",
     attackType: "Melee",
     effect: "Deals high single-target damage",
+    type: "attack"
   },
   {
     name: "Beast Frost Blast",
@@ -1378,6 +1441,7 @@ export const attacks: Attack[] = [
     element: "Frost",
     attackType: "Heal",
     effect: "Freezes the enemy, preventing movement for 1 turn",
+    type: "spell"
   },
   {
     name: "Goblin Arcane Beam",
@@ -1385,6 +1449,7 @@ export const attacks: Attack[] = [
     element: "Arcane",
     attackType: "Summon",
     effect: "Poisons the target, dealing damage over time",
+    type: "spell"
   },
   {
     name: "Mystic Arcane Pierce",
@@ -1392,6 +1457,7 @@ export const attacks: Attack[] = [
     element: "Arcane",
     attackType: "Debuff",
     effect: "Deals area-of-effect elemental damage",
+    type: "spell"
   },
   {
     name: "Elemental Frost Scream",
@@ -1399,6 +1465,7 @@ export const attacks: Attack[] = [
     element: "Frost",
     attackType: "Trap",
     effect: "Reflects a portion of incoming damage",
+    type: "spell"
   },
   {
     name: "Giant Fire Fury",
@@ -1406,6 +1473,7 @@ export const attacks: Attack[] = [
     element: "Fire",
     attackType: "Heal",
     effect: "Applies a burning effect over time",
+    type: "spell"
   },
   {
     name: "Oracle Ash Blast",
@@ -1413,6 +1481,7 @@ export const attacks: Attack[] = [
     element: "Ash",
     attackType: "Spell",
     effect: "Heals allies in a moderate radius",
+    type: "spell"
   },
   {
     name: "Elf Solar Shatter",
@@ -1420,6 +1489,7 @@ export const attacks: Attack[] = [
     element: "Solar",
     attackType: "Heal",
     effect: "Deals high single-target damage",
+    type: "spell"
   },
   {
     name: "Barbarian Earth Pulse",
@@ -1427,6 +1497,7 @@ export const attacks: Attack[] = [
     element: "Earth",
     attackType: "Buff",
     effect: "Poisons the target, dealing damage over time",
+    type: "spell"
   },
   {
     name: "Hunter Holy Beam",
@@ -1434,6 +1505,7 @@ export const attacks: Attack[] = [
     element: "Holy",
     attackType: "Debuff",
     effect: "Applies a burning effect over time",
+    type: "spell"
   },
   {
     name: "Seer Holy Blast",
@@ -1441,6 +1513,7 @@ export const attacks: Attack[] = [
     element: "Holy",
     attackType: "Buff",
     effect: "Grants temporary invisibility to the caster",
+    type: "spell"
   },
   {
     name: "Orc Psychic Fury",
@@ -1448,6 +1521,7 @@ export const attacks: Attack[] = [
     element: "Psychic",
     attackType: "Aura",
     effect: "Creates a shield that blocks damage",
+    type: "spell"
   },
   {
     name: "Demon Poison Flame",
@@ -1455,6 +1529,7 @@ export const attacks: Attack[] = [
     element: "Poison",
     attackType: "Heal",
     effect: "Freezes the enemy, preventing movement for 1 turn",
+    type: "spell"
   },
   {
     name: "Barbarian Ice Storm",
@@ -1462,6 +1537,7 @@ export const attacks: Attack[] = [
     element: "Ice",
     attackType: "Ranged",
     effect: "Applies a burning effect over time",
+    type: "attack"
   },
   {
     name: "Invoker Earth Pierce",
@@ -1469,6 +1545,7 @@ export const attacks: Attack[] = [
     element: "Earth",
     attackType: "Melee",
     effect: "Applies a burning effect over time",
+    type: "attack"
   },
   {
     name: "Orc Ice Barrage",
@@ -1476,6 +1553,7 @@ export const attacks: Attack[] = [
     element: "Ice",
     attackType: "Buff",
     effect: "Causes enemies to flee in fear for 1 turn",
+    type: "spell"
   },
   {
     name: "Phantom Light Beam",
@@ -1483,6 +1561,7 @@ export const attacks: Attack[] = [
     element: "Light",
     attackType: "Curse",
     effect: "Reflects a portion of incoming damage",
+    type: "spell"
   },
   {
     name: "Elf Arcane Scream",
@@ -1490,6 +1569,7 @@ export const attacks: Attack[] = [
     element: "Arcane",
     attackType: "Spell",
     effect: "Creates a shield that blocks damage",
+    type: "spell"
   },
   {
     name: "Ranger Frost Fury",
@@ -1497,6 +1577,7 @@ export const attacks: Attack[] = [
     element: "Frost",
     attackType: "Curse",
     effect: "Summons a creature to fight for you",
+    type: "spell"
   },
   {
     name: "Witch Plague Slash",
@@ -1504,6 +1585,7 @@ export const attacks: Attack[] = [
     element: "Plague",
     attackType: "Heal",
     effect: "Creates a shield that blocks damage",
+    type: "spell"
   },
   {
     name: "Orc Lightning Blast",
@@ -1511,6 +1593,7 @@ export const attacks: Attack[] = [
     element: "Lightning",
     attackType: "Aura",
     effect: "Deals area-of-effect elemental damage",
+    type: "spell"
   },
   {
     name: "Halfling Plague Wail",
@@ -1518,6 +1601,7 @@ export const attacks: Attack[] = [
     element: "Plague",
     attackType: "Curse",
     effect: "Deals high single-target damage",
+    type: "spell"
   },
   {
     name: "Halfling Lightning Beam",
@@ -1525,6 +1609,7 @@ export const attacks: Attack[] = [
     element: "Lightning",
     attackType: "Melee",
     effect: "Freezes the enemy, preventing movement for 1 turn",
+    type: "attack"
   },
   {
     name: "Orc Plague Slash",
@@ -1532,5 +1617,6 @@ export const attacks: Attack[] = [
     element: "Plague",
     attackType: "Summon",
     effect: "Prevents enemies from casting spells",
+    type: "spell"
   },
 ];

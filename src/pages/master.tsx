@@ -474,7 +474,7 @@ const PlayButton = styled(Link)`
   background: none;
   border: none;
   color: #bb8930;
-  font-size: 2rem;
+  font-size: 1.5rem;
   cursor: pointer;
   transition: all 0.3s ease;
   animation: ${glow} 3s infinite ease-in-out;
@@ -483,12 +483,6 @@ const PlayButton = styled(Link)`
   &:hover {
     transform: translate(-50%, -50%) scale(1.1);
   }
-`;
-
-const Video = styled.video`
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
 `;
 
 const Title = styled.h1`

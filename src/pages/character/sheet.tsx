@@ -22,6 +22,11 @@ const CharacterSheetContainer = styled.div`
   border-radius: 0.5rem;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   border: 4px solid #a77d3e;
+  
+  @media (max-width: 768px) {
+    padding: 0.5rem;
+    border-width: 2px;
+  }
 `;
 
 const Header = styled.h1`
@@ -30,6 +35,11 @@ const Header = styled.h1`
   text-align: center;
   margin-bottom: 1rem;
   color: #d6b87b;
+  
+  @media (max-width: 768px) {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
 `;
 
 const Section = styled.div`
@@ -39,6 +49,11 @@ const Section = styled.div`
   margin-bottom: 1rem;
   border: 2px solid #a77d3e;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  
+  @media (max-width: 768px) {
+    padding: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
 `;
 
 const SectionLabel = styled.label`
@@ -56,6 +71,11 @@ const SectionLabel = styled.label`
   border-top-left-radius: 0.25rem;
   border-top-right-radius: 0.25rem;
   margin-bottom: 0;
+  
+  @media (max-width: 768px) {
+    font-size: 0.75rem;
+    padding: 0.25rem;
+  }
 `;
 
 const ContentBox = styled.div`
@@ -65,6 +85,11 @@ const ContentBox = styled.div`
   border-bottom-right-radius: 0.25rem;
   border: 1px solid #a77d3e;
   font-family: "Merriweather", serif;
+  
+  @media (max-width: 768px) {
+    padding: 0.15rem;
+    font-size: 0.85rem;
+  }
 `;
 
 const ListItem = styled.div`
@@ -74,12 +99,28 @@ const ListItem = styled.div`
   &:last-child {
     border-bottom: none;
   }
+  
+  @media (max-width: 768px) {
+    padding: 0.15rem 0;
+    font-size: 0.85rem;
+  }
 `;
 
 const Grid = styled.div<{ columns?: number; gap?: string }>`
   display: grid;
   grid-template-columns: repeat(${(props) => props.columns || 1}, 1fr);
   gap: ${(props) => props.gap || "0.75rem"};
+  
+  @media (max-width: 768px) {
+    grid-template-columns: ${(props) => props.columns && props.columns > 2 
+      ? `repeat(2, 1fr)` 
+      : `repeat(${props.columns || 1}, 1fr)`};
+    gap: 0.5rem;
+  }
+  
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+  }
 `;
 
 const AbilityBox = styled(ContentBox)`
@@ -106,10 +147,18 @@ const StatValue = styled.div`
   font-family: "Cinzel", serif;
   font-size: 1.5rem;
   color: #d6b87b;
+  
+  @media (max-width: 768px) {
+    font-size: 1.25rem;
+  }
 `;
 
 const TraitBox = styled(ContentBox)`
   margin-bottom: 0.5rem;
+  
+  @media (max-width: 768px) {
+    margin-bottom: 0.25rem;
+  }
 `;
 
 const TraitLabel = styled.div`
@@ -126,10 +175,19 @@ const TraitLabel = styled.div`
   border-top-left-radius: 0.25rem;
   border-top-right-radius: 0.25rem;
   margin-bottom: 0;
+  
+  @media (max-width: 768px) {
+    font-size: 0.75rem;
+    padding: 0.15rem;
+  }
 `;
 
 const TraitValue = styled.div`
   font-size: 0.875rem;
+  
+  @media (max-width: 768px) {
+    font-size: 0.8rem;
+  }
 `;
 
 const BackButton = styled.button`
@@ -150,11 +208,20 @@ const SkillCheckbox = styled.input`
   height: 1rem;
   background-color: #2e1e0f;
   border: 1px solid #a77d3e;
+  
+  @media (max-width: 768px) {
+    width: 0.85rem;
+    height: 0.85rem;
+  }
 `;
 
 const DeathSaveBox = styled.div`
   display: flex;
   gap: 0.25rem;
+  
+  @media (max-width: 768px) {
+    gap: 0.15rem;
+  }
 `;
 
 const DeathSaveCheck = styled.div<{ checked?: boolean }>`
@@ -163,6 +230,12 @@ const DeathSaveCheck = styled.div<{ checked?: boolean }>`
   border: 2px solid ${(props) => (props.checked ? "#d6b87b" : "#a77d3e")};
   border-radius: 0.25rem;
   background-color: ${(props) => (props.checked ? "#d6b87b" : "transparent")};
+  
+  @media (max-width: 768px) {
+    width: 1rem;
+    height: 1rem;
+    border-width: 1px;
+  }
 `;
 
 const CombatSection = styled.div`
@@ -171,12 +244,21 @@ const CombatSection = styled.div`
   border-radius: 0.25rem;
   padding: 0.5rem;
   margin-bottom: 1rem;
+  
+  @media (max-width: 768px) {
+    padding: 0.25rem;
+    margin-bottom: 0.5rem;
+  }
 `;
 
 const AttackList = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
+  
+  @media (max-width: 768px) {
+    gap: 0.15rem;
+  }
 `;
 
 const AttackItem = styled.div`
@@ -193,10 +275,18 @@ const FeatureList = styled.div`
 
 const FeatureItem = styled(ListItem)`
   font-size: 0.875rem;
+  
+  @media (max-width: 768px) {
+    font-size: 0.8rem;
+  }
 `;
 
 const ProficiencySection = styled.div`
   margin-bottom: 1rem;
+  
+  @media (max-width: 768px) {
+    margin-bottom: 0.5rem;
+  }
 `;
 
 const ProficiencyList = styled.div`
@@ -206,6 +296,10 @@ const ProficiencyList = styled.div`
 
 const ProficiencyItem = styled(ListItem)`
   font-size: 0.875rem;
+  
+  @media (max-width: 768px) {
+    font-size: 0.8rem;
+  }
 `;
 
 const AttackDetails = styled.div`
@@ -215,6 +309,11 @@ const AttackDetails = styled.div`
   padding: 0.25rem;
   background-color: #7e6230;
   border-radius: 0.25rem;
+  
+  @media (max-width: 768px) {
+    gap: 0.15rem;
+    padding: 0.15rem;
+  }
 `;
 
 const AttackHeader = styled.div`
@@ -227,6 +326,12 @@ const AttackHeader = styled.div`
   gap: 0.5rem;
   padding: 0.25rem 0;
   border-bottom: 1px solid #a77d3e;
+  
+  @media (max-width: 768px) {
+    font-size: 0.75rem;
+    gap: 0.25rem;
+    padding: 0.15rem 0;
+  }
 `;
 
 const AttackInfo = styled.div`
@@ -236,12 +341,22 @@ const AttackInfo = styled.div`
   font-size: 0.8rem;
   color: #f5e6d3;
   padding: 0.25rem 0;
+  
+  @media (max-width: 768px) {
+    gap: 0.25rem;
+    font-size: 0.7rem;
+    padding: 0.15rem 0;
+  }
 `;
 
 const AttackDescription = styled.div`
   font-size: 0.8rem;
   color: #f5e6d3;
   font-style: italic;
+  
+  @media (max-width: 768px) {
+    font-size: 0.7rem;
+  }
 `;
 
 const HitDiceBox = styled.div`
@@ -252,6 +367,12 @@ const HitDiceBox = styled.div`
   background-color: #7e6230;
   border-radius: 0.25rem;
   margin-bottom: 1rem;
+  
+  @media (max-width: 768px) {
+    gap: 0.25rem;
+    padding: 0.25rem;
+    margin-bottom: 0.5rem;
+  }
 `;
 
 const HitDiceInfo = styled.div`
@@ -259,6 +380,10 @@ const HitDiceInfo = styled.div`
   justify-content: space-between;
   align-items: center;
   color: #f5e6d3;
+  
+  @media (max-width: 768px) {
+    font-size: 0.85rem;
+  }
 `;
 
 const RegenerateButton = styled.button`
@@ -286,6 +411,12 @@ const RegenerateButton = styled.button`
   &:active {
     transform: translateY(0);
   }
+  
+  @media (max-width: 768px) {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+  }
 `;
 
 const ModalOverlay = styled.div`
@@ -307,6 +438,12 @@ const ModalContent = styled.div`
   max-height: 80vh;
   overflow-y: auto;
   position: relative;
+  
+  @media (max-width: 768px) {
+    padding: 1rem;
+    width: 90%;
+    max-height: 85vh;
+  }
 `;
 
 const ModalCloseButton = styled.button`
@@ -317,6 +454,11 @@ const ModalCloseButton = styled.button`
   &:hover {
     color: #d6b87b;
   }
+  
+  @media (max-width: 768px) {
+    top: 0.5rem;
+    right: 0.5rem;
+  }
 `;
 
 const ModalTitle = styled.h2`
@@ -324,25 +466,47 @@ const ModalTitle = styled.h2`
   font-family: "Cinzel", serif;
   color: #d6b87b;
   margin-bottom: 1rem;
+  
+  @media (max-width: 768px) {
+    font-size: 1.25rem;
+    margin-bottom: 0.75rem;
+  }
 `;
 
 const ModalBody = styled.div`
   color: #f5e6d3;
+  
+  @media (max-width: 768px) {
+    font-size: 0.9rem;
+  }
 `;
 
 const BioModalSection = styled.div`
   margin-bottom: 1rem;
+  
+  @media (max-width: 768px) {
+    margin-bottom: 0.75rem;
+  }
 `;
 
 const BioModalTitle = styled.h3`
   color: #d6b87b;
   margin-bottom: 0.5rem;
   font-family: "Cinzel", serif;
+  
+  @media (max-width: 768px) {
+    font-size: 1.1rem;
+    margin-bottom: 0.25rem;
+  }
 `;
 
 const BioModalText = styled.p`
   color: #f5e6d3;
   font-size: 0.6rem;
+  
+  @media (max-width: 768px) {
+    font-size: 0.85rem;
+  }
 `;
 
 interface ModalProps {

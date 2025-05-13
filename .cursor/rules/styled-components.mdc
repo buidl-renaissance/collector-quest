@@ -1,0 +1,6 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+use @emotion/styled, placing the styled components below the react components. when possible, use reusable styled components located in components/styled directory

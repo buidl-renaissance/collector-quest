@@ -47,6 +47,39 @@ export const Input = styled.input`
   }
 `;
 
+export const InputContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+`;
+
+export const InputButtons = styled.div`
+  display: flex;
+  gap: 0.5rem;
+`;
+
+export const InputButton = styled.button<{ disabled?: boolean }>`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  background-color: #3a3a5e;
+  color: #e0e0e0;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s;
+
+  &:hover {
+    background-color: #bb8930;
+    color: #1a1a2e;
+  }
+`;
+
+export const InputButtonIcon = styled.span`
+  font-size: 1.2rem;
+`;
+
 export const TextArea = styled.textarea`
   width: 100%;
   padding: 0.8rem;

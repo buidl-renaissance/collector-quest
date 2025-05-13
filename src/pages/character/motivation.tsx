@@ -11,15 +11,23 @@ import CharacterDescription from "@/components/CharacterDescription";
 import MotivationalFusion from "@/components/MotivationalFusion";
 import Page from "@/components/Page";
 import { BackButton, NextButton } from "@/components/styled/buttons";
-import { Container, LoadingMessage } from "@/components/styled/layout";
+import {
+  Container as PageContainer,
+  LoadingMessage,
+} from "@/components/styled/layout";
 import { Title, Subtitle } from "@/components/styled/typography";
 import { useMotivation } from "@/hooks/useMotivation";
+import BottomNavigation from "@/components/BottomNavigation";
 
 const MotivationPage: React.FC = () => {
   const router = useRouter();
   const { selectedRace, loading: raceLoading } = useRace();
   const { selectedClass, loading: classLoading } = useCharacterClass();
-  const { motivationState, loading: motivationLoading, setGeneratedMotivation } = useMotivation();
+  const {
+    motivationState,
+    loading: motivationLoading,
+    setGeneratedMotivation,
+  } = useMotivation();
 
   // Redirect if no race or class is selected
   useEffect(() => {
@@ -48,14 +56,14 @@ const MotivationPage: React.FC = () => {
 
   if (raceLoading || classLoading || motivationLoading) {
     return (
-      <Container>
+      <PageContainer>
         <LoadingMessage>
           <CrownIcon>
             <FaCrown />
           </CrownIcon>
           Loading...
         </LoadingMessage>
-      </Container>
+      </PageContainer>
     );
   }
 
@@ -75,36 +83,21 @@ const MotivationPage: React.FC = () => {
           Craft the perfect motivation for your character&apos;s journey
         </Subtitle>
 
-        {/* <CharacterPreview>
-            <CharacterImage
-              race={selectedRace}
-              characterClass={selectedClass}
-              size="large"
-            />
-            <CharacterDescription
-              race={selectedRace}
-              characterClass={selectedClass}
-              size="large"
-            />
-          </CharacterPreview> */}
-
         <MotivationalFusion onMotivationGenerated={handleMotivationGenerated} />
 
-        <NavigationFooter>
-          <NextButton onClick={handleNext} disabled={!motivationState.generatedMotivation}>
-            Next Step <FaArrowRight />
-          </NextButton>
-        </NavigationFooter>
+        <BottomNavigation
+          selectedItem={
+            motivationState.generatedMotivation
+              ? "Motivation Generated"
+              : undefined
+          }
+          onNext={handleNext}
+          disabled={!motivationState.generatedMotivation}
+        />
       </Page>
     </PageTransition>
   );
 };
-
-const NavigationFooter = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 2rem;
-`;
 
 const CrownIcon = styled.div`
   font-size: 2rem;

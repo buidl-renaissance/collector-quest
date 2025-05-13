@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import styled from '@emotion/styled';
 import { FaRedo, FaDice, FaChevronDown, FaChevronUp } from 'react-icons/fa';
+import { useRace } from '@/hooks/useRace';
+import { useCharacterClass } from '@/hooks/useCharacterClass';
+import { useCharacter } from '@/hooks/useCharacter';
 
 // Types
 interface Action {
@@ -12,13 +15,6 @@ interface DrivingForce {
   id: string;
   label: string;
 }
-
-const Title = styled.h2`
-  font-size: 1.8rem;
-  margin-bottom: 1.5rem;
-  color: #e6e6e6;
-  text-align: center;
-`;
 
 const StepContainer = styled.div`
   margin-bottom: 2rem;
@@ -50,20 +46,6 @@ const OptionButton = styled.button<{ selected: boolean }>`
   &:hover {
     background-color: ${props => props.selected ? '#5a5af0' : '#3d3d5c'};
     transform: translateY(-2px);
-  }
-`;
-
-const CustomInput = styled.input`
-  width: 100%;
-  padding: 0.75rem;
-  background-color: #2d2d42;
-  border: 1px solid #4a4ae4;
-  border-radius: 8px;
-  color: #ffffff;
-  margin-top: 1rem;
-  
-  &::placeholder {
-    color: #a0a0a0;
   }
 `;
 
@@ -248,6 +230,9 @@ const MotivationalFusion: React.FC<MotivationalFusionProps> = ({ onMotivationGen
   const [generatedMotivation, setGeneratedMotivation] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [selectedSex, setSelectedSex] = useState<string | null>(null);
+  const { selectedRace } = useRace();
+  const { selectedClass } = useCharacterClass();
+  const { character } = useCharacter();
 
   // Load saved state from localStorage
   useEffect(() => {
@@ -350,7 +335,14 @@ const MotivationalFusion: React.FC<MotivationalFusionProps> = ({ onMotivationGen
           forces: forceLabels,
           forceIntensities,
           archetype: selectedArchetype,
-          sex: selectedSex
+          sex: selectedSex,
+          race: selectedRace?.name || '',
+          class: selectedClass?.name || '',
+          personality: character?.traits?.personality || [],
+          ideals: character?.traits?.ideals || [],
+          flaws: character?.traits?.flaws || [],
+          hauntingMemory: character?.traits?.memory || '',
+          treasuredPossession: character?.traits?.possession || ''
         }),
       });
 
@@ -374,8 +366,6 @@ const MotivationalFusion: React.FC<MotivationalFusionProps> = ({ onMotivationGen
   
   return (
     <div>
-      <Title>Create Your Character&apos;s Motivation</Title>
-
       <StepContainer>
         <StepTitle>What are their primary actions? (Select up to 2)</StepTitle>
         <OptionsGrid>
@@ -418,7 +408,7 @@ const MotivationalFusion: React.FC<MotivationalFusionProps> = ({ onMotivationGen
               {selectedForces.map(force => (
                 <SliderContainer key={force.id}>
                   <SliderLabel>
-                    <span>{force.label}</span>
+                    <span>{drivingForces.find(f => f.id === force.id)?.label}</span>
                     <span>{selectedForces.find(f => f.id === force.id)?.intensity || 50}%</span>
                   </SliderLabel>
                   <Slider

@@ -16,6 +16,17 @@ const eslintConfig = [
       "@typescript-eslint/no-explicit-any": "off",
       "@typescript-eslint/no-unused-vars": "off"
     }
+  },
+  {
+    files: ["**/*.{js,jsx,ts,tsx}"],
+    rules: {
+      "no-restricted-imports": ["error", {
+        patterns: [{
+          group: ["next/app"],
+          message: "Please use Pages Router instead of App Router. Import from 'next' instead of 'next/app'."
+        }]
+      }]
+    }
   }
 ];
 

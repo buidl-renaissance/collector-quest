@@ -1,8 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import styled from "@emotion/styled";
-import { keyframes } from "@emotion/react";
-import { FaArrowLeft, FaArrowRight, FaCrown, FaCopy, FaRedo } from "react-icons/fa";
+import {
+  FaArrowLeft,
+  FaArrowRight,
+  FaCrown,
+  FaRedo,
+} from "react-icons/fa";
 import PageTransition from "@/components/PageTransition";
 import { useRace } from "@/hooks/useRace";
 import { useCharacterClass } from "@/hooks/useCharacterClass";
@@ -36,58 +40,99 @@ const SummaryPage: React.FC = () => {
     }
   }, [selectedRace, selectedClass, raceLoading, classLoading, router]);
 
-  // Generate bio when button is clicked
+  // Load saved bio from localStorage on initial render
+  useEffect(() => {
+    const savedBio = localStorage.getItem('characterBio');
+    if (savedBio) {
+      setCharacterBio(savedBio);
+    }
+  }, []);
+
+  // Auto-generate bio when all required data is loaded
+  useEffect(() => {
+    const generateBioIfNeeded = async () => {
+      if (
+        !raceLoading &&
+        !classLoading &&
+        !traitsLoading &&
+        !motivationLoading &&
+        !loading &&
+        selectedRace &&
+        selectedClass &&
+        selectedTraits &&
+        motivationState.generatedMotivation &&
+        character &&
+        !characterBio // Only generate if we don't already have a bio
+      ) {
+        await generateBio();
+      }
+    };
+
+    generateBioIfNeeded();
+  }, [
+    raceLoading,
+    classLoading,
+    traitsLoading,
+    motivationLoading,
+    loading,
+    selectedRace,
+    selectedClass,
+    selectedTraits,
+    motivationState.generatedMotivation,
+    character,
+    characterBio
+  ]);
+
+  // Generate bio
   const generateBio = async () => {
-    console.log("Generating bio");
-    console.log('selectedRace', selectedRace);
-    console.log('selectedClass', selectedClass);
-    console.log('selectedTraits', selectedTraits);
-    console.log('motivationState', motivationState);
-    console.log('character', character);
-    console.log('loading', loading);
-    console.log('raceLoading', raceLoading);
-    console.log('classLoading', classLoading);
-    console.log('traitsLoading', traitsLoading);
-    console.log('motivationLoading', motivationLoading);
-    if (!selectedRace || !selectedClass || !selectedTraits || !motivationState.generatedMotivation || !character) return;
-    if (raceLoading || classLoading || traitsLoading || motivationLoading) return;
+    if (
+      !selectedRace ||
+      !selectedClass ||
+      !selectedTraits ||
+      !motivationState.generatedMotivation ||
+      !character
+    )
+      return;
+    if (raceLoading || classLoading || traitsLoading || motivationLoading)
+      return;
 
     setIsGeneratingBio(true);
     try {
-      const response = await fetch('/api/character/generate-bio', {
-        method: 'POST',
+      const response = await fetch("/api/character/generate-bio", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          name: character.name || 'Unknown',
+          name: character.name || "Unknown",
           race: selectedRace.name,
           class: selectedClass.name,
-          background: selectedClass.description || '',
+          background: selectedClass.description || "",
           traits: {
-            personality: selectedTraits.personality?.join(', ') || '',
-            fear: selectedTraits.flaws?.join(', ') || '',
-            memory: selectedTraits.bonds?.[0] || '',
-            possession: character.traits?.possession || '',
-            ideals: selectedTraits.ideals?.join(', ') || '',
-            bonds: selectedTraits.bonds?.join(', ') || '',
-            flaws: selectedTraits.flaws?.join(', ') || ''
+            personality: selectedTraits.personality?.join(", ") || "",
+            fear: selectedTraits.flaws?.join(", ") || "",
+            memory: selectedTraits.bonds?.[0] || "",
+            possession: character.traits?.possession || "",
+            ideals: selectedTraits.ideals?.join(", ") || "",
+            bonds: selectedTraits.bonds?.join(", ") || "",
+            flaws: selectedTraits.flaws?.join(", ") || "",
           },
           motivation: motivationState.generatedMotivation,
-          sex: character.sex || 'unknown'
+          sex: character.sex || "unknown",
         }),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to generate bio');
+        throw new Error("Failed to generate bio");
       }
 
       const data = await response.json();
       setCharacterBio(data.bio);
-      // Save the generated bio to character state
+      // Save the generated bio to character state and localStorage
       updateCharacter({ bio: data.bio });
+      localStorage.setItem('characterBio', data.bio);
     } catch (error) {
-      console.error('Error generating bio:', error);
+      console.error("Error generating bio:", error);
       setCharacterBio("Failed to generate character bio. Please try again.");
     } finally {
       setIsGeneratingBio(false);
@@ -100,13 +145,8 @@ const SummaryPage: React.FC = () => {
 
   const handleNext = () => {
     if (character && character.bio) {
-      router.push('/character/sheet');
+      router.push("/character/sheet");
     }
-  };
-
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(characterBio);
-    // Could add a toast notification here
   };
 
   if (raceLoading || classLoading) {
@@ -151,32 +191,24 @@ const SummaryPage: React.FC = () => {
             </div>
           ) : (
             <div className="text-center py-4">
-              <button
-                onClick={generateBio}
-                className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                Generate Biography
-              </button>
+              <p>Loading character details...</p>
             </div>
           )}
         </div>
 
         <ActionButtons>
           {characterBio && (
-            <ActionButton onClick={copyToClipboard}>
-              <FaCopy /> Copy to Clipboard
-            </ActionButton>
-          )}
-          {characterBio && (
             <ActionButton onClick={generateBio}>
               <FaRedo /> Regenerate
             </ActionButton>
           )}
+          <NextButton
+            onClick={handleNext}
+            disabled={!character || !character.bio}
+          >
+            Continue to Character Sheet <FaArrowRight />
+          </NextButton>
         </ActionButtons>
-
-        <NextButton onClick={handleNext} disabled={!character || !character.bio}>
-          Continue to Character Sheet <FaArrowRight />
-        </NextButton>
       </Page>
     </PageTransition>
   );

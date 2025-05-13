@@ -11,6 +11,13 @@ interface MotivationInput {
   forceIntensities: Record<string, number>;
   archetype: string | null;
   sex: string;
+  race: string;
+  class: string;
+  personality: string[];
+  ideals: string[];
+  flaws: string[];
+  hauntingMemory: string;
+  treasuredPossession: string;
 }
 
 export default async function handler(
@@ -22,18 +29,43 @@ export default async function handler(
   }
 
   try {
-    const { actions, forces, forceIntensities, archetype, sex } = req.body as MotivationInput;
+    const { 
+      actions, 
+      forces, 
+      forceIntensities, 
+      archetype, 
+      sex,
+      race,
+      class: characterClass,
+      personality,
+      ideals,
+      flaws,
+      hauntingMemory,
+      treasuredPossession
+    } = req.body as MotivationInput;
 
     // Create a detailed prompt for the AI
     const prompt = `Create a compelling character motivation based on the following elements:
 
-Character Sex: ${sex}
-Actions: ${actions.join(', ')}
-Driving Forces: ${forces.join(', ')}
-Force Intensities: ${Object.entries(forceIntensities)
+Character Details:
+- Race: ${race}
+- Class: ${characterClass}
+- Sex: ${sex}
+
+Personality & Traits:
+- Personality: ${personality.join(', ')}
+- Ideals: ${ideals.join(', ')}
+- Flaws: ${flaws.join(', ')}
+- Haunting Memory: ${hauntingMemory}
+- Treasured Possession: ${treasuredPossession}
+
+Motivational Elements:
+- Actions: ${actions.join(', ')}
+- Driving Forces: ${forces.join(', ')}
+- Force Intensities: ${Object.entries(forceIntensities)
   .map(([force, intensity]) => `${force}: ${intensity}/5`)
   .join(', ')}
-Archetype: ${archetype || 'None'}
+- Archetype: ${archetype || 'None'}
 
 Generate a rich, nuanced motivation that:
 1. Incorporates all selected actions and forces
@@ -42,7 +74,10 @@ Generate a rich, nuanced motivation that:
 4. Includes subtle psychological depth
 5. Suggests potential internal conflicts
 6. Maintains a natural, flowing narrative style
-7. Acknowledges the character's sex in a nuanced way
+7. Acknowledges the character's race, class, and sex in a nuanced way
+8. Connects to their personality traits, ideals, and flaws
+9. References their haunting memory and treasured possession
+10. Creates a cohesive narrative that ties all elements together
 
 The output should be a single, cohesive paragraph that reads like a character study.`;
 

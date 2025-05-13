@@ -2,13 +2,37 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import styled from "@emotion/styled";
 import { keyframes } from "@emotion/react";
-import { FaArrowLeft, FaArrowRight, FaRandom, FaPlus, FaMicrophone, FaPencilAlt } from "react-icons/fa";
+import {
+  FaArrowLeft,
+  FaArrowRight,
+  FaRandom,
+  FaPlus,
+  FaMicrophone,
+  FaPencilAlt,
+} from "react-icons/fa";
 import PageTransition from "@/components/PageTransition";
 import { useCharacterClass } from "@/hooks/useCharacterClass";
 import { useRace } from "@/hooks/useRace";
 import Page from "@/components/Page";
 import { BackButton, NextButton } from "@/components/styled/buttons";
 import { useCharacter } from "@/hooks/useCharacter";
+import BottomNavigation from "@/components/BottomNavigation";
+import { Container, LoadingContainer } from "@/components/styled/layout";
+import { Title, Subtitle } from "@/components/styled/typography";
+import {
+  AddChipButton,
+  Chip,
+  ChipsContainer,
+  CustomChipInput,
+  CustomInput,
+  Input,
+  InputContainer,
+  InputButton,
+  InputButtons,
+  Label,
+} from "@/components/styled/forms";
+import { FormGroup, TextArea } from "@/components/styled/forms";
+import { FormSection } from "@/components/styled/forms";
 
 const CharacterBioPage: React.FC = () => {
   const router = useRouter();
@@ -84,10 +108,13 @@ const CharacterBioPage: React.FC = () => {
             bonds: [parsedData.hauntingMemory].filter(Boolean),
             flaws: parsedData.fear || [],
             hauntingMemory: parsedData.hauntingMemory || "",
-            treasuredPossession: parsedData.treasuredPossession || ""
+            treasuredPossession: parsedData.treasuredPossession || "",
           };
           setFormData(transformedData);
-          localStorage.setItem("selectedTraits", JSON.stringify(transformedData));
+          localStorage.setItem(
+            "selectedTraits",
+            JSON.stringify(transformedData)
+          );
         } else {
           setFormData(parsedData);
         }
@@ -153,9 +180,7 @@ const CharacterBioPage: React.FC = () => {
     }
   };
 
-  const handleAddCustomOption = (
-    type: "personality" | "ideals" | "flaws"
-  ) => {
+  const handleAddCustomOption = (type: "personality" | "ideals" | "flaws") => {
     if (type === "personality" && customPersonality.trim()) {
       setPersonalityOptions((prev) => [...prev, customPersonality.trim()]);
       setFormData((prev) => {
@@ -235,9 +260,14 @@ const CharacterBioPage: React.FC = () => {
       ],
       personality: randomPersonality,
       ideals: randomIdeals,
-      bonds: [["A village burning", "A lost love", "A broken promise", "A mysterious stranger"][
-        Math.floor(Math.random() * 4)
-      ]],
+      bonds: [
+        [
+          "A village burning",
+          "A lost love",
+          "A broken promise",
+          "A mysterious stranger",
+        ][Math.floor(Math.random() * 4)],
+      ],
       flaws: randomFlaws,
       hauntingMemory: [
         "A village burning",
@@ -258,12 +288,12 @@ const CharacterBioPage: React.FC = () => {
   };
 
   const handleBack = () => {
-    router.push('/character/class');
+    router.push("/character/class");
   };
 
   const handleNext = () => {
     if (characterBio) {
-      router.push('/character/motivation');
+      router.push("/character/motivation");
     }
   };
 
@@ -276,22 +306,22 @@ const CharacterBioPage: React.FC = () => {
         return;
       }
 
-      const response = await fetch('/api/character/generate-bio', {
-        method: 'POST',
+      const response = await fetch("/api/character/generate-bio", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           name: formData.name,
           race: {
             name: selectedRace.name,
-            description: selectedRace.description || '',
+            description: selectedRace.description || "",
           },
           class: {
             name: selectedClass.name,
-            description: selectedClass.description || '',
+            description: selectedClass.description || "",
           },
-          sex: character?.sex || '',
+          sex: character?.sex || "",
           personality: formData.personality,
           motivation: formData.ideals,
           fear: formData.flaws,
@@ -302,35 +332,44 @@ const CharacterBioPage: React.FC = () => {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to generate bio');
+        throw new Error("Failed to generate bio");
       }
 
       const data = await response.json();
       setCharacterBio(data.bio);
     } catch (error) {
-      console.error('Error generating bio:', error);
+      console.error("Error generating bio:", error);
       // Fallback to the original bio generation if the API call fails
       if (!selectedRace || !selectedClass) {
         setIsLoading(false);
         return;
       }
 
-      const personalityText = formData.personality.length > 0
-        ? formData.personality.join(", ").replace(/, ([^,]*)$/, " and $1")
-        : "mysterious";
+      const personalityText =
+        formData.personality.length > 0
+          ? formData.personality.join(", ").replace(/, ([^,]*)$/, " and $1")
+          : "mysterious";
 
-      const motivationText = formData.ideals.length > 0
-        ? formData.ideals.join(", ").replace(/, ([^,]*)$/, " and $1")
-        : "survival";
+      const motivationText =
+        formData.ideals.length > 0
+          ? formData.ideals.join(", ").replace(/, ([^,]*)$/, " and $1")
+          : "survival";
 
-      const fearText = formData.flaws.length > 0
-        ? formData.flaws.join(", ").replace(/, ([^,]*)$/, " and $1")
-        : "the unknown";
+      const fearText =
+        formData.flaws.length > 0
+          ? formData.flaws.join(", ").replace(/, ([^,]*)$/, " and $1")
+          : "the unknown";
 
       const raceClassContext = `${selectedRace.name} ${selectedClass.name}`;
-      const raceDescription = selectedRace.description ? selectedRace.description.split('.')[0] : '';
-      const classDescription = selectedClass.description ? selectedClass.description.split('.')[0] : '';
-      const raceClassDescription = [raceDescription, classDescription].filter(Boolean).join('. ');
+      const raceDescription = selectedRace.description
+        ? selectedRace.description.split(".")[0]
+        : "";
+      const classDescription = selectedClass.description
+        ? selectedClass.description.split(".")[0]
+        : "";
+      const raceClassDescription = [raceDescription, classDescription]
+        .filter(Boolean)
+        .join(". ");
 
       const firstPersonBio = `I am ${formData.name}, a ${personalityText} ${raceClassContext}. ${raceClassDescription} My quest for ${motivationText} drives me forward, though I am haunted by ${formData.hauntingMemory}. Above all, I fear ${fearText}, yet I find comfort in my most treasured possession: ${formData.treasuredPossession}.`;
 
@@ -356,19 +395,28 @@ const CharacterBioPage: React.FC = () => {
   React.useEffect(() => {
     if (!raceLoading && !classLoading) {
       if (!selectedRace) {
-        router.push('/character/race');
+        router.push("/character/race");
       }
     }
   }, [selectedRace, raceLoading, classLoading, router]);
 
+  const isFormComplete = () => {
+    return (
+      formData.name &&
+      formData.personality.length > 0 &&
+      formData.ideals.length > 0 &&
+      formData.flaws.length > 0 &&
+      formData.hauntingMemory &&
+      formData.treasuredPossession
+    );
+  };
+
   return (
     <PageTransition>
       <Page width="narrow">
-        <Header>
-          <BackButton onClick={handleBack}>
-            <FaArrowLeft /> Back to Class Selection
-          </BackButton>
-        </Header>
+        <BackButton onClick={handleBack}>
+          <FaArrowLeft /> Back to Class Selection
+        </BackButton>
 
         <HeroSection>
           <Title>Forge Your Legend in Seconds</Title>
@@ -376,24 +424,6 @@ const CharacterBioPage: React.FC = () => {
             Answer a few questions. Get a rich character backstory.
           </Subtitle>
         </HeroSection>
-
-        {/* <StepTitle>Create Your Character</StepTitle> */}
-
-        {/* {selectedRace && selectedClass && (
-          <>
-            <CharacterImage
-              race={selectedRace}
-              characterClass={selectedClass}
-              size="large"
-            />
-
-            <CharacterDescription
-              race={selectedRace}
-              characterClass={selectedClass}
-              size="large"
-            />
-          </>
-        )} */}
 
         <FormSection>
           <FormGroup>
@@ -407,14 +437,17 @@ const CharacterBioPage: React.FC = () => {
                 onChange={handleInputChange}
                 placeholder="Enter your character's name"
               />
-              <InputButtons>
-                <InputButton onClick={handleStartRecording} isRecording={isRecording}>
-                  <FaMicrophone />
-                </InputButton>
-                <InputButton>
-                  <FaPencilAlt />
-                </InputButton>
-              </InputButtons>
+              {/* <InputButtons>
+                  <InputButton
+                    onClick={handleStartRecording}
+                    disabled={isRecording}
+                  >
+                    <FaMicrophone />
+                  </InputButton>
+                  <InputButton>
+                    <FaPencilAlt />
+                  </InputButton>
+                </InputButtons> */}
             </InputContainer>
           </FormGroup>
 
@@ -472,9 +505,7 @@ const CharacterBioPage: React.FC = () => {
                   onChange={(e) => setCustomIdeals(e.target.value)}
                   placeholder="Add custom motivation"
                 />
-                <AddChipButton
-                  onClick={() => handleAddCustomOption("ideals")}
-                >
+                <AddChipButton onClick={() => handleAddCustomOption("ideals")}>
                   <FaPlus />
                 </AddChipButton>
               </CustomChipInput>
@@ -558,28 +589,17 @@ const CharacterBioPage: React.FC = () => {
                 <BioScroll>
                   <BioContent>{characterBio}</BioContent>
                 </BioScroll>
-                <ActionButtons>
-                  <ActionButton onClick={handleNext}>
-                    Next Step <FaArrowRight />
-                  </ActionButton>
-                  <ViewToggle>
-                    <ToggleLabel>
-                      <input
-                        type="checkbox"
-                        checked={isFirstPerson}
-                        onChange={() => {
-                          setIsFirstPerson(!isFirstPerson);
-                          if (characterBio) generateBio();
-                        }}
-                      />
-                      {isFirstPerson ? "First Person" : "Third Person"}
-                    </ToggleLabel>
-                  </ViewToggle>
-                </ActionButtons>
               </>
             )}
           </ResultSection>
         )}
+
+        <BottomNavigation
+          selectedItem={formData.name}
+          selectedItemLabel="Character Name"
+          onNext={handleNext}
+          disabled={!isFormComplete()}
+        />
       </Page>
     </PageTransition>
   );
@@ -613,29 +633,10 @@ const unfurl = keyframes`
   to { height: 200px; opacity: 1; }
 `;
 
-const Header = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 2rem;
-`;
-
 const HeroSection = styled.div`
   text-align: center;
   margin-bottom: 2rem;
   animation: ${slideUp} 0.5s ease-out;
-`;
-
-const Title = styled.h1`
-  font-size: 2.5rem;
-  color: #bb8930;
-  margin-bottom: 0.5rem;
-`;
-
-const Subtitle = styled.p`
-  font-size: 1.2rem;
-  color: #c7bfd4;
-  margin-bottom: 2rem;
 `;
 
 const RandomizeButton = styled.button`
@@ -659,167 +660,6 @@ const RandomizeButton = styled.button`
   }
 `;
 
-const StepTitle = styled.h2`
-  text-align: center;
-  font-size: 1.8rem;
-  color: #bb8930;
-  margin-bottom: 2rem;
-  animation: ${fadeIn} 0.5s ease-in;
-`;
-
-const FormSection = styled.div`
-  animation: ${fadeIn} 0.5s ease-in;
-`;
-
-const FormGroup = styled.div`
-  margin-bottom: 1.5rem;
-`;
-
-const Label = styled.label`
-  display: block;
-  margin-bottom: 0.5rem;
-  font-size: 1.1rem;
-  color: #c7bfd4;
-`;
-
-const InputContainer = styled.div`
-  position: relative;
-  display: flex;
-  align-items: center;
-`;
-
-const InputButtons = styled.div`
-  position: absolute;
-  right: 0.5rem;
-  display: flex;
-  gap: 0.5rem;
-`;
-
-const InputButton = styled.button<{ isRecording?: boolean }>`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: none;
-  border: none;
-  color: ${props => props.isRecording ? '#ff4444' : '#bb8930'};
-  padding: 0.5rem;
-  cursor: pointer;
-  transition: all 0.2s;
-  border-radius: 50%;
-
-  &:hover {
-    background-color: rgba(187, 137, 48, 0.1);
-  }
-
-  &:active {
-    transform: scale(0.95);
-  }
-`;
-
-const Input = styled.input`
-  width: 100%;
-  padding: 0.8rem;
-  background-color: rgba(58, 51, 71, 0.3);
-  border: 1px solid #3a3347;
-  border-radius: 4px;
-  color: inherit;
-  font-family: "Cormorant Garamond", serif;
-  font-size: 1rem;
-
-  &:focus {
-    border-color: #bb8930;
-    outline: none;
-  }
-`;
-
-const ChipsContainer = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-bottom: 0.5rem;
-`;
-
-const CustomChipInput = styled.div`
-  display: flex;
-  align-items: center;
-  background-color: rgba(58, 51, 71, 0.3);
-  border: 1px solid #3a3347;
-  border-radius: 20px;
-  overflow: hidden;
-  transition: all 0.2s;
-
-  &:focus-within {
-    border-color: #bb8930;
-  }
-`;
-
-const CustomInput = styled.input`
-  background: transparent;
-  border: none;
-  padding: 0.5rem 0.8rem;
-  font-size: 0.9rem;
-  color: inherit;
-  font-family: "Cormorant Garamond", serif;
-  width: 150px;
-
-  &:focus {
-    outline: none;
-  }
-`;
-
-const AddChipButton = styled.button`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #bb8930;
-  color: #1a1a2e;
-  border: none;
-  border-radius: 50%;
-  width: 24px;
-  height: 24px;
-  margin-right: 6px;
-  cursor: pointer;
-  transition: all 0.2s;
-
-  &:hover {
-    background-color: #d4a959;
-  }
-`;
-
-const Chip = styled.div<{ selected: boolean }>`
-  padding: 0.5rem 1rem;
-  background-color: ${(props) =>
-    props.selected ? "rgba(187, 137, 48, 0.4)" : "rgba(58, 51, 71, 0.3)"};
-  border: 1px solid ${(props) => (props.selected ? "#bb8930" : "#3a3347")};
-  border-radius: 20px;
-  font-size: 0.9rem;
-  cursor: pointer;
-  transition: all 0.2s;
-
-  &:hover {
-    background-color: rgba(187, 137, 48, 0.3);
-    border-color: #bb8930;
-  }
-`;
-
-const TextArea = styled.textarea`
-  width: 100%;
-  padding: 0.8rem;
-  background-color: rgba(58, 51, 71, 0.3);
-  border: 1px solid #3a3347;
-  border-radius: 4px;
-  color: inherit;
-  font-family: "Cormorant Garamond", serif;
-  font-size: 1rem;
-  min-height: 100px;
-  resize: vertical;
-
-  &:focus {
-    border-color: #bb8930;
-    outline: none;
-  }
-`;
-
 const NavigationFooter = styled.div`
   display: flex;
   justify-content: flex-end;
@@ -831,14 +671,6 @@ const ResultSection = styled.div`
   flex-direction: column;
   align-items: center;
   animation: ${fadeIn} 0.5s ease-in;
-`;
-
-const LoadingContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 200px;
 `;
 
 const ScrollAnimation = styled.div`
@@ -882,7 +714,7 @@ const BioScroll = styled.div`
   background-color: rgba(58, 51, 71, 0.2);
   border: 1px solid #bb8930;
   border-radius: 8px;
-  padding: 2rem;
+  padding: 1rem;
   margin-bottom: 2rem;
   width: 100%;
   max-width: 600px;
