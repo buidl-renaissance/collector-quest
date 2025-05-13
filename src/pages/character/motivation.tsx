@@ -42,7 +42,7 @@ const MotivationPage: React.FC = () => {
 
   const handleNext = () => {
     if (selectedRace && selectedClass) {
-      router.push("/character/summary");
+      router.push("/character/backstory");
     }
   };
 

@@ -16,9 +16,12 @@ export interface Character {
     memory?: string;
     possession?: string;
     fear?: string[];
+    hauntingMemory?: string;
+    treasuredPossession?: string;
   };
   motivation?: string;
   bio?: string;
+  backstory?: string;
   sex?: string;
   creature?: string;
   background?: string;
@@ -64,16 +67,18 @@ export const useCharacter = () => {
             race: selectedRace,
             class: selectedClass,
             name,
-            level: 1,
             background,
             motivation: generatedMotivation,
-            appearance,
             bio,
             traits: {
               personality: personality.length > 0 ? personality : ideals,
-              fear: fear.length > 0 ? fear : flaws,
+              ideals: ideals,
+              bonds: bonds,
+              flaws: fear.length > 0 ? fear : flaws,
               memory: memory || hauntingMemory || bonds[0] || '',
-              possession: possession || treasuredPossession || ''
+              possession: possession || treasuredPossession || '',
+              hauntingMemory: hauntingMemory || memory || bonds[0] || '',
+              treasuredPossession: treasuredPossession || possession || ''
             }
           });
         }

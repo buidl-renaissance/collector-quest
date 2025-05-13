@@ -1,147 +1,292 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import styled from "@emotion/styled";
-import { keyframes } from "@emotion/react";
-import { FaArrowLeft, FaArrowRight, FaBook } from "react-icons/fa";
+import {
+  FaArrowLeft,
+  FaArrowRight,
+  FaCrown,
+  FaRedo,
+} from "react-icons/fa";
+import PageTransition from "@/components/PageTransition";
 import { useRace } from "@/hooks/useRace";
 import { useCharacterClass } from "@/hooks/useCharacterClass";
-import CharacterImage from "@/components/CharacterImage";
-import CharacterDescription from "@/components/CharacterDescription";
-import PageTransition from "@/components/PageTransition";
-import { BackButton, NextButton } from "@/components/styled/buttons";
-import {
-  FormGroup,
-  FormSection,
-  Label,
-  TextArea,
-} from "@/components/styled/forms";
-import { LoadingMessage } from "@/components/styled/layout";
-import Page from "@/components/Page";
-import { Subtitle, Title } from "@/components/styled/typography";
-import CharacterCard from "@/components/CharacterCard";
+import CharacterSummary from "@/components/CharacterSummary";
 import { useCharacter } from "@/hooks/useCharacter";
-export default function BackstoryPage() {
+import Page from "@/components/Page";
+import { Container, LoadingMessage } from "@/components/styled/layout";
+import { Title, Subtitle } from "@/components/styled/typography";
+import { BackButton, NextButton } from "@/components/styled/buttons";
+import { useTraits } from "@/hooks/useTraits";
+import { useMotivation } from "@/hooks/useMotivation";
+
+// Update the traits interface to include the new properties
+interface Traits {
+  personality: string[];
+  ideals: string[];
+  bonds: string[];
+  flaws: string[];
+  hauntingMemory: string;
+  treasuredPossession: string;
+}
+
+// Update the character interface to include backstory
+interface Character {
+  name: string;
+  race?: {
+    name: string;
+    description?: string;
+  };
+  class?: {
+    name: string;
+    description?: string;
+  };
+  sex?: string;
+  traits?: {
+    personality?: string[];
+    ideals?: string[];
+    bonds?: string[];
+    flaws?: string[];
+    hauntingMemory?: string;
+    treasuredPossession?: string;
+  };
+  backstory?: string;
+}
+
+const BackstoryPage: React.FC = () => {
   const router = useRouter();
   const { selectedRace, loading: raceLoading } = useRace();
   const { selectedClass, loading: classLoading } = useCharacterClass();
-  const { character, loading: characterLoading } = useCharacter();
-  const [isLoading, setIsLoading] = useState(false);
+  const { selectedTraits, loading: traitsLoading } = useTraits();
+  const { motivationState, loading: motivationLoading } = useMotivation();
+  const [isGeneratingBackstory, setIsGeneratingBackstory] = useState(false);
+  const [characterBackstory, setCharacterBackstory] = useState("");
+  const { character, loading, updateCharacter } = useCharacter();
 
   // Redirect if no race or class is selected
   React.useEffect(() => {
-    if (!raceLoading && !selectedRace) {
-      router.push("/character/race");
-    } else if (!classLoading && !selectedClass) {
-      router.push("/character/class");
+    if (!raceLoading && !classLoading) {
+      if (!selectedRace) {
+        router.push("/character/race");
+      } else if (!selectedClass) {
+        router.push("/character/class");
+      }
     }
   }, [selectedRace, selectedClass, raceLoading, classLoading, router]);
 
-  const handleNext = () => {
-    router.push("/character/motivation");
+  // Load saved backstory from localStorage on initial render
+  useEffect(() => {
+    const savedBackstory = localStorage.getItem('characterBackstory');
+    if (savedBackstory) {
+      setCharacterBackstory(savedBackstory);
+    }
+  }, []);
+
+  // Auto-generate backstory when all required data is loaded
+  useEffect(() => {
+    const generateBackstoryIfNeeded = async () => {
+      if (
+        !raceLoading &&
+        !classLoading &&
+        !traitsLoading &&
+        !motivationLoading &&
+        !loading &&
+        selectedRace &&
+        selectedClass &&
+        selectedTraits &&
+        motivationState.generatedMotivation &&
+        character &&
+        !characterBackstory // Only generate if we don't already have a backstory
+      ) {
+        await generateBackstory();
+      }
+    };
+
+    generateBackstoryIfNeeded();
+  }, [
+    raceLoading,
+    classLoading,
+    traitsLoading,
+    motivationLoading,
+    loading,
+    selectedRace,
+    selectedClass,
+    selectedTraits,
+    motivationState.generatedMotivation,
+    character,
+    characterBackstory
+  ]);
+
+  // Generate backstory
+  const generateBackstory = async () => {
+    if (
+      !selectedRace ||
+      !selectedClass ||
+      !selectedTraits ||
+      !motivationState.generatedMotivation ||
+      !character
+    )
+      return;
+    if (raceLoading || classLoading || traitsLoading || motivationLoading)
+      return;
+
+    setIsGeneratingBackstory(true);
+    try {
+      const response = await fetch("/api/character/generate-backstory", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: character.name || "Unknown",
+          race: {
+            name: selectedRace.name,
+            description: selectedRace.description || "",
+          },
+          class: {
+            name: selectedClass.name,
+            description: selectedClass.description || "",
+          },
+          traits: {
+            personality: selectedTraits.personality || [],
+            ideals: selectedTraits.ideals || [],
+            bonds: selectedTraits.bonds || [],
+            flaws: selectedTraits.flaws || [],
+            hauntingMemory: selectedTraits.hauntingMemory || "",
+            treasuredPossession: selectedTraits.treasuredPossession || "",
+          },
+          motivation: motivationState.generatedMotivation,
+          sex: character.sex || "unknown",
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to generate backstory");
+      }
+
+      const data = await response.json();
+      setCharacterBackstory(data.backstory);
+      // Save the generated backstory to character state and localStorage
+      updateCharacter({ backstory: data.backstory });
+      localStorage.setItem('characterBackstory', data.backstory);
+    } catch (error) {
+      console.error("Error generating backstory:", error);
+      setCharacterBackstory("Failed to generate character backstory. Please try again.");
+    } finally {
+      setIsGeneratingBackstory(false);
+    }
   };
 
   const handleBack = () => {
-    router.push("/character/traits");
+    router.push("/character/motivation");
   };
 
-  if (raceLoading || classLoading || !selectedRace || !selectedClass) {
+  const handleNext = () => {
+    if (character && character.backstory) {
+      router.push("/character/sheet");
+    }
+  };
+
+  if (raceLoading || classLoading) {
     return (
-      <Page width="narrow">
+      <Container>
         <LoadingMessage>
-          <BookIcon>
-            <FaBook />
-          </BookIcon>
+          <CrownIcon>
+            <FaCrown />
+          </CrownIcon>
           Loading...
         </LoadingMessage>
-      </Page>
+      </Container>
     );
+  }
+
+  if (!selectedRace || !selectedClass || !character) {
+    return null; // Will redirect in useEffect
   }
 
   return (
     <PageTransition>
       <Page width="narrow">
         <BackButton onClick={handleBack}>
-          <FaArrowLeft /> Back to Traits
+          <FaArrowLeft /> Back to Motivation
         </BackButton>
 
-        <Title>Character Backstory</Title>
-        <Subtitle>What shaped your character&apos;s past?</Subtitle>
+        <Title>Your Character&apos;s Backstory</Title>
+        <Subtitle>Discover the tale of your character&apos;s past</Subtitle>
 
-        {/* {character && <CharacterCard character={character} />} */}
+        <CharacterSummary character={character} />
 
-        <FormSection>
-          <FormGroup>
-            <Label>Background</Label>
-            <TextArea
-              placeholder="Describe your character's background and history..."
-              rows={6}
-            />
-          </FormGroup>
+        <BackstorySection>
+          <h2 className="text-2xl font-bold mb-4">Character Backstory</h2>
+          {isGeneratingBackstory ? (
+            <div className="text-center py-4">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto"></div>
+              <p className="mt-2">Crafting your character&apos;s tale...</p>
+            </div>
+          ) : characterBackstory ? (
+            <div className="prose prose-invert max-w-none">
+              <p className="whitespace-pre-wrap">{characterBackstory}</p>
+            </div>
+          ) : (
+            <div className="text-center py-4">
+              <p>Loading character details...</p>
+            </div>
+          )}
+        </BackstorySection>
 
-          <FormGroup>
-            <Label>Personality Traits</Label>
-            <TextArea
-              placeholder="What are your character's personality traits?"
-              rows={4}
-            />
-          </FormGroup>
-
-          <FormGroup>
-            <Label>Ideals</Label>
-            <TextArea
-              placeholder="What ideals drive your character?"
-              rows={4}
-            />
-          </FormGroup>
-
-          <FormGroup>
-            <Label>Bonds</Label>
-            <TextArea
-              placeholder="What bonds connect your character to others?"
-              rows={4}
-            />
-          </FormGroup>
-
-          <FormGroup>
-            <Label>Flaws</Label>
-            <TextArea
-              placeholder="What flaws or vices does your character have?"
-              rows={4}
-            />
-          </FormGroup>
-        </FormSection>
-
-        <Navigation>
-          <BackButton onClick={handleBack}>
-            <FaArrowLeft /> Back
-          </BackButton>
-          <NextButton onClick={handleNext}>
-            Next <FaArrowRight />
+        <ActionButtons>
+          {characterBackstory && (
+            <ActionButton onClick={generateBackstory}>
+              <FaRedo /> Regenerate Backstory
+            </ActionButton>
+          )}
+          <NextButton
+            onClick={handleNext}
+            disabled={!character || !character.backstory}
+          >
+            Continue to Character Sheet <FaArrowRight />
           </NextButton>
-        </Navigation>
+        </ActionButtons>
       </Page>
     </PageTransition>
   );
-}
+};
 
-const BookIcon = styled.div`
-  font-size: 3rem;
-  color: #4a90e2;
-  animation: float 3s ease-in-out infinite;
+const ActionButtons = styled.div`
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
 `;
 
-const CharacterPreview = styled.div`
+const ActionButton = styled.button`
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-bottom: 2rem;
-  gap: 2rem;
+  gap: 0.5rem;
+  padding: 0.8rem 1.5rem;
+  background-color: rgba(187, 137, 48, 0.2);
+  color: #bb8930;
+  border: 1px solid #bb8930;
+  border-radius: 4px;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s;
+
+  &:hover {
+    background-color: rgba(187, 137, 48, 0.3);
+  }
 `;
 
-const Navigation = styled.div`
-  display: flex;
-  justify-content: space-between;
-  margin-top: 2rem;
-  padding-top: 2rem;
-  border-top: 1px solid #444;
+const CrownIcon = styled.div`
+  font-size: 2rem;
+  margin-bottom: 1rem;
 `;
+
+const BackstorySection = styled.div`
+  background-color: rgba(58, 51, 71, 0.2);
+  border: 1px solid #bb8930;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin: 2rem 0;
+`;
+
+export default BackstoryPage;
