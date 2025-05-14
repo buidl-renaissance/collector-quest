@@ -4,6 +4,7 @@ import { FaRedo, FaDice, FaChevronDown, FaChevronUp } from 'react-icons/fa';
 import { useRace } from '@/hooks/useRace';
 import { useCharacterClass } from '@/hooks/useCharacterClass';
 import { useCharacter } from '@/hooks/useCharacter';
+import StoryDisplay from './StoryDisplay';
 
 // Types
 interface Action {
@@ -67,7 +68,6 @@ const OutputText = styled.p`
   font-size: 1.2rem;
   line-height: 1.6;
   color: #ffffff;
-  font-style: italic;
   margin-bottom: 1.5rem;
 `;
 
@@ -467,10 +467,13 @@ const MotivationalFusion: React.FC<MotivationalFusionProps> = ({ onMotivationGen
       )}
 
       {generatedMotivation && (
-        <OutputContainer>
-          <OutputTitle>Generated Motivation</OutputTitle>
-          <OutputText>{generatedMotivation}</OutputText>
-        </OutputContainer>
+        <StoryDisplay
+          title="Motivation"
+          text={generatedMotivation}
+          isGenerating={isGenerating}
+          onRegenerate={generateMotive}
+          showRegenerateButton={true}
+        />
       )}
     </div>
   );

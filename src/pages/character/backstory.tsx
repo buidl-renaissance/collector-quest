@@ -5,12 +5,10 @@ import {
   FaArrowLeft,
   FaArrowRight,
   FaCrown,
-  FaRedo,
 } from "react-icons/fa";
 import PageTransition from "@/components/PageTransition";
 import { useRace } from "@/hooks/useRace";
 import { useCharacterClass } from "@/hooks/useCharacterClass";
-import CharacterSummary from "@/components/CharacterSummary";
 import { useCharacter } from "@/hooks/useCharacter";
 import Page from "@/components/Page";
 import { Container, LoadingMessage } from "@/components/styled/layout";
@@ -19,6 +17,7 @@ import { BackButton } from "@/components/styled/character";
 import { NextButton } from "@/components/styled/buttons";
 import { useTraits } from "@/hooks/useTraits";
 import { useMotivation } from "@/hooks/useMotivation";
+import BackstoryDisplay from "@/components/StoryDisplay";
 
 // Update the traits interface to include the new properties
 interface Traits {
@@ -26,8 +25,8 @@ interface Traits {
   ideals: string[];
   bonds: string[];
   flaws: string[];
-  hauntingMemory: string;
-  treasuredPossession: string;
+  hauntingMemory?: string;
+  treasuredPossession?: string;
 }
 
 // Update the character interface to include backstory
@@ -168,11 +167,9 @@ const BackstoryPage: React.FC = () => {
       setCharacterBackstory(data.backstory);
       // Save the generated backstory to character state and localStorage
       updateCharacter({ 
-        backstory: data.backstory,
-        background: data.backstory 
+        backstory: data.backstory
       });
       localStorage.setItem('characterBackstory', data.backstory);
-      localStorage.setItem('characterBackground', data.backstory);
     } catch (error) {
       console.error("Error generating backstory:", error);
       setCharacterBackstory("Failed to generate character backstory. Please try again.");
@@ -218,32 +215,15 @@ const BackstoryPage: React.FC = () => {
         <Title>Your Character&apos;s Backstory</Title>
         <Subtitle>Discover the tale of your character&apos;s past</Subtitle>
 
-        {/* <CharacterSummary character={character} /> */}
-
-        <BackstorySection>
-          <h2 className="text-2xl font-bold mb-4">Backstory</h2>
-          {isGeneratingBackstory ? (
-            <div className="text-center py-4">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto"></div>
-              <p className="mt-2">Crafting your character&apos;s tale...</p>
-            </div>
-          ) : characterBackstory ? (
-            <div className="prose prose-invert max-w-none">
-              <p className="whitespace-pre-wrap">{characterBackstory}</p>
-            </div>
-          ) : (
-            <div className="text-center py-4">
-              <p>Loading character details...</p>
-            </div>
-          )}
-        </BackstorySection>
+        <BackstoryDisplay
+          title="Backstory"
+          text={characterBackstory}
+          isGenerating={isGeneratingBackstory}
+          onRegenerate={generateBackstory}
+          showRegenerateButton={!!characterBackstory}
+        />
 
         <ActionButtons>
-          {/* {characterBackstory && (
-            <ActionButton onClick={generateBackstory}>
-              <FaRedo /> Regenerate Backstory
-            </ActionButton>
-          )} */}
           <NextButton
             onClick={handleNext}
             disabled={!character || !character.backstory}
@@ -262,36 +242,9 @@ const ActionButtons = styled.div`
   justify-content: flex-end;
 `;
 
-const ActionButton = styled.button`
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.8rem 1.5rem;
-  background-color: rgba(187, 137, 48, 0.2);
-  color: #bb8930;
-  border: 1px solid #bb8930;
-  border-radius: 4px;
-  font-family: "Cormorant Garamond", serif;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: all 0.3s;
-
-  &:hover {
-    background-color: rgba(187, 137, 48, 0.3);
-  }
-`;
-
 const CrownIcon = styled.div`
   font-size: 2rem;
   margin-bottom: 1rem;
-`;
-
-const BackstorySection = styled.div`
-  background-color: rgba(58, 51, 71, 0.2);
-  border: 1px solid #bb8930;
-  border-radius: 8px;
-  padding: 1.5rem;
-  margin: 2rem 0;
 `;
 
 export default BackstoryPage;
