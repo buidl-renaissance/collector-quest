@@ -17,7 +17,7 @@ export async function getAllClasses(): Promise<CharacterClass[]> {
     .select('*')
     .then(classes => classes.map(cls => ({
       ...cls,
-      abilities: JSON.parse(cls.abilities as unknown as string)
+      abilities: typeof cls.abilities === 'string' ? JSON.parse(cls.abilities) : cls.abilities
     })));
 }
 
@@ -34,7 +34,7 @@ export async function getClassById(id: string): Promise<CharacterClass | null> {
   
   return {
     ...result,
-    abilities: JSON.parse(result.abilities as unknown as string)
+    abilities: typeof result.abilities === 'string' ? JSON.parse(result.abilities) : result.abilities
   };
 }
 
@@ -51,7 +51,7 @@ export async function createClass(characterClass: CharacterClass): Promise<Chara
   
   return {
     ...created,
-    abilities: JSON.parse(created.abilities as unknown as string)
+    abilities: typeof created.abilities === 'string' ? JSON.parse(created.abilities) : created.abilities
   };
 }
 
@@ -74,7 +74,7 @@ export async function updateClass(id: string, characterClass: Partial<CharacterC
   
   return {
     ...updated,
-    abilities: JSON.parse(updated.abilities as unknown as string)
+    abilities: typeof updated.abilities === 'string' ? JSON.parse(updated.abilities) : updated.abilities
   };
 }
 
