@@ -3,11 +3,9 @@ import { useRouter } from "next/router";
 import styled from "@emotion/styled";
 import { keyframes } from "@emotion/react";
 import { FaArrowLeft, FaCrown, FaImage } from "react-icons/fa";
-import Link from "next/link";
 import { Race, coreRaces, ethnicities, expandedRaces } from "@/data/races";
 import { GetServerSidePropsContext } from "next";
 import { getRaceById } from "@/db/races";
-import { uploadImage } from "@/lib/image";
 import { ImageGenerationResult, useImageGeneration } from "@/hooks/useImageGeneration";
 import { saveRace } from "@/lib/character";
 import { BackLink } from "@/components/styled/buttons";
@@ -120,8 +118,8 @@ const CharacterImagesPage: React.FC<CharacterImagesPageProps> = ({ race }) => {
   if (isGenerating) {
     return (
       <Container>
-        <BackLink href="/character/admin">
-          <FaArrowLeft /> Back to Character Creation
+        <BackLink href="/character/race/admin">
+          <FaArrowLeft /> Back to Race Admin
         </BackLink>
 
         <Title>Character Image Generator</Title>
