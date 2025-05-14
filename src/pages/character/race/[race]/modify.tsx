@@ -52,8 +52,9 @@ const CharacterImagesPage: React.FC<CharacterImagesPageProps> = ({ race }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [generatedImage, setGeneratedImage] = useState(race.image || "");
+  const accessory = race.accessory ? race.accessory[Math.floor(Math.random() * race.accessory.length)] : null;
   const [prompt, setPrompt] = useState(
-    `${race.name}, a ${race.description}, replace the staff with a ${race.accessory || "wand"}`
+    `Removing the collector quest logo, update the image to be a ${race.name}, ${race.description}, ${accessory ? `remove the staff and give the character a ${accessory}` : ""}`
   );
 
   // Use our image generation hook
@@ -166,7 +167,7 @@ const CharacterImagesPage: React.FC<CharacterImagesPageProps> = ({ race }) => {
           <FaImage /> {isGenerating ? `Generating... ${progress}%` : 'Generate Image'}
         </GenerateButton>
 
-        {generatedImage && (
+        {/* {generatedImage && (
           <ImagePreviewContainer>
             <ImagePreview src={generatedImage} alt="Generated character" />
             <SaveButton
@@ -176,7 +177,7 @@ const CharacterImagesPage: React.FC<CharacterImagesPageProps> = ({ race }) => {
               {loading ? 'Saving...' : 'Save'}
             </SaveButton>
           </ImagePreviewContainer>
-        )}
+        )} */}
       </GeneratorSection>
 
       <Tips>
