@@ -609,7 +609,7 @@ const CharacterSheetPage: React.FC = () => {
   }, [characterSheet]);
 
   const handleBack = () => {
-    router.push("/character/summary");
+    router.push("/character/backstory");
   };
 
   const handleRegenerate = () => {
