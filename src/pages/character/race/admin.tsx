@@ -59,7 +59,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ races: initialRaces }) => {
   const [error, setError] = useState("");
 
   const handleEditRace = (raceId: string) => {
-    router.push(`/character/race/${raceId}/modify`);
+    window.open(`/character/race/${raceId}/modify`, '_blank');
   };
 
   const handleGenerateImages = async () => {
@@ -147,7 +147,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ races: initialRaces }) => {
 
   return (
     <Container>
-      <BackLink href="/admin">
+      <BackLink href="/character/race/admin">
         <FaArrowLeft /> Back to Admin Panel
       </BackLink>
       
