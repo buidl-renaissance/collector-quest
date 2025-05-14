@@ -80,6 +80,11 @@ export const useCharacter = () => {
         const fear = JSON.parse(localStorage.getItem(getNamespacedKey(storedCharacterId, 'fear')) || '[]');
         const memory = localStorage.getItem(getNamespacedKey(storedCharacterId, 'memory')) || '';
         const possession = localStorage.getItem(getNamespacedKey(storedCharacterId, 'possession')) || '';
+        const status = localStorage.getItem(getNamespacedKey(storedCharacterId, 'status')) || CharacterStatus.NEW;
+        const level = localStorage.getItem(getNamespacedKey(storedCharacterId, 'level')) || 1;
+        const motivation = localStorage.getItem(getNamespacedKey(storedCharacterId, 'motivation')) || '';
+        const sex = localStorage.getItem(getNamespacedKey(storedCharacterId, 'sex')) || '';
+        const image_url = localStorage.getItem(getNamespacedKey(storedCharacterId, 'image_url')) || '';
 
         // Get old traits structure with namespaced keys
         const oldTraits = JSON.parse(localStorage.getItem(getNamespacedKey(storedCharacterId, 'selectedTraits')) || '{}');
@@ -95,27 +100,29 @@ export const useCharacter = () => {
         const generatedMotivation = localStorage.getItem(getNamespacedKey(storedCharacterId, 'motivationalFusion_generatedMotive')) || '';
 
         // Only set character if we have the minimum required data
-        if (selectedRace && selectedClass) {
-          setCharacter({
-            id: storedCharacterId,
-            race: selectedRace,
-            class: selectedClass,
-            name,
-            backstory,
-            motivation: generatedMotivation,
-            bio,
-            traits: {
-              personality: personality.length > 0 ? personality : ideals,
-              ideals: ideals,
-              bonds: bonds,
-              flaws: fear.length > 0 ? fear : flaws,
-              memory: memory || hauntingMemory || bonds[0] || '',
-              possession: possession || treasuredPossession || '',
-              hauntingMemory: hauntingMemory || memory || bonds[0] || '',
-              treasuredPossession: treasuredPossession || possession || ''
-            }
-          });
-        }
+        setCharacter({
+          id: storedCharacterId,
+          race: selectedRace || undefined,
+          class: selectedClass || undefined,
+          status: status,
+          level: parseInt(level as string),
+          sex: sex,
+          image_url: image_url,
+          name,
+          backstory,
+          motivation: generatedMotivation,
+          bio,
+          traits: {
+            personality: personality.length > 0 ? personality : ideals,
+            ideals: ideals,
+            bonds: bonds,
+            flaws: fear.length > 0 ? fear : flaws,
+            memory: memory || hauntingMemory || bonds[0] || '',
+            possession: possession || treasuredPossession || '',
+            hauntingMemory: hauntingMemory || memory || bonds[0] || '',
+            treasuredPossession: treasuredPossession || possession || ''
+          }
+        });
       } catch (error) {
         console.error('Error loading character data:', error);
         setError('Failed to load character data');
@@ -171,7 +178,7 @@ export const useCharacter = () => {
     
     try {
       const response = await fetch('/api/characters', {
-        method: 'POST',
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -192,7 +199,6 @@ export const useCharacter = () => {
       }
 
       // Set as current character
-      localStorage.setItem(STORAGE_KEYS.CURRENT_CHARACTER_ID, savedCharacter.id);
       setCurrentCharacterId(savedCharacter.id);
       setCharacterId(savedCharacter.id);
       
@@ -261,6 +267,7 @@ export const useCharacter = () => {
       const newCharacter: Character = {
         id: characterId,
         name: '',
+        status: CharacterStatus.NEW,
         race: undefined,
         class: undefined,
         traits: {

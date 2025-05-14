@@ -3,6 +3,8 @@ import styled from '@emotion/styled';
 import { keyframes } from '@emotion/react';
 import { useRouter } from 'next/router';
 import useRace from '@/hooks/useRace';
+import { useCharacter } from '@/hooks/useCharacter';
+import { useCharacterImageGenerator } from '@/hooks/useCharacterImageGenerator';
 
 // Animations
 const fadeIn = keyframes`
@@ -16,83 +18,63 @@ const slideUp = keyframes`
 `;
 
 const ImageGeneratorPage = () => {
+  const router = useRouter();
   const { selectedRace } = useRace();
+  const { character, updateCharacter } = useCharacter();
+  const { 
+    generateImage, 
+    isGenerating, 
+    error: generationError, 
+    generatedImage,
+    pollStatus 
+  } = useCharacterImageGenerator();
   const [userImage, setUserImage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [characteristics, setCharacteristics] = useState<Record<string, string | string[]>>({});
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [generatedImage, setGeneratedImage] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
 
   const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
     const reader = new FileReader();
-    reader.onload = (e) => {
+    reader.onload = async (e) => {
       const result = e.target?.result as string;
       setUserImage(result);
-      analyzeFace(result);
+      try {
+        const { resultId } = await generateImage(result);
+        // Here you would typically start polling for the result
+        // For now, we'll just show a success message
+        setError(null);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to generate character image');
+      }
     };
     reader.readAsDataURL(file);
   };
 
-  const analyzeFace = async (imageData: string) => {
-    try {
-      setIsAnalyzing(true);
-      setError(null);
-
-      const response = await fetch('/api/analyze-face', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ image: imageData }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to analyze face');
-      }
-
-      const data = await response.json();
-      setCharacteristics(data.characteristics);
-    } catch (err) {
-      console.error('Error analyzing face:', err);
-      setError(err instanceof Error ? err.message : 'Failed to analyze face');
-    } finally {
-      setIsAnalyzing(false);
+  const handleNext = async () => {
+    if (!generatedImage) {
+      setError('Please generate a character image first');
+      return;
     }
-  };
-
-  const generateCharacter = async () => {
-    if (!characteristics || !selectedRace) return;
 
     try {
-      setIsGenerating(true);
+      setIsSaving(true);
       setError(null);
 
-      const response = await fetch('/api/generate-character', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ 
-          characteristics,
-          race: selectedRace // You might want to pass the actual race image URL here
-        }),
+      // Update the character with the new image URL
+      await updateCharacter({
+        ...character,
+        image_url: generatedImage
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to generate character');
-      }
-
-      const data = await response.json();
-      setGeneratedImage(data.imageUrl);
+      // Navigate to the next page
+      router.push('/character/complete');
     } catch (err) {
-      console.error('Error generating character:', err);
-      setError(err instanceof Error ? err.message : 'Failed to generate character');
+      console.error('Error saving character image:', err);
+      setError(err instanceof Error ? err.message : 'Failed to save character image');
     } finally {
-      setIsGenerating(false);
+      setIsSaving(false);
     }
   };
 
@@ -182,7 +164,9 @@ const ImageGeneratorPage = () => {
 
         const imageData = canvas.toDataURL('image/jpeg');
         setUserImage(imageData);
-        analyzeFace(imageData);
+        generateImage(imageData).catch(err => {
+          setError(err instanceof Error ? err.message : 'Failed to generate character image');
+        });
 
         // Clean up
         stream.getTracks().forEach(track => track.stop());
@@ -212,7 +196,7 @@ const ImageGeneratorPage = () => {
         fantasy race, creating a character that&apos;s uniquely yours.
       </Description>
       
-      {error && <ErrorMessage>{error}</ErrorMessage>}
+      {(error || generationError) && <ErrorMessage>{error || generationError}</ErrorMessage>}
       
       <Section>
         <SectionTitle>Step 1: Upload Your Photo</SectionTitle>
@@ -237,31 +221,13 @@ const ImageGeneratorPage = () => {
         </Section>
       )}
 
-      {isAnalyzing && (
+      {(isGenerating || pollStatus === 'polling') && (
         <Section>
-          <LoadingMessage>Analyzing facial characteristics...</LoadingMessage>
-        </Section>
-      )}
-
-      {Object.keys(characteristics).length > 0 && userImage && (
-        <Section>
-          <SectionTitle>Facial Characteristics</SectionTitle>
-          <CharacteristicsList>
-            {Object.entries(characteristics).map(([key, value]) => (
-              <CharacteristicItem key={key}>
-                <CharacteristicLabel>{key}:</CharacteristicLabel>
-                <CharacteristicValue>
-                  {Array.isArray(value) ? value.join(', ') : String(value)}
-                </CharacteristicValue>
-              </CharacteristicItem>
-            ))}
-          </CharacteristicsList>
-          <Button 
-            onClick={generateCharacter}
-            disabled={isGenerating}
-          >
-            {isGenerating ? 'Generating Character...' : 'Generate Character'}
-          </Button>
+          <LoadingMessage>
+            {isGenerating 
+              ? 'Starting image generation...' 
+              : 'Generating your character image...'}
+          </LoadingMessage>
         </Section>
       )}
 
@@ -269,6 +235,15 @@ const ImageGeneratorPage = () => {
         <Section>
           <SectionTitle>Generated Character</SectionTitle>
           <ImagePreview src={generatedImage} alt="Generated Character" />
+          <ButtonGroup>
+            <Button 
+              onClick={handleNext}
+              disabled={isSaving}
+              primary
+            >
+              {isSaving ? 'Saving...' : 'Next'}
+            </Button>
+          </ButtonGroup>
         </Section>
       )}
     </Container>
@@ -319,29 +294,27 @@ const SectionTitle = styled.h2`
 const ButtonGroup = styled.div`
   display: flex;
   gap: 1rem;
-  flex-wrap: wrap;
+  margin-top: 1rem;
 `;
 
-const Button = styled.button`
-  padding: 0.75rem 1.5rem;
-  background-color: #bb8930;
-  color: #1a1a2e;
-  border: none;
+const Button = styled.button<{ primary?: boolean }>`
+  background: ${props => props.primary ? '#bb8930' : 'transparent'};
+  color: ${props => props.primary ? '#1a1a1a' : '#bb8930'};
+  border: 2px solid #bb8930;
   border-radius: 4px;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
   cursor: pointer;
-  font-weight: 500;
-  transition: all 0.3s;
-  font-family: 'Cormorant Garamond', serif;
+  transition: all 0.3s ease;
 
   &:hover {
-    background-color: #d4a959;
-    transform: translateY(-2px);
+    background: ${props => props.primary ? '#d4a959' : 'rgba(187, 137, 48, 0.1)'};
+    border-color: ${props => props.primary ? '#d4a959' : '#d4a959'};
   }
 
   &:disabled {
-    background-color: #666;
+    opacity: 0.5;
     cursor: not-allowed;
-    transform: none;
   }
 `;
 

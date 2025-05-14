@@ -1,10 +1,15 @@
-import { generateImageRequest } from '@/lib/imageGenerator';
 import { NextApiRequest, NextApiResponse } from 'next';
-import OpenAI from 'openai';
+import { FaceAnalyzer } from '@/lib/faceAnalyzer';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+export const config = {
+  api: {
+    bodyParser: {
+      sizeLimit: '10mb',
+    },
+  },
+};
+
+const faceAnalyzer = new FaceAnalyzer(process.env.OPENAI_API_KEY || '');
 
 export default async function handler(
   req: NextApiRequest,
@@ -17,21 +22,11 @@ export default async function handler(
   try {
     const { characteristics, race } = req.body;
 
-    if (!characteristics || !race || !race.image || !race.description || !race.name) {
+    if (!characteristics || !race) {
       return res.status(400).json({ error: 'Missing required parameters' });
     }
 
-    // Construct a detailed prompt for DALL-E
-    const prompt = `Create a video game character portrait that combines these facial characteristics: ${JSON.stringify(characteristics)}. 
-    The character should maintain the fantasy race's ${race.name} features, described as ${race.description} while incorporating the human facial characteristics. 
-    Style: High-quality digital art, detailed fantasy character portrait, soft lighting, professional game art style.`;
-
-    const imageUrl = await generateImageRequest(prompt, race.image);
-
-    if (!imageUrl) {
-      throw new Error('No image URL in response');
-    }
-
+    const imageUrl = await faceAnalyzer.generateCharacter({ characteristics, race });
     return res.status(200).json({ imageUrl });
   } catch (error) {
     console.error('Error generating character:', error);
