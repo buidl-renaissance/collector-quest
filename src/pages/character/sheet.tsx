@@ -694,38 +694,23 @@ const CharacterSheetPage: React.FC = () => {
         <Header>COLLECTOR QUEST</Header>
 
         <Section>
-          <Grid columns={4} gap="0.75rem">
-            <div style={{ gridColumn: "span 2" }}>
+          <Grid columns={3} gap="0.75rem">
+            <div>
               <SectionLabel>Character Name</SectionLabel>
-              <ContentBox style={{ fontSize: "1.125rem" }}>
+              <ContentBox style={{ fontSize: "1.125rem", textAlign: "center" }}>
                 {character.name}
               </ContentBox>
             </div>
             <div>
               <SectionLabel>Class</SectionLabel>
-              <ContentBox style={{ fontSize: "1.125rem" }}>
+              <ContentBox style={{ fontSize: "1.125rem", textAlign: "center" }}>
                 {character.class?.name || "Unknown"}
               </ContentBox>
             </div>
             <div>
               <SectionLabel>Race</SectionLabel>
-              <ContentBox style={{ fontSize: "1.125rem" }}>
+              <ContentBox style={{ fontSize: "1.125rem", textAlign: "center" }}>
                 {character.race?.name || "Unknown"}
-              </ContentBox>
-            </div>
-          </Grid>
-
-          <Grid columns={3} gap="0.75rem" style={{ marginTop: "0.75rem" }}>
-            <div style={{ gridColumn: "span 2" }}>
-              <SectionLabel>Background</SectionLabel>
-              <ContentBox style={{ minHeight: "5rem" }}>
-                {character.backstory || "Unknown"}
-              </ContentBox>
-            </div>
-            <div>
-              <SectionLabel>Alignment</SectionLabel>
-              <ContentBox style={{ minHeight: "5rem" }}>
-                {character.traits?.ideals?.[0] || "Unknown"}
               </ContentBox>
             </div>
           </Grid>
