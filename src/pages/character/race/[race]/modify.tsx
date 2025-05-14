@@ -55,7 +55,7 @@ const CharacterImagesPage: React.FC<CharacterImagesPageProps> = ({ race }) => {
   // const ethnicity = ethnicities[Math.floor(Math.random() * ethnicities.length)];
   const accessory = race.accessory ? race.accessory[Math.floor(Math.random() * race.accessory.length)] : null;
   const [prompt, setPrompt] = useState(
-    `Removing the collector quest logo, update the image to be a ${race.name}, ${race.description}, ${accessory ? `remove the staff and give the character a ${accessory}` : ""}`
+    `Removing the collector quest logo, update the image to be a ${race.name}, who are described as ${race.description}, ${accessory ? `remove the staff and give the character a ${accessory}` : ""}`
   );
 
   // Use our image generation hook
