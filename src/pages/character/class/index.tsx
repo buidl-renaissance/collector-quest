@@ -9,7 +9,7 @@ import { useCharacterClass } from "@/hooks/useCharacterClass";
 import PageTransition from "@/components/PageTransition";
 import { getAllClasses } from "@/db/classes";
 import { GetServerSideProps } from "next";
-import { BackButton } from "@/components/styled/character";
+import { BackButton, Subtitle, Title } from "@/components/styled/character";
 
 interface ClassSelectionPageProps {
   classes: CharacterClass[];
@@ -137,21 +137,7 @@ const Container = styled.div`
   padding: 2rem;
   font-family: 'Cormorant Garamond', serif;
   animation: ${fadeIn} 0.5s ease-in;
-  padding-bottom: 80px; /* Make room for the footer */
-`;
-
-const Title = styled.h1`
-  font-size: 2.5rem;
-  color: #bb8930;
-  margin-bottom: 0.5rem;
-  text-align: center;
-`;
-
-const Subtitle = styled.p`
-  font-size: 1.2rem;
-  color: #C7BFD4;
-  margin-bottom: 2rem;
-  text-align: center;
+  padding-bottom: 120px; /* Make room for the footer */
 `;
 
 const SelectedRaceBanner = styled.div`
@@ -229,6 +215,7 @@ const ClassDescription = styled.p`
 const AbilitiesList = styled.ul`
   margin: 0;
   padding: 0 0 0 1.2rem;
+  list-style-type: disc;
 `;
 
 const AbilityItem = styled.li`
