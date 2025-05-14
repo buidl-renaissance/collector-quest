@@ -1,6 +1,17 @@
 import { Race } from "@/data/races";
 import client from "./client";
 
+const ingressRaces = (races: any[]) => {
+  return races.map(race => ({
+    id: race.id,
+    name: race.name,
+    source: race.source,
+    description: race.description,
+    image: race.image,
+    accessory: JSON.parse(race.accessory)
+  }));
+}
+
 /**
  * Fetches all races from the database
  * @returns Promise<Race[]> Array of all races
@@ -8,7 +19,7 @@ import client from "./client";
 export async function getAllRaces(): Promise<Race[]> {
   try {
     const races = await client('races').select('*').orderBy('name', 'asc');
-    return races;
+    return ingressRaces(races);
   } catch (error) {
     console.error("Database error when fetching races:", error);
     throw new Error("Failed to fetch races");
@@ -23,7 +34,7 @@ export async function getAllRaces(): Promise<Race[]> {
 export async function getRaceById(id: string): Promise<Race | null> {
   try {
     const result = await client('races').select('*').where('id', id).first();
-    return result || null;
+    return result ? ingressRaces([result])[0] : null;
   } catch (error) {
     console.error(`Database error when fetching race ${id}:`, error);
     throw new Error("Failed to fetch race");

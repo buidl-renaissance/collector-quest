@@ -26,7 +26,7 @@ export async function getRaceById(id: string): Promise<Race | null> {
       source: predefinedRace.source,
       image: predefinedRace.image,
       description: predefinedRace.description,
-      accessory: predefinedRace.accessory,
+      accessory: JSON.stringify(predefinedRace.accessory),
       created_at: new Date(),
       updated_at: new Date()
     });
