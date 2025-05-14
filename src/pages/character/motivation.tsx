@@ -86,11 +86,8 @@ const MotivationPage: React.FC = () => {
         <MotivationalFusion onMotivationGenerated={handleMotivationGenerated} />
 
         <BottomNavigation
-          selectedItem={
-            motivationState.generatedMotivation
-              ? "Motivation Generated"
-              : undefined
-          }
+          selectedItemLabel={""}
+          selectedItem={"Motivation Generated"}
           onNext={handleNext}
           disabled={!motivationState.generatedMotivation}
         />

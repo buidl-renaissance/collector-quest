@@ -64,7 +64,7 @@ const OutputTitle = styled.h3`
 `;
 
 const OutputText = styled.p`
-  font-size: 1.3rem;
+  font-size: 1.2rem;
   line-height: 1.6;
   color: #ffffff;
   font-style: italic;

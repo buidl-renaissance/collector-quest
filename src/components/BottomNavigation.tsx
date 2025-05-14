@@ -76,7 +76,7 @@ const BottomNavigation: React.FC<BottomNavigationProps> = ({
     <SelectionFooter>
       {selectedItem && (
         <SelectedItemInfo>
-          <SelectedItemLabel>{selectedItemLabel}:</SelectedItemLabel>
+          {selectedItemLabel?.length > 0 && <SelectedItemLabel>{selectedItemLabel}:</SelectedItemLabel>}
           <SelectedItemName>{selectedItem}</SelectedItemName>
         </SelectedItemInfo>
       )}

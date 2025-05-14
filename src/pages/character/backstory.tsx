@@ -218,10 +218,10 @@ const BackstoryPage: React.FC = () => {
         <Title>Your Character&apos;s Backstory</Title>
         <Subtitle>Discover the tale of your character&apos;s past</Subtitle>
 
-        <CharacterSummary character={character} />
+        {/* <CharacterSummary character={character} /> */}
 
         <BackstorySection>
-          <h2 className="text-2xl font-bold mb-4">Character Backstory</h2>
+          <h2 className="text-2xl font-bold mb-4">Backstory</h2>
           {isGeneratingBackstory ? (
             <div className="text-center py-4">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto"></div>
@@ -239,11 +239,11 @@ const BackstoryPage: React.FC = () => {
         </BackstorySection>
 
         <ActionButtons>
-          {characterBackstory && (
+          {/* {characterBackstory && (
             <ActionButton onClick={generateBackstory}>
               <FaRedo /> Regenerate Backstory
             </ActionButton>
-          )}
+          )} */}
           <NextButton
             onClick={handleNext}
             disabled={!character || !character.backstory}
