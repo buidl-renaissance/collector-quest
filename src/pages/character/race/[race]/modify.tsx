@@ -139,7 +139,7 @@ const CharacterImagesPage: React.FC<CharacterImagesPageProps> = ({ race }) => {
 
   return (
     <Container>
-      <BackLink href="/character/race">
+      <BackLink href="/character/race/admin">
         <FaArrowLeft /> Back to Character Creation
       </BackLink>
 
