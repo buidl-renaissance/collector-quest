@@ -8,8 +8,6 @@ import {
   FaDice,
   FaScroll,
   FaBook,
-  FaVolumeUp,
-  FaVolumeMute,
 } from "react-icons/fa";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
@@ -49,22 +47,9 @@ const MasterPage: React.FC = () => {
     <PageWrapper>
       <ParallaxBackground style={{ transform: `translateY(${parallaxOffset}px)` }} />
       
-      {/* {[...Array(5)].map((_, i) => (
-        <FloatingObject
-          key={i}
-          style={{
-            top: `${Math.random() * 100}%`,
-            left: `${Math.random() * 100}%`,
-            animationDelay: `${Math.random() * 5}s`,
-          }}
-        >
-          {i % 3 === 0 ? <FaDungeon /> : <FaDice />}
-        </FloatingObject>
-      ))} */}
-
-      <AudioToggle onClick={toggleAudio}>
+      {/* <AudioToggle onClick={toggleAudio}>
         {audioEnabled ? <FaVolumeUp /> : <FaVolumeMute />}
-      </AudioToggle>
+      </AudioToggle> */}
 
       <Container>
         <HeroSection>
