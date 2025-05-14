@@ -29,3 +29,28 @@ exports.up = function(knex) {
 exports.down = function(knex) {
   return knex.schema.dropTable('characters');
 };
+
+/**
+ * MySQL equivalent create table query
+ * This is for reference only and not executed by the migration
+ */
+const mysqlCreateTableQuery = `
+CREATE TABLE characters (
+  id VARCHAR(255) PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  status VARCHAR(255) NOT NULL,
+  race VARCHAR(255) NULL,
+  class VARCHAR(255) NULL,
+  level INT DEFAULT 1,
+  traits JSON NULL,
+  motivation TEXT NULL,
+  bio TEXT NULL,
+  backstory TEXT NULL,
+  sex VARCHAR(255) NULL,
+  creature VARCHAR(255) NULL,
+  image_url VARCHAR(255) NULL,
+  sheet VARCHAR(255) NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+`;
