@@ -1,5 +1,5 @@
 import { inngest } from "./client";
-import { generateImage } from "@/lib/image";
+import { generateImage, uploadImage } from "@/lib/image";
 import { completeResult, failResult } from "@/lib/storage";
 
 export const helloWorld = inngest.createFunction(
@@ -20,6 +20,12 @@ export const generateImageFunction = inngest.createFunction(
       const image = await step.run("generate-image", async () => {
         return await generateImage(event.data.prompt, event.data.image);
       });
+
+      if (image) {  
+        await step.run("upload-image", async () => {
+          return await uploadImage(image);
+        });
+      }
 
       // Store the result
       if (event.data.resultId) {
