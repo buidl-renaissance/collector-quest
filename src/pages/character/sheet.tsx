@@ -14,6 +14,7 @@ import Page from "@/components/Page";
 import { Container, LoadingMessage } from "@/components/styled/layout";
 import { Attack, attacks, getAttack } from "@/data/attacks";
 import { BackButton } from "@/components/styled/character";
+import Emblems from "@/components/CharacterSheet/Emblems";
 
 // Styled Components
 const CharacterSheetContainer = styled.div`
@@ -81,7 +82,6 @@ const SectionLabel = styled.label`
 
 const ContentBox = styled.div`
   background-color: #7e6230;
-  padding: 0.25rem;
   border-bottom-left-radius: 0.25rem;
   border-bottom-right-radius: 0.25rem;
   border: 1px solid #a77d3e;
@@ -125,20 +125,12 @@ const Grid = styled.div<{ columns?: number; gap?: string }>`
   }
 `;
 
-const AbilityBox = styled(ContentBox)`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  transition: box-shadow 0.2s;
-
-  &:hover {
-    box-shadow: 0 0 10px #d6b87b;
-  }
-`;
-
 const StatBox = styled(ContentBox)`
   text-align: center;
   transition: box-shadow 0.2s;
+  margin-bottom: 1rem;
+  border-radius: 0.25rem;
+  border: none;
 
   &:hover {
     box-shadow: 0 0 10px #d6b87b;
@@ -152,43 +144,6 @@ const StatValue = styled.div`
 
   @media (max-width: 768px) {
     font-size: 1.25rem;
-  }
-`;
-
-const TraitBox = styled(ContentBox)`
-  margin-bottom: 0.5rem;
-
-  @media (max-width: 768px) {
-    margin-bottom: 0.25rem;
-  }
-`;
-
-const TraitLabel = styled.div`
-  font-family: "Cinzel", serif;
-  font-size: 0.875rem;
-  text-transform: uppercase;
-  color: #d6b87b;
-  text-align: center;
-  background-color: #2e1e0f;
-  padding: 0.25rem;
-  border-top: 1px solid #a77d3e;
-  border-left: 1px solid #a77d3e;
-  border-right: 1px solid #a77d3e;
-  border-top-left-radius: 0.25rem;
-  border-top-right-radius: 0.25rem;
-  margin-bottom: 0;
-
-  @media (max-width: 768px) {
-    font-size: 0.75rem;
-    padding: 0.15rem;
-  }
-`;
-
-const TraitValue = styled.div`
-  font-size: 0.875rem;
-
-  @media (max-width: 768px) {
-    font-size: 0.8rem;
   }
 `;
 
@@ -400,6 +355,19 @@ const HitDiceBox = styled.div`
     gap: 0.25rem;
     padding: 0.25rem;
     margin-bottom: 0.5rem;
+  }
+`;
+
+const BackstoryContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  .backstory-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 10;
+    -webkit-box-orient: vertical;
   }
 `;
 
@@ -704,11 +672,6 @@ const CharacterSheetPage: React.FC = () => {
     return null;
   }
 
-  const getAbilityModifier = (score: number) => {
-    const modifier = Math.floor((score - 10) / 2);
-    return modifier >= 0 ? `+${modifier}` : `${modifier}`;
-  };
-
   const renderProficienciesAndLanguages = () => {
     return (
       <div>
@@ -779,21 +742,8 @@ const CharacterSheetPage: React.FC = () => {
           </Grid>
         </Section>
 
-        <Grid columns={3} gap="0.75rem" style={{ marginBottom: "1rem" }}>
-          <div>
-            {Object.entries(characterSheet.abilities).map(
-              ([ability, score]) => (
-                <AbilityBox key={ability}>
-                  <div className="text-sm font-['Cinzel'] uppercase text-[#d6b87b]">
-                    {ability.charAt(0).toUpperCase() + ability.slice(1)}
-                  </div>
-                  <div className="text-lg font-['Cinzel'] text-[#d6b87b]">
-                    {score}/{getAbilityModifier(score)}
-                  </div>
-                </AbilityBox>
-              )
-            )}
-          </div>
+        <Grid columns={3} gap="0.75rem" style={{ marginBottom: "1rem", alignItems: "flex-start" }}>
+          <Emblems abilities={characterSheet.abilities} />
 
           <div>
             <SectionLabel>Bio</SectionLabel>
@@ -833,8 +783,10 @@ const CharacterSheetPage: React.FC = () => {
                   }
                 >
                   {character.backstory ? (
-                    <>
+                    <BackstoryContainer>
+                      <div className="backstory-text">
                       {character.backstory.split("\n")[0]}
+                      </div>
                       <div
                         style={{
                           color: "#d6b87b",
@@ -845,7 +797,7 @@ const CharacterSheetPage: React.FC = () => {
                       >
                         Click to view full bio
                       </div>
-                    </>
+                    </BackstoryContainer>
                   ) : (
                     "No backstory provided"
                   )}
@@ -1001,13 +953,14 @@ const CharacterSheetPage: React.FC = () => {
               </StatValue>
             </StatBox>
           </div>
-          <ContentBox>
+          <StatBox>
             <SectionLabel>Skills</SectionLabel>
             <div
               style={{
                 display: "flex",
                 flexDirection: "column",
                 gap: "0.25rem",
+                padding: "0.5rem",
               }}
             >
               {characterSheet.skills.map((skill) => (
@@ -1028,10 +981,10 @@ const CharacterSheetPage: React.FC = () => {
                 </div>
               ))}
             </div>
-          </ContentBox>
-          <ContentBox>
+          </StatBox>
+          <StatBox>
             <SectionLabel>Death Saves</SectionLabel>
-            <Grid columns={2} gap="0.5rem">
+            <div style={{ display: "inline-flex", flexDirection: "row", gap: "1rem", padding: "0.5rem" }}>
               <div>
                 <div style={{ fontSize: "0.75rem", marginBottom: "0.25rem" }}>
                   Successes
@@ -1058,8 +1011,8 @@ const CharacterSheetPage: React.FC = () => {
                   ))}
                 </DeathSaveBox>
               </div>
-            </Grid>
-          </ContentBox>
+            </div>
+          </StatBox>
         </Grid>
 
         {/* Combat Section */}
