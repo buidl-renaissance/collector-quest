@@ -5,6 +5,8 @@ interface Traits {
   ideals: string[];
   bonds: string[];
   flaws: string[];
+  hauntingMemory?: string;
+  treasuredPossession?: string;
 }
 
 export function useTraits() {

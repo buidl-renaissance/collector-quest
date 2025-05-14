@@ -29,11 +29,13 @@ const CharacterCard: React.FC<CharacterCardProps> = ({
           characterClass={character.class}
           size="large"
         />
-        <CharacterDescription
-          race={character.race}
-          characterClass={character.class}
-          size="large"
-        />
+        {character.race && character.class && (
+          <CharacterDescription
+            race={character.race}
+            characterClass={character.class}
+            size="large"
+          />
+        )}
       </CardContent>
     </Card>
   );

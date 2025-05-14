@@ -23,7 +23,7 @@ const CharacterSheetContainer = styled.div`
   border-radius: 0.5rem;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   border: 4px solid #a77d3e;
-  
+
   @media (max-width: 768px) {
     padding: 0.5rem;
     border-width: 2px;
@@ -36,7 +36,7 @@ const Header = styled.h1`
   text-align: center;
   margin-bottom: 1rem;
   color: #d6b87b;
-  
+
   @media (max-width: 768px) {
     font-size: 1.5rem;
     margin-bottom: 0.5rem;
@@ -50,7 +50,7 @@ const Section = styled.div`
   margin-bottom: 1rem;
   border: 2px solid #a77d3e;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  
+
   @media (max-width: 768px) {
     padding: 0.5rem;
     margin-bottom: 0.5rem;
@@ -72,7 +72,7 @@ const SectionLabel = styled.label`
   border-top-left-radius: 0.25rem;
   border-top-right-radius: 0.25rem;
   margin-bottom: 0;
-  
+
   @media (max-width: 768px) {
     font-size: 0.75rem;
     padding: 0.25rem;
@@ -86,7 +86,7 @@ const ContentBox = styled.div`
   border-bottom-right-radius: 0.25rem;
   border: 1px solid #a77d3e;
   font-family: "Merriweather", serif;
-  
+
   @media (max-width: 768px) {
     padding: 0.15rem;
     font-size: 0.85rem;
@@ -100,7 +100,7 @@ const ListItem = styled.div`
   &:last-child {
     border-bottom: none;
   }
-  
+
   @media (max-width: 768px) {
     padding: 0.15rem 0;
     font-size: 0.85rem;
@@ -111,14 +111,15 @@ const Grid = styled.div<{ columns?: number; gap?: string }>`
   display: grid;
   grid-template-columns: repeat(${(props) => props.columns || 1}, 1fr);
   gap: ${(props) => props.gap || "0.75rem"};
-  
+
   @media (max-width: 768px) {
-    grid-template-columns: ${(props) => props.columns && props.columns > 2 
-      ? `repeat(2, 1fr)` 
-      : `repeat(${props.columns || 1}, 1fr)`};
+    grid-template-columns: ${(props) =>
+      props.columns && props.columns > 2
+        ? `repeat(2, 1fr)`
+        : `repeat(${props.columns || 1}, 1fr)`};
     gap: 0.5rem;
   }
-  
+
   @media (max-width: 480px) {
     grid-template-columns: 1fr;
   }
@@ -148,7 +149,7 @@ const StatValue = styled.div`
   font-family: "Cinzel", serif;
   font-size: 1.5rem;
   color: #d6b87b;
-  
+
   @media (max-width: 768px) {
     font-size: 1.25rem;
   }
@@ -156,7 +157,7 @@ const StatValue = styled.div`
 
 const TraitBox = styled(ContentBox)`
   margin-bottom: 0.5rem;
-  
+
   @media (max-width: 768px) {
     margin-bottom: 0.25rem;
   }
@@ -176,7 +177,7 @@ const TraitLabel = styled.div`
   border-top-left-radius: 0.25rem;
   border-top-right-radius: 0.25rem;
   margin-bottom: 0;
-  
+
   @media (max-width: 768px) {
     font-size: 0.75rem;
     padding: 0.15rem;
@@ -185,7 +186,7 @@ const TraitLabel = styled.div`
 
 const TraitValue = styled.div`
   font-size: 0.875rem;
-  
+
   @media (max-width: 768px) {
     font-size: 0.8rem;
   }
@@ -196,7 +197,7 @@ const SkillCheckbox = styled.input`
   height: 1rem;
   background-color: #2e1e0f;
   border: 1px solid #a77d3e;
-  
+
   @media (max-width: 768px) {
     width: 0.85rem;
     height: 0.85rem;
@@ -206,7 +207,7 @@ const SkillCheckbox = styled.input`
 const DeathSaveBox = styled.div`
   display: flex;
   gap: 0.25rem;
-  
+
   @media (max-width: 768px) {
     gap: 0.15rem;
   }
@@ -218,7 +219,7 @@ const DeathSaveCheck = styled.div<{ checked?: boolean }>`
   border: 2px solid ${(props) => (props.checked ? "#d6b87b" : "#a77d3e")};
   border-radius: 0.25rem;
   background-color: ${(props) => (props.checked ? "#d6b87b" : "transparent")};
-  
+
   @media (max-width: 768px) {
     width: 1rem;
     height: 1rem;
@@ -227,12 +228,10 @@ const DeathSaveCheck = styled.div<{ checked?: boolean }>`
 `;
 
 const CombatSection = styled.div`
-  background-color: #7e6230;
-  border: 1px solid #a77d3e;
   border-radius: 0.25rem;
-  padding: 0.5rem;
   margin-bottom: 1rem;
-  
+  margin-top: 1rem;
+
   @media (max-width: 768px) {
     padding: 0.25rem;
     margin-bottom: 0.5rem;
@@ -243,7 +242,7 @@ const AttackList = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
-  
+
   @media (max-width: 768px) {
     gap: 0.15rem;
   }
@@ -263,30 +262,71 @@ const FeatureList = styled.div`
 
 const FeatureItem = styled(ListItem)`
   font-size: 0.875rem;
-  
+
   @media (max-width: 768px) {
     font-size: 0.8rem;
   }
 `;
 
+const ProficiencyModalContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+`;
+
 const ProficiencySection = styled.div`
   margin-bottom: 1rem;
-  
-  @media (max-width: 768px) {
-    margin-bottom: 0.5rem;
-  }
+`;
+
+const ProficiencyTitle = styled.h3`
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  color: #d6b87b;
+  font-family: "Cinzel", serif;
 `;
 
 const ProficiencyList = styled.div`
   display: flex;
   flex-direction: column;
+  gap: 0.5rem;
 `;
 
-const ProficiencyItem = styled(ListItem)`
+const ProficiencyItem = styled.div`
   font-size: 0.875rem;
-  
+  color: #f5e6d3;
+`;
+
+const ProficiencyLink = styled.button`
+  color: #d6b87b;
+  font-size: 0.875rem;
+  font-family: "Cinzel", serif;
+  text-transform: uppercase;
+  transition: all 0.2s;
+  background: none;
+  border: none;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  text-align: center;
+  width: 100%;
+  border-radius: 0.25rem;
+  background-color: #614921;
+  border: 2px solid #a77d3e;
+
+  &:hover {
+    color: #f5e6d3;
+    background-color: #a77d3e;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+
+  &:active {
+    transform: translateY(0);
+    box-shadow: none;
+  }
+
   @media (max-width: 768px) {
     font-size: 0.8rem;
+    padding: 0.4rem 0.8rem;
   }
 `;
 
@@ -297,7 +337,7 @@ const AttackDetails = styled.div`
   padding: 0.25rem;
   background-color: #7e6230;
   border-radius: 0.25rem;
-  
+
   @media (max-width: 768px) {
     gap: 0.15rem;
     padding: 0.15rem;
@@ -314,7 +354,7 @@ const AttackHeader = styled.div`
   gap: 0.5rem;
   padding: 0.25rem 0;
   border-bottom: 1px solid #a77d3e;
-  
+
   @media (max-width: 768px) {
     font-size: 0.75rem;
     gap: 0.25rem;
@@ -329,7 +369,7 @@ const AttackInfo = styled.div`
   font-size: 0.8rem;
   color: #f5e6d3;
   padding: 0.25rem 0;
-  
+
   @media (max-width: 768px) {
     gap: 0.25rem;
     font-size: 0.7rem;
@@ -341,7 +381,7 @@ const AttackDescription = styled.div`
   font-size: 0.8rem;
   color: #f5e6d3;
   font-style: italic;
-  
+
   @media (max-width: 768px) {
     font-size: 0.7rem;
   }
@@ -355,7 +395,7 @@ const HitDiceBox = styled.div`
   background-color: #7e6230;
   border-radius: 0.25rem;
   margin-bottom: 1rem;
-  
+
   @media (max-width: 768px) {
     gap: 0.25rem;
     padding: 0.25rem;
@@ -368,7 +408,7 @@ const HitDiceInfo = styled.div`
   justify-content: space-between;
   align-items: center;
   color: #f5e6d3;
-  
+
   @media (max-width: 768px) {
     font-size: 0.85rem;
   }
@@ -399,7 +439,7 @@ const RegenerateButton = styled.button`
   &:active {
     transform: translateY(0);
   }
-  
+
   @media (max-width: 768px) {
     padding: 0.5rem 1rem;
     font-size: 0.9rem;
@@ -420,32 +460,56 @@ const ModalOverlay = styled.div`
 const ModalContent = styled.div`
   background-color: #2e1e0f;
   border-radius: 0.5rem;
-  padding: 1.5rem;
+  padding: 0;
   max-width: 42rem;
   width: 100%;
   max-height: 80vh;
   overflow-y: auto;
   position: relative;
-  
+  border: 2px solid #a77d3e;
+
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Hide scrollbar for IE, Edge and Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+
   @media (max-width: 768px) {
-    padding: 1rem;
     width: 90%;
     max-height: 85vh;
   }
 `;
 
+const ModalHeader = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #a77d3e;
+  background-color: #2e1e0f;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+`;
+
 const ModalCloseButton = styled.button`
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
   color: #f5e6d3;
+  padding: 0.5rem;
+  margin: -0.5rem;
+  border-radius: 0.25rem;
+  transition: all 0.2s;
+
   &:hover {
     color: #d6b87b;
+    background-color: rgba(167, 125, 62, 0.1);
   }
-  
+
   @media (max-width: 768px) {
-    top: 0.5rem;
-    right: 0.5rem;
+    padding: 0.25rem;
+    margin: -0.25rem;
   }
 `;
 
@@ -453,25 +517,35 @@ const ModalTitle = styled.h2`
   font-size: 1.5rem;
   font-family: "Cinzel", serif;
   color: #d6b87b;
-  margin-bottom: 1rem;
-  
+  margin: 0;
+
   @media (max-width: 768px) {
     font-size: 1.25rem;
-    margin-bottom: 0.75rem;
   }
 `;
 
 const ModalBody = styled.div`
   color: #f5e6d3;
-  
+  padding: 1.5rem;
+
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Hide scrollbar for IE, Edge and Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+
   @media (max-width: 768px) {
+    padding: 1rem;
     font-size: 0.9rem;
   }
 `;
 
 const BioModalSection = styled.div`
   margin-bottom: 1rem;
-  
+
   @media (max-width: 768px) {
     margin-bottom: 0.75rem;
   }
@@ -481,7 +555,7 @@ const BioModalTitle = styled.h3`
   color: #d6b87b;
   margin-bottom: 0.5rem;
   font-family: "Cinzel", serif;
-  
+
   @media (max-width: 768px) {
     font-size: 1.1rem;
     margin-bottom: 0.25rem;
@@ -490,8 +564,8 @@ const BioModalTitle = styled.h3`
 
 const BioModalText = styled.p`
   color: #f5e6d3;
-  font-size: 0.6rem;
-  
+  font-size: 0.9rem;
+
   @media (max-width: 768px) {
     font-size: 0.85rem;
   }
@@ -510,10 +584,12 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }) => {
   return (
     <ModalOverlay>
       <ModalContent>
-        <ModalCloseButton onClick={onClose}>
-          <FaTimes size={24} />
-        </ModalCloseButton>
-        <ModalTitle>{title}</ModalTitle>
+        <ModalHeader>
+          <ModalTitle>{title}</ModalTitle>
+          <ModalCloseButton onClick={onClose}>
+            <FaTimes size={24} />
+          </ModalCloseButton>
+        </ModalHeader>
         <ModalBody>{children}</ModalBody>
       </ModalContent>
     </ModalOverlay>
@@ -636,38 +712,37 @@ const CharacterSheetPage: React.FC = () => {
   const renderProficienciesAndLanguages = () => {
     return (
       <div>
-        <button
+        <ProficiencyLink
           onClick={() =>
             openModal(
               "Proficiencies & Languages",
-              <div className="space-y-4">
-                <div>
-                  <h3 className="font-bold mb-2">Proficiencies</h3>
-                  <div className="space-y-2">
+              <ProficiencyModalContent>
+                <ProficiencySection>
+                  <ProficiencyTitle>Proficiencies</ProficiencyTitle>
+                  <ProficiencyList>
                     {characterSheet.proficiencies.map((prof, index) => (
-                      <div key={`prof-${index}`} className="text-sm">
+                      <ProficiencyItem key={`prof-${index}`}>
                         {prof}
-                      </div>
+                      </ProficiencyItem>
                     ))}
-                  </div>
-                </div>
-                <div>
-                  <h3 className="font-bold mb-2">Languages</h3>
-                  <div className="space-y-2">
+                  </ProficiencyList>
+                </ProficiencySection>
+                <ProficiencySection>
+                  <ProficiencyTitle>Languages</ProficiencyTitle>
+                  <ProficiencyList>
                     {characterSheet.languages.map((lang, index) => (
-                      <div key={`lang-${index}`} className="text-sm">
+                      <ProficiencyItem key={`lang-${index}`}>
                         {lang}
-                      </div>
+                      </ProficiencyItem>
                     ))}
-                  </div>
-                </div>
-              </div>
+                  </ProficiencyList>
+                </ProficiencySection>
+              </ProficiencyModalContent>
             )
           }
-          className="text-yellow-300 hover:text-yellow-200 text-sm"
         >
-          Proficiencies & Languages
-        </button>
+          PROFICIENCIES & LANGUAGES
+        </ProficiencyLink>
       </div>
     );
   };
@@ -723,39 +798,56 @@ const CharacterSheetPage: React.FC = () => {
           <div>
             <SectionLabel>Bio</SectionLabel>
             <ContentBox>
-              <div style={{ padding: '0.5rem' }}>
-                <div style={{ 
-                  fontSize: '0.9rem', 
-                  color: '#f5e6d3',
-                  cursor: 'pointer',
-                  lineHeight: '1.4'
-                }} onClick={() => openModal(
-                  "Character Bio",
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                    <BioModalSection>
-                      <BioModalTitle>Backstory</BioModalTitle>
-                      <BioModalText>{character.backstory || 'No backstory provided'}</BioModalText>
-                    </BioModalSection>
-                    <BioModalSection>
-                      <BioModalTitle>Motivation</BioModalTitle>
-                      <BioModalText>{character.motivation || 'No motivation provided'}</BioModalText>
-                    </BioModalSection>
-                  </div>
-                )}>
+              <div style={{ padding: "0.5rem" }}>
+                <div
+                  style={{
+                    fontSize: "0.9rem",
+                    color: "#f5e6d3",
+                    cursor: "pointer",
+                    lineHeight: "1.4",
+                  }}
+                  onClick={() =>
+                    openModal(
+                      "Character Bio",
+                      <div
+                        style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: "1rem",
+                        }}
+                      >
+                        <BioModalSection>
+                          <BioModalTitle>Motivation</BioModalTitle>
+                          <BioModalText>
+                            {character.motivation || "No motivation provided"}
+                          </BioModalText>
+                        </BioModalSection>
+                        <BioModalSection>
+                          <BioModalTitle>Backstory</BioModalTitle>
+                          <BioModalText>
+                            {character.backstory || "No backstory provided"}
+                          </BioModalText>
+                        </BioModalSection>
+                      </div>
+                    )
+                  }
+                >
                   {character.backstory ? (
                     <>
-                      {character.backstory.split('\n')[0]}
-                      <div style={{ 
-                        color: '#d6b87b', 
-                        fontSize: '0.8rem', 
-                        marginTop: '0.5rem',
-                        textAlign: 'right'
-                      }}>
+                      {character.backstory.split("\n")[0]}
+                      <div
+                        style={{
+                          color: "#d6b87b",
+                          fontSize: "0.8rem",
+                          marginTop: "0.5rem",
+                          textAlign: "right",
+                        }}
+                      >
                         Click to view full bio
                       </div>
                     </>
                   ) : (
-                    'No backstory provided'
+                    "No backstory provided"
                   )}
                 </div>
               </div>
@@ -765,78 +857,123 @@ const CharacterSheetPage: React.FC = () => {
           <div>
             <SectionLabel>Traits</SectionLabel>
             <ContentBox>
-              <div style={{ padding: '0.5rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              <div
+                style={{
+                  padding: "0.5rem",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "0.75rem",
+                }}
+              >
                 <div>
-                  <div style={{ 
-                    color: '#d6b87b', 
-                    fontSize: '0.8rem', 
-                    marginBottom: '0.25rem',
-                    fontFamily: 'Cinzel, serif'
-                  }}>Personality</div>
-                  <div style={{ 
-                    color: '#f5e6d3',
-                    fontSize: '0.9rem',
-                    lineHeight: '1.4'
-                  }}>
-                    {characterSheet.effects?.personality_traits?.map((trait: string, index: number) => (
-                      <div key={`personality-${index}`} style={{ marginBottom: '0.25rem' }}>
-                        {trait}
-                      </div>
-                    ))}
+                  <div
+                    style={{
+                      color: "#d6b87b",
+                      fontSize: "0.8rem",
+                      marginBottom: "0.25rem",
+                      fontFamily: "Cinzel, serif",
+                    }}
+                  >
+                    Personality
+                  </div>
+                  <div
+                    style={{
+                      color: "#f5e6d3",
+                      fontSize: "0.9rem",
+                      lineHeight: "1.4",
+                    }}
+                  >
+                    {characterSheet.effects?.personality_traits?.map(
+                      (trait: string, index: number) => (
+                        <div
+                          key={`personality-${index}`}
+                          style={{ marginBottom: "0.25rem" }}
+                        >
+                          {trait}
+                        </div>
+                      )
+                    )}
                   </div>
                 </div>
                 <div>
-                  <div style={{ 
-                    color: '#d6b87b', 
-                    fontSize: '0.8rem', 
-                    marginBottom: '0.25rem',
-                    fontFamily: 'Cinzel, serif'
-                  }}>Ideals</div>
-                  <div style={{ 
-                    color: '#f5e6d3',
-                    fontSize: '0.9rem',
-                    lineHeight: '1.4'
-                  }}>
+                  <div
+                    style={{
+                      color: "#d6b87b",
+                      fontSize: "0.8rem",
+                      marginBottom: "0.25rem",
+                      fontFamily: "Cinzel, serif",
+                    }}
+                  >
+                    Ideals
+                  </div>
+                  <div
+                    style={{
+                      color: "#f5e6d3",
+                      fontSize: "0.9rem",
+                      lineHeight: "1.4",
+                    }}
+                  >
                     {characterSheet.effects?.ideals?.map((ideal, index) => (
-                      <div key={`ideal-${index}`} style={{ marginBottom: '0.25rem' }}>
+                      <div
+                        key={`ideal-${index}`}
+                        style={{ marginBottom: "0.25rem" }}
+                      >
                         {ideal}
                       </div>
                     ))}
                   </div>
                 </div>
                 <div>
-                  <div style={{ 
-                    color: '#d6b87b', 
-                    fontSize: '0.8rem', 
-                    marginBottom: '0.25rem',
-                    fontFamily: 'Cinzel, serif'
-                  }}>Bonds</div>
-                  <div style={{ 
-                    color: '#f5e6d3',
-                    fontSize: '0.9rem',
-                    lineHeight: '1.4'
-                  }}>
+                  <div
+                    style={{
+                      color: "#d6b87b",
+                      fontSize: "0.8rem",
+                      marginBottom: "0.25rem",
+                      fontFamily: "Cinzel, serif",
+                    }}
+                  >
+                    Bonds
+                  </div>
+                  <div
+                    style={{
+                      color: "#f5e6d3",
+                      fontSize: "0.9rem",
+                      lineHeight: "1.4",
+                    }}
+                  >
                     {characterSheet.effects?.bonds?.map((bond, index) => (
-                      <div key={`bond-${index}`} style={{ marginBottom: '0.25rem' }}>
+                      <div
+                        key={`bond-${index}`}
+                        style={{ marginBottom: "0.25rem" }}
+                      >
                         {bond}
                       </div>
                     ))}
                   </div>
                 </div>
                 <div>
-                  <div style={{ 
-                    color: '#d6b87b', 
-                    fontSize: '0.8rem', 
-                    marginBottom: '0.25rem',
-                    fontFamily: 'Cinzel, serif'
-                  }}>Flaws</div>
-                  <div style={{ 
-                    color: '#f5e6d3',
-                    fontSize: '0.9rem',
-                    lineHeight: '1.4'
-                  }}>
+                  <div
+                    style={{
+                      color: "#d6b87b",
+                      fontSize: "0.8rem",
+                      marginBottom: "0.25rem",
+                      fontFamily: "Cinzel, serif",
+                    }}
+                  >
+                    Flaws
+                  </div>
+                  <div
+                    style={{
+                      color: "#f5e6d3",
+                      fontSize: "0.9rem",
+                      lineHeight: "1.4",
+                    }}
+                  >
                     {characterSheet.effects?.flaws?.map((flaw, index) => (
-                      <div key={`flaw-${index}`} style={{ marginBottom: '0.25rem' }}>
+                      <div
+                        key={`flaw-${index}`}
+                        style={{ marginBottom: "0.25rem" }}
+                      >
                         {flaw}
                       </div>
                     ))}
@@ -845,7 +982,9 @@ const CharacterSheetPage: React.FC = () => {
               </div>
             </ContentBox>
           </div>
+        </Grid>
 
+        <Grid columns={3} gap="0.75rem">
           <div>
             <StatBox>
               <SectionLabel>Armor Class</SectionLabel>
@@ -861,66 +1000,66 @@ const CharacterSheetPage: React.FC = () => {
                 {characterSheet.combatStats.currentHitPoints}
               </StatValue>
             </StatBox>
-            <ContentBox>
-              <SectionLabel>Skills</SectionLabel>
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "0.25rem",
-                }}
-              >
-                {characterSheet.skills.map((skill) => (
-                  <div
-                    key={skill.name}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "0.5rem",
-                    }}
-                  >
-                    <SkillCheckbox
-                      type="checkbox"
-                      checked={skill.proficient}
-                      readOnly
-                    />
-                    <span>{skill.name}</span>
-                  </div>
-                ))}
-              </div>
-            </ContentBox>
-            <ContentBox>
-              <SectionLabel>Death Saves</SectionLabel>
-              <Grid columns={2} gap="0.5rem">
-                <div>
-                  <div style={{ fontSize: "0.75rem", marginBottom: "0.25rem" }}>
-                    Successes
-                  </div>
-                  <DeathSaveBox>
-                    {[0, 1, 2].map((i) => (
-                      <DeathSaveCheck
-                        key={`success-${i}`}
-                        checked={i < characterSheet.deathSaves.successes}
-                      />
-                    ))}
-                  </DeathSaveBox>
-                </div>
-                <div>
-                  <div style={{ fontSize: "0.75rem", marginBottom: "0.25rem" }}>
-                    Failures
-                  </div>
-                  <DeathSaveBox>
-                    {[0, 1, 2].map((i) => (
-                      <DeathSaveCheck
-                        key={`failure-${i}`}
-                        checked={i < characterSheet.deathSaves.failures}
-                      />
-                    ))}
-                  </DeathSaveBox>
-                </div>
-              </Grid>
-            </ContentBox>
           </div>
+          <ContentBox>
+            <SectionLabel>Skills</SectionLabel>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "0.25rem",
+              }}
+            >
+              {characterSheet.skills.map((skill) => (
+                <div
+                  key={skill.name}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.5rem",
+                  }}
+                >
+                  <SkillCheckbox
+                    type="checkbox"
+                    checked={skill.proficient}
+                    readOnly
+                  />
+                  <span>{skill.name}</span>
+                </div>
+              ))}
+            </div>
+          </ContentBox>
+          <ContentBox>
+            <SectionLabel>Death Saves</SectionLabel>
+            <Grid columns={2} gap="0.5rem">
+              <div>
+                <div style={{ fontSize: "0.75rem", marginBottom: "0.25rem" }}>
+                  Successes
+                </div>
+                <DeathSaveBox>
+                  {[0, 1, 2].map((i) => (
+                    <DeathSaveCheck
+                      key={`success-${i}`}
+                      checked={i < characterSheet.deathSaves.successes}
+                    />
+                  ))}
+                </DeathSaveBox>
+              </div>
+              <div>
+                <div style={{ fontSize: "0.75rem", marginBottom: "0.25rem" }}>
+                  Failures
+                </div>
+                <DeathSaveBox>
+                  {[0, 1, 2].map((i) => (
+                    <DeathSaveCheck
+                      key={`failure-${i}`}
+                      checked={i < characterSheet.deathSaves.failures}
+                    />
+                  ))}
+                </DeathSaveBox>
+              </div>
+            </Grid>
+          </ContentBox>
         </Grid>
 
         {/* Combat Section */}
@@ -938,75 +1077,77 @@ const CharacterSheetPage: React.FC = () => {
                           <span>Element</span>
                           <span>Type</span>
                         </AttackHeader>
-                        {characterSheet.combat.attacks.map((attack: Attack, index: number) => {
-                          return (
-                            <AttackItem key={index}>
-                              <AttackDetails>
-                                <AttackInfo>
-                                  <span>{attack.name}</span>
-                                  <span>{attack.element}</span>
-                                  <span>{attack.attackType}</span>
-                                </AttackInfo>
-                                <AttackDescription>
-                                  {attack.effect}
-                                </AttackDescription>
-                              </AttackDetails>
-                            </AttackItem>
-                          );
-                        })}
+                        {characterSheet.combat.attacks.map(
+                          (attack: Attack, index: number) => {
+                            return (
+                              <AttackItem key={index}>
+                                <AttackDetails>
+                                  <AttackInfo>
+                                    <span>{attack.name}</span>
+                                    <span>{attack.element}</span>
+                                    <span>{attack.attackType}</span>
+                                  </AttackInfo>
+                                  <AttackDescription>
+                                    {attack.effect}
+                                  </AttackDescription>
+                                </AttackDetails>
+                              </AttackItem>
+                            );
+                          }
+                        )}
                       </AttackList>
                     </>
                   )}
                 </ContentBox>
               </div>
 
-              <div>
-                <SectionLabel>Hit Dice</SectionLabel>
-                <ContentBox>
-                  <HitDiceBox>
-                    <HitDiceInfo>
-                      <span>Hit Dice:</span>
-                      <span>{characterSheet.combat?.hitDice?.current}</span>
-                    </HitDiceInfo>
-                    <HitDiceInfo>
-                      <span>Type:</span>
-                      <span>{characterSheet.combat?.hitDice?.type}</span>
-                    </HitDiceInfo>
-                    <HitDiceInfo>
-                      <span>Constitution Bonus:</span>
-                      <span>
-                        {characterSheet.combat?.hitDice?.bonus >= 0 ? "+" : ""}
-                        {characterSheet.combat?.hitDice?.bonus}
-                      </span>
-                    </HitDiceInfo>
-                  </HitDiceBox>
-                </ContentBox>
-              </div>
+              <Grid columns={1} gap="0.75rem">
+                <div>
+                  <SectionLabel>Hit Dice</SectionLabel>
+                  <ContentBox>
+                    <HitDiceBox>
+                      <HitDiceInfo>
+                        <span>Hit Dice:</span>
+                        <span>{characterSheet.combat?.hitDice?.current}</span>
+                      </HitDiceInfo>
+                      <HitDiceInfo>
+                        <span>Type:</span>
+                        <span>{characterSheet.combat?.hitDice?.type}</span>
+                      </HitDiceInfo>
+                      <HitDiceInfo>
+                        <span>Constitution Bonus:</span>
+                        <span>
+                          {characterSheet.combat?.hitDice?.bonus >= 0
+                            ? "+"
+                            : ""}
+                          {characterSheet.combat?.hitDice?.bonus}
+                        </span>
+                      </HitDiceInfo>
+                    </HitDiceBox>
+                  </ContentBox>
+                </div>
+
+                <div>
+                  <SectionLabel>Features & Traits</SectionLabel>
+                  <ContentBox>
+                    <FeatureList>
+                      {characterSheet.features.map((feature, index) => (
+                        <FeatureItem key={`feature-${index}`}>
+                          {feature}
+                        </FeatureItem>
+                      ))}
+                    </FeatureList>
+                  </ContentBox>
+                </div>
+
+                <div>
+                  {renderProficienciesAndLanguages()}
+                </div>
+
+              </Grid>
             </Grid>
           </CombatSection>
         )}
-
-        {/* Features & Traits Section */}
-        <Section>
-          <Grid columns={2} gap="0.75rem">
-            <div>
-              <SectionLabel>Features & Traits</SectionLabel>
-              <ContentBox>
-                <FeatureList>
-                  {characterSheet.features.map((feature, index) => (
-                    <FeatureItem key={`feature-${index}`}>
-                      {feature}
-                    </FeatureItem>
-                  ))}
-                </FeatureList>
-              </ContentBox>
-            </div>
-
-            <div>
-              <ContentBox>{renderProficienciesAndLanguages()}</ContentBox>
-            </div>
-          </Grid>
-        </Section>
 
         <RegenerateButton onClick={handleRegenerate}>
           Regenerate Character Sheet

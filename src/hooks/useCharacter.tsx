@@ -8,6 +8,7 @@ export interface Character {
   name: string;
   race?: Race;
   class?: CharacterClass;
+  level?: number;
   traits?: {
     personality: string[];
     ideals: string[];

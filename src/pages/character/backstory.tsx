@@ -62,60 +62,6 @@ const BackstoryPage: React.FC = () => {
   const [characterBackstory, setCharacterBackstory] = useState("");
   const { character, loading, updateCharacter } = useCharacter();
 
-  // Redirect if no race or class is selected
-  React.useEffect(() => {
-    if (!raceLoading && !classLoading) {
-      if (!selectedRace) {
-        router.push("/character/race");
-      } else if (!selectedClass) {
-        router.push("/character/class");
-      }
-    }
-  }, [selectedRace, selectedClass, raceLoading, classLoading, router]);
-
-  // Load saved backstory from localStorage on initial render
-  useEffect(() => {
-    const savedBackstory = localStorage.getItem('characterBackstory');
-    if (savedBackstory) {
-      setCharacterBackstory(savedBackstory);
-    }
-  }, []);
-
-  // Auto-generate backstory when all required data is loaded
-  useEffect(() => {
-    const generateBackstoryIfNeeded = async () => {
-      if (
-        !raceLoading &&
-        !classLoading &&
-        !traitsLoading &&
-        !motivationLoading &&
-        !loading &&
-        selectedRace &&
-        selectedClass &&
-        selectedTraits &&
-        motivationState.generatedMotivation &&
-        character &&
-        !characterBackstory // Only generate if we don't already have a backstory
-      ) {
-        await generateBackstory();
-      }
-    };
-
-    generateBackstoryIfNeeded();
-  }, [
-    raceLoading,
-    classLoading,
-    traitsLoading,
-    motivationLoading,
-    loading,
-    selectedRace,
-    selectedClass,
-    selectedTraits,
-    motivationState.generatedMotivation,
-    character,
-    characterBackstory
-  ]);
-
   // Generate backstory
   const generateBackstory = async () => {
     if (
@@ -177,6 +123,61 @@ const BackstoryPage: React.FC = () => {
       setIsGeneratingBackstory(false);
     }
   };
+
+  // Redirect if no race or class is selected
+  React.useEffect(() => {
+    if (!raceLoading && !classLoading) {
+      if (!selectedRace) {
+        router.push("/character/race");
+      } else if (!selectedClass) {
+        router.push("/character/class");
+      }
+    }
+  }, [selectedRace, selectedClass, raceLoading, classLoading, router]);
+
+  // Load saved backstory from localStorage on initial render
+  useEffect(() => {
+    const savedBackstory = localStorage.getItem('characterBackstory');
+    if (savedBackstory) {
+      setCharacterBackstory(savedBackstory);
+    }
+  }, []);
+
+  // Auto-generate backstory when all required data is loaded
+  useEffect(() => {
+    const generateBackstoryIfNeeded = async () => {
+      if (
+        !raceLoading &&
+        !classLoading &&
+        !traitsLoading &&
+        !motivationLoading &&
+        !loading &&
+        selectedRace &&
+        selectedClass &&
+        selectedTraits &&
+        motivationState.generatedMotivation &&
+        character &&
+        !characterBackstory // Only generate if we don't already have a backstory
+      ) {
+        await generateBackstory();
+      }
+    };
+
+    generateBackstoryIfNeeded();
+  }, [
+    raceLoading,
+    classLoading,
+    traitsLoading,
+    motivationLoading,
+    loading,
+    selectedRace,
+    selectedClass,
+    selectedTraits,
+    motivationState.generatedMotivation,
+    character,
+    characterBackstory,
+    generateBackstory
+  ]);
 
   const handleBack = () => {
     router.push("/character/motivation");

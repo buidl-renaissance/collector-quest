@@ -1,5 +1,5 @@
 import "@/styles/globals.css";
-import type { AppProps } from "next/app";
+import type { AppProps } from "next/dist/shared/lib/router/router";
 import { WalletProvider } from "@suiet/wallet-kit";
 import "@suiet/wallet-kit/style.css";
 import { Analytics } from "@vercel/analytics/react";
