@@ -1,10 +1,14 @@
 import { useState, useEffect } from 'react';
+import { getCurrentCharacterId, getNamespacedJson, setNamespacedJson } from '@/utils/storage';
 
 interface Traits {
   personality: string[];
   ideals: string[];
   bonds: string[];
   flaws: string[];
+  memory?: string;
+  possession?: string;
+  fear?: string[];
   hauntingMemory?: string;
   treasuredPossession?: string;
 }
@@ -16,9 +20,16 @@ export function useTraits() {
   useEffect(() => {
     const loadTraits = () => {
       try {
-        const savedTraits = localStorage.getItem('selectedTraits');
-        if (savedTraits) {
-          setSelectedTraits(JSON.parse(savedTraits));
+        const characterId = getCurrentCharacterId();
+        if (!characterId) {
+          setLoading(false);
+          return;
+        }
+
+        // Get traits from namespaced storage
+        const traits = getNamespacedJson(characterId, 'traits');
+        if (traits) {
+          setSelectedTraits(traits);
         }
       } catch (error) {
         console.error('Error loading traits:', error);
@@ -30,20 +41,38 @@ export function useTraits() {
     loadTraits();
   }, []);
 
-  const selectTraits = (traits: Traits) => {
-    setSelectedTraits(traits);
-    localStorage.setItem('selectedTraits', JSON.stringify(traits));
+  const updateTraits = (traits: Partial<Traits>) => {
+    const characterId = getCurrentCharacterId();
+    if (!characterId || !selectedTraits) return;
+
+    const updatedTraits: Traits = {
+      personality: traits.personality || selectedTraits.personality,
+      ideals: traits.ideals || selectedTraits.ideals,
+      bonds: traits.bonds || selectedTraits.bonds,
+      flaws: traits.flaws || selectedTraits.flaws,
+      memory: traits.memory || selectedTraits.memory,
+      possession: traits.possession || selectedTraits.possession,
+      fear: traits.fear || selectedTraits.fear,
+      hauntingMemory: traits.hauntingMemory || selectedTraits.hauntingMemory,
+      treasuredPossession: traits.treasuredPossession || selectedTraits.treasuredPossession
+    };
+
+    setSelectedTraits(updatedTraits);
+    setNamespacedJson(characterId, 'traits', updatedTraits);
   };
 
   const clearTraits = () => {
+    const characterId = getCurrentCharacterId();
+    if (!characterId) return;
+
     setSelectedTraits(null);
-    localStorage.removeItem('selectedTraits');
+    setNamespacedJson(characterId, 'traits', null);
   };
 
   return {
     selectedTraits,
     loading,
-    selectTraits,
+    updateTraits,
     clearTraits
   };
 }

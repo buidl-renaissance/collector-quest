@@ -4,23 +4,93 @@ import { useRace } from './useRace';
 import { useCharacterClass } from './useCharacterClass';
 import { useTraits } from './useTraits';
 import { useMotivation } from './useMotivation';
+import { getCurrentCharacterId, getNamespacedJson, setNamespacedJson } from '@/utils/storage';
 
-export const useBackstory = () => {
-  const [isGeneratingBackstory, setIsGeneratingBackstory] = useState(false);
-  const [characterBackstory, setCharacterBackstory] = useState("");
-  const { character, loading, updateCharacter } = useCharacter();
+interface BackstoryState {
+  generatedBackstory: string | null;
+  isGenerating: boolean;
+  error: string | null;
+}
+
+export function useBackstory() {
+  const [backstoryState, setBackstoryState] = useState<BackstoryState>({
+    generatedBackstory: null,
+    isGenerating: false,
+    error: null
+  });
+  const [loading, setLoading] = useState(true);
+  const { character, loading: characterLoading, updateCharacter } = useCharacter();
   const { selectedRace, loading: raceLoading } = useRace();
   const { selectedClass, loading: classLoading } = useCharacterClass();
   const { selectedTraits, loading: traitsLoading } = useTraits();
   const { motivationState, loading: motivationLoading } = useMotivation();
 
-  // Load saved backstory from localStorage on initial render
   useEffect(() => {
-    const savedBackstory = localStorage.getItem('characterBackstory');
-    if (savedBackstory) {
-      setCharacterBackstory(savedBackstory);
-    }
+    const loadBackstory = () => {
+      try {
+        const characterId = getCurrentCharacterId();
+        if (!characterId) {
+          setLoading(false);
+          return;
+        }
+
+        // Get backstory data from namespaced storage
+        const backstory = getNamespacedJson(characterId, 'backstory_generatedBackstory');
+
+        setBackstoryState(prev => ({
+          ...prev,
+          generatedBackstory: backstory
+        }));
+      } catch (error) {
+        console.error('Error loading backstory:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadBackstory();
   }, []);
+
+  const setGeneratedBackstory = (backstory: string) => {
+    const characterId = getCurrentCharacterId();
+    if (!characterId) return;
+
+    setBackstoryState(prev => ({
+      ...prev,
+      generatedBackstory: backstory,
+      isGenerating: false,
+      error: null
+    }));
+    setNamespacedJson(characterId, 'backstory_generatedBackstory', backstory);
+  };
+
+  const setGenerating = (isGenerating: boolean) => {
+    setBackstoryState(prev => ({
+      ...prev,
+      isGenerating,
+      error: null
+    }));
+  };
+
+  const setError = (error: string | null) => {
+    setBackstoryState(prev => ({
+      ...prev,
+      error,
+      isGenerating: false
+    }));
+  };
+
+  const clearBackstory = () => {
+    const characterId = getCurrentCharacterId();
+    if (!characterId) return;
+
+    setBackstoryState({
+      generatedBackstory: null,
+      isGenerating: false,
+      error: null
+    });
+    setNamespacedJson(characterId, 'backstory_generatedBackstory', null);
+  };
 
   const generateBackstory = async () => {
     if (
@@ -34,7 +104,7 @@ export const useBackstory = () => {
     if (raceLoading || classLoading || traitsLoading || motivationLoading)
       return;
 
-    setIsGeneratingBackstory(true);
+    setGenerating(true);
     try {
       const response = await fetch("/api/character/generate-backstory", {
         method: "POST",
@@ -69,17 +139,16 @@ export const useBackstory = () => {
       }
 
       const data = await response.json();
-      setCharacterBackstory(data.backstory);
+      setGeneratedBackstory(data.backstory);
       // Save the generated backstory to character state and localStorage
       updateCharacter({ 
         backstory: data.backstory
       });
-      localStorage.setItem('characterBackstory', data.backstory);
     } catch (error) {
       console.error("Error generating backstory:", error);
-      setCharacterBackstory("Failed to generate character backstory. Please try again.");
+      setError("Failed to generate character backstory. Please try again.");
     } finally {
-      setIsGeneratingBackstory(false);
+      setGenerating(false);
     }
   };
 
@@ -91,13 +160,13 @@ export const useBackstory = () => {
         !classLoading &&
         !traitsLoading &&
         !motivationLoading &&
-        !loading &&
+        !characterLoading &&
         selectedRace &&
         selectedClass &&
         selectedTraits &&
         motivationState.generatedMotivation &&
         character &&
-        !characterBackstory // Only generate if we don't already have a backstory
+        !backstoryState.generatedBackstory // Only generate if we don't already have a backstory
       ) {
         await generateBackstory();
       }
@@ -109,20 +178,23 @@ export const useBackstory = () => {
     classLoading,
     traitsLoading,
     motivationLoading,
-    loading,
+    characterLoading,
     selectedRace,
     selectedClass,
     selectedTraits,
     motivationState.generatedMotivation,
     character,
-    characterBackstory,
+    backstoryState.generatedBackstory,
     generateBackstory
   ]);
 
   return {
-    characterBackstory,
-    isGeneratingBackstory,
-    generateBackstory,
-    loading: raceLoading || classLoading || traitsLoading || motivationLoading || loading
+    backstoryState,
+    loading,
+    setGeneratedBackstory,
+    setGenerating,
+    setError,
+    clearBackstory,
+    generateBackstory
   };
-}; 
+} 

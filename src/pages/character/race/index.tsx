@@ -10,6 +10,7 @@ import { coreRaces, expandedRaces, Race } from "@/data/races";
 import { getAllRaces } from "@/db/races";
 import { GetServerSideProps } from "next";
 import { BackButton } from "@/components/styled/character";
+import { useCharacter } from "@/hooks/useCharacter";
 
 interface CharacterCreatePageProps {
   races: Race[];
@@ -28,6 +29,7 @@ const CharacterCreatePage: React.FC<CharacterCreatePageProps> = ({
   races
 }) => {
   const router = useRouter();
+  const { saveCharacter } = useCharacter();
   const { selectedRace, selectRace, loading: raceLoading } = useRace();
   const { selectedSex, loading: sexLoading } = useSex();
   const [error, setError] = React.useState("");
@@ -42,11 +44,13 @@ const CharacterCreatePage: React.FC<CharacterCreatePageProps> = ({
   const handleNext = () => {
     if (selectedRace) {
       router.push('/character/class');
+      saveCharacter();
     }
   };
 
   const handleBack = () => {
     router.push('/character/sex');
+    saveCharacter();
   };
 
   if (raceLoading || sexLoading) {

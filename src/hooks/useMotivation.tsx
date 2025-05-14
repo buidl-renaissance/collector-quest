@@ -1,18 +1,18 @@
 import { useState, useEffect } from 'react';
+import { getCurrentCharacterId, getNamespacedJson, setNamespacedJson } from '@/utils/storage';
 
 interface MotivationState {
   selectedActions: string[];
-  drivingForces: {
-    id: string;
-    intensity: number;
-  }[];
+  selectedForces: { id: string; intensity: number }[];
+  selectedArchetype: string | null;
   generatedMotivation: string | null;
 }
 
 export function useMotivation() {
   const [motivationState, setMotivationState] = useState<MotivationState>({
     selectedActions: [],
-    drivingForces: [],
+    selectedForces: [],
+    selectedArchetype: null,
     generatedMotivation: null
   });
   const [loading, setLoading] = useState(true);
@@ -20,10 +20,24 @@ export function useMotivation() {
   useEffect(() => {
     const loadMotivation = () => {
       try {
-        const savedMotivation = localStorage.getItem('selectedMotivation');
-        if (savedMotivation) {
-          setMotivationState(JSON.parse(savedMotivation));
+        const characterId = getCurrentCharacterId();
+        if (!characterId) {
+          setLoading(false);
+          return;
         }
+
+        // Get motivation data from namespaced storage
+        const actions = getNamespacedJson(characterId, 'motivationalFusion_selectedActions') || [];
+        const forces = getNamespacedJson(characterId, 'motivationalFusion_selectedForces') || [];
+        const archetype = getNamespacedJson(characterId, 'motivationalFusion_selectedArchetype');
+        const motivation = getNamespacedJson(characterId, 'motivationalFusion_generatedMotive');
+
+        setMotivationState({
+          selectedActions: actions,
+          selectedForces: forces,
+          selectedArchetype: archetype,
+          generatedMotivation: motivation
+        });
       } catch (error) {
         console.error('Error loading motivation:', error);
       } finally {
@@ -34,59 +48,60 @@ export function useMotivation() {
     loadMotivation();
   }, []);
 
-  const selectAction = (actionId: string) => {
-    setMotivationState(prev => {
-      const newActions = prev.selectedActions.includes(actionId)
-        ? prev.selectedActions.filter(id => id !== actionId)
-        : prev.selectedActions.length < 2
-          ? [...prev.selectedActions, actionId]
-          : prev.selectedActions;
-      
-      const newState = {
-        ...prev,
-        selectedActions: newActions
-      };
-      localStorage.setItem('selectedMotivation', JSON.stringify(newState));
-      return newState;
-    });
+  const setSelectedActions = (actions: string[]) => {
+    const characterId = getCurrentCharacterId();
+    if (!characterId) return;
+
+    setMotivationState(prev => ({ ...prev, selectedActions: actions }));
+    setNamespacedJson(characterId, 'motivationalFusion_selectedActions', actions);
   };
 
-  const updateDrivingForces = (forces: { id: string; intensity: number }[]) => {
-    setMotivationState(prev => {
-      const newState = {
-        ...prev,
-        drivingForces: forces
-      };
-      localStorage.setItem('selectedMotivation', JSON.stringify(newState));
-      return newState;
-    });
+  const setSelectedForces = (forces: { id: string; intensity: number }[]) => {
+    const characterId = getCurrentCharacterId();
+    if (!characterId) return;
+
+    setMotivationState(prev => ({ ...prev, selectedForces: forces }));
+    setNamespacedJson(characterId, 'motivationalFusion_selectedForces', forces);
+  };
+
+  const setSelectedArchetype = (archetype: string | null) => {
+    const characterId = getCurrentCharacterId();
+    if (!characterId) return;
+
+    setMotivationState(prev => ({ ...prev, selectedArchetype: archetype }));
+    setNamespacedJson(characterId, 'motivationalFusion_selectedArchetype', archetype);
   };
 
   const setGeneratedMotivation = (motivation: string) => {
-    setMotivationState(prev => {
-      const newState = {
-        ...prev,
-        generatedMotivation: motivation
-      };
-      localStorage.setItem('selectedMotivation', JSON.stringify(newState));
-      return newState;
-    });
+    const characterId = getCurrentCharacterId();
+    if (!characterId) return;
+
+    setMotivationState(prev => ({ ...prev, generatedMotivation: motivation }));
+    setNamespacedJson(characterId, 'motivationalFusion_generatedMotive', motivation);
   };
 
   const clearMotivation = () => {
+    const characterId = getCurrentCharacterId();
+    if (!characterId) return;
+
     setMotivationState({
       selectedActions: [],
-      drivingForces: [],
+      selectedForces: [],
+      selectedArchetype: null,
       generatedMotivation: null
     });
-    localStorage.removeItem('selectedMotivation');
+    setNamespacedJson(characterId, 'motivationalFusion_selectedActions', []);
+    setNamespacedJson(characterId, 'motivationalFusion_selectedForces', []);
+    setNamespacedJson(characterId, 'motivationalFusion_selectedArchetype', null);
+    setNamespacedJson(characterId, 'motivationalFusion_generatedMotive', null);
   };
 
   return {
     motivationState,
     loading,
-    selectAction,
-    updateDrivingForces,
+    setSelectedActions,
+    setSelectedForces,
+    setSelectedArchetype,
     setGeneratedMotivation,
     clearMotivation
   };

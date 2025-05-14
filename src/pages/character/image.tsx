@@ -1,7 +1,19 @@
 import React, { useState } from 'react';
-import styled from 'styled-components';
+import styled from '@emotion/styled';
+import { keyframes } from '@emotion/react';
 import { useRouter } from 'next/router';
 import useRace from '@/hooks/useRace';
+
+// Animations
+const fadeIn = keyframes`
+  from { opacity: 0; }
+  to { opacity: 1; }
+`;
+
+const slideUp = keyframes`
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+`;
 
 const ImageGeneratorPage = () => {
   const { selectedRace } = useRace();
@@ -193,6 +205,13 @@ const ImageGeneratorPage = () => {
     <Container>
       <Title>Character Image Generator</Title>
       
+      <Description>
+        Create your unique character by uploading a photo of yourself! Our AI will analyze your facial features 
+        and combine them with your chosen race and class to generate a personalized fantasy character. 
+        The result will maintain your distinct characteristics while adapting them to fit your selected 
+        fantasy race, creating a character that&apos;s uniquely yours.
+      </Description>
+      
       {error && <ErrorMessage>{error}</ErrorMessage>}
       
       <Section>
@@ -205,9 +224,9 @@ const ImageGeneratorPage = () => {
             onChange={handleImageUpload}
             id="image-upload"
           />
-          <Button as="label" htmlFor="image-upload">
+          <UploadLabel htmlFor="image-upload">
             Upload Photo
-          </Button>
+          </UploadLabel>
         </ButtonGroup>
       </Section>
 
@@ -224,7 +243,7 @@ const ImageGeneratorPage = () => {
         </Section>
       )}
 
-      {characteristics && (
+      {Object.keys(characteristics).length > 0 && userImage && (
         <Section>
           <SectionTitle>Facial Characteristics</SectionTitle>
           <CharacteristicsList>
@@ -260,26 +279,41 @@ const Container = styled.div`
   max-width: 800px;
   margin: 0 auto;
   padding: 2rem;
+  font-family: 'Cormorant Garamond', serif;
+  animation: ${fadeIn} 0.5s ease-in;
+  padding-bottom: 80px;
 `;
 
 const Title = styled.h1`
-  color: #e0dde5;
+  font-size: 2.5rem;
+  color: #bb8930;
+  margin-bottom: 0.5rem;
+  text-align: center;
+`;
+
+const Description = styled.p`
+  color: #C7BFD4;
   text-align: center;
   margin-bottom: 2rem;
+  line-height: 1.6;
+  font-size: 1.1rem;
 `;
 
 const Section = styled.div`
-  margin-bottom: 2rem;
-  padding: 1.5rem;
-  background: #2a2533;
+  background-color: rgba(26, 26, 46, 0.7);
   border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   border: 1px solid #bb8930;
+  animation: ${slideUp} 0.5s ease-out;
 `;
 
 const SectionTitle = styled.h2`
-  color: #e0dde5;
+  color: #bb8930;
   margin-bottom: 1rem;
   font-size: 1.25rem;
+  font-family: 'Cormorant Garamond', serif;
 `;
 
 const ButtonGroup = styled.div`
@@ -291,20 +325,41 @@ const ButtonGroup = styled.div`
 const Button = styled.button`
   padding: 0.75rem 1.5rem;
   background-color: #bb8930;
-  color: #1a1a1a;
+  color: #1a1a2e;
   border: none;
   border-radius: 4px;
   cursor: pointer;
   font-weight: 500;
-  transition: background-color 0.2s;
+  transition: all 0.3s;
+  font-family: 'Cormorant Garamond', serif;
 
   &:hover {
-    background-color: #d4a03c;
+    background-color: #d4a959;
+    transform: translateY(-2px);
   }
 
   &:disabled {
     background-color: #666;
     cursor: not-allowed;
+    transform: none;
+  }
+`;
+
+const UploadLabel = styled.label`
+  padding: 0.75rem 1.5rem;
+  background-color: #bb8930;
+  color: #1a1a2e;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s;
+  font-family: 'Cormorant Garamond', serif;
+  display: inline-block;
+
+  &:hover {
+    background-color: #d4a959;
+    transform: translateY(-2px);
   }
 `;
 
@@ -316,6 +371,8 @@ const ImagePreview = styled.img`
   max-width: 100%;
   border-radius: 8px;
   margin-top: 1rem;
+  border: 2px solid #bb8930;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 `;
 
 const ErrorMessage = styled.div`
@@ -324,12 +381,14 @@ const ErrorMessage = styled.div`
   padding: 1rem;
   border-radius: 4px;
   margin-bottom: 1rem;
+  border: 1px solid #ff6b6b;
 `;
 
 const LoadingMessage = styled.div`
-  color: #e0dde5;
+  color: #C7BFD4;
   text-align: center;
   padding: 1rem;
+  font-style: italic;
 `;
 
 const CharacteristicsList = styled.div`
@@ -341,7 +400,7 @@ const CharacteristicsList = styled.div`
 const CharacteristicItem = styled.div`
   display: flex;
   gap: 0.5rem;
-  color: #e0dde5;
+  color: #C7BFD4;
 `;
 
 const CharacteristicLabel = styled.span`
@@ -350,7 +409,7 @@ const CharacteristicLabel = styled.span`
 `;
 
 const CharacteristicValue = styled.span`
-  color: #e0dde5;
+  color: #C7BFD4;
 `;
 
 export default ImageGeneratorPage; 

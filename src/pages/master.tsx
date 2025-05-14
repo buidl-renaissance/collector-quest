@@ -9,6 +9,8 @@ import {
   FaScroll,
   FaBook,
 } from "react-icons/fa";
+import { useCharacter } from '@/hooks/useCharacter';
+import { useRouter } from 'next/router';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   return {
@@ -28,6 +30,9 @@ const MasterPage: React.FC = () => {
   const [showMore, setShowMore] = useState(false);
   const [audioEnabled, setAudioEnabled] = useState(false);
   const [parallaxOffset, setParallaxOffset] = useState(0);
+  const [isCreating, setIsCreating] = useState(false);
+  const { createCharacter } = useCharacter();
+  const router = useRouter();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -41,6 +46,17 @@ const MasterPage: React.FC = () => {
   const toggleAudio = () => {
     setAudioEnabled(!audioEnabled);
     // Audio implementation would go here
+  };
+
+  const handlePressStart = async () => {
+    try {
+      setIsCreating(true);
+      await createCharacter();
+      router.push('/character/sex');
+    } catch (err) {
+      console.error('Error creating character:', err);
+      setIsCreating(false);
+    }
   };
 
   return (
@@ -268,8 +284,12 @@ const MasterPage: React.FC = () => {
               Your browser does not support the video tag.
             </video>
             <VideoOverlay>
-              <PlayButton href="/character/sex">
-                <span>PRESS START</span>
+              <PlayButton onClick={handlePressStart} disabled={isCreating}>
+                {isCreating ? (
+                  <LoadingSpinner />
+                ) : (
+                  <span>PRESS START</span>
+                )}
               </PlayButton>
             </VideoOverlay>
           </VideoContainer>
@@ -451,7 +471,7 @@ const VideoOverlay = styled.div`
   height: 100%;
 `;
 
-const PlayButton = styled(Link)`
+const PlayButton = styled.button`
   position: absolute;
   top: 50%;
   left: 50%;
@@ -467,6 +487,16 @@ const PlayButton = styled(Link)`
 
   &:hover {
     transform: translate(-50%, -50%) scale(1.1);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
+    animation: none;
+    
+    &:hover {
+      transform: translate(-50%, -50%);
+    }
   }
 `;
 
@@ -785,6 +815,30 @@ const FooterLink = styled(Link)`
   &:hover {
     color: #b6551c;
     text-decoration: underline;
+  }
+`;
+
+const LoadingSpinner = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+
+  &::after {
+    content: '';
+    width: 1.5rem;
+    height: 1.5rem;
+    border: 2px solid #bb8930;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
   }
 `;
 

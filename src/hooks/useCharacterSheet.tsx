@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Character } from './useCharacter';
 import { Attack } from '@/data/attacks';
+import { getCurrentCharacterId, getNamespacedJson, setNamespacedJson } from '@/utils/storage';
 
 export interface CharacterSheet {
   abilities: {
@@ -70,7 +71,11 @@ export function useCharacterSheet() {
 
       const data = await response.json();
       setCharacterSheet(data);
-      localStorage.setItem('character_sheet', JSON.stringify(data));
+
+      const characterId = getCurrentCharacterId();
+      if (characterId) {
+        setNamespacedJson(characterId, 'character_sheet', data);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
@@ -81,11 +86,14 @@ export function useCharacterSheet() {
   const updateDeathSaves = (type: 'successes' | 'failures', value: number) => {
     if (!characterSheet) return;
 
+    const characterId = getCurrentCharacterId();
+    if (!characterId) return;
+
     setCharacterSheet(prev => {
       if (!prev) return prev;
       const newSheet = { ...prev };
       newSheet.deathSaves[type] = Math.max(0, Math.min(3, value));
-      localStorage.setItem('character_sheet', JSON.stringify(newSheet));
+      setNamespacedJson(characterId, 'character_sheet', newSheet);
       return newSheet;
     });
   };
@@ -93,13 +101,16 @@ export function useCharacterSheet() {
   const updateSkillProficiency = (skillName: string, proficient: boolean) => {
     if (!characterSheet) return;
 
+    const characterId = getCurrentCharacterId();
+    if (!characterId) return;
+
     setCharacterSheet(prev => {
       if (!prev) return prev;
       const newSheet = { ...prev };
       const skillIndex = newSheet.skills.findIndex(s => s.name === skillName);
       if (skillIndex !== -1) {
         newSheet.skills[skillIndex].proficient = proficient;
-        localStorage.setItem('character_sheet', JSON.stringify(newSheet));
+        setNamespacedJson(characterId, 'character_sheet', newSheet);
       }
       return newSheet;
     });
@@ -108,25 +119,35 @@ export function useCharacterSheet() {
   const updateCurrentHitPoints = (value: number) => {
     if (!characterSheet) return;
 
+    const characterId = getCurrentCharacterId();
+    if (!characterId) return;
+
     setCharacterSheet(prev => {
       if (!prev) return prev;
       const newSheet = { ...prev };
       newSheet.combatStats.currentHitPoints = Math.max(0, value);
-      localStorage.setItem('character_sheet', JSON.stringify(newSheet));
+      setNamespacedJson(characterId, 'character_sheet', newSheet);
       return newSheet;
     });
   };
 
-  // Load character sheet from localStorage on mount
+  // Load character sheet from namespaced storage on mount
   useEffect(() => {
-    const savedSheet = localStorage.getItem('character_sheet');
-    if (savedSheet) {
+    const loadCharacterSheet = () => {
       try {
-        setCharacterSheet(JSON.parse(savedSheet));
+        const characterId = getCurrentCharacterId();
+        if (!characterId) return;
+
+        const savedSheet = getNamespacedJson(characterId, 'character_sheet');
+        if (savedSheet) {
+          setCharacterSheet(savedSheet);
+        }
       } catch (err) {
-        console.error('Error loading character sheet from localStorage:', err);
+        console.error('Error loading character sheet from storage:', err);
       }
-    }
+    };
+
+    loadCharacterSheet();
   }, []);
 
   return {

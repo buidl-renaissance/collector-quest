@@ -4,7 +4,6 @@ import styled from "@emotion/styled";
 import { keyframes } from "@emotion/react";
 import {
   FaArrowLeft,
-  FaArrowRight,
   FaRandom,
   FaPlus,
 } from "react-icons/fa";
@@ -15,7 +14,6 @@ import Page from "@/components/Page";
 import { BackButton } from "@/components/styled/character";
 import { useCharacter } from "@/hooks/useCharacter";
 import BottomNavigation from "@/components/BottomNavigation";
-import { Container, LoadingContainer } from "@/components/styled/layout";
 import { Title, Subtitle } from "@/components/styled/typography";
 import {
   AddChipButton,
@@ -257,7 +255,7 @@ const CharacterTraitsPage: React.FC = () => {
   };
 
   const handleBack = () => {
-    router.push("/character/class");
+    router.push("/character/image");
   };
 
   const handleNext = () => {
@@ -288,7 +286,7 @@ const CharacterTraitsPage: React.FC = () => {
     <PageTransition>
       <Page width="narrow">
         <BackButton onClick={handleBack}>
-          <FaArrowLeft /> Back to Class Selection
+          <FaArrowLeft /> Back to Character Image
         </BackButton>
 
         <HeroSection>
