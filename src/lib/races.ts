@@ -49,13 +49,17 @@ export async function updateRace(id: string, updates: Partial<Race>): Promise<Ra
   }
 
   // Update the race in the database
-  const [updatedRace] = await db('races')
+  await db('races')
     .where({ id })
     .update({
       ...updates,
       updated_at: new Date()
-    })
-    .returning('*');
+    });
+
+  // Fetch the updated race
+  const updatedRace = await db('races')
+    .where({ id })
+    .first();
 
   return updatedRace;
 }

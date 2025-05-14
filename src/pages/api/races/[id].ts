@@ -1,14 +1,10 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { getRaceById } from '@/db/races';
+import { getRaceById, updateRace } from '@/lib/races';
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  if (req.method !== 'GET') {
-    return res.status(405).json({ message: 'Method not allowed' });
-  }
-
   const { id } = req.query;
 
   if (!id || typeof id !== 'string') {
@@ -16,13 +12,32 @@ export default async function handler(
   }
 
   try {
-    const race = await getRaceById(id);
-    if (!race) {
-      return res.status(404).json({ message: 'Race not found' });
+    switch (req.method) {
+      case 'GET': {
+        const race = await getRaceById(id);
+        if (!race) {
+          return res.status(404).json({ message: 'Race not found' });
+        }
+        return res.status(200).json(race);
+      }
+
+      case 'PUT': {
+        const updates = req.body;
+        const updatedRace = await updateRace(id, updates);
+        if (!updatedRace) {
+          return res.status(404).json({ message: 'Race not found' });
+        }
+        return res.status(200).json(updatedRace);
+      }
+
+      default:
+        return res.status(405).json({ message: 'Method not allowed' });
     }
-    res.status(200).json(race);
   } catch (error) {
-    console.error('Error fetching race:', error);
-    res.status(500).json({ message: 'Error fetching race' });
+    console.error('Error handling race:', error);
+    return res.status(500).json({ 
+      message: 'Error handling race',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    });
   }
 } 

@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { coreRaces, expandedRaces } from '@/data/races';
+import { coreRaces, expandedRaces, Race } from '@/data/races';
 import db from '@/db/client';
-import { getAllRaces } from '@/db/races';
+import { getAllRaces, saveRace } from '@/db/races';
 
 export default async function handler(
   req: NextApiRequest,
@@ -67,15 +67,16 @@ async function createRace(req: NextApiRequest, res: NextApiResponse) {
       return res.status(409).json({ error: 'Race with this ID already exists' });
     }
     
-    // Insert new race
-    const [newRace] = await db('races').insert({
+    const race: Race = {
       id,
       name,
       source,
-      image: image || '',
-      description: description || '',
-    }).returning('*');
-    
+      image,
+      description
+    }
+
+    const newRace = await saveRace(race);
+
     return res.status(201).json(newRace);
   } catch (error) {
     console.error('Error creating race:', error);
@@ -87,51 +88,21 @@ async function createRace(req: NextApiRequest, res: NextApiResponse) {
 async function updateRace(req: NextApiRequest, res: NextApiResponse) {
   try {
     const { id, name, source, image, description } = req.body;
+
+    const race: Race = {
+      id,
+      name,
+      source,
+      image,
+      description
+    }
     
     if (!id) {
       return res.status(400).json({ error: 'Race ID is required' });
     }
 
-    let predefinedRace = null;
-    
-    // Check if race exists
-    const existingRace = await db('races').where({ id }).first();
-    if (!existingRace) {
+    const updatedRace = await saveRace(race);
 
-      // If not in database, check predefined races
-       predefinedRace = [...coreRaces, ...expandedRaces].find(r => r.id === id);
-      
-      if (!predefinedRace) {
-        return res.status(404).json({ error: 'Race not found' });
-      } else {
-        const [newRace] = await db('races').insert({
-          id: predefinedRace.id,
-          name: predefinedRace.name,
-          source: predefinedRace.source,
-          image: predefinedRace.image,
-          description: predefinedRace.description,
-        });
-      }
-
-    }
-
-    const race = existingRace || predefinedRace;
-
-    if (!race) {
-      return res.status(404).json({ error: 'Race not found' });
-    }
-    
-    // Update race
-    const [updatedRace] = await db('races')
-      .where({ id })
-      .update({
-        name: name || race.name,
-        source: source || race.source,
-        description: description !== undefined ? description : race.description,
-        image: image || race.image,
-      })
-      .returning('*');
-    
     return res.status(200).json(updatedRace);
   } catch (error) {
     console.error('Error updating race:', error);
