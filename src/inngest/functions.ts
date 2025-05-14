@@ -1,5 +1,6 @@
 import { inngest } from "./client";
-import { generateImage, uploadImage } from "@/lib/image";
+import { generateImageRequest } from "@/lib/imageGenerator";
+import { uploadBase64Image, UploadResult, UploadError } from "@/lib/imageUpload";
 import { completeResult, failResult } from "@/lib/storage";
 
 export const helloWorld = inngest.createFunction(
@@ -18,19 +19,31 @@ export const generateImageFunction = inngest.createFunction(
     try {
       // Generate the image
       const image = await step.run("generate-image", async () => {
-        return await generateImage(event.data.prompt, event.data.image);
+        return await generateImageRequest(event.data.prompt, event.data.image);
       });
 
+      let imageUrl = null;
+
       if (image) {  
-        await step.run("upload-image", async () => {
-          return await uploadImage(image);
+        const uploadResult: UploadResult | UploadError = await step.run("upload-image", async () => {
+          return await uploadBase64Image(image);
         });
+
+        if ('success' in uploadResult) {
+          imageUrl = uploadResult.url;
+        } else {
+          throw new Error(uploadResult.error);
+        }
       }
 
       // Store the result
       if (event.data.resultId) {
         if (image) {
-          completeResult(event.data.resultId, image);
+          completeResult(event.data.resultId, JSON.stringify({
+            success: true,
+            message: "Image generated successfully",
+            imageUrl,
+          }));
         } else {
           failResult(event.data.resultId, "Failed to generate image");
         }
@@ -39,7 +52,8 @@ export const generateImageFunction = inngest.createFunction(
       return {
         success: !!image,
         message: image ? `Image generated successfully` : `Failed to generate image`,
-        image
+        image,
+        imageUrl,
       };
     } catch (error) {
       // Store the error

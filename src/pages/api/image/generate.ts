@@ -22,14 +22,14 @@ export default async function handler(
     const resultId = uuidv4();
     
     // Create a pending result
-    createPendingResult(resultId);
+    await createPendingResult(resultId);
 
     // Trigger the Inngest function
     await inngest.send({
       name: 'test/generate.image',
       data: {
         prompt,
-        image,
+        image: image?.length > 0 ? image : 'https://collectorquest.ai/images/COLLECTOR-quest-intro-1024.png',
         resultId,
       },
     });

@@ -1,4 +1,3 @@
-
 interface UploadResponse {
   success: boolean;
   url: string;
@@ -12,7 +11,8 @@ interface UploadResponse {
  * @returns The uploaded image data
  */
 export const uploadImage = async (image: string): Promise<UploadResponse> => {
-  const response = await fetch("/api/image-upload", {
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://smearington.theethical.ai';
+  const response = await fetch(`${baseUrl}/api/image-upload`, {
     method: "POST",
     body: JSON.stringify({ image }),
     headers: {
@@ -42,6 +42,8 @@ export const generateImage = async (prompt: string, image?: string) => {
     const isServer = typeof window === 'undefined';
     const baseUrl = isServer ? process.env.NEXT_PUBLIC_BASE_URL || 'https://smearington.theethical.ai' : '';
     
+    console.log("Generating image", prompt, image);
+
     const response = await fetch(`${baseUrl}/api/ai/generate-image`, {
       method: "POST",
       headers: {

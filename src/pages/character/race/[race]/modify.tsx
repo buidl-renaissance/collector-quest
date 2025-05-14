@@ -8,7 +8,7 @@ import { Race, coreRaces, expandedRaces } from "@/data/races";
 import { GetServerSidePropsContext } from "next";
 import { getRaceById } from "@/db/races";
 import { uploadImage } from "@/lib/image";
-import { useImageGeneration } from "@/hooks/useImageGeneration";
+import { ImageGenerationResult, useImageGeneration } from "@/hooks/useImageGeneration";
 import { saveRace } from "@/lib/character";
 
 export const getServerSideProps = async (
@@ -73,16 +73,16 @@ const CharacterImagesPage: React.FC<CharacterImagesPageProps> = ({ race }) => {
     setError("");
 
     try {
-      const image = await generateImage(prompt, generatedImage);
+      const imageData: ImageGenerationResult | null = await generateImage(prompt, generatedImage);
 
-      if (!image) {
+      if (!imageData) {
        console.error(generationError || "Failed to generate image");
        return;
       }
 
-      setGeneratedImage(image);
-      const data = await uploadImage(image);
-      console.log('Image uploaded:', data);
+      setGeneratedImage(imageData.imageUrl);
+      // const data = await uploadImage(image);
+      // console.log('Image uploaded:', data);
     } catch (err) {
       console.error("Error generating image:", err);
       setError("Failed to generate your character image. Please try again.");

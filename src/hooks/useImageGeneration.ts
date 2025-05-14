@@ -5,8 +5,15 @@ interface UseImageGenerationOptions {
   maxAttempts?: number;
 }
 
+export interface ImageGenerationResult {
+  success: boolean;
+  message: string;
+  image: string;
+  imageUrl: string;
+}
+
 interface UseImageGenerationReturn {
-  generateImage: (prompt: string, image?: string) => Promise<string | null>;
+  generateImage: (prompt: string, image?: string) => Promise<ImageGenerationResult | null>;
   isGenerating: boolean;
   error: string | null;
   progress: number;
@@ -30,9 +37,9 @@ export const useImageGeneration = (options?: UseImageGenerationOptions): UseImag
   const [progress, setProgress] = useState(0);
 
   const pollingInterval = options?.pollingInterval || 2000; // 2 seconds
-  const maxAttempts = options?.maxAttempts || 30; // 30 attempts = 60 seconds max
+  const maxAttempts = options?.maxAttempts || 60; // 30 attempts = 120 seconds max
 
-  const generateImage = useCallback(async (prompt: string, image?: string): Promise<string | null> => {
+  const generateImage = useCallback(async (prompt: string, image?: string): Promise<ImageGenerationResult | null> => {
     setIsGenerating(true);
     setError(null);
     setProgress(0);
@@ -78,7 +85,9 @@ export const useImageGeneration = (options?: UseImageGenerationOptions): UseImag
         if (statusData.status === 'completed' && statusData.result) {
           setIsGenerating(false);
           setProgress(100);
-          return statusData.result;
+          const result = JSON.parse(statusData.result) as ImageGenerationResult;
+          console.log('Image generation result:', result);
+          return result;
         } else if (statusData.status === 'error') {
           throw new Error(statusData.error || 'Failed to generate image');
         }

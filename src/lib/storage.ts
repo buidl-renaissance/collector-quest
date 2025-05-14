@@ -3,6 +3,8 @@
  * In a production environment, this would be replaced with a database
  */
 
+import db from '@/db/client';
+
 // Type for stored results
 export interface StoredResult {
   id: string;
@@ -13,22 +15,20 @@ export interface StoredResult {
   updatedAt: Date;
 }
 
-// In-memory storage
-const storage = new Map<string, StoredResult>();
-
 /**
  * Create a new pending result
  * @param id Unique identifier for the result
  * @returns The created result
  */
-export const createPendingResult = (id: string): StoredResult => {
+export const createPendingResult = async (id: string): Promise<StoredResult> => {
   const result: StoredResult = {
     id,
     status: 'pending',
     createdAt: new Date(),
     updatedAt: new Date(),
   };
-  storage.set(id, result);
+  
+  await db('results').insert(result);
   return result;
 };
 
@@ -38,18 +38,17 @@ export const createPendingResult = (id: string): StoredResult => {
  * @param result The result data
  * @returns The updated result
  */
-export const completeResult = (id: string, result: string): StoredResult | null => {
-  const storedResult = storage.get(id);
-  if (!storedResult) return null;
-
-  const updatedResult: StoredResult = {
-    ...storedResult,
-    status: 'completed',
-    result,
-    updatedAt: new Date(),
-  };
-  storage.set(id, updatedResult);
-  return updatedResult;
+export const completeResult = async (id: string, result: string): Promise<StoredResult | null> => {
+  const [updatedResult] = await db('results')
+    .where({ id })
+    .update({
+      status: 'completed',
+      result,
+      updatedAt: new Date(),
+    })
+    .returning('*');
+  
+  return updatedResult || null;
 };
 
 /**
@@ -58,18 +57,17 @@ export const completeResult = (id: string, result: string): StoredResult | null 
  * @param error The error message
  * @returns The updated result
  */
-export const failResult = (id: string, error: string): StoredResult | null => {
-  const storedResult = storage.get(id);
-  if (!storedResult) return null;
-
-  const updatedResult: StoredResult = {
-    ...storedResult,
-    status: 'error',
-    error,
-    updatedAt: new Date(),
-  };
-  storage.set(id, updatedResult);
-  return updatedResult;
+export const failResult = async (id: string, error: string): Promise<StoredResult | null> => {
+  const [updatedResult] = await db('results')
+    .where({ id })
+    .update({
+      status: 'error',
+      error,
+      updatedAt: new Date(),
+    })
+    .returning('*');
+  
+  return updatedResult || null;
 };
 
 /**
@@ -77,23 +75,31 @@ export const failResult = (id: string, error: string): StoredResult | null => {
  * @param id Unique identifier for the result
  * @returns The result or null if not found
  */
-export const getResult = (id: string): StoredResult | null => {
-  return storage.get(id) || null;
+export const getResult = async (id: string): Promise<StoredResult | null> => {
+  const result = await db('results')
+    .where({ id })
+    .first();
+  
+  return result || null;
 };
 
 /**
  * Clean up old results (older than 1 hour)
  */
-export const cleanupOldResults = (): void => {
+export const cleanupOldResults = async (): Promise<void> => {
   const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
-  for (const [id, result] of storage.entries()) {
-    if (result.createdAt < oneHourAgo) {
-      storage.delete(id);
-    }
-  }
+  await db('results')
+    .where('createdAt', '<', oneHourAgo)
+    .delete();
 };
 
 // Clean up old results every hour
 if (typeof window === 'undefined') {
-  setInterval(cleanupOldResults, 60 * 60 * 1000);
+  setInterval(async () => {
+    try {
+      await cleanupOldResults();
+    } catch (error) {
+      console.error('Error cleaning up old results:', error);
+    }
+  }, 60 * 60 * 1000);
 }

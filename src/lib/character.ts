@@ -7,7 +7,7 @@ import { Race } from "@/data/races";
  */
 export const saveRace = async (race: Race) => {
    const response = await fetch("/api/races", {
-    method: "POST",
+    method: "PUT",
     headers: {
       "Content-Type": "application/json",
     },
