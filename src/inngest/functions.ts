@@ -102,7 +102,9 @@ export const generateRaceImageFunction = inngest.createFunction(
 
       if (race && imageUrl) {
         race.image = imageUrl;
-        await saveRace(race);
+        await step.run("save-race", async () => {
+          await saveRace(race);
+        });
       }
 
       // Store the result
@@ -112,6 +114,7 @@ export const generateRaceImageFunction = inngest.createFunction(
             success: true,
             message: "Image generated successfully",
             imageUrl,
+            race,
           }));
         } else {
           failResult(event.data.resultId, "Failed to generate image");
