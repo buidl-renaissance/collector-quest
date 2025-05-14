@@ -80,14 +80,21 @@ export const GenerateButton = styled.button`
 `;
 
 export const BackLink = styled(Link)`
-  display: inline-flex;
   align-items: center;
-  margin-bottom: 2rem;
+  background-color: transparent;
+  border-radius: 4px;
+  border: 1px solid #bb8930;
   color: #bb8930;
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 1rem;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+  padding: 0.8rem 1.5rem;
   text-decoration: none;
-  transition: color 0.3s;
+  transition: all 0.3s;
   
   &:hover {
-    color: #d4a959;
+    background-color: rgba(187, 137, 48, 0.1);
   }
 `; 

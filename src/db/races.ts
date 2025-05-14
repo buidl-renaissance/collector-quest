@@ -49,7 +49,7 @@ export async function saveRace(race: Race): Promise<Race> {
           source: race.source || existingRace.source,
           description: race.description || existingRace.description,
           image: race.image || existingRace.image,
-          accessory: race.accessory || existingRace.accessory
+          accessory: JSON.stringify(race.accessory) || JSON.stringify(existingRace.accessory)
         });
       
       // Fetch the updated record
@@ -67,7 +67,7 @@ export async function saveRace(race: Race): Promise<Race> {
           source: race.source,
           description: race.description,
           image: race.image,
-          accessory: race.accessory
+          accessory: JSON.stringify(race.accessory)
         });
       
       // Fetch the inserted record

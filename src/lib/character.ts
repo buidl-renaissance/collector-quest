@@ -17,6 +17,7 @@ export const saveRace = async (race: Race) => {
       source: race.source,
       description: race.description,
       image: race.image,
+      accessory: race.accessory,
     }),
   });
 

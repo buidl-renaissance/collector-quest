@@ -10,6 +10,8 @@ import { getRaceById } from "@/db/races";
 import { uploadImage } from "@/lib/image";
 import { ImageGenerationResult, useImageGeneration } from "@/hooks/useImageGeneration";
 import { saveRace } from "@/lib/character";
+import { BackLink } from "@/components/styled/buttons";
+import { Subtitle, Title } from "@/components/styled/typography";
 
 export const getServerSideProps = async (
   context: GetServerSidePropsContext
@@ -118,7 +120,7 @@ const CharacterImagesPage: React.FC<CharacterImagesPageProps> = ({ race }) => {
   if (isGenerating) {
     return (
       <Container>
-        <BackLink href="/character/race">
+        <BackLink href="/character/admin">
           <FaArrowLeft /> Back to Character Creation
         </BackLink>
 
@@ -152,6 +154,7 @@ const CharacterImagesPage: React.FC<CharacterImagesPageProps> = ({ race }) => {
         <RaceName>{race.name}</RaceName>
         <RaceSource>{race.source}</RaceSource>
         <RaceDescriptionText>{race.description}</RaceDescriptionText>
+        {race.image && <RaceImage src={race.image} alt={race.name} />}
       </RaceDescription>
 
       <GeneratorSection>
@@ -212,31 +215,10 @@ const Container = styled.div`
   animation: ${fadeIn} 0.5s ease-in;
 `;
 
-const BackLink = styled(Link)`
-  display: inline-flex;
-  align-items: center;
-  margin-bottom: 2rem;
-  color: #bb8930;
-  text-decoration: none;
-  transition: color 0.3s;
-
-  &:hover {
-    color: #d4a959;
-  }
-`;
-
-const Title = styled.h1`
-  font-size: 2.5rem;
-  color: #bb8930;
-  margin-bottom: 0.5rem;
-  text-align: center;
-`;
-
-const Subtitle = styled.p`
-  font-size: 1.2rem;
-  color: #c7bfd4;
-  margin-bottom: 2rem;
-  text-align: center;
+const RaceImage = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 `;
 
 const ErrorMessage = styled.div`
@@ -263,10 +245,12 @@ const LoadingText = styled.div`
 `;
 
 const CrownIcon = styled.span`
-  margin-right: 0.5rem;
   font-size: 1.5rem;
   color: #bb8930;
   animation: ${fadeIn} 1s infinite alternate;
+  svg, .fa {
+    margin: auto;
+  }
 `;
 
 const ProgressBar = styled.div`
