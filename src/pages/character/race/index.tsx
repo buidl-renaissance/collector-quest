@@ -9,6 +9,7 @@ import { useSex } from "@/hooks/useSex";
 import { coreRaces, expandedRaces, Race } from "@/data/races";
 import { getAllRaces } from "@/db/races";
 import { GetServerSideProps } from "next";
+import { BackButton } from "@/components/styled/character";
 
 interface CharacterCreatePageProps {
   races: Race[];
@@ -212,25 +213,6 @@ const NextButton = styled.button`
   
   &:hover {
     background-color: #d4a959;
-  }
-`;
-
-const BackButton = styled.button`
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.8rem 1.5rem;
-  background-color: transparent;
-  color: #bb8930;
-  border: 1px solid #bb8930;
-  border-radius: 4px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: all 0.3s;
-  margin-bottom: 2rem;
-  
-  &:hover {
-    background-color: rgba(187, 137, 48, 0.1);
   }
 `;
 

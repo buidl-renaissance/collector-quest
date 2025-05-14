@@ -12,7 +12,7 @@ import PageTransition from "@/components/PageTransition";
 import { useCharacterClass } from "@/hooks/useCharacterClass";
 import { useRace } from "@/hooks/useRace";
 import Page from "@/components/Page";
-import { BackButton, NextButton } from "@/components/styled/buttons";
+import { BackButton } from "@/components/styled/character";
 import { useCharacter } from "@/hooks/useCharacter";
 import BottomNavigation from "@/components/BottomNavigation";
 import { Container, LoadingContainer } from "@/components/styled/layout";

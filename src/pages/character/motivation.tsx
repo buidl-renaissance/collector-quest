@@ -10,7 +10,7 @@ import CharacterImage from "@/components/CharacterImage";
 import CharacterDescription from "@/components/CharacterDescription";
 import MotivationalFusion from "@/components/MotivationalFusion";
 import Page from "@/components/Page";
-import { BackButton, NextButton } from "@/components/styled/buttons";
+import { BackButton } from "@/components/styled/character";
 import {
   Container as PageContainer,
   LoadingMessage,

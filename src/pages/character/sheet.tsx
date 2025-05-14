@@ -13,6 +13,7 @@ import { useCharacterSheet } from "@/hooks/useCharacterSheet";
 import Page from "@/components/Page";
 import { Container, LoadingMessage } from "@/components/styled/layout";
 import { Attack, attacks, getAttack } from "@/data/attacks";
+import { BackButton } from "@/components/styled/character";
 
 // Styled Components
 const CharacterSheetContainer = styled.div`
@@ -187,19 +188,6 @@ const TraitValue = styled.div`
   
   @media (max-width: 768px) {
     font-size: 0.8rem;
-  }
-`;
-
-const BackButton = styled.button`
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  color: #d6b87b;
-  margin-bottom: 0.5rem;
-  font-family: serif;
-
-  &:hover {
-    color: #f3e2b3;
   }
 `;
 
@@ -731,7 +719,7 @@ const CharacterSheetPage: React.FC = () => {
             <div style={{ gridColumn: "span 2" }}>
               <SectionLabel>Background</SectionLabel>
               <ContentBox style={{ minHeight: "5rem" }}>
-                {character.traits?.memory || "Unknown"}
+                {character.backstory || "Unknown"}
               </ContentBox>
             </div>
             <div>
@@ -772,8 +760,8 @@ const CharacterSheetPage: React.FC = () => {
                   "Character Bio",
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                     <BioModalSection>
-                      <BioModalTitle>Background</BioModalTitle>
-                      <BioModalText>{character.bio || 'No background provided'}</BioModalText>
+                      <BioModalTitle>Backstory</BioModalTitle>
+                      <BioModalText>{character.backstory || 'No backstory provided'}</BioModalText>
                     </BioModalSection>
                     <BioModalSection>
                       <BioModalTitle>Motivation</BioModalTitle>
@@ -781,10 +769,9 @@ const CharacterSheetPage: React.FC = () => {
                     </BioModalSection>
                   </div>
                 )}>
-                  {character.bio ? (
+                  {character.backstory ? (
                     <>
-                      {character.bio.slice(0, 150)}
-                      {character.bio.length > 150 ? '...' : ''}
+                      {character.backstory.split('\n')[0]}
                       <div style={{ 
                         color: '#d6b87b', 
                         fontSize: '0.8rem', 
@@ -795,7 +782,7 @@ const CharacterSheetPage: React.FC = () => {
                       </div>
                     </>
                   ) : (
-                    'No background provided'
+                    'No backstory provided'
                   )}
                 </div>
               </div>

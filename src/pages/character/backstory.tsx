@@ -15,7 +15,8 @@ import { useCharacter } from "@/hooks/useCharacter";
 import Page from "@/components/Page";
 import { Container, LoadingMessage } from "@/components/styled/layout";
 import { Title, Subtitle } from "@/components/styled/typography";
-import { BackButton, NextButton } from "@/components/styled/buttons";
+import { BackButton } from "@/components/styled/character";
+import { NextButton } from "@/components/styled/buttons";
 import { useTraits } from "@/hooks/useTraits";
 import { useMotivation } from "@/hooks/useMotivation";
 
@@ -166,8 +167,12 @@ const BackstoryPage: React.FC = () => {
       const data = await response.json();
       setCharacterBackstory(data.backstory);
       // Save the generated backstory to character state and localStorage
-      updateCharacter({ backstory: data.backstory });
+      updateCharacter({ 
+        backstory: data.backstory,
+        background: data.backstory 
+      });
       localStorage.setItem('characterBackstory', data.backstory);
+      localStorage.setItem('characterBackground', data.backstory);
     } catch (error) {
       console.error("Error generating backstory:", error);
       setCharacterBackstory("Failed to generate character backstory. Please try again.");

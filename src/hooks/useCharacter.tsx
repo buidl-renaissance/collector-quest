@@ -24,7 +24,6 @@ export interface Character {
   backstory?: string;
   sex?: string;
   creature?: string;
-  background?: string;
 }
 
 export const useCharacter = () => {
@@ -38,7 +37,7 @@ export const useCharacter = () => {
       try {
         // Get basic character info
         const name = localStorage.getItem('characterName') || '';
-        const background = localStorage.getItem('characterBackground') || '';
+        const backstory = localStorage.getItem('characterBackstory') || '';
         const appearance = localStorage.getItem('characterAppearance') || '';
         const bio = localStorage.getItem('characterBio') || '';
         
@@ -67,7 +66,7 @@ export const useCharacter = () => {
             race: selectedRace,
             class: selectedClass,
             name,
-            background,
+            backstory,
             motivation: generatedMotivation,
             bio,
             traits: {
