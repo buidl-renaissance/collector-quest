@@ -8,6 +8,16 @@ export interface Race {
     isGeneratingImage?: boolean;
 }
 
+export const ethnicities = [
+  "African American",
+  "Hispanic / Latino",
+  "Asian",
+  "Native American / Alaska Native",
+  "White / European descent",
+  "Middle Eastern / North African",
+  "Pacific Islander"
+];
+
 export const coreRaces: Race[] = [
     { id: "human", name: 'Human', source: "Player's Handbook", description: "Versatile and ambitious, humans are the most common race in the realms, known for their adaptability and drive to leave their mark on the world.", accessory: ["longsword", "city map", "quill & parchment"] },
     { id: "elf", name: 'Elf', source: "Player's Handbook", description: "Graceful and long-lived, elves are magical beings of otherworldly grace, living in places of ethereal beauty.", accessory: ["elegant bow", "moonlit orb", "ancient scroll"] },

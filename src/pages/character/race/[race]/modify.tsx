@@ -4,7 +4,7 @@ import styled from "@emotion/styled";
 import { keyframes } from "@emotion/react";
 import { FaArrowLeft, FaCrown, FaImage } from "react-icons/fa";
 import Link from "next/link";
-import { Race, coreRaces, expandedRaces } from "@/data/races";
+import { Race, coreRaces, ethnicities, expandedRaces } from "@/data/races";
 import { GetServerSidePropsContext } from "next";
 import { getRaceById } from "@/db/races";
 import { uploadImage } from "@/lib/image";
@@ -52,9 +52,10 @@ const CharacterImagesPage: React.FC<CharacterImagesPageProps> = ({ race }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [generatedImage, setGeneratedImage] = useState(race.image || "");
+  const ethnicity = ethnicities[Math.floor(Math.random() * ethnicities.length)];
   const accessory = race.accessory ? race.accessory[Math.floor(Math.random() * race.accessory.length)] : null;
   const [prompt, setPrompt] = useState(
-    `Removing the collector quest logo, update the image to be a ${race.name}, ${race.description}, ${accessory ? `remove the staff and give the character a ${accessory}` : ""}`
+    `Removing the collector quest logo, update the image to be a ${race.name} with a ${ethnicity} background, ${race.description}, ${accessory ? `remove the staff and give the character a ${accessory}` : ""}`
   );
 
   // Use our image generation hook
