@@ -118,6 +118,9 @@ export const Chip = styled.div<{ selected?: boolean }>`
   border: 1px solid ${(props) => (props.selected ? "#bb8930" : "#3a3a5e")};
   cursor: pointer;
   transition: all 0.3s;
+  height: 42px;
+  display: flex;
+  align-items: center;
 
   &:hover {
     background-color: ${(props) => (props.selected ? "#d4a959" : "rgba(58, 58, 94, 0.7)")};
@@ -127,21 +130,38 @@ export const Chip = styled.div<{ selected?: boolean }>`
 export const CustomChipInput = styled.div`
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.25rem;
+  background-color: rgba(26, 26, 46, 0.7);
+  border: 1px solid #3a3a5e;
+  border-radius: 20px;
+  padding: 0.5rem 1rem;
+  padding-right: 0;
+  transition: all 0.3s;
+  height: 42px;
+  width: fit-content;
+  min-width: 160px;
+  max-width: 200px;
+
+  &:focus-within {
+    border-color: #bb8930;
+    background-color: rgba(58, 58, 94, 0.7);
+  }
 `;
 
 export const CustomInput = styled.input`
-  padding: 0.5rem;
-  border: 1px solid #3a3a5e;
-  border-radius: 4px;
-  background-color: rgba(26, 26, 46, 0.7);
+  padding: 0;
+  border: none;
+  background: transparent;
   color: #e0e0e0;
   font-family: inherit;
   font-size: 0.9rem;
+  flex: 1;
+  height: 100%;
+  line-height: 1;
+  min-width: 80px;
 
   &:focus {
     outline: none;
-    border-color: #bb8930;
   }
 
   &::placeholder {
@@ -160,10 +180,18 @@ export const AddChipButton = styled.button`
   color: #e0e0e0;
   border: none;
   cursor: pointer;
-  transition: background-color 0.3s;
+  margin-right: 4px;
+  transition: all 0.3s;
+  flex-shrink: 0;
+  padding: 0;
 
   &:hover {
     background-color: #bb8930;
     color: #1a1a2e;
+    transform: scale(1.05);
+  }
+
+  &:active {
+    transform: scale(0.95);
   }
 `;
