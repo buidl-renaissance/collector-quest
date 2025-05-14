@@ -520,18 +520,6 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }) => {
   );
 };
 
-interface AttackDetails {
-  name: string;
-  element: string;
-  type: string;
-  effect: string;
-  damage?: string;
-  range?: string;
-  duration?: string;
-  components?: string[];
-  description?: string;
-}
-
 const CharacterSheetPage: React.FC = () => {
   const router = useRouter();
   const { character, loading: characterLoading } = useCharacter();
@@ -620,7 +608,7 @@ const CharacterSheetPage: React.FC = () => {
 
   if (characterLoading || sheetLoading) {
     return (
-      <Container>
+      <Container darkMode>
         <LoadingMessage>Loading character sheet...</LoadingMessage>
       </Container>
     );
@@ -950,19 +938,17 @@ const CharacterSheetPage: React.FC = () => {
                           <span>Element</span>
                           <span>Type</span>
                         </AttackHeader>
-                        {characterSheet.combat.attacks.map((attack, index) => {
-                          const attackDetails: Attack | undefined =
-                            getAttack(attack);
+                        {characterSheet.combat.attacks.map((attack: Attack, index: number) => {
                           return (
                             <AttackItem key={index}>
                               <AttackDetails>
                                 <AttackInfo>
-                                  <span>{attackDetails?.name}</span>
-                                  <span>{attackDetails?.element}</span>
-                                  <span>{attackDetails?.attackType}</span>
+                                  <span>{attack.name}</span>
+                                  <span>{attack.element}</span>
+                                  <span>{attack.attackType}</span>
                                 </AttackInfo>
                                 <AttackDescription>
-                                  {attackDetails?.effect}
+                                  {attack.effect}
                                 </AttackDescription>
                               </AttackDetails>
                             </AttackItem>

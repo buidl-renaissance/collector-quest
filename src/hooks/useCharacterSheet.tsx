@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Character } from './useCharacter';
+import { Attack } from '@/data/attacks';
 
 export interface CharacterSheet {
   abilities: {
@@ -25,8 +26,7 @@ export interface CharacterSheet {
     failures: number;
   };
   combat: {
-    attacks: string[];
-    spellcasting: string[];
+    attacks: Attack[];
     hitDice: {
       type: string;
       bonus: number;

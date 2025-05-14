@@ -204,8 +204,14 @@ Format the response as a JSON object with the following structure:
     "personality_traits": string[]
   },
   "combat": {
-    "attacks": string[],
-    "spellcasting": string[]
+    "attacks": {
+      "name": string,
+      "classRaceCreature": string,
+      "element": string,
+      "attackType": string,
+      "effect": string,
+      "type": string
+    }[],
   },
   "equipment": string[],
   "features": string[],
@@ -240,6 +246,7 @@ Format the response as a JSON object with the following structure:
 
     try {
       const characterSheet = JSON.parse(cleanedResponse) as CharacterSheet;
+      console.log(characterSheet);
       return res.status(200).json(characterSheet);
     } catch (parseError) {
       console.error("Error parsing character sheet:", parseError);

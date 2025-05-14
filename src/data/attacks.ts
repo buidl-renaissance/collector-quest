@@ -7,9 +7,9 @@ export interface Attack {
   type: string;
 }
 
-export const getAttack = (attack: string) => {
+export const getAttack = (attack: Attack) => {
   return attacks.find((a: Attack) => {
-    return a.name.toLowerCase() === attack.toLowerCase();
+    return a.name.toLowerCase() === attack.name?.toLowerCase();
   });
 }
 
