@@ -42,28 +42,40 @@ export async function saveRace(race: Race): Promise<Race> {
     
     if (existingRace) {
       // Update existing race
-      const [result] = await client('races')
+      await client('races')
         .where('id', race.id)
         .update({
           name: race.name || existingRace.name,
           source: race.source || existingRace.source,
           description: race.description || existingRace.description,
-          image: race.image || existingRace.image
-        })
-        .returning('*');
-      return result;
+          image: race.image || existingRace.image,
+          accessory: race.accessory || existingRace.accessory
+        });
+      
+      // Fetch the updated record
+      const updatedRace = await getRaceById(race.id);
+      if (!updatedRace) {
+        throw new Error("Failed to fetch updated race");
+      }
+      return updatedRace;
     } else {
       // Insert new race
-      const [result] = await client('races')
+      await client('races')
         .insert({
           id: race.id,
           name: race.name,
           source: race.source,
           description: race.description,
-          image: race.image
-        })
-        .returning('*');
-      return result;
+          image: race.image,
+          accessory: race.accessory
+        });
+      
+      // Fetch the inserted record
+      const newRace = await getRaceById(race.id);
+      if (!newRace) {
+        throw new Error("Failed to fetch new race");
+      }
+      return newRace;
     }
   } catch (error) {
     console.error("Database error when saving race:", error);
