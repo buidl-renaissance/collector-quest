@@ -9,7 +9,7 @@ import {
   getNamespacedJson,
   setNamespacedJson,
 } from "@/utils/storage";
-import { generateBackstory } from "@/lib/backstory";
+import { generateBackstory as generateBackstoryRequest } from "@/lib/backstory";
 
 interface BackstoryState {
   backstory: string | null;
@@ -95,7 +95,10 @@ export function useBackstory() {
         !backstory // Only generate if we don't already have a backstory
       ) {
         setIsGeneratingBackstory(true);
-        await generateBackstory(character);
+        const { backstory: generatedBackstory, success } = await generateBackstoryRequest(character);
+        if (success) {
+          saveBackstory(generatedBackstory);
+        }
         setIsGeneratingBackstory(false);
       }
     };

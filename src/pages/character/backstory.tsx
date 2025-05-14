@@ -24,7 +24,7 @@ const BackstoryPage: React.FC = () => {
   const { selectedClass, loading: classLoading } = useCharacterClass();
   const { character } = useCharacter();
   const { 
-    characterBackstory, 
+    backstory, 
     isGeneratingBackstory, 
     generateBackstory,
     loading: backstoryLoading 
@@ -80,10 +80,10 @@ const BackstoryPage: React.FC = () => {
 
         <BackstoryDisplay
           title="Backstory"
-          text={characterBackstory}
+          text={backstory ?? ""}
           isGenerating={isGeneratingBackstory}
-          onRegenerate={generateBackstory}
-          showRegenerateButton={!!characterBackstory}
+          onRegenerate={() => generateBackstory(character)}
+          showRegenerateButton={!!backstory}
         />
 
         <ActionButtons>
