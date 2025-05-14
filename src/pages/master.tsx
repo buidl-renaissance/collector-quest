@@ -259,10 +259,10 @@ const MasterPage: React.FC = () => {
               muted
               loop
               playsInline
-              poster="/images/COLLECTOR-quest-intro.png"
+              poster="/images/COLLECTOR-quest-intro-placeholder.png"
             >
               <source
-                src="/videos/COLLECTOR-quest-intro.mp4"
+                src="/videos/COLLECTOR-quest-intro-compressed.mp4"
                 type="video/mp4"
               />
               Your browser does not support the video tag.
