@@ -396,22 +396,22 @@ const CompetitionPage: NextPage = () => {
       // In a real app, this would be an API call to submit the artwork
       // and handle the token staking transaction
 
-      // Generate image using the hook
-      if (submissionForm.description && submissionForm.imageUrl) {
-        try {
-          const generatedImage = await generateImage(
-            submissionForm.description,
-            submissionForm.imageUrl
-          );
+      // // Generate image using the hook
+      // if (submissionForm.description && submissionForm.imageUrl) {
+      //   try {
+      //     const generatedImage = await generateImage(
+      //       submissionForm.description,
+      //       submissionForm.imageUrl
+      //     );
 
-          if (generatedImage) {
-            submissionForm.imageUrl = generatedImage;
-          }
-        } catch (error) {
-          console.error('Error generating image:', error);
-          // Continue with submission even if image generation fails
-        }
-      }
+      //     if (generatedImage) {
+      //       submissionForm.imageUrl = generatedImage;
+      //     }
+      //   } catch (error) {
+      //     console.error('Error generating image:', error);
+      //     // Continue with submission even if image generation fails
+      //   }
+      // }
 
       // Mock successful submission
       const newSubmission: Submission = {
