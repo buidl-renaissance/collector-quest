@@ -14,6 +14,7 @@ const CharacterRaces: React.FC<CharacterRacesProps> = ({ races, onSelectRace, se
   const handleRaceSelect = (race: Race) => {
     if (onSelectRace) {
       onSelectRace(race);
+      localStorage.setItem('selectedRaceId', race.id);
     }
   };
 

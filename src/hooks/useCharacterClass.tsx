@@ -12,31 +12,47 @@ export function useCharacterClass() {
   const router = useRouter();
 
   useEffect(() => {
-    const savedClassId = localStorage.getItem('selectedClassId');
-    if (savedClassId) {
-      fetch(`/api/classes/${savedClassId}`)
-        .then(res => res.json())
-        .then(data => {
+    const loadClass = async () => {
+      try {
+        // First try to get from cache
+        const cachedClass = localStorage.getItem('selectedClass');
+        if (cachedClass) {
+          setSelectedClass(JSON.parse(cachedClass));
+          setLoading(false);
+          return;
+        }
+
+        // If not in cache, try to get from API
+        const savedClassId = localStorage.getItem('selectedClassId');
+        if (savedClassId) {
+          const response = await fetch(`/api/classes/${savedClassId}`);
+          if (!response.ok) throw new Error('Failed to fetch class');
+          
+          const data = await response.json();
           setSelectedClass(data);
-          setLoading(false);
-        })
-        .catch(error => {
-          console.error('Error fetching class:', error);
-          setLoading(false);
-        });
-    } else {
-      setLoading(false);
-    }
+          // Cache the full class data
+          localStorage.setItem('selectedClass', JSON.stringify(data));
+        }
+      } catch (error) {
+        console.error('Error loading class:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadClass();
   }, []);
 
   const selectClass = (characterClass: CharacterClass) => {
     setSelectedClass(characterClass);
     localStorage.setItem('selectedClassId', characterClass.id);
+    localStorage.setItem('selectedClass', JSON.stringify(characterClass));
   };
 
   const clearClass = () => {
     setSelectedClass(null);
     localStorage.removeItem('selectedClassId');
+    localStorage.removeItem('selectedClass');
   };
 
   const goToClassSelection = () => {

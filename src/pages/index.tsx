@@ -4,6 +4,7 @@ import { FaPalette, FaStar, FaCrown } from "react-icons/fa";
 import Link from "next/link";
 import styled from "@emotion/styled";
 import Events from "@/components/Events";
+import { useRouter } from "next/router";
 
 export const getServerSideProps = async () => {
   return {
@@ -20,6 +21,12 @@ export const getServerSideProps = async () => {
 };
 
 export default function Home() {
+  const router = useRouter();
+
+  const handleCreateCharacter = () => {
+    router.push('/character/sex');
+  };
+
   return (
     <Box>
       {/* Hero Section */}

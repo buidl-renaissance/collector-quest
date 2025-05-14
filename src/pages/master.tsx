@@ -49,7 +49,7 @@ const MasterPage: React.FC = () => {
     <PageWrapper>
       <ParallaxBackground style={{ transform: `translateY(${parallaxOffset}px)` }} />
       
-      {[...Array(5)].map((_, i) => (
+      {/* {[...Array(5)].map((_, i) => (
         <FloatingObject
           key={i}
           style={{
@@ -60,7 +60,7 @@ const MasterPage: React.FC = () => {
         >
           {i % 3 === 0 ? <FaDungeon /> : <FaDice />}
         </FloatingObject>
-      ))}
+      ))} */}
 
       <AudioToggle onClick={toggleAudio}>
         {audioEnabled ? <FaVolumeUp /> : <FaVolumeMute />}
@@ -283,10 +283,8 @@ const MasterPage: React.FC = () => {
               Your browser does not support the video tag.
             </video>
             <VideoOverlay>
-              <PlayButton>
-                <Link href="/character/race">
-                  <span>PRESS START</span>
-                </Link>
+              <PlayButton href="/character/sex">
+                <span>PRESS START</span>
               </PlayButton>
             </VideoOverlay>
           </VideoContainer>
@@ -342,11 +340,26 @@ const unfurl = keyframes`
 // Styled Components
 const PageWrapper = styled.div`
   min-height: 100vh;
-  background: linear-gradient(135deg, #3a2606 0%, #6c3a14 50%, #3a2606 100%);
+  background: linear-gradient(135deg, rgba(58, 38, 6, 0.9) 0%, rgba(108, 58, 20, 0.9) 50%, rgba(58, 38, 6, 0.9) 100%);
   color: #e6e6e6;
   position: relative;
   overflow: hidden;
   font-family: "EB Garamond", "Merriweather", serif;
+
+  &::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('/images/collector-quest-background.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.15;
+    z-index: 0;
+  }
 `;
 
 const ParallaxBackground = styled.div`
@@ -358,7 +371,7 @@ const ParallaxBackground = styled.div`
   background-image: url('/images/parchment-texture.jpg');
   background-size: cover;
   opacity: 0.05;
-  z-index: 0;
+  z-index: 1;
 `;
 
 const AudioToggle = styled.button`
@@ -453,7 +466,7 @@ const VideoOverlay = styled.div`
   height: 100%;
 `;
 
-const PlayButton = styled.button`
+const PlayButton = styled(Link)`
   position: absolute;
   top: 50%;
   left: 50%;
@@ -461,20 +474,15 @@ const PlayButton = styled.button`
   background: none;
   border: none;
   color: #bb8930;
-  font-size: 2rem;
+  font-size: 1.5rem;
   cursor: pointer;
   transition: all 0.3s ease;
   animation: ${glow} 3s infinite ease-in-out;
+  text-decoration: none;
 
   &:hover {
     transform: translate(-50%, -50%) scale(1.1);
   }
-`;
-
-const Video = styled.video`
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
 `;
 
 const Title = styled.h1`
@@ -533,67 +541,6 @@ const Section = styled.section`
   }
 `;
 
-const PartySection = styled(Section)`
-  background-image: url('/images/parchment-texture.jpg');
-  background-size: cover;
-  background-blend-mode: overlay;
-  background-color: rgba(58, 38, 6, 0.8);
-`;
-
-const CharacterCards = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1.5rem;
-  margin-top: 2rem;
-`;
-
-const CharacterCard = styled.div`
-  background: rgba(27, 58, 84, 0.1);
-  border: 1px solid #bb8930;
-  border-radius: 8px;
-  padding: 1.5rem;
-  text-align: center;
-  transition: all 0.3s ease;
-  
-  &:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 5px 15px rgba(187, 137, 48, 0.3);
-    background: rgba(27, 58, 84, 0.2);
-  }
-`;
-
-const CardIcon = styled.div`
-  font-size: 2rem;
-  color: #b6551c;
-  margin-bottom: 1rem;
-`;
-
-const CardTitle = styled.h4`
-  font-size: 1.2rem;
-  color: #bb8930;
-  margin-bottom: 0.5rem;
-  font-family: "Cinzel", serif;
-`;
-
-const CardDescription = styled.p`
-  font-size: 0.9rem;
-  margin-bottom: 1rem;
-`;
-
-const CardCTA = styled.button`
-  background: #9f3515;
-  color: #e6e6e6;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  
-  &:hover {
-    background: #b6551c;
-  }
-`;
-
 const DiscoverSection = styled(Section)`
   background: rgba(58, 38, 6, 0.7);
 `;
@@ -611,6 +558,10 @@ const CollectibleItem = styled.div`
   padding: 1rem;
   text-align: center;
   transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   
   &:hover {
     transform: scale(1.05);
@@ -621,7 +572,11 @@ const CollectibleItem = styled.div`
 const CollectibleIcon = styled.div`
   font-size: 1.8rem;
   color: #b6551c;
+  margin: 0 auto;
   margin-bottom: 0.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 const CollectibleTitle = styled.h4`
@@ -694,6 +649,9 @@ const SectionIcon = styled.div`
   color: #bb8930;
   margin-bottom: 1rem;
   text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 const SectionTitle = styled.h3`

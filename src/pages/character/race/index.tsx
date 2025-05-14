@@ -2,12 +2,14 @@ import React from "react";
 import { useRouter } from "next/router";
 import styled from "@emotion/styled";
 import { keyframes } from "@emotion/react";
-import { FaCrown, FaArrowRight } from "react-icons/fa";
+import { FaCrown, FaArrowRight, FaArrowLeft } from "react-icons/fa";
 import CharacterRaces from "@/components/CharacterRaces";
 import { useRace } from "@/hooks/useRace";
+import { useSex } from "@/hooks/useSex";
 import { coreRaces, expandedRaces, Race } from "@/data/races";
 import { getAllRaces } from "@/db/races";
 import { GetServerSideProps } from "next";
+import { BackButton } from "@/components/styled/character";
 
 interface CharacterCreatePageProps {
   races: Race[];
@@ -26,8 +28,16 @@ const CharacterCreatePage: React.FC<CharacterCreatePageProps> = ({
   races
 }) => {
   const router = useRouter();
-  const { selectedRace, selectRace, loading } = useRace();
+  const { selectedRace, selectRace, loading: raceLoading } = useRace();
+  const { selectedSex, loading: sexLoading } = useSex();
   const [error, setError] = React.useState("");
+
+  // Redirect if no sex is selected
+  React.useEffect(() => {
+    if (!sexLoading && !selectedSex) {
+      router.push('/character/sex');
+    }
+  }, [selectedSex, sexLoading, router]);
 
   const handleNext = () => {
     if (selectedRace) {
@@ -35,7 +45,11 @@ const CharacterCreatePage: React.FC<CharacterCreatePageProps> = ({
     }
   };
 
-  if (loading) {
+  const handleBack = () => {
+    router.push('/character/sex');
+  };
+
+  if (raceLoading || sexLoading) {
     return (
       <Container>
         <LoadingMessage>
@@ -48,6 +62,10 @@ const CharacterCreatePage: React.FC<CharacterCreatePageProps> = ({
 
   return (
     <Container>
+      <BackButton onClick={handleBack}>
+        <FaArrowLeft /> Back to Sex Selection
+      </BackButton>
+
       <Title>Craft Your Character</Title>
       <Subtitle>Who will you be in Lord Smearington&apos;s Gallery of the Absurd?</Subtitle>
       

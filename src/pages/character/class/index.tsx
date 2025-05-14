@@ -9,6 +9,7 @@ import { useCharacterClass } from "@/hooks/useCharacterClass";
 import PageTransition from "@/components/PageTransition";
 import { getAllClasses } from "@/db/classes";
 import { GetServerSideProps } from "next";
+import { BackButton } from "@/components/styled/character";
 
 interface ClassSelectionPageProps {
   classes: CharacterClass[];
@@ -137,22 +138,6 @@ const Container = styled.div`
   font-family: 'Cormorant Garamond', serif;
   animation: ${fadeIn} 0.5s ease-in;
   padding-bottom: 80px; /* Make room for the footer */
-`;
-
-const BackButton = styled.button`
-  display: inline-flex;
-  align-items: center;
-  margin-bottom: 2rem;
-  color: #bb8930;
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 1rem;
-  transition: color 0.3s;
-  
-  &:hover {
-    color: #d4a959;
-  }
 `;
 
 const Title = styled.h1`

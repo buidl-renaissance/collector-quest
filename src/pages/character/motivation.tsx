@@ -10,23 +10,24 @@ import CharacterImage from "@/components/CharacterImage";
 import CharacterDescription from "@/components/CharacterDescription";
 import MotivationalFusion from "@/components/MotivationalFusion";
 import Page from "@/components/Page";
-import { BackButton, NextButton } from "@/components/styled/buttons";
-import { Container, LoadingMessage } from "@/components/styled/layout";
+import { BackButton } from "@/components/styled/character";
+import {
+  Container as PageContainer,
+  LoadingMessage,
+} from "@/components/styled/layout";
 import { Title, Subtitle } from "@/components/styled/typography";
+import { useMotivation } from "@/hooks/useMotivation";
+import BottomNavigation from "@/components/BottomNavigation";
 
 const MotivationPage: React.FC = () => {
   const router = useRouter();
   const { selectedRace, loading: raceLoading } = useRace();
   const { selectedClass, loading: classLoading } = useCharacterClass();
-  const [generatedMotivation, setGeneratedMotivation] = useState("");
-
-  // Load saved motivation from localStorage if it exists
-  useEffect(() => {
-    const savedMotivation = localStorage.getItem("characterMotivation");
-    if (savedMotivation) {
-      setGeneratedMotivation(savedMotivation);
-    }
-  }, []);
+  const {
+    motivationState,
+    loading: motivationLoading,
+    setGeneratedMotivation,
+  } = useMotivation();
 
   // Redirect if no race or class is selected
   useEffect(() => {
@@ -41,11 +42,7 @@ const MotivationPage: React.FC = () => {
 
   const handleNext = () => {
     if (selectedRace && selectedClass) {
-      // Save the generated motivation to localStorage before navigating
-      if (generatedMotivation) {
-        localStorage.setItem("characterMotivation", generatedMotivation);
-      }
-      router.push("/character/summary");
+      router.push("/character/backstory");
     }
   };
 
@@ -55,20 +52,18 @@ const MotivationPage: React.FC = () => {
 
   const handleMotivationGenerated = (motivation: string) => {
     setGeneratedMotivation(motivation);
-    // Ensure the motivation is saved immediately when generated
-    localStorage.setItem("characterMotivation", motivation);
   };
 
-  if (raceLoading || classLoading) {
+  if (raceLoading || classLoading || motivationLoading) {
     return (
-      <Container>
+      <PageContainer>
         <LoadingMessage>
           <CrownIcon>
             <FaCrown />
           </CrownIcon>
           Loading...
         </LoadingMessage>
-      </Container>
+      </PageContainer>
     );
   }
 
@@ -88,36 +83,18 @@ const MotivationPage: React.FC = () => {
           Craft the perfect motivation for your character&apos;s journey
         </Subtitle>
 
-        {/* <CharacterPreview>
-            <CharacterImage
-              race={selectedRace}
-              characterClass={selectedClass}
-              size="large"
-            />
-            <CharacterDescription
-              race={selectedRace}
-              characterClass={selectedClass}
-              size="large"
-            />
-          </CharacterPreview> */}
-
         <MotivationalFusion onMotivationGenerated={handleMotivationGenerated} />
 
-        <NavigationFooter>
-          <NextButton onClick={handleNext} disabled={!generatedMotivation}>
-            Next Step <FaArrowRight />
-          </NextButton>
-        </NavigationFooter>
+        <BottomNavigation
+          selectedItemLabel={""}
+          selectedItem={"Motivation Generated"}
+          onNext={handleNext}
+          disabled={!motivationState.generatedMotivation}
+        />
       </Page>
     </PageTransition>
   );
 };
-
-const NavigationFooter = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 2rem;
-`;
 
 const CrownIcon = styled.div`
   font-size: 2rem;

@@ -2,18 +2,21 @@ import styled from "@emotion/styled";
 import Link from "next/link";
 
 export const BackButton = styled.button`
-  display: inline-flex;
+  display: flex;
   align-items: center;
   gap: 0.5rem;
+  padding: 0.8rem 1.5rem;
+  background-color: transparent;
   color: #bb8930;
-  background: none;
-  border: none;
-  cursor: pointer;
+  border: 1px solid #bb8930;
+  border-radius: 4px;
   font-size: 1rem;
-  transition: color 0.3s;
-
+  cursor: pointer;
+  transition: all 0.3s;
+  margin-bottom: 2rem;
+  
   &:hover {
-    color: #d4a959;
+    background-color: rgba(187, 137, 48, 0.1);
   }
 `;
 
