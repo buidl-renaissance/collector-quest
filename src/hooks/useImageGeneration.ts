@@ -13,7 +13,7 @@ export interface ImageGenerationResult {
 }
 
 interface UseImageGenerationReturn {
-  generateImage: (prompt: string, image?: string) => Promise<ImageGenerationResult | null>;
+  generateImage: (prompt: string, image?: string, raceId?: string) => Promise<ImageGenerationResult | null>;
   isGenerating: boolean;
   error: string | null;
   progress: number;
@@ -39,7 +39,7 @@ export const useImageGeneration = (options?: UseImageGenerationOptions): UseImag
   const pollingInterval = options?.pollingInterval || 2000; // 2 seconds
   const maxAttempts = options?.maxAttempts || 60; // 30 attempts = 120 seconds max
 
-  const generateImage = useCallback(async (prompt: string, image?: string): Promise<ImageGenerationResult | null> => {
+  const generateImage = useCallback(async (prompt: string, image?: string, raceId?: string): Promise<ImageGenerationResult | null> => {
     setIsGenerating(true);
     setError(null);
     setProgress(0);
@@ -54,6 +54,7 @@ export const useImageGeneration = (options?: UseImageGenerationOptions): UseImag
         body: JSON.stringify({
           prompt,
           image,
+          raceId,
         }),
       });
 

@@ -1,6 +1,6 @@
 import { serve } from "inngest/next";
 import { inngest } from "@/inngest/client";
-import { helloWorld, generateImageFunction } from "@/inngest/functions";
+import { helloWorld, generateImageFunction, generateRaceImageFunction } from "@/inngest/functions";
 
 export const config = {
   api: {
@@ -18,5 +18,6 @@ export default serve({
   functions: [
     helloWorld,
     generateImageFunction,
+    generateRaceImageFunction,
   ],
 });

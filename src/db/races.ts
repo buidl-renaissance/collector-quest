@@ -45,10 +45,10 @@ export async function saveRace(race: Race): Promise<Race> {
       const [result] = await client('races')
         .where('id', race.id)
         .update({
-          name: race.name,
-          source: race.source,
-          description: race.description,
-          image: race.image
+          name: race.name || existingRace.name,
+          source: race.source || existingRace.source,
+          description: race.description || existingRace.description,
+          image: race.image || existingRace.image
         })
         .returning('*');
       return result;

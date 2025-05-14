@@ -73,7 +73,7 @@ const CharacterImagesPage: React.FC<CharacterImagesPageProps> = ({ race }) => {
     setError("");
 
     try {
-      const imageData: ImageGenerationResult | null = await generateImage(prompt, generatedImage);
+      const imageData: ImageGenerationResult | null = await generateImage(prompt, generatedImage, race.id);
 
       if (!imageData) {
        console.error(generationError || "Failed to generate image");
