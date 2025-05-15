@@ -38,6 +38,25 @@ export const createPendingResult = async (id: string): Promise<StoredResult> => 
  * @param result The result data
  * @returns The updated result
  */
+export const updateResult = async (id: string, result: string): Promise<StoredResult | null> => {
+  const [updatedResult] = await db('results')
+    .where({ id })
+    .update({
+      status: 'pending',
+      result,
+      updatedAt: new Date(),
+    })
+    .returning('*');
+  
+  return updatedResult || null;
+};
+
+/**
+ * Update a result with the completed data
+ * @param id Unique identifier for the result
+ * @param result The result data
+ * @returns The updated result
+ */
 export const completeResult = async (id: string, result: string): Promise<StoredResult | null> => {
   const [updatedResult] = await db('results')
     .where({ id })

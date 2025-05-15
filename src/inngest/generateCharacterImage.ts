@@ -3,7 +3,7 @@ import { CharacterDB } from '@/db/character';
 import { FaceAnalyzer } from '@/lib/faceAnalyzer';
 import { generateImageRequest } from '@/lib/imageGenerator';
 import { uploadBase64Image } from '@/lib/imageUpload';
-import { completeResult, failResult } from '@/lib/storage';
+import { completeResult, failResult, updateResult } from '@/lib/storage';
 
 interface UploadResult {
   success: true;
@@ -49,6 +49,12 @@ export const generateCharacterImageFunction = inngest.createFunction(
           const faceAnalyzer = new FaceAnalyzer(process.env.OPENAI_API_KEY || '');
           return await faceAnalyzer.analyzeFace(userImage);
         });
+
+        updateResult(event.data.resultId!, JSON.stringify({
+          message: "Facial data analyzed successfully",
+          facialData
+        }));
+
       }
       
       // Step 2: Generate the character image
@@ -71,6 +77,14 @@ export const generateCharacterImageFunction = inngest.createFunction(
         } else {
           throw new Error(('error' in uploadResult) ? uploadResult.error : 'Failed to upload image');
         }
+
+        updateResult(event.data.resultId!, JSON.stringify({
+          success: true,
+          message: "Character image generated successfully",
+          imageUrl,
+          character,
+          facialData
+        }));
       }
       
       // Step 4: Save the image URL to the character
@@ -79,6 +93,14 @@ export const generateCharacterImageFunction = inngest.createFunction(
           // Save to database
           const characterDB = new CharacterDB();
           await characterDB.updateCharacter(characterId, { image_url: imageUrl });
+
+          updateResult(event.data.resultId!, JSON.stringify({
+            success: true,
+            message: "Character image saved successfully",
+            imageUrl,
+            character,
+          }));
+  
         });
       }
       

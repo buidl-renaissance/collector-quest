@@ -89,7 +89,7 @@ const BackstoryPage: React.FC = () => {
         <ActionButtons>
           <NextButton
             onClick={handleNext}
-            disabled={!character || !character.backstory}
+            disabled={!backstory || isGeneratingBackstory}
           >
             Continue to Character Sheet <FaArrowRight />
           </NextButton>
