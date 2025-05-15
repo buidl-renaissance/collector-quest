@@ -41,9 +41,8 @@ const CharacterCreatePage: React.FC<CharacterCreatePageProps> = ({
     }
   }, [selectedSex, sexLoading, router]);
 
-  const handleNext = async () => {
+  const handleNext = () => {
     if (selectedRace) {
-      await saveCharacter();
       router.push('/character/class');
     }
   };

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getCurrentCharacterId, getNamespacedJson, setNamespacedJson } from '@/utils/storage';
+import { getCurrentCharacterId, getNamespacedItem, getNamespacedJson, setNamespacedJson } from '@/utils/storage';
 
 interface MotivationState {
   selectedActions: string[];
@@ -30,7 +30,7 @@ export function useMotivation() {
         const actions = getNamespacedJson(characterId, 'motivationalFusion_selectedActions') || [];
         const forces = getNamespacedJson(characterId, 'motivationalFusion_selectedForces') || [];
         const archetype = getNamespacedJson(characterId, 'motivationalFusion_selectedArchetype');
-        const motivation = getNamespacedJson(characterId, 'motivationalFusion_generatedMotive');
+        const motivation = getNamespacedItem(characterId, 'motivationalFusion_generatedMotive');
 
         setMotivationState({
           selectedActions: actions,

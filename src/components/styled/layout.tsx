@@ -1,8 +1,10 @@
 import styled from "@emotion/styled";
+import { keyframes } from "@emotion/react";
+import { FaCrown } from "react-icons/fa";
 import { fadeIn } from "./animations";
 
 export const Container = styled.div<{ darkMode?: boolean }>`
-  max-width: 800px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 2rem;
   font-family: "Cormorant Garamond", serif;
@@ -58,7 +60,20 @@ export const LoadingMessage = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100vh;
-  font-size: 1.5rem;
+  min-height: 200px;
+  font-size: 1.2rem;
+  color: #c7bfd4;
+`;
+
+export const ActionButtons = styled.div`
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+`;
+
+export const CrownIcon = styled.div`
+  font-size: 2rem;
+  margin-bottom: 1rem;
   color: #bb8930;
+  animation: ${fadeIn} 1s infinite alternate;
 `; 

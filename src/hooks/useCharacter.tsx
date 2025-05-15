@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useRace } from './useRace';
 import { useCharacterClass } from './useCharacterClass';
-import { Race } from '@/data/races';
+import { Race, getRaceById } from '@/data/races';
 import { CharacterClass } from '@/data/classes';
-import { getCurrentCharacterId, setCurrentCharacterId, setNamespacedJson } from '@/utils/storage';
+import { getCurrentCharacterId, getNamespacedItem, getNamespacedJson, setCurrentCharacterId, setNamespacedJson } from '@/utils/storage';
+import { get } from 'http';
 
 const STORAGE_KEYS = {
   CURRENT_CHARACTER_ID: 'currentCharacterId',
@@ -49,8 +50,6 @@ export interface Character {
 }
 
 export const useCharacter = () => {
-  const { selectedRace, loading: raceLoading } = useRace();
-  const { selectedClass, loading: classLoading } = useCharacterClass();
   const [character, setCharacter] = useState<Character | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -70,24 +69,28 @@ export const useCharacter = () => {
         }
 
         // Get basic character info with namespaced keys
-        const name = localStorage.getItem(getNamespacedKey(storedCharacterId, 'name')) || '';
-        const backstory = localStorage.getItem(getNamespacedKey(storedCharacterId, 'backstory')) || '';
-        const appearance = localStorage.getItem(getNamespacedKey(storedCharacterId, 'appearance')) || '';
-        const bio = localStorage.getItem(getNamespacedKey(storedCharacterId, 'bio')) || '';
+        const name = getNamespacedItem(storedCharacterId, 'name') || '';
+        const backstory = getNamespacedItem(storedCharacterId, 'backstory') || '';
+        const appearance = getNamespacedItem(storedCharacterId, 'appearance') || '';
+        const bio = getNamespacedItem(storedCharacterId, 'bio') || '';
+
+        // Get character Race / Class
+        const race = getNamespacedJson(storedCharacterId, 'race') || '';
+        const characterClass = getNamespacedJson(storedCharacterId, 'class') || '';
         
         // Get character traits from both sources with namespaced keys
-        const personality = JSON.parse(localStorage.getItem(getNamespacedKey(storedCharacterId, 'personality')) || '[]');
-        const fear = JSON.parse(localStorage.getItem(getNamespacedKey(storedCharacterId, 'fear')) || '[]');
-        const memory = localStorage.getItem(getNamespacedKey(storedCharacterId, 'memory')) || '';
-        const possession = localStorage.getItem(getNamespacedKey(storedCharacterId, 'possession')) || '';
-        const status = localStorage.getItem(getNamespacedKey(storedCharacterId, 'status')) || CharacterStatus.NEW;
-        const level = localStorage.getItem(getNamespacedKey(storedCharacterId, 'level')) || 1;
-        const motivation = localStorage.getItem(getNamespacedKey(storedCharacterId, 'motivation')) || '';
-        const sex = localStorage.getItem(getNamespacedKey(storedCharacterId, 'sex')) || '';
-        const image_url = localStorage.getItem(getNamespacedKey(storedCharacterId, 'image_url')) || '';
+        const personality = getNamespacedJson(storedCharacterId, 'personality') || [];
+        const fear = getNamespacedJson(storedCharacterId, 'fear') || [];
+        const memory = getNamespacedJson(storedCharacterId, 'memory') || '';
+        const possession = getNamespacedItem(storedCharacterId, 'possession') || '';
+        const status = getNamespacedItem(storedCharacterId, 'status') || CharacterStatus.NEW;
+        const level = getNamespacedItem(storedCharacterId, 'level') || 1;
+        const motivation = getNamespacedItem(storedCharacterId, 'motivation') || '';
+        const sex = getNamespacedItem(storedCharacterId, 'sex') || '';
+        const image_url = getNamespacedItem(storedCharacterId, 'image_url') || '';
 
         // Get old traits structure with namespaced keys
-        const oldTraits = JSON.parse(localStorage.getItem(getNamespacedKey(storedCharacterId, 'selectedTraits')) || '{}');
+        const oldTraits = getNamespacedJson(storedCharacterId, 'selectedTraits') || {};
         const ideals = oldTraits.ideals || [];
         const bonds = oldTraits.bonds || [];
         const flaws = oldTraits.flaws || [];
@@ -95,15 +98,15 @@ export const useCharacter = () => {
         const treasuredPossession = oldTraits.treasuredPossession || '';
 
         // Get motivation data with namespaced keys
-        const selectedActions = JSON.parse(localStorage.getItem(getNamespacedKey(storedCharacterId, 'motivationalFusion_selectedActions')) || '[]');
-        const selectedForces = JSON.parse(localStorage.getItem(getNamespacedKey(storedCharacterId, 'motivationalFusion_selectedForces')) || '[]');
-        const generatedMotivation = localStorage.getItem(getNamespacedKey(storedCharacterId, 'motivationalFusion_generatedMotive')) || '';
+        const selectedActions = getNamespacedJson(storedCharacterId, 'motivationalFusion_selectedActions') || [];
+        const selectedForces = getNamespacedJson(storedCharacterId, 'motivationalFusion_selectedForces') || [];
+        const generatedMotivation = getNamespacedItem(storedCharacterId, 'motivationalFusion_generatedMotive') || '';
 
         // Only set character if we have the minimum required data
         setCharacter({
           id: storedCharacterId,
-          race: selectedRace || undefined,
-          class: selectedClass || undefined,
+          race: race || undefined,
+          class: characterClass || undefined,
           status: status,
           level: parseInt(level as string),
           sex: sex,
@@ -132,7 +135,7 @@ export const useCharacter = () => {
     };
 
     loadCharacterData();
-  }, [selectedRace, selectedClass]);
+  }, []);
 
   const updateCharacter = (updates: Partial<Character>) => {
     if (!character || !character.id) return;
@@ -296,7 +299,7 @@ export const useCharacter = () => {
 
   return {
     character,
-    loading: loading || raceLoading || classLoading,
+    loading,
     saving,
     error,
     characterId,

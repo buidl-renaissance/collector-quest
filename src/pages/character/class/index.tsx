@@ -40,7 +40,7 @@ const ClassSelectionPage: React.FC<ClassSelectionPageProps> = ({
 
   const handleNext = () => {
     if (selectedClass) {
-      router.push('/character/image');
+      router.push('/character/name');
     }
   };
 

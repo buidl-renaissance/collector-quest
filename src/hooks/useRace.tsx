@@ -2,12 +2,14 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { Race } from '@/data/races';
 import { getCurrentCharacterId, getNamespacedJson, setNamespacedJson } from '@/utils/storage';
+import { useCharacter } from './useCharacter';
 
 /**
  * Custom hook to manage character race selection state
  * Handles loading from localStorage and persisting changes
  */
 export function useRace() {
+  const { saveCharacter } = useCharacter();
   const [selectedRace, setSelectedRace] = useState<Race | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
@@ -58,6 +60,9 @@ export function useRace() {
     setSelectedRace(race);
     setNamespacedJson(characterId, 'raceId', race.id);
     setNamespacedJson(characterId, 'race', race);
+    (async () => {
+      await saveCharacter();
+    })();
   };
 
   // Function to clear race selection

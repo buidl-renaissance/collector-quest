@@ -31,7 +31,7 @@ import { FormSection } from "@/components/styled/forms";
 const CharacterTraitsPage: React.FC = () => {
   const router = useRouter();
   const [darkMode, setDarkMode] = useState(true);
-  const { character } = useCharacter();
+  const { saveCharacter } = useCharacter();
   const { selectedClass, loading: classLoading } = useCharacterClass();
   const { selectedRace, loading: raceLoading } = useRace();
 
@@ -142,9 +142,6 @@ const CharacterTraitsPage: React.FC = () => {
       localStorage.setItem("selectedTraits", JSON.stringify(updatedData));
       return updatedData;
     });
-    if (name === "name") {
-      localStorage.setItem("characterName", value);
-    }
   };
 
   const handleAddCustomOption = (type: "personality" | "ideals" | "flaws") => {
@@ -297,19 +294,6 @@ const CharacterTraitsPage: React.FC = () => {
         </HeroSection>
 
         <FormSection>
-          <FormGroup>
-            <Label htmlFor="name">Character Name</Label>
-            <InputContainer>
-              <Input
-                type="text"
-                id="name"
-                name="name"
-                value={formData.name}
-                onChange={handleInputChange}
-                placeholder="Enter your character's name"
-              />
-            </InputContainer>
-          </FormGroup>
 
           <RandomizeButton onClick={handleRandomize}>
             <FaRandom /> Randomize All

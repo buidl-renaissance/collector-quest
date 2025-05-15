@@ -1,13 +1,10 @@
-import React, { useState, useEffect } from "react";
+  import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import styled from "@emotion/styled";
-import { keyframes } from "@emotion/react";
-import { FaArrowLeft, FaArrowRight, FaCrown } from "react-icons/fa";
+import { FaArrowLeft, FaCrown } from "react-icons/fa";
 import PageTransition from "@/components/PageTransition";
 import { useRace } from "@/hooks/useRace";
 import { useCharacterClass } from "@/hooks/useCharacterClass";
-import CharacterImage from "@/components/CharacterImage";
-import CharacterDescription from "@/components/CharacterDescription";
 import MotivationalFusion from "@/components/MotivationalFusion";
 import Page from "@/components/Page";
 import { BackButton } from "@/components/styled/character";
@@ -18,13 +15,15 @@ import {
 import { Title, Subtitle } from "@/components/styled/typography";
 import { useMotivation } from "@/hooks/useMotivation";
 import BottomNavigation from "@/components/BottomNavigation";
+import { useCharacter } from "@/hooks/useCharacter";
 
 const MotivationPage: React.FC = () => {
   const router = useRouter();
+  const { saveCharacter } = useCharacter();
   const { selectedRace, loading: raceLoading } = useRace();
   const { selectedClass, loading: classLoading } = useCharacterClass();
   const {
-    motivationState,
+    motivationState: { generatedMotivation },
     loading: motivationLoading,
     setGeneratedMotivation,
   } = useMotivation();
@@ -40,7 +39,7 @@ const MotivationPage: React.FC = () => {
     }
   }, [selectedRace, selectedClass, raceLoading, classLoading, router]);
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (selectedRace && selectedClass) {
       router.push("/character/backstory");
     }
@@ -50,8 +49,9 @@ const MotivationPage: React.FC = () => {
     router.push("/character/traits");
   };
 
-  const handleMotivationGenerated = (motivation: string) => {
+  const handleMotivationGenerated = async (motivation: string) => {
     setGeneratedMotivation(motivation);
+    await saveCharacter();
   };
 
   if (raceLoading || classLoading || motivationLoading) {
@@ -89,7 +89,7 @@ const MotivationPage: React.FC = () => {
           selectedItemLabel={""}
           selectedItem={"Motivation Generated"}
           onNext={handleNext}
-          disabled={!motivationState.generatedMotivation}
+          disabled={!generatedMotivation}
         />
       </Page>
     </PageTransition>

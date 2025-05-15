@@ -11,7 +11,7 @@ import { useRace } from "@/hooks/useRace";
 import { useCharacterClass } from "@/hooks/useCharacterClass";
 import { useCharacter } from "@/hooks/useCharacter";
 import Page from "@/components/Page";
-import { Container, LoadingMessage } from "@/components/styled/layout";
+import { Container, LoadingMessage, ActionButtons, CrownIcon } from "@/components/styled/layout";
 import { Title, Subtitle } from "@/components/styled/typography";
 import { BackButton } from "@/components/styled/character";
 import { NextButton } from "@/components/styled/buttons";
@@ -22,7 +22,7 @@ const BackstoryPage: React.FC = () => {
   const router = useRouter();
   const { selectedRace, loading: raceLoading } = useRace();
   const { selectedClass, loading: classLoading } = useCharacterClass();
-  const { character } = useCharacter();
+  const { character, saveCharacter } = useCharacter();
   const { 
     backstory, 
     isGeneratingBackstory, 
@@ -46,7 +46,7 @@ const BackstoryPage: React.FC = () => {
   };
 
   const handleNext = () => {
-    if (character && character.backstory) {
+    if (character && backstory) {
       router.push("/character/sheet");
     }
   };
@@ -98,16 +98,5 @@ const BackstoryPage: React.FC = () => {
     </PageTransition>
   );
 };
-
-const ActionButtons = styled.div`
-  display: flex;
-  gap: 1rem;
-  justify-content: flex-end;
-`;
-
-const CrownIcon = styled.div`
-  font-size: 2rem;
-  margin-bottom: 1rem;
-`;
 
 export default BackstoryPage;
