@@ -39,6 +39,9 @@ export interface Character {
     fear?: string[];
     hauntingMemory?: string;
     treasuredPossession?: string;
+    actions?: string[];
+    forces?: string[];
+    archetype?: string;
   };
   motivation?: string;
   bio?: string;

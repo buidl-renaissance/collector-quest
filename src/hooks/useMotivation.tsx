@@ -1,21 +1,15 @@
 import { useState, useEffect } from 'react';
 import { getCurrentCharacterId, getNamespacedItem, getNamespacedJson, setNamespacedJson } from '@/utils/storage';
-
-interface MotivationState {
-  selectedActions: string[];
-  selectedForces: { id: string; intensity: number }[];
-  selectedArchetype: string | null;
-  generatedMotivation: string | null;
-}
+import { useCharacter } from './useCharacter';
 
 export function useMotivation() {
-  const [motivationState, setMotivationState] = useState<MotivationState>({
-    selectedActions: [],
-    selectedForces: [],
-    selectedArchetype: null,
-    generatedMotivation: null
-  });
+  const { character } = useCharacter();
+  const [motivation, setMotivation] = useState<string | null>(null);
+  const [actions, setActions] = useState<string[]>([]);
+  const [forces, setForces] = useState<string[]>([]);
+  const [archetype, setArchetype] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isGenerating, setIsGenerating] = useState(false);
 
   useEffect(() => {
     const loadMotivation = () => {
@@ -32,12 +26,11 @@ export function useMotivation() {
         const archetype = getNamespacedJson(characterId, 'motivationalFusion_selectedArchetype');
         const motivation = getNamespacedItem(characterId, 'motivationalFusion_generatedMotive');
 
-        setMotivationState({
-          selectedActions: actions,
-          selectedForces: forces,
-          selectedArchetype: archetype,
-          generatedMotivation: motivation
-        });
+        setActions(actions);
+        setForces(forces);
+        setArchetype(archetype);
+        setMotivation(motivation);
+
       } catch (error) {
         console.error('Error loading motivation:', error);
       } finally {
@@ -52,15 +45,15 @@ export function useMotivation() {
     const characterId = getCurrentCharacterId();
     if (!characterId) return;
 
-    setMotivationState(prev => ({ ...prev, selectedActions: actions }));
+    setActions(actions);
     setNamespacedJson(characterId, 'motivationalFusion_selectedActions', actions);
   };
 
-  const setSelectedForces = (forces: { id: string; intensity: number }[]) => {
+  const setSelectedForces = (forces: string[]) => {
     const characterId = getCurrentCharacterId();
     if (!characterId) return;
 
-    setMotivationState(prev => ({ ...prev, selectedForces: forces }));
+    setForces(forces);
     setNamespacedJson(characterId, 'motivationalFusion_selectedForces', forces);
   };
 
@@ -68,7 +61,7 @@ export function useMotivation() {
     const characterId = getCurrentCharacterId();
     if (!characterId) return;
 
-    setMotivationState(prev => ({ ...prev, selectedArchetype: archetype }));
+    setArchetype(archetype);
     setNamespacedJson(characterId, 'motivationalFusion_selectedArchetype', archetype);
   };
 
@@ -76,7 +69,7 @@ export function useMotivation() {
     const characterId = getCurrentCharacterId();
     if (!characterId) return;
 
-    setMotivationState(prev => ({ ...prev, generatedMotivation: motivation }));
+    setMotivation(motivation);
     setNamespacedJson(characterId, 'motivationalFusion_generatedMotive', motivation);
   };
 
@@ -84,21 +77,52 @@ export function useMotivation() {
     const characterId = getCurrentCharacterId();
     if (!characterId) return;
 
-    setMotivationState({
-      selectedActions: [],
-      selectedForces: [],
-      selectedArchetype: null,
-      generatedMotivation: null
-    });
+    setActions([]);
+    setForces([]);
+    setArchetype(null);
+    setMotivation(null);
+
     setNamespacedJson(characterId, 'motivationalFusion_selectedActions', []);
     setNamespacedJson(characterId, 'motivationalFusion_selectedForces', []);
     setNamespacedJson(characterId, 'motivationalFusion_selectedArchetype', null);
     setNamespacedJson(characterId, 'motivationalFusion_generatedMotive', null);
   };
 
+  // Generate motive
+  const generateMotivation = async () => {
+    if (actions.length === 0 || forces.length === 0) return;
+
+    setIsGenerating(true);
+
+    try {
+      const response = await fetch('/api/character/generate-motivation', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(character),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to generate motivation');
+      }
+
+      const data = await response.json();
+      setGeneratedMotivation(data.motivation);
+    } catch (error) {
+      console.error('Error generating motivation:', error);
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
   return {
-    motivationState,
+    actions,
+    forces,
+    archetype,
+    motivation,
     loading,
+    generateMotivation,
     setSelectedActions,
     setSelectedForces,
     setSelectedArchetype,

@@ -19,14 +19,9 @@ import { useCharacter } from "@/hooks/useCharacter";
 
 const MotivationPage: React.FC = () => {
   const router = useRouter();
-  const { saveCharacter } = useCharacter();
   const { selectedRace, loading: raceLoading } = useRace();
   const { selectedClass, loading: classLoading } = useCharacterClass();
-  const {
-    motivationState: { generatedMotivation },
-    loading: motivationLoading,
-    setGeneratedMotivation,
-  } = useMotivation();
+  const { motivation } = useMotivation();
 
   // Redirect if no race or class is selected
   useEffect(() => {
@@ -49,12 +44,7 @@ const MotivationPage: React.FC = () => {
     router.push("/character/traits");
   };
 
-  const handleMotivationGenerated = async (motivation: string) => {
-    setGeneratedMotivation(motivation);
-    await saveCharacter();
-  };
-
-  if (raceLoading || classLoading || motivationLoading) {
+  if (raceLoading || classLoading) {
     return (
       <PageContainer>
         <LoadingMessage>
@@ -83,13 +73,13 @@ const MotivationPage: React.FC = () => {
           Craft the perfect motivation for your character&apos;s journey
         </Subtitle>
 
-        <MotivationalFusion onMotivationGenerated={handleMotivationGenerated} />
+        <MotivationalFusion />
 
         <BottomNavigation
           selectedItemLabel={""}
           selectedItem={"Motivation Generated"}
           onNext={handleNext}
-          disabled={!generatedMotivation}
+          disabled={!motivation}
         />
       </Page>
     </PageTransition>

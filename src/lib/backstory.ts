@@ -67,3 +67,4 @@ export const generateBackstory = async (character: Character): Promise<Backstory
     };
   }
 };
+
