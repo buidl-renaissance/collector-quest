@@ -82,7 +82,7 @@ const BackstoryPage: React.FC = () => {
           title="Backstory"
           text={backstory ?? ""}
           isGenerating={isGeneratingBackstory}
-          onRegenerate={() => generateBackstory(character)}
+          onRegenerate={generateBackstory}
           showRegenerateButton={!!backstory}
         />
 

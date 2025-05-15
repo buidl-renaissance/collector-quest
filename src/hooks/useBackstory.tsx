@@ -24,7 +24,6 @@ export function useBackstory() {
   const [loading, setLoading] = useState(true);
 
   const { character, loading: characterLoading } = useCharacter();
-
   const { selectedRace, loading: raceLoading } = useRace();
   const { selectedClass, loading: classLoading } = useCharacterClass();
   const { selectedTraits, loading: traitsLoading } = useTraits();
@@ -76,6 +75,30 @@ export function useBackstory() {
     setBackstory(null);
     setError(null);
     setNamespacedJson(characterId, "backstory_generatedBackstory", null);
+  };
+
+  const generateBackstory = async () => {
+    if (!character) {
+      setError("Missing character information");
+      return;
+    }
+
+    setIsGeneratingBackstory(true);
+    setError(null);
+
+    try {
+      const { backstory: generatedBackstory, success } = await generateBackstoryRequest(character);
+      if (success) {
+        saveBackstory(generatedBackstory);
+      } else {
+        setError("Failed to generate backstory");
+      }
+    } catch (error) {
+      console.error("Error generating backstory:", error);
+      setError("Failed to generate character backstory. Please try again.");
+    } finally {
+      setIsGeneratingBackstory(false);
+    }
   };
 
   // Auto-generate backstory when all required data is loaded
