@@ -18,10 +18,10 @@ export async function generateBackstory(character: Character): Promise<string> {
   const prompt = `Create a rich, detailed backstory for a ${character.sex} ${character.race.name} ${character.class.name} named ${character.name}. 
     
   Character traits:
-  - Personality: ${character.traits.personality.join(", ")}
-  - Ideals: ${character.traits.ideals.join(", ")}
-  - Bonds: ${character.traits.bonds.join(", ")}
-  - Flaws: ${character.traits.flaws.join(", ")}
+  - Personality: ${character.traits.personality?.join(", ")}
+  - Ideals: ${character.traits.ideals?.join(", ")}
+  - Bonds: ${character.traits.bonds?.join(", ")}
+  - Flaws: ${character.traits.flaws?.join(", ")}
   - Actions: ${character.traits.actions?.join(", ")}
   - Driving Forces:  ${character.traits.forces?.join(", ")}
   - Haunting Memory: ${character.traits.hauntingMemory}

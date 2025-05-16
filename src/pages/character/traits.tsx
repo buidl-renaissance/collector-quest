@@ -139,7 +139,7 @@ const CharacterTraitsPage: React.FC = () => {
     value: string
   ) => {
     if (!character) return;
-    const currentValues = character.traits?.[type] as string[];
+    const currentValues = character.traits?.[type] as string[] ?? [];
     let updatedData;
     if (currentValues.includes(value)) {
       updatedData = {

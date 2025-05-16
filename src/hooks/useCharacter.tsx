@@ -7,6 +7,7 @@ import {
   setCurrentCharacterId,
   setCharacterKey,
   getCharacter as getCharacterFromStorage,
+  setCharacter,
 } from "@/utils/storage";
 
 const STORAGE_KEYS = {
@@ -85,6 +86,20 @@ export const useCharacter = () => {
           updateCharacter({
             id: storedCharacterId,
             status: CharacterStatus.NEW,
+            traits: {
+              personality: [],
+              ideals: [],
+              bonds: [],
+              flaws: [],
+              memory: "",
+              possession: "",
+              fear: [],
+              hauntingMemory: "",
+              treasuredPossession: "",
+              actions: [],
+              forces: [],
+              archetype: "",
+            },
           });
         } else {
           characterData.id = storedCharacterId;
@@ -114,7 +129,7 @@ export const useCharacter = () => {
       if (key === "traits" && value) {
         // Handle nested traits object
         Object.entries(value).forEach(([traitKey, traitValue]) => {
-          const traits = getCharacterKey(characterId, "traits");
+          const traits = getCharacterKey(characterId, "traits") ?? {};
           traits[traitKey] = traitValue;
           setCharacterKey(characterId, "traits", traits);
         });

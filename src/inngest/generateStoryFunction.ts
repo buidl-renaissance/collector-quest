@@ -1,7 +1,7 @@
-import { inngest } from './client';
-import { CharacterDB } from '@/db/character';
-import { completeResult, failResult, updateResult } from '@/lib/storage';
-import { generateBackstory, generateMotivation } from '@/lib/generateStory';
+import { inngest } from "./client";
+import { CharacterDB } from "@/db/character";
+import { completeResult, failResult, updateResult } from "@/lib/storage";
+import { generateBackstory, generateMotivation } from "@/lib/generateStory";
 
 interface GenerateBackstoryEvent {
   data: {
@@ -17,69 +17,112 @@ interface GenerateBackstoryEvent {
 export const generateStoryFunction = inngest.createFunction(
   { id: "generate-character-story" },
   { event: "character/generate.story" },
-  async ({ event, step }: { event: GenerateBackstoryEvent, step: any }) => {
+  async ({ event, step }: { event: GenerateBackstoryEvent; step: any }) => {
     try {
       const { characterId, resultId } = event.data;
       const characterDB = new CharacterDB();
       const character = await characterDB.getCharacter(characterId);
 
       if (!character) {
-        throw new Error('Character not found');
+        throw new Error("Character not found");
+      }
+
+      if (!resultId) {
+        throw new Error("Result ID is required");
       }
 
       // Update the result with progress
-      if (resultId) {
-        updateResult(resultId, JSON.stringify({
-          message: "Generating character backstory and motivation..."
-        }));
-      }
+      updateResult(
+        resultId,
+        JSON.stringify({
+          message: "Generating character backstory and motivation...",
+          step: "generate-motivation",
+        })
+      );
 
-      const motivationResult = await step.run("generate-motivation", async () => {
-        return await generateMotivation(character);
-      });
+      const motivationResult = await step.run(
+        "generate-motivation",
+        async () => {
+          return await generateMotivation(character);
+        }
+      );
+
+      updateResult(
+        resultId,
+        JSON.stringify({
+          message: "Motivation generated successfully",
+          motivation: motivationResult,
+          step: "save-motivation",
+        })
+      );
 
       // save motivation to character
       await step.run("save-motivation", async () => {
         await characterDB.updateCharacter(characterId, {
-          motivation: motivationResult
+          motivation: motivationResult,
         });
       });
+
+      updateResult(
+        resultId,
+        JSON.stringify({
+          message: "Motivation saved successfully",
+          motivation: motivationResult,
+          step: "generate-backstory",
+        })
+      );
 
       // Generate backstory and motivation
       const backstoryResult = await step.run("generate-backstory", async () => {
         return await generateBackstory(character);
       });
 
+      updateResult(
+        resultId,
+        JSON.stringify({
+          message: "Backstory generated successfully",
+          backstory: backstoryResult,
+          step: "save-backstory",
+        })
+      );
+
       // save backstory to character
       await step.run("save-backstory", async () => {
         await characterDB.updateCharacter(characterId, {
-          backstory: backstoryResult
+          backstory: backstoryResult,
         });
       });
-    
+
       // Complete the result
-      if (resultId) {
-        completeResult(resultId, JSON.stringify({
+      completeResult(
+        resultId,
+        JSON.stringify({
           message: "Backstory and motivation generated successfully",
-          backstory: backstoryResult.backstory,
-          motivation: backstoryResult.motivation
-        }));
-      }
+          backstory: backstoryResult,
+          motivation: motivationResult,
+        })
+      );
+    
 
       return {
         characterId,
-        backstory: backstoryResult.backstory,
-        motivation: backstoryResult.motivation
+        backstory: backstoryResult,
+        motivation: motivationResult,
       };
     } catch (error) {
       console.error("Error generating backstory:", error);
-      
+
       if (event.data.resultId) {
-        failResult(event.data.resultId, JSON.stringify({
-          error: `Failed to generate backstory: ${error instanceof Error ? error.message : String(error)}`
-        }));
+        failResult(
+          event.data.resultId,
+          JSON.stringify({
+            error: `Failed to generate backstory: ${
+              error instanceof Error ? error.message : String(error)
+            }`,
+          })
+        );
       }
-      
+
       throw error;
     }
   }

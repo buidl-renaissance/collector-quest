@@ -117,32 +117,8 @@ const ImageGeneratorPage = () => {
     reader.readAsDataURL(file);
   };
 
-  const handleNext = async () => {
-    if (!generatedImage) {
-      setError("Please generate a character image first");
-      return;
-    }
-
-    try {
-      setIsSaving(true);
-      setError(null);
-
-      // Update the character with the new image URL
-      await updateCharacter({
-        ...character,
-        image_url: generatedImage,
-      });
-
-      // Navigate to the name page
-      router.push("/character/traits");
-    } catch (err) {
-      console.error("Error saving character image:", err);
-      setError(
-        err instanceof Error ? err.message : "Failed to save character image"
-      );
-    } finally {
-      setIsSaving(false);
-    }
+  const handleNext = () => {
+    router.push("/character/traits");
   };
 
   const handleSkip = async () => {

@@ -30,7 +30,7 @@ const POLL_INTERVAL = 2000; // 2 seconds
 const MAX_POLL_ATTEMPTS = 60; // 2 minute maximum
 
 export function useCharacterImageGenerator(): UseCharacterImageGeneratorResult {
-  const { character } = useCharacter();
+  const { character, updateCharacter } = useCharacter();
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [resultId, setResultId] = useState<string | null>(null);
@@ -79,6 +79,10 @@ export function useCharacterImageGenerator(): UseCharacterImageGeneratorResult {
           setError(null);
         } else if (result.status === 'pending' && resultData.imageUrl) {
           setGeneratedImage(resultData.imageUrl);
+          updateCharacter({
+            ...character,
+            image_url: resultData.imageUrl,
+          });
         } else if (result.status === 'failed' || result.status === 'error') {
           setError(result.error || 'Failed to generate image');
           setPollStatus(result.status);

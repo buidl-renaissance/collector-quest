@@ -1,18 +1,7 @@
 import { useState, useEffect } from 'react';
 import { getCurrentCharacterId, getCharacterKey, setCharacterKey } from '@/utils/storage';
 import { useCharacter } from './useCharacter';
-interface Traits {
-  personality: string[];
-  ideals: string[];
-  bonds: string[];
-  flaws: string[];
-  memory?: string;
-  possession?: string;
-  fear?: string[];
-  hauntingMemory?: string;
-  treasuredPossession?: string;
-}
-
+import { Traits } from './useCharacter';
 export function useTraits() {
   const { character, updateCharacter } = useCharacter();
   const [selectedTraits, setSelectedTraits] = useState<Traits | null>(null);

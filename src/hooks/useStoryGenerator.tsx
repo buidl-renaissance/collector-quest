@@ -26,7 +26,7 @@ interface UseStoryGeneratorReturn {
 }
 
 export const useStoryGenerator = (): UseStoryGeneratorReturn => {
-  const { character } = useCharacter();
+  const { character, updateCharacter } = useCharacter();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [backstory, setBackstory] = useState<string | null>(null);
@@ -98,10 +98,18 @@ export const useStoryGenerator = (): UseStoryGeneratorReturn => {
         
         if (resultData.motivation) {
           setMotivation(resultData.motivation);
+          updateCharacter({
+            ...character,
+            motivation: resultData.motivation,
+          });
         }
 
         if (resultData.backstory) {
           setBackstory(resultData.backstory);
+          updateCharacter({
+            ...character,
+            backstory: resultData.backstory,
+          });
         }
 
         if (!result.success && result.message?.includes('error')) {

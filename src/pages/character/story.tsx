@@ -122,15 +122,14 @@ const ErrorMessage = styled.div`
 
 export default function CharacterStoryPage() {
   const router = useRouter();
-  const { id } = router.query;
   const { character } = useCharacter();
-  const { generateStory, isLoading, story, progress, error: storyError } = useStoryGenerator();
+  const { generateStory, isLoading, backstory, motivation, progress, error: storyError } = useStoryGenerator();
 
   useEffect(() => {
-    if (character && !isLoading && !story) {
+    if (character && !isLoading && !backstory && !motivation) {
       generateStory();
     }
-  }, [character, isLoading, story, generateStory]);
+  }, [character, isLoading, backstory, motivation, generateStory]);
   
   if (!character) {
     return <Container>Character not found</Container>;
@@ -147,16 +146,12 @@ export default function CharacterStoryPage() {
         
         <Section>
           <SectionTitle>Motivation</SectionTitle>
-          <ContentBox>
-            {character.motivation || "No motivation provided"}
-          </ContentBox>
+          {character.motivation || motivation || "No motivation provided"}
         </Section>
         
         <Section>
           <SectionTitle>Backstory</SectionTitle>
-          <ContentBox>
-            {character.backstory || "No backstory provided"}
-          </ContentBox>
+          {character.backstory || backstory || "No backstory provided"}
         </Section>
 
       </Container>
