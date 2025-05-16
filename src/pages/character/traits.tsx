@@ -6,6 +6,8 @@ import {
   FaArrowLeft,
   FaRandom,
   FaPlus,
+  FaCheck,
+  FaSpinner,
 } from "react-icons/fa";
 import PageTransition from "@/components/PageTransition";
 import { useCharacterClass } from "@/hooks/useCharacterClass";
@@ -28,6 +30,7 @@ import {
 import { FormGroup, TextArea } from "@/components/styled/forms";
 import { FormSection } from "@/components/styled/forms";
 import { navigateTo } from "@/utils/navigation";
+import useGeneratedTraits from "@/hooks/useGeneratedTraits";
 
 const CharacterTraitsPage: React.FC = () => {
   const router = useRouter();
@@ -35,43 +38,63 @@ const CharacterTraitsPage: React.FC = () => {
   const { character, updateCharacter, saveCharacter, updateCharacterTrait } = useCharacter();
   const { selectedClass, loading: classLoading } = useCharacterClass();
   const { selectedRace, loading: raceLoading } = useRace();
+  const { generateTraits, loading: traitsLoading, error: traitsError, traits: generatedTraits } = useGeneratedTraits();
+  const [selectedPersonality, setSelectedPersonality] = useState<string[]>([]);
+  const [selectedIdeals, setSelectedIdeals] = useState<string[]>([]);
+  const [selectedFlaws, setSelectedFlaws] = useState<string[]>([]);
+  const [selectedBonds, setSelectedBonds] = useState<string[]>([]);
 
-  // State for custom options
-  const [customPersonality, setCustomPersonality] = useState("");
-  const [customIdeals, setCustomIdeals] = useState("");
-  const [customFlaws, setCustomFlaws] = useState("");
+  // Automatically trigger trait generation when the page loads
+  useEffect(() => {
+    if (!generatedTraits && !traitsLoading) {
+      generateTraits();
+    }
+  }, [generatedTraits, traitsLoading]);
 
-  // State for option arrays
-  const [personalityOptions, setPersonalityOptions] = useState([
-    "Brooding",
-    "Cheerful",
-    "Suspicious",
-    "Bold",
-    "Cautious",
-    "Eccentric",
-    "Honorable",
-    "Mischievous",
-  ]);
-  const [idealsOptions, setIdealsOptions] = useState([
-    "Revenge",
-    "Knowledge",
-    "Wealth",
-    "Glory",
-    "Power",
-    "Justice",
-    "Freedom",
-    "Love",
-  ]);
-  const [flawsOptions, setFlawsOptions] = useState([
-    "Darkness",
-    "Failure",
-    "Betrayal",
-    "Loss",
-    "Confinement",
-    "The Unknown",
-    "Death",
-    "Being Forgotten",
-  ]);
+  // Update traits when generated traits are available
+  useEffect(() => {
+    if (generatedTraits && character) {
+      // Only initialize selections if they're empty
+      if (!selectedPersonality.length && generatedTraits.personality) {
+        setSelectedPersonality(character.traits?.personality || []);
+      }
+      if (!selectedIdeals.length && generatedTraits.ideals) {
+        setSelectedIdeals(character.traits?.ideals || []);
+      }
+      if (!selectedFlaws.length && generatedTraits.flaws) {
+        setSelectedFlaws(character.traits?.flaws || []);
+      }
+      if (!selectedBonds.length && generatedTraits.bonds) {
+        setSelectedBonds(character.traits?.bonds || []);
+      }
+    }
+  }, [generatedTraits, character]);
+
+  // Update character with selected traits only when selections change
+  useEffect(() => {
+    if (character && (
+      selectedPersonality.length > 0 ||
+      selectedIdeals.length > 0 ||
+      selectedFlaws.length > 0 ||
+      selectedBonds.length > 0
+    )) {
+      const updatedTraits = {
+        ...character.traits,
+        personality: selectedPersonality,
+        ideals: selectedIdeals,
+        flaws: selectedFlaws,
+        bonds: selectedBonds
+      };
+
+      // Only update if there are actual changes
+      if (JSON.stringify(updatedTraits) !== JSON.stringify(character.traits)) {
+        updateCharacter({
+          ...character,
+          traits: updatedTraits
+        });
+      }
+    }
+  }, [selectedPersonality, selectedIdeals, selectedFlaws, selectedBonds]);
 
   const handleInputChange = (
     e: React.ChangeEvent<
@@ -99,92 +122,38 @@ const CharacterTraitsPage: React.FC = () => {
     });
   };
 
-  const handleAddCustomOption = (type: "personality" | "ideals" | "flaws") => {
-
-    if (!character) return;
-    if (type === "personality" && customPersonality.trim()) {
-      setPersonalityOptions((prev) => [...prev, customPersonality.trim()]);
-      updateCharacter({
-        ...character,
-        traits: {
-          ...character.traits,
-          personality: [...(character.traits?.personality || []), customPersonality.trim()]
-        }
-      });
-      setCustomPersonality("");
-    } else if (type === "ideals" && customIdeals.trim()) {
-      setIdealsOptions((prev) => [...prev, customIdeals.trim()]);
-      updateCharacter({
-        ...character,
-        traits: {
-          ...character.traits,
-          ideals: [...(character.traits?.ideals || []), customIdeals.trim()]
-        }
-      });
-      setCustomIdeals("");
-    } else if (type === "flaws" && customFlaws.trim()) {
-      setFlawsOptions((prev) => [...prev, customFlaws.trim()]);
-      updateCharacter({
-        ...character,
-        traits: {
-          ...character.traits,
-          flaws: [...(character.traits?.flaws || []), customFlaws.trim()]
-        }
-      });
-      setCustomFlaws("");
+  const handleTraitSelection = (category: 'personality' | 'ideals' | 'flaws' | 'bonds', trait: string) => {
+    let currentSelection: string[] = [];
+    let setSelection: React.Dispatch<React.SetStateAction<string[]>> = () => {};
+    
+    switch(category) {
+      case 'personality':
+        currentSelection = [...selectedPersonality];
+        setSelection = setSelectedPersonality;
+        break;
+      case 'ideals':
+        currentSelection = [...selectedIdeals];
+        setSelection = setSelectedIdeals;
+        break;
+      case 'flaws':
+        currentSelection = [...selectedFlaws];
+        setSelection = setSelectedFlaws;
+        break;
+      case 'bonds':
+        currentSelection = [...selectedBonds];
+        setSelection = setSelectedBonds;
+        break;
     }
-  };
 
-  const handleSelectChip = (
-    type: "personality" | "ideals" | "flaws",
-    value: string
-  ) => {
-    updateCharacterTrait(type, value);
-  };
-
-  const handleRandomize = () => {
-    // This would be expanded with actual random options
-    const randomPersonality = [
-      personalityOptions[Math.floor(Math.random() * personalityOptions.length)],
-    ];
-    const randomIdeals = [
-      idealsOptions[Math.floor(Math.random() * idealsOptions.length)],
-    ];
-    const randomFlaws = [
-      flawsOptions[Math.floor(Math.random() * flawsOptions.length)],
-    ];
-
-    const randomizedData = {
-      name: character?.name,
-      personality: randomPersonality,
-      ideals: randomIdeals,
-      bonds: [
-        [
-          "A village burning",
-          "A lost love",
-          "A broken promise",
-          "A mysterious stranger",
-        ][Math.floor(Math.random() * 4)],
-      ],
-      flaws: randomFlaws,
-      hauntingMemory: [
-        "A village burning",
-        "A lost love",
-        "A broken promise",
-        "A mysterious stranger",
-      ][Math.floor(Math.random() * 4)],
-      treasuredPossession: [
-        "A family heirloom",
-        "A mysterious map",
-        "A mentor's gift",
-        "A token of victory",
-      ][Math.floor(Math.random() * 4)],
-    };
-
-    updateCharacter({
-      ...character,
-      traits: randomizedData
-    });
+    // Toggle selection (add or remove)
+    if (currentSelection.includes(trait)) {
+      setSelection(currentSelection.filter(item => item !== trait));
+    } else {
+      // Only allow up to 3 selections per category
+      if (currentSelection.length < 3) {
+        setSelection([...currentSelection, trait]);
+      }
+    }
   };
 
   const handleBack = () => {
@@ -208,11 +177,10 @@ const CharacterTraitsPage: React.FC = () => {
   const isFormComplete = () => {
     return (
       character?.name &&
-      (character?.traits?.personality?.length || 0) > 0 &&
-      (character?.traits?.ideals?.length || 0) > 0 &&
-      (character?.traits?.flaws?.length || 0) > 0 &&
-      character?.traits?.hauntingMemory &&
-      character?.traits?.treasuredPossession
+      (selectedPersonality.length === 3) &&
+      (selectedIdeals.length === 3) &&
+      (selectedFlaws.length === 3) &&
+      (selectedBonds.length === 3)
     );
   };
 
@@ -224,121 +192,98 @@ const CharacterTraitsPage: React.FC = () => {
         </BackButton> */}
 
         <HeroSection>
-          <Title>Forge Your Legend in Seconds</Title>
+          <Title>Character Traits</Title>
           <Subtitle>
-            Answer a few questions. Get a rich character backstory.
+            Craft your character&apos;s personality, ideals, flaws, and bonds.
           </Subtitle>
         </HeroSection>
 
         <FormSection>
+          {traitsLoading && (
+            <LoadingContainer>
+              <SpinnerIcon><FaSpinner /></SpinnerIcon>
+              <LoadingMessage>Crafting your character&apos;s traits...</LoadingMessage>
+              <LoadingSubtext>Analyzing your character&apos;s race, class, and background to create unique traits.</LoadingSubtext>
+            </LoadingContainer>
+          )}
+          
+          {traitsError && <ErrorMessage>{traitsError}</ErrorMessage>}
 
-          <RandomizeButton onClick={handleRandomize}>
-            <FaRandom /> Randomize All
-          </RandomizeButton>
+          {generatedTraits && (
+            <>
+              <TraitSection>
+                <TraitSectionTitle>Personality Traits (Select 3)</TraitSectionTitle>
+                <TraitSelectionInfo>Selected: {selectedPersonality.length}/3</TraitSelectionInfo>
+                <TraitGrid>
+                  {generatedTraits.personality?.map((trait, index) => (
+                    <TraitCard 
+                      key={index}
+                      selected={selectedPersonality.includes(trait)}
+                      onClick={() => handleTraitSelection('personality', trait)}
+                      disabled={selectedPersonality.length >= 3 && !selectedPersonality.includes(trait)}
+                    >
+                      {selectedPersonality.includes(trait) && <CheckIcon><FaCheck /></CheckIcon>}
+                      {trait}
+                    </TraitCard>
+                  ))}
+                </TraitGrid>
+              </TraitSection>
 
-          <FormGroup>
-            <Label htmlFor="personality">
-              Personality Traits (select multiple)
-            </Label>
-            <ChipsContainer>
-              {personalityOptions.map((option, index) => (
-                <Chip
-                  key={index}
-                  selected={character?.traits?.personality?.includes(option)}
-                  onClick={() => handleSelectChip("personality", option)}
-                >
-                  {option}
-                </Chip>
-              ))}
-              <CustomChipInput>
-                <CustomInput
-                  type="text"
-                  value={customPersonality}
-                  onChange={(e) => setCustomPersonality(e.target.value)}
-                  placeholder="Add custom trait"
-                />
-                <AddChipButton
-                  onClick={() => handleAddCustomOption("personality")}
-                >
-                  <FaPlus />
-                </AddChipButton>
-              </CustomChipInput>
-            </ChipsContainer>
-          </FormGroup>
-          <FormGroup>
-            <Label htmlFor="ideals">
-              Primary Motivations (select multiple)
-            </Label>
-            <ChipsContainer>
-              {idealsOptions.map((option, index) => (
-                <Chip
-                  key={index}
-                  selected={character?.traits?.ideals?.includes(option)}
-                  onClick={() => handleSelectChip("ideals", option)}
-                >
-                  {option}
-                </Chip>
-              ))}
-              <CustomChipInput>
-                <CustomInput
-                  type="text"
-                  value={customIdeals}
-                  onChange={(e) => setCustomIdeals(e.target.value)}
-                  placeholder="Add custom motivation"
-                />
-                <AddChipButton onClick={() => handleAddCustomOption("ideals")}>
-                  <FaPlus />
-                </AddChipButton>
-              </CustomChipInput>
-            </ChipsContainer>
-          </FormGroup>
-          <FormGroup>
-            <Label htmlFor="flaws">Greatest Fears (select multiple)</Label>
-            <ChipsContainer>
-              {flawsOptions.map((option, index) => (
-                <Chip
-                  key={index}
-                  selected={character?.traits?.flaws?.includes(option)}
-                  onClick={() => handleSelectChip("flaws", option)}
-                >
-                  {option}
-                </Chip>
-              ))}
-              <CustomChipInput>
-                <CustomInput
-                  type="text"
-                  value={customFlaws}
-                  onChange={(e) => setCustomFlaws(e.target.value)}
-                  placeholder="Add custom fear"
-                />
-                <AddChipButton onClick={() => handleAddCustomOption("flaws")}>
-                  <FaPlus />
-                </AddChipButton>
-              </CustomChipInput>
-            </ChipsContainer>
-          </FormGroup>
-          <FormGroup>
-            <Label htmlFor="hauntingMemory">A Memory That Haunts You</Label>
-            <TextArea
-              id="hauntingMemory"
-              name="hauntingMemory"
-              value={character?.traits?.hauntingMemory}
-              onChange={handleInputChange}
-              placeholder="Describe a memory that haunts your character..."
-            />
-          </FormGroup>
-          <FormGroup>
-            <Label htmlFor="treasuredPossession">
-              Most Treasured Possession
-            </Label>
-            <TextArea
-              id="treasuredPossession"
-              name="treasuredPossession"
-              value={character?.traits?.treasuredPossession}
-              onChange={handleInputChange}
-              placeholder="Describe your character's most treasured possession..."
-            />
-          </FormGroup>
+              <TraitSection>
+                <TraitSectionTitle>Ideals (Select 3)</TraitSectionTitle>
+                <TraitSelectionInfo>Selected: {selectedIdeals.length}/3</TraitSelectionInfo>
+                <TraitGrid>
+                  {generatedTraits.ideals?.map((ideal, index) => (
+                    <TraitCard 
+                      key={index}
+                      selected={selectedIdeals.includes(ideal)}
+                      onClick={() => handleTraitSelection('ideals', ideal)}
+                      disabled={selectedIdeals.length >= 3 && !selectedIdeals.includes(ideal)}
+                    >
+                      {selectedIdeals.includes(ideal) && <CheckIcon><FaCheck /></CheckIcon>}
+                      {ideal}
+                    </TraitCard>
+                  ))}
+                </TraitGrid>
+              </TraitSection>
+
+              <TraitSection>
+                <TraitSectionTitle>Flaws (Select 3)</TraitSectionTitle>
+                <TraitSelectionInfo>Selected: {selectedFlaws.length}/3</TraitSelectionInfo>
+                <TraitGrid>
+                  {generatedTraits.flaws?.map((flaw, index) => (
+                    <TraitCard 
+                      key={index}
+                      selected={selectedFlaws.includes(flaw)}
+                      onClick={() => handleTraitSelection('flaws', flaw)}
+                      disabled={selectedFlaws.length >= 3 && !selectedFlaws.includes(flaw)}
+                    >
+                      {selectedFlaws.includes(flaw) && <CheckIcon><FaCheck /></CheckIcon>}
+                      {flaw}
+                    </TraitCard>
+                  ))}
+                </TraitGrid>
+              </TraitSection>
+
+              <TraitSection>
+                <TraitSectionTitle>Bonds (Select 3)</TraitSectionTitle>
+                <TraitSelectionInfo>Selected: {selectedBonds.length}/3</TraitSelectionInfo>
+                <TraitGrid>
+                  {generatedTraits.bonds?.map((bond, index) => (
+                    <TraitCard 
+                      key={index}
+                      selected={selectedBonds.includes(bond)}
+                      onClick={() => handleTraitSelection('bonds', bond)}
+                      disabled={selectedBonds.length >= 3 && !selectedBonds.includes(bond)}
+                    >
+                      {selectedBonds.includes(bond) && <CheckIcon><FaCheck /></CheckIcon>}
+                      {bond}
+                    </TraitCard>
+                  ))}
+                </TraitGrid>
+              </TraitSection>
+            </>
+          )}
         </FormSection>
 
         <BottomNavigation
@@ -375,31 +320,101 @@ const float = keyframes`
   100% { transform: translateY(0px); }
 `;
 
+const spin = keyframes`
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+`;
+
 const HeroSection = styled.div`
   text-align: center;
   margin-bottom: 2rem;
   animation: ${slideUp} 0.5s ease-out;
 `;
 
-const RandomizeButton = styled.button`
+const LoadingContainer = styled.div`
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  margin: 0 auto 2rem;
-  padding: 0.6rem 1.2rem;
-  background-color: rgba(187, 137, 48, 0.2);
+  padding: 3rem 1rem;
+  text-align: center;
+  animation: ${fadeIn} 0.5s ease-out;
+`;
+
+const SpinnerIcon = styled.div`
+  font-size: 2rem;
   color: #bb8930;
-  border: 1px solid #bb8930;
-  border-radius: 4px;
+  margin-bottom: 1rem;
+  animation: ${spin} 1.5s linear infinite;
+`;
+
+const LoadingMessage = styled.div`
   font-family: "Cormorant Garamond", serif;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: all 0.3s;
+  font-size: 1.5rem;
+  color: #bb8930;
+  margin-bottom: 0.5rem;
+`;
+
+const LoadingSubtext = styled.div`
+  font-size: 0.9rem;
+  color: #aaa;
+  max-width: 400px;
+`;
+
+const TraitSection = styled.div`
+  margin-bottom: 2rem;
+  animation: ${fadeIn} 0.5s ease-out;
+`;
+
+const TraitSectionTitle = styled.h3`
+  font-family: "Cormorant Garamond", serif;
+  font-size: 1.3rem;
+  margin-bottom: 0.5rem;
+  color: #bb8930;
+`;
+
+const TraitSelectionInfo = styled.div`
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+  color: #aaa;
+`;
+
+const TraitGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+`;
+
+const TraitCard = styled.div<{ selected: boolean; disabled: boolean }>`
+  position: relative;
+  padding: 1rem;
+  background-color: ${props => props.selected ? 'rgba(187, 137, 48, 0.2)' : 'rgba(30, 30, 30, 0.3)'};
+  border: 1px solid ${props => props.selected ? '#bb8930' : '#333'};
+  border-radius: 4px;
+  cursor: ${props => props.disabled ? 'not-allowed' : 'pointer'};
+  transition: all 0.2s;
+  opacity: ${props => props.disabled ? 0.5 : 1};
 
   &:hover {
-    background-color: rgba(187, 137, 48, 0.3);
+    background-color: ${props => props.disabled ? 'rgba(30, 30, 30, 0.3)' : props.selected ? 'rgba(187, 137, 48, 0.3)' : 'rgba(50, 50, 50, 0.3)'};
   }
+`;
+
+const CheckIcon = styled.span`
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  color: #bb8930;
+`;
+
+const ErrorMessage = styled.div`
+  color: #e74c3c;
+  text-align: center;
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+  border-radius: 4px;
+  background-color: rgba(231, 76, 60, 0.1);
 `;
 
 export default CharacterTraitsPage;

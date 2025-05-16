@@ -2,13 +2,18 @@ import React from "react";
 import { useRouter } from "next/router";
 import styled from "@emotion/styled";
 import { keyframes } from "@emotion/react";
-import { FaArrowRight, FaCrown, FaMars, FaVenus, FaGenderless } from "react-icons/fa";
+import { FaArrowRight, FaCrown, FaMars, FaVenus, FaGenderless, FaArrowLeft } from "react-icons/fa";
 import { useSex, Sex } from "@/hooks/useSex";
 import PageTransition from "@/components/PageTransition";
+import { BackButton } from "@/components/styled/buttons";
 
 const SexSelectionPage: React.FC = () => {
   const router = useRouter();
   const { selectedSex, selectSex, loading } = useSex();
+
+  const handleBack = () => {
+    router.push('/character/name');
+  };
 
   const handleNext = () => {
     if (selectedSex) {
@@ -30,6 +35,10 @@ const SexSelectionPage: React.FC = () => {
   return (
     <PageTransition>
       <Container>
+        <BackButton onClick={handleBack}>
+          <FaArrowLeft /> Back to Name Selection
+        </BackButton>
+
         <Title>Craft Your Character</Title>
         <Subtitle>Who will you be in Lord Smearington&apos;s Gallery of the Absurd?</Subtitle>
         

@@ -52,7 +52,7 @@ const MasterPage: React.FC = () => {
     try {
       setIsCreating(true);
       await createCharacter();
-      router.push('/character/sex');
+      router.push('/character/name');
     } catch (err) {
       console.error('Error creating character:', err);
       setIsCreating(false);

@@ -42,7 +42,7 @@ const AlignmentPage: React.FC = () => {
   };
 
   const handleBack = () => {
-    router.push('/character/image');
+    router.push('/character/background');
   };
 
   const handleNext = async () => {
@@ -51,10 +51,9 @@ const AlignmentPage: React.FC = () => {
   };
 
   return (
-    <PageTransition>
       <Page darkMode={true}>
         <BackButton onClick={handleBack}>
-          <FaArrowLeft /> Back to Class Selection
+          <FaArrowLeft /> Back to Background
         </BackButton>
 
         <HeroSection>
@@ -115,7 +114,6 @@ const AlignmentPage: React.FC = () => {
           />
         )}
       </Page>
-    </PageTransition>
   );
 };
 

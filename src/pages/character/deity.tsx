@@ -79,7 +79,7 @@ const DeityPage: React.FC = () => {
   };
 
   const handleNext = async () => {
-    await saveCharacter();
+    // await saveCharacter();
     router.push('/character/traits');
   };
 

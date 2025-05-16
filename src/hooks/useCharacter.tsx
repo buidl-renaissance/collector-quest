@@ -28,6 +28,7 @@ export interface Traits {
   alignment?: string;
   deity?: string;
   personality?: string[];
+  background?: string;
   ideals?: string[];
   bonds?: string[];
   flaws?: string[];
@@ -89,6 +90,7 @@ export const useCharacter = () => {
             id: storedCharacterId,
             status: CharacterStatus.NEW,
             traits: {
+              background: "",
               personality: [],
               ideals: [],
               bonds: [],

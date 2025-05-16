@@ -42,7 +42,7 @@ const NamePage = () => {
         name: name.trim(),
       });
 
-      router.push("/character/image");
+      router.push("/character/sex");
     } catch (err) {
       console.error("Error saving character name:", err);
       setError(
@@ -62,9 +62,9 @@ const NamePage = () => {
   return (
     <PageTransition>
       <Page width="narrow">
-        <BackButton onClick={handleBack}>
+        {/* <BackButton onClick={handleBack}>
           <FaArrowLeft /> Back to Class Selection
-        </BackButton>
+        </BackButton> */}
 
         <Title>Name Your Character</Title>
         
