@@ -7,8 +7,8 @@ interface GenerateImageResult {
 }
 
 interface PollResult {
-  status: 'pending' | 'completed' | 'failed';
-  imageUrl?: string;
+  status: 'pending' | 'completed' | 'failed' | 'error';
+  result?: string;
   error?: string;
 }
 
@@ -18,7 +18,7 @@ interface UseCharacterImageGeneratorResult {
   error: string | null;
   resultId: string | null;
   generatedImage: string | null;
-  pollStatus: 'idle' | 'polling' | 'completed' | 'failed';
+  pollStatus: 'idle' | 'polling' | 'completed' | 'failed' | 'error';
 }
 
 const POLL_INTERVAL = 2000; // 2 seconds
@@ -29,7 +29,8 @@ export function useCharacterImageGenerator(): UseCharacterImageGeneratorResult {
   const [error, setError] = useState<string | null>(null);
   const [resultId, setResultId] = useState<string | null>(null);
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
-  const [pollStatus, setPollStatus] = useState<'idle' | 'polling' | 'completed' | 'failed'>('idle');
+  const [resultData, setResultData] = useState<string | null>(null);
+  const [pollStatus, setPollStatus] = useState<'idle' | 'polling' | 'completed' | 'failed' | 'error'>('idle');
   const [pollAttempts, setPollAttempts] = useState(0);
   const { character } = useCharacter();
 
@@ -52,21 +53,27 @@ export function useCharacterImageGenerator(): UseCharacterImageGeneratorResult {
     let pollTimeout: NodeJS.Timeout;
 
     const startPolling = async () => {
-      if (!resultId || pollStatus === 'completed' || pollStatus === 'failed') {
+      if (!resultId || pollStatus === 'completed' || pollStatus === 'failed' || pollStatus === 'error') {
         return;
       }
 
       try {
         setPollStatus('polling');
         const result = await pollResult(resultId);
-
-        if (result.status === 'completed' && result.imageUrl) {
-          setGeneratedImage(result.imageUrl);
+        const resultData = result.result ? JSON.parse(result.result) : {};
+        console.log('result', resultData);
+        setResultData(resultData);
+        if (result.status === 'completed' && resultData.imageUrl) {
+          setGeneratedImage(resultData.imageUrl);
           setPollStatus('completed');
           setError(null);
-        } else if (result.status === 'failed') {
+        } else if (result.status === 'pending' && resultData.imageUrl) {
+          setGeneratedImage(resultData.imageUrl);
+        } else if (result.status === 'failed' || result.status === 'error') {
           setError(result.error || 'Failed to generate image');
-          setPollStatus('failed');
+          setPollStatus(result.status);
+          // Stop polling when failed or error
+          return;
         } else {
           // Still pending, continue polling
           setPollAttempts(prev => {
@@ -82,7 +89,9 @@ export function useCharacterImageGenerator(): UseCharacterImageGeneratorResult {
         }
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to check result status');
-        setPollStatus('failed');
+        setPollStatus('error');
+        // Stop polling on error
+        return;
       }
     };
 

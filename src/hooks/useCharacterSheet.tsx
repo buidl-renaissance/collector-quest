@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Character } from './useCharacter';
 import { Attack } from '@/data/attacks';
-import { getCurrentCharacterId, getNamespacedJson, setNamespacedJson } from '@/utils/storage';
+import { getCurrentCharacterId, getCharacterKey, setCharacterKey } from '@/utils/storage';
 
 export interface CharacterSheet {
   abilities: {
@@ -74,7 +74,7 @@ export function useCharacterSheet() {
 
       const characterId = getCurrentCharacterId();
       if (characterId) {
-        setNamespacedJson(characterId, 'character_sheet', data);
+        setCharacterKey(characterId, 'character_sheet', data);
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
@@ -93,7 +93,7 @@ export function useCharacterSheet() {
       if (!prev) return prev;
       const newSheet = { ...prev };
       newSheet.deathSaves[type] = Math.max(0, Math.min(3, value));
-      setNamespacedJson(characterId, 'character_sheet', newSheet);
+      setCharacterKey(characterId, 'character_sheet', newSheet);
       return newSheet;
     });
   };
@@ -110,7 +110,7 @@ export function useCharacterSheet() {
       const skillIndex = newSheet.skills.findIndex(s => s.name === skillName);
       if (skillIndex !== -1) {
         newSheet.skills[skillIndex].proficient = proficient;
-        setNamespacedJson(characterId, 'character_sheet', newSheet);
+        setCharacterKey(characterId, 'character_sheet', newSheet);
       }
       return newSheet;
     });
@@ -126,7 +126,7 @@ export function useCharacterSheet() {
       if (!prev) return prev;
       const newSheet = { ...prev };
       newSheet.combatStats.currentHitPoints = Math.max(0, value);
-      setNamespacedJson(characterId, 'character_sheet', newSheet);
+      setCharacterKey(characterId, 'character_sheet', newSheet);
       return newSheet;
     });
   };
@@ -138,7 +138,7 @@ export function useCharacterSheet() {
         const characterId = getCurrentCharacterId();
         if (!characterId) return;
 
-        const savedSheet = getNamespacedJson(characterId, 'character_sheet');
+        const savedSheet = getCharacterKey(characterId, 'character_sheet');
         if (savedSheet) {
           setCharacterSheet(savedSheet);
         }

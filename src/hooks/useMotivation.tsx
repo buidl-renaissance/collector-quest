@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getCurrentCharacterId, getNamespacedItem, getNamespacedJson, setNamespacedJson } from '@/utils/storage';
+import { getCurrentCharacterId, getCharacterKey, setCharacterKey } from '@/utils/storage';
 import { useCharacter } from './useCharacter';
 
 export function useMotivation() {
@@ -21,10 +21,10 @@ export function useMotivation() {
         }
 
         // Get motivation data from namespaced storage
-        const actions = getNamespacedJson(characterId, 'motivationalFusion_selectedActions') || [];
-        const forces = getNamespacedJson(characterId, 'motivationalFusion_selectedForces') || [];
-        const archetype = getNamespacedJson(characterId, 'motivationalFusion_selectedArchetype');
-        const motivation = getNamespacedItem(characterId, 'motivationalFusion_generatedMotive');
+        const actions = getCharacterKey(characterId, 'motivationalFusion_selectedActions') || [];
+        const forces = getCharacterKey(characterId, 'motivationalFusion_selectedForces') || [];
+        const archetype = getCharacterKey(characterId, 'motivationalFusion_selectedArchetype');
+        const motivation = getCharacterKey(characterId, 'motivationalFusion_generatedMotive');
 
         setActions(actions);
         setForces(forces);
@@ -46,7 +46,7 @@ export function useMotivation() {
     if (!characterId) return;
 
     setActions(actions);
-    setNamespacedJson(characterId, 'motivationalFusion_selectedActions', actions);
+    setCharacterKey(characterId, 'motivationalFusion_selectedActions', actions);
   };
 
   const setSelectedForces = (forces: string[]) => {
@@ -54,7 +54,7 @@ export function useMotivation() {
     if (!characterId) return;
 
     setForces(forces);
-    setNamespacedJson(characterId, 'motivationalFusion_selectedForces', forces);
+    setCharacterKey(characterId, 'motivationalFusion_selectedForces', forces);
   };
 
   const setSelectedArchetype = (archetype: string | null) => {
@@ -62,7 +62,7 @@ export function useMotivation() {
     if (!characterId) return;
 
     setArchetype(archetype);
-    setNamespacedJson(characterId, 'motivationalFusion_selectedArchetype', archetype);
+    setCharacterKey(characterId, 'motivationalFusion_selectedArchetype', archetype);
   };
 
   const setGeneratedMotivation = (motivation: string) => {
@@ -70,7 +70,7 @@ export function useMotivation() {
     if (!characterId) return;
 
     setMotivation(motivation);
-    setNamespacedJson(characterId, 'motivationalFusion_generatedMotive', motivation);
+    setCharacterKey(characterId, 'motivationalFusion_generatedMotive', motivation);
   };
 
   const clearMotivation = () => {
@@ -82,10 +82,10 @@ export function useMotivation() {
     setArchetype(null);
     setMotivation(null);
 
-    setNamespacedJson(characterId, 'motivationalFusion_selectedActions', []);
-    setNamespacedJson(characterId, 'motivationalFusion_selectedForces', []);
-    setNamespacedJson(characterId, 'motivationalFusion_selectedArchetype', null);
-    setNamespacedJson(characterId, 'motivationalFusion_generatedMotive', null);
+    setCharacterKey(characterId, 'motivationalFusion_selectedActions', []);
+    setCharacterKey(characterId, 'motivationalFusion_selectedForces', []);
+    setCharacterKey(characterId, 'motivationalFusion_selectedArchetype', null);
+    setCharacterKey(characterId, 'motivationalFusion_generatedMotive', null);
   };
 
   // Generate motive

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { Race } from '@/data/races';
-import { getCurrentCharacterId, getNamespacedJson, setNamespacedJson } from '@/utils/storage';
+import { getCurrentCharacterId, getCharacterKey, setCharacterKey } from '@/utils/storage';
 import { useCharacter } from './useCharacter';
 
 /**
@@ -24,7 +24,7 @@ export function useRace() {
         }
 
         // First try to get from namespaced storage
-        const cachedRace = getNamespacedJson(characterId, 'race');
+        const cachedRace = getCharacterKey(characterId, 'race');
         if (cachedRace) {
           setSelectedRace(cachedRace);
           setLoading(false);
@@ -32,7 +32,7 @@ export function useRace() {
         }
 
         // If not in namespaced storage, try to get from API
-        const savedRaceId = getNamespacedJson(characterId, 'raceId');
+        const savedRaceId = getCharacterKey(characterId, 'raceId');
         if (savedRaceId) {
           const response = await fetch(`/api/races/${savedRaceId}`);
           if (!response.ok) throw new Error('Failed to fetch race');
@@ -40,7 +40,7 @@ export function useRace() {
           const data = await response.json();
           setSelectedRace(data);
           // Cache the full race data in namespaced storage
-          setNamespacedJson(characterId, 'race', data);
+          setCharacterKey(characterId, 'race', data);
         }
       } catch (error) {
         console.error('Error loading race:', error);
@@ -58,8 +58,8 @@ export function useRace() {
     if (!characterId) return;
 
     setSelectedRace(race);
-    setNamespacedJson(characterId, 'raceId', race.id);
-    setNamespacedJson(characterId, 'race', race);
+    setCharacterKey(characterId, 'raceId', race.id);
+    setCharacterKey(characterId, 'race', race);
     (async () => {
       await saveCharacter();
     })();
@@ -71,8 +71,8 @@ export function useRace() {
     if (!characterId) return;
 
     setSelectedRace(null);
-    setNamespacedJson(characterId, 'raceId', null);
-    setNamespacedJson(characterId, 'race', null);
+    setCharacterKey(characterId, 'raceId', null);
+    setCharacterKey(characterId, 'race', null);
   };
 
   // Navigate to race selection page

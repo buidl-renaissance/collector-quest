@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getCurrentCharacterId, getNamespacedJson, setNamespacedJson } from '@/utils/storage';
+import { getCurrentCharacterId, getCharacterKey, setCharacterKey } from '@/utils/storage';
 
 interface Traits {
   personality: string[];
@@ -27,7 +27,7 @@ export function useTraits() {
         }
 
         // Get traits from namespaced storage
-        const traits = getNamespacedJson(characterId, 'traits');
+        const traits = getCharacterKey(characterId, 'traits');
         if (traits) {
           setSelectedTraits(traits);
         }
@@ -58,7 +58,7 @@ export function useTraits() {
     };
 
     setSelectedTraits(updatedTraits);
-    setNamespacedJson(characterId, 'traits', updatedTraits);
+    setCharacterKey(characterId, 'traits', updatedTraits);
   };
 
   const clearTraits = () => {
@@ -66,7 +66,7 @@ export function useTraits() {
     if (!characterId) return;
 
     setSelectedTraits(null);
-    setNamespacedJson(characterId, 'traits', null);
+    setCharacterKey(characterId, 'traits', null);
   };
 
   return {

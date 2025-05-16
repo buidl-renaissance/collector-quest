@@ -41,6 +41,11 @@ export const generateCharacterImageFunction = inngest.createFunction(
       if (!character.race) {
         throw new Error('Character race not found');
       }
+
+      updateResult(event.data.resultId!, JSON.stringify({
+        message: "Starting character image generation",
+        step: "analyze-facial-data",
+      }));
       
       // Step 1: Analyze facial data if user image is provided
       let facialData = existingFacialData;
@@ -52,7 +57,8 @@ export const generateCharacterImageFunction = inngest.createFunction(
 
         updateResult(event.data.resultId!, JSON.stringify({
           message: "Facial data analyzed successfully",
-          facialData
+          step: "generate-character-image",
+          facialAnalysis: facialData
         }));
 
       }
@@ -60,7 +66,7 @@ export const generateCharacterImageFunction = inngest.createFunction(
       // Step 2: Generate the character image
       const generatedImage = await step.run("generate-image", async () => {
         const imagePrompt = prompt || 
-          `Fantasy character portrait based on facial analysis: ${JSON.stringify(facialData)}`;
+          `character portrait based on facial analysis: ${facialData} and character data: ${JSON.stringify(character)}`;
         return await generateImageRequest(imagePrompt, character.race?.image);
       });
       
@@ -81,6 +87,7 @@ export const generateCharacterImageFunction = inngest.createFunction(
         updateResult(event.data.resultId!, JSON.stringify({
           success: true,
           message: "Character image generated successfully",
+          step: "uploading-image",
           imageUrl,
           character,
           facialData
@@ -97,6 +104,7 @@ export const generateCharacterImageFunction = inngest.createFunction(
           updateResult(event.data.resultId!, JSON.stringify({
             success: true,
             message: "Character image saved successfully",
+            step: "save-character-image",
             imageUrl,
             character,
           }));

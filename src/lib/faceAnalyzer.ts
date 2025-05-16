@@ -10,6 +10,8 @@ export interface FacialCharacteristics {
   hairColor?: string;
   skinTone?: string;
   distinctiveFeatures?: string[];
+  accessories?: string[];
+  clothingStyle?: string[];
   [key: string]: string | string[] | undefined;
 }
 
@@ -42,7 +44,7 @@ export class FaceAnalyzer {
           content: [
             {
               type: "text",
-              text: "Extract facial characteristics that we can use to fuse with a generated video game character. Focus on: face shape, eye shape and color, nose shape, mouth shape, hair style and color, skin tone, and any distinctive features. Format the response as a JSON object with these characteristics."
+              text: "extract facial characteristics that we can use to fuse with a generated video game character. Focus on: face shape, eye shape and color, nose shape, mouth shape, hair style and color, skin tone, and any distinctive features like scars, tattoos, clothing, accessories, etc. Format the response as a JSON object with these characteristics."
             },
             {
               type: "image_url",
@@ -105,7 +107,7 @@ export class FaceAnalyzer {
       })
       .join(', ');
 
-    return `Create a fantasy character portrait of a ${race} with the following features: ${features}. 
+    return `Create a character portrait of a ${race} with the following features: ${features}. 
     The character should be in a heroic pose, with dramatic lighting, and a fantasy RPG style. 
     The image should be highly detailed and suitable for a video game character.`;
   }

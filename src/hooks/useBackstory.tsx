@@ -6,8 +6,8 @@ import { useTraits } from "./useTraits";
 import { useMotivation } from "./useMotivation";
 import {
   getCurrentCharacterId,
-  getNamespacedJson,
-  setNamespacedJson,
+  getCharacterKey,
+  setCharacterKey,
 } from "@/utils/storage";
 import { generateBackstory as generateBackstoryRequest } from "@/lib/backstory";
 
@@ -27,7 +27,7 @@ export function useBackstory() {
   const { selectedRace, loading: raceLoading } = useRace();
   const { selectedClass, loading: classLoading } = useCharacterClass();
   const { selectedTraits, loading: traitsLoading } = useTraits();
-  const { motivationState, loading: motivationLoading } = useMotivation();
+  const { motivation, loading: motivationLoading } = useMotivation();
 
   useEffect(() => {
     const loadBackstory = () => {
@@ -39,7 +39,7 @@ export function useBackstory() {
         }
 
         // Get backstory data from namespaced storage
-        const savedBackstory = getNamespacedJson(
+        const savedBackstory = getCharacterKey(
           characterId,
           "backstory_generatedBackstory"
         );
@@ -61,7 +61,7 @@ export function useBackstory() {
 
     setBackstory(newBackstory);
     setError(null);
-    setNamespacedJson(
+    setCharacterKey(
       characterId,
       "backstory_generatedBackstory",
       newBackstory
@@ -74,7 +74,7 @@ export function useBackstory() {
 
     setBackstory(null);
     setError(null);
-    setNamespacedJson(characterId, "backstory_generatedBackstory", null);
+    setCharacterKey(characterId, "backstory_generatedBackstory", null);
   };
 
   const generateBackstory = async () => {
@@ -113,7 +113,7 @@ export function useBackstory() {
         selectedRace &&
         selectedClass &&
         selectedTraits &&
-        motivationState.generatedMotivation &&
+        motivation &&
         character &&
         !backstory // Only generate if we don't already have a backstory
       ) {
@@ -132,7 +132,7 @@ export function useBackstory() {
     selectedRace,
     selectedClass,
     selectedTraits,
-    motivationState.generatedMotivation,
+    motivation,
     backstory,
     raceLoading,
     classLoading,

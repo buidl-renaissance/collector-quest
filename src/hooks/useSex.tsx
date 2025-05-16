@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { getCurrentCharacterId, getNamespacedItem, setNamespacedItem } from '@/utils/storage';
+import { getCurrentCharacterId, getCharacterKey, setCharacterKey } from '@/utils/storage';
 
 export type Sex = 'male' | 'female' | 'other';
 
@@ -18,7 +18,7 @@ export function useSex() {
           return;
         }
 
-        const savedSex = getNamespacedItem(characterId, 'sex');
+        const savedSex = getCharacterKey(characterId, 'sex');
         if (savedSex) {
           setSelectedSex(savedSex as Sex);
         }
@@ -37,7 +37,7 @@ export function useSex() {
     if (!characterId) return;
 
     setSelectedSex(sex);
-    setNamespacedItem(characterId, 'sex', sex);
+    setCharacterKey(characterId, 'sex', sex);
   };
 
   const clearSex = () => {

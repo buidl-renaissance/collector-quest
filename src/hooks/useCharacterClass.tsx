@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { CharacterClass } from '@/data/classes';
-import { getCurrentCharacterId, getNamespacedJson, setNamespacedJson } from '@/utils/storage';
+import { getCurrentCharacterId, getCharacterKey, setCharacterKey } from '@/utils/storage';
 
 /**
  * Custom hook to manage character class selection state
@@ -22,7 +22,7 @@ export function useCharacterClass() {
         }
 
         // First try to get from namespaced storage
-        const cachedClass = getNamespacedJson(characterId, 'class');
+        const cachedClass = getCharacterKey(characterId, 'class');
         if (cachedClass) {
           setSelectedClass(cachedClass);
           setLoading(false);
@@ -30,7 +30,7 @@ export function useCharacterClass() {
         }
 
         // If not in namespaced storage, try to get from API
-        const savedClassId = getNamespacedJson(characterId, 'classId');
+        const savedClassId = getCharacterKey(characterId, 'classId');
         if (savedClassId) {
           const response = await fetch(`/api/classes/${savedClassId}`);
           if (!response.ok) throw new Error('Failed to fetch class');
@@ -38,7 +38,7 @@ export function useCharacterClass() {
           const data = await response.json();
           setSelectedClass(data);
           // Cache the full class data in namespaced storage
-          setNamespacedJson(characterId, 'class', data);
+          setCharacterKey(characterId, 'class', data);
         }
       } catch (error) {
         console.error('Error loading class:', error);
@@ -56,8 +56,8 @@ export function useCharacterClass() {
     if (!characterId) return;
 
     setSelectedClass(characterClass);
-    setNamespacedJson(characterId, 'classId', characterClass.id);
-    setNamespacedJson(characterId, 'class', characterClass);
+    setCharacterKey(characterId, 'classId', characterClass.id);
+    setCharacterKey(characterId, 'class', characterClass);
   };
 
   // Function to clear class selection
@@ -66,8 +66,8 @@ export function useCharacterClass() {
     if (!characterId) return;
 
     setSelectedClass(null);
-    setNamespacedJson(characterId, 'classId', null);
-    setNamespacedJson(characterId, 'class', null);
+    setCharacterKey(characterId, 'classId', null);
+    setCharacterKey(characterId, 'class', null);
   };
 
   // Navigate to class selection page
