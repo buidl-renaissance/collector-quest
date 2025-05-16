@@ -206,7 +206,7 @@ const EquipmentPage: React.FC = () => {
   }, [selectedRace, selectedClass, raceLoading, classLoading, router]);
 
   const handleBack = () => {
-    navigateTo(router, "/character/background");
+    navigateTo(router, "/character/image");
   };
 
   const handleNext = async () => {
