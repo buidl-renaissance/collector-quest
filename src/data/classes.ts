@@ -80,6 +80,17 @@ export const characterClasses: CharacterClass[] = [
     image: "/images/classes/fighter.jpg"
   },
   {
+    id: "werewolf",
+    name: "Werewolf",
+    description: "Werewolves are a type of werebeast that can transform into a wolf or a humanoid form.",
+    abilities: [
+      { name: "Lycanthropy", description: "You can use your action to transform into a wolf-like creature. While transformed, you gain enhanced strength, speed, and senses. The transformation lasts until you choose to revert to your normal form.", level: 1 },
+      { name: "Regeneration", description: "At the start of each of your turns, you regain hit points equal to your Constitution modifier (minimum of 1) if you have at least 1 hit point remaining.", level: 1 },
+      { name: "Heightened Senses", description: "You have advantage on Wisdom (Perception) checks that rely on hearing or smell, and you can track creatures by scent alone.", level: 1 }
+    ],
+    image: "/images/classes/paladin.jpg"
+  },
+  {
     id: "monk",
     name: "Monk",
     description: "Martial artists channeling ki for powerful strikes.",
@@ -206,6 +217,14 @@ VALUES
      JSON_OBJECT('name', 'Action Surge', 'description', 'You can push yourself beyond your normal limits for a moment.', 'level', 1)
    ), 
    '/images/classes/fighter.jpg', NOW(), NOW()),
+  
+  ('werewolf', 'Werewolf', 'Werewolves are a type of werebeast that can transform into a wolf or a humanoid form.', 
+   JSON_ARRAY(
+     JSON_OBJECT('name', 'Lycanthropy', 'description', 'You can use your action to transform into a wolf-like creature. While transformed, you gain enhanced strength, speed, and senses. The transformation lasts until you choose to revert to your normal form.', 'level', 1),
+     JSON_OBJECT('name', 'Regeneration', 'description', 'At the start of each of your turns, you regain hit points equal to your Constitution modifier (minimum of 1) if you have at least 1 hit point remaining.', 'level', 1),
+     JSON_OBJECT('name', 'Heightened Senses', 'description', 'You have advantage on Wisdom (Perception) checks that rely on hearing or smell, and you can track creatures by scent alone.', 'level', 1)
+   ), 
+   '/images/classes/paladin.jpg', NOW(), NOW()),
   
   ('monk', 'Monk', 'Martial artists channeling ki for powerful strikes.', 
    JSON_ARRAY(

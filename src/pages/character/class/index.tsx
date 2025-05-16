@@ -92,7 +92,10 @@ const ClassSelectionPage: React.FC<ClassSelectionPageProps> = ({
                 <AbilitiesList>
                   {characterClass.abilities.map((ability, index) => (
                     <AbilityItem key={index}>
-                      {typeof ability === 'string' ? ability : ability.name}
+                      <AbilityName>{typeof ability === 'string' ? ability : ability.name}: </AbilityName>
+                      {typeof ability === 'object' && ability.description && (
+                        <AbilityDescription>{ability.description}</AbilityDescription>
+                      )}
                     </AbilityItem>
                   ))}
                 </AbilitiesList>
@@ -138,6 +141,14 @@ const Container = styled.div`
   font-family: 'Cormorant Garamond', serif;
   animation: ${fadeIn} 0.5s ease-in;
   padding-bottom: 120px; /* Make room for the footer */
+`;
+
+const AbilityName = styled.span`
+  font-weight: bold;
+`;
+
+const AbilityDescription = styled.span`
+  font-size: 0.85rem;
 `;
 
 const SelectedRaceBanner = styled.div`
