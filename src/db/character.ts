@@ -34,13 +34,17 @@ export class CharacterDB {
 
     const race = await getRaceById(result.race);
     const characterClass = await getClassById(result.class);
+    let traits = result.traits;
+    if (typeof traits === 'string') {
+      traits = JSON.parse(traits);
+    }
 
     return {
       name: result.name,
       race: race ?? undefined,
       class: characterClass ?? undefined,
       level: result.level,
-      traits: result.traits ? JSON.parse(result.traits) : undefined,
+      traits: traits ?? undefined,
       motivation: result.motivation,
       bio: result.bio,
       backstory: result.backstory,
