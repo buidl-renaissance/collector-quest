@@ -21,8 +21,8 @@ const MotivationPage: React.FC = () => {
   const router = useRouter();
   const { selectedRace, loading: raceLoading } = useRace();
   const { selectedClass, loading: classLoading } = useCharacterClass();
-  const { motivation } = useMotivation();
-
+  const { actions, forces, archetype } = useMotivation();
+  const { character } = useCharacter();
   // Redirect if no race or class is selected
   useEffect(() => {
     if (!raceLoading && !classLoading) {
@@ -36,7 +36,7 @@ const MotivationPage: React.FC = () => {
 
   const handleNext = async () => {
     if (selectedRace && selectedClass) {
-      router.push("/character/backstory");
+      router.push("/character/story");
     }
   };
 
@@ -79,7 +79,7 @@ const MotivationPage: React.FC = () => {
           selectedItemLabel={""}
           selectedItem={"Motivation Generated"}
           onNext={handleNext}
-          disabled={!motivation}
+          disabled={!actions.length || !forces.length || !archetype}
         />
       </Page>
     </PageTransition>

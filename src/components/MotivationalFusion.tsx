@@ -56,6 +56,8 @@ const MotivationalFusion: React.FC = () => {
     setSelectedForces,
     setSelectedArchetype,
     setGeneratedMotivation,
+    addSelectedAction,
+    addSelectedForce,
     loading: isGenerating,
   } = useMotivation();
 
@@ -68,9 +70,9 @@ const MotivationalFusion: React.FC = () => {
             <OptionButton
               key={action}
               selected={selectedActions.includes(action)}
-              onClick={() =>
-                setSelectedActions([...selectedActions, action])
-              }
+              onClick={() => {
+                addSelectedAction(action);
+              }}
             >
               {action}
             </OptionButton>
@@ -85,7 +87,9 @@ const MotivationalFusion: React.FC = () => {
             <OptionButton
               key={force}
               selected={selectedForces.includes(force)}
-              onClick={() => setSelectedForces([...selectedForces, force])}
+              onClick={() => {
+                addSelectedForce(force);
+              }}
             >
               {force}
             </OptionButton>
@@ -93,7 +97,22 @@ const MotivationalFusion: React.FC = () => {
         </OptionsGrid>
       </StepContainer>
 
-      {selectedActions.length > 0 && selectedForces.length > 0 && (
+      <StepContainer>
+        <StepTitle>What archetype best fits them?</StepTitle>
+        <ArchetypeContainer>
+          {archetypes.map((archetype) => (
+            <ArchetypeButton
+              key={archetype.id}
+              selected={selectedArchetype === archetype.id}
+              onClick={() => setSelectedArchetype(archetype.id)}
+            >
+              {archetype.label}
+            </ArchetypeButton>
+          ))}
+        </ArchetypeContainer>
+      </StepContainer>
+
+      {/* {selectedActions.length > 0 && selectedForces.length > 0 && (
         <ButtonGroup>
           <ActionButton onClick={generateMotivation} disabled={isGenerating}>
             {isGenerating ? (
@@ -108,7 +127,7 @@ const MotivationalFusion: React.FC = () => {
             )}
           </ActionButton>
         </ButtonGroup>
-      )}
+      )} */}
 
       {generatedMotivation && (
         <StoryDisplay

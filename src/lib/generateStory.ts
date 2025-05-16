@@ -79,9 +79,9 @@ Character Details:
 - Sex: ${character.sex}
 
 Personality & Traits:
-- Personality: ${character.traits.personality.join(', ')}
-- Ideals: ${character.traits.ideals.join(', ')}
-- Flaws: ${character.traits.flaws.join(', ')}
+- Personality: ${character.traits.personality?.join(', ')}
+- Ideals: ${character.traits.ideals?.join(', ')}
+- Flaws: ${character.traits.flaws?.join(', ')}
 - Haunting Memory: ${character.traits.hauntingMemory}
 - Treasured Possession: ${character.traits.treasuredPossession}
 

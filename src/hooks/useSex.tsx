@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { getCurrentCharacterId, getCharacterKey, setCharacterKey } from '@/utils/storage';
+import { getCurrentCharacterId, getCharacterKey } from '@/utils/storage';
+import { useCharacter } from './useCharacter';
 
 export type Sex = 'male' | 'female' | 'other';
 
 export function useSex() {
+  const { updateCharacter } = useCharacter();
   const [selectedSex, setSelectedSex] = useState<Sex | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
@@ -37,7 +39,7 @@ export function useSex() {
     if (!characterId) return;
 
     setSelectedSex(sex);
-    setCharacterKey(characterId, 'sex', sex);
+    updateCharacter({ sex });
   };
 
   const clearSex = () => {
@@ -45,7 +47,7 @@ export function useSex() {
     if (!characterId) return;
 
     setSelectedSex(null);
-    setCharacterKey(characterId, 'sex', '');
+    updateCharacter({ sex: undefined });
   };
 
   const goToSexSelection = () => {

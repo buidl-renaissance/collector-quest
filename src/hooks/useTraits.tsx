@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { getCurrentCharacterId, getCharacterKey, setCharacterKey } from '@/utils/storage';
-
+import { useCharacter } from './useCharacter';
 interface Traits {
   personality: string[];
   ideals: string[];
@@ -14,6 +14,7 @@ interface Traits {
 }
 
 export function useTraits() {
+  const { character, updateCharacter } = useCharacter();
   const [selectedTraits, setSelectedTraits] = useState<Traits | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -27,7 +28,7 @@ export function useTraits() {
         }
 
         // Get traits from namespaced storage
-        const traits = getCharacterKey(characterId, 'traits');
+        const traits = character?.traits;
         if (traits) {
           setSelectedTraits(traits);
         }
@@ -58,7 +59,10 @@ export function useTraits() {
     };
 
     setSelectedTraits(updatedTraits);
-    setCharacterKey(characterId, 'traits', updatedTraits);
+    updateCharacter({
+      ...character,
+      traits: updatedTraits
+    });
   };
 
   const clearTraits = () => {

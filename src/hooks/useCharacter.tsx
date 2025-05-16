@@ -6,6 +6,7 @@ import {
   getCharacterKey,
   setCurrentCharacterId,
   setCharacterKey,
+  getCharacter as getCharacterFromStorage,
 } from "@/utils/storage";
 
 const STORAGE_KEYS = {
@@ -22,6 +23,21 @@ export enum CharacterStatus {
   DELETED = "deleted",
 }
 
+export interface Traits {
+  personality?: string[];
+  ideals?: string[];
+  bonds?: string[];
+  flaws?: string[];
+  memory?: string;
+  possession?: string;
+  fear?: string[];
+  hauntingMemory?: string;
+  treasuredPossession?: string;
+  actions?: string[];
+  forces?: string[];
+  archetype?: string;
+}
+
 export interface Character {
   id?: string;
   name: string;
@@ -29,20 +45,7 @@ export interface Character {
   race?: Race;
   class?: CharacterClass;
   level?: number;
-  traits?: {
-    personality: string[];
-    ideals: string[];
-    bonds: string[];
-    flaws: string[];
-    memory?: string;
-    possession?: string;
-    fear?: string[];
-    hauntingMemory?: string;
-    treasuredPossession?: string;
-    actions?: string[];
-    forces?: string[];
-    archetype?: string;
-  };
+  traits?: Traits;
   motivation?: string;
   bio?: string;
   backstory?: string;
@@ -71,85 +74,24 @@ export const useCharacter = () => {
           return;
         }
 
-        // Get basic character info with namespaced keys
-        const name = getCharacterKey(storedCharacterId, "name") || "";
-        const backstory = getCharacterKey(storedCharacterId, "backstory") || "";
-        const appearance =
-          getCharacterKey(storedCharacterId, "appearance") || "";
-        const bio = getCharacterKey(storedCharacterId, "bio") || "";
+        const characterData = getCharacterFromStorage(storedCharacterId);
 
-        // Get character Race / Class
-        const race = getCharacterKey(storedCharacterId, "race") || "";
-        const characterClass =
-          getCharacterKey(storedCharacterId, "class") || "";
-
-        // Get character traits from both sources with namespaced keys
-        const personality =
-          getCharacterKey(storedCharacterId, "personality") || [];
-        const fear = getCharacterKey(storedCharacterId, "fear") || [];
-        const memory = getCharacterKey(storedCharacterId, "memory") || "";
-        const possession =
-          getCharacterKey(storedCharacterId, "possession") || "";
-        const status =
-          getCharacterKey(storedCharacterId, "status") || CharacterStatus.NEW;
-        const level = getCharacterKey(storedCharacterId, "level") || 1;
-        const motivation =
-          getCharacterKey(storedCharacterId, "motivation") || "";
-        const sex = getCharacterKey(storedCharacterId, "sex") || "";
-        const image_url = getCharacterKey(storedCharacterId, "image_url") || "";
-
-        // Get old traits structure with namespaced keys
-        const oldTraits =
-          getCharacterKey(storedCharacterId, "selectedTraits") || {};
-        const ideals = oldTraits.ideals || [];
-        const bonds = oldTraits.bonds || [];
-        const flaws = oldTraits.flaws || [];
-        const hauntingMemory = oldTraits.hauntingMemory || "";
-        const treasuredPossession = oldTraits.treasuredPossession || "";
-
-        // Get motivation data with namespaced keys
-        const actions =
-          getCharacterKey(
-            storedCharacterId,
-            "motivationalFusion_selectedActions"
-          ) || [];
-        const forces =
-          getCharacterKey(
-            storedCharacterId,
-            "motivationalFusion_selectedForces"
-          ) || [];
-        const generatedMotivation =
-          getCharacterKey(
-            storedCharacterId,
-            "motivationalFusion_generatedMotive"
-          ) || "";
-
-        // Only set character if we have the minimum required data
-        setCharacter({
-          id: storedCharacterId,
-          race: race || undefined,
-          class: characterClass || undefined,
-          status: status,
-          level: parseInt(level as string),
-          sex: sex,
-          image_url: image_url,
-          name,
-          backstory,
-          motivation: generatedMotivation,
-          bio,
-          traits: {
-            personality: personality.length > 0 ? personality : ideals,
-            ideals: ideals,
-            bonds: bonds,
-            flaws: fear.length > 0 ? fear : flaws,
-            memory: memory || hauntingMemory || bonds[0] || "",
-            possession: possession || treasuredPossession || "",
-            actions: actions,
-            forces: forces,
-            hauntingMemory: hauntingMemory || memory || bonds[0] || "",
-            treasuredPossession: treasuredPossession || possession || "",
-          },
-        });
+        if (!characterData) {
+          setCharacter({
+            id: storedCharacterId,
+            name: "",
+            status: CharacterStatus.NEW,
+          });
+          updateCharacter({
+            id: storedCharacterId,
+            status: CharacterStatus.NEW,
+          });
+        } else {
+          characterData.id = storedCharacterId;
+          // Only set character if we have the minimum required data
+          setCharacter(characterData);
+        }
+        setLoading(false);
       } catch (error) {
         console.error("Error loading character data:", error);
         setError("Failed to load character data");
@@ -194,6 +136,10 @@ export const useCharacter = () => {
 
     setSaving(true);
     setError(null);
+
+    if (!character.status) {
+      character.status = CharacterStatus.NEW;
+    }
 
     if (
       character.status !== CharacterStatus.NEW &&
@@ -305,20 +251,11 @@ export const useCharacter = () => {
         status: CharacterStatus.NEW,
         race: undefined,
         class: undefined,
-        traits: {
-          personality: [],
-          ideals: [],
-          bonds: [],
-          flaws: [],
-        },
       };
-
-      // Save initial character data
-      setCharacterKey(characterId, "name", "");
-      setCharacterKey(characterId, "traits", newCharacter.traits);
 
       setCharacter(newCharacter);
       setCurrentCharacterId(characterId);
+      updateCharacter(newCharacter);
       return newCharacter;
     } catch (err) {
       console.error("Error creating character:", err);

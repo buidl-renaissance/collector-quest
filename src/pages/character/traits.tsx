@@ -12,7 +12,7 @@ import { useCharacterClass } from "@/hooks/useCharacterClass";
 import { useRace } from "@/hooks/useRace";
 import Page from "@/components/Page";
 import { BackButton } from "@/components/styled/character";
-import { useCharacter } from "@/hooks/useCharacter";
+import { useCharacter, Traits } from "@/hooks/useCharacter";
 import BottomNavigation from "@/components/BottomNavigation";
 import { Title, Subtitle } from "@/components/styled/typography";
 import {
@@ -31,7 +31,7 @@ import { FormSection } from "@/components/styled/forms";
 const CharacterTraitsPage: React.FC = () => {
   const router = useRouter();
   const [darkMode, setDarkMode] = useState(true);
-  const { saveCharacter } = useCharacter();
+  const { character, updateCharacter } = useCharacter();
   const { selectedClass, loading: classLoading } = useCharacterClass();
   const { selectedRace, loading: raceLoading } = useRace();
 
@@ -72,111 +72,63 @@ const CharacterTraitsPage: React.FC = () => {
     "Being Forgotten",
   ]);
 
-  const [formData, setFormData] = useState({
-    name: "",
-    personality: [] as string[],
-    ideals: [] as string[],
-    bonds: [] as string[],
-    flaws: [] as string[],
-    hauntingMemory: "",
-    treasuredPossession: "",
-  });
-
-  // Load data from localStorage on initial render
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const savedFormData = localStorage.getItem("selectedTraits");
-      if (savedFormData) {
-        const parsedData = JSON.parse(savedFormData);
-        // Transform old format to new format if needed
-        if (parsedData.motivation || parsedData.fear) {
-          const transformedData = {
-            name: parsedData.name || "",
-            personality: parsedData.personality || [],
-            ideals: parsedData.motivation || [],
-            bonds: [parsedData.hauntingMemory].filter(Boolean),
-            flaws: parsedData.fear || [],
-            hauntingMemory: parsedData.hauntingMemory || "",
-            treasuredPossession: parsedData.treasuredPossession || "",
-          };
-          setFormData(transformedData);
-          localStorage.setItem(
-            "selectedTraits",
-            JSON.stringify(transformedData)
-          );
-        } else {
-          setFormData(parsedData);
-        }
-      }
-
-      const savedName = localStorage.getItem("characterName");
-      if (savedName) {
-        setFormData((prev) => ({ ...prev, name: savedName }));
-      }
-
-      const savedPersonality = localStorage.getItem("personality");
-      if (savedPersonality) {
-        setPersonalityOptions(JSON.parse(savedPersonality));
-      }
-
-      const savedIdeals = localStorage.getItem("ideals");
-      if (savedIdeals) {
-        setIdealsOptions(JSON.parse(savedIdeals));
-      }
-
-      const savedFlaws = localStorage.getItem("flaws");
-      if (savedFlaws) {
-        setFlawsOptions(JSON.parse(savedFlaws));
-      }
-    }
-  }, []);
-
   const handleInputChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
     >
   ) => {
     const { name, value } = e.target;
-    setFormData((prev) => {
-      const updatedData = { ...prev, [name]: value };
-      localStorage.setItem("selectedTraits", JSON.stringify(updatedData));
-      return updatedData;
+    if (!character || !name || !value) return;
+    
+    // Create a copy of traits to avoid direct mutation
+    const updatedTraits: Traits = { ...character.traits };
+    
+    // Handle the assignment based on the field type
+    if (Array.isArray(updatedTraits[name as keyof Traits])) {
+      // For array fields, we need to handle differently
+      (updatedTraits[name as keyof Traits] as string[]) = [value];
+    } else {
+      // For string fields
+      (updatedTraits[name as keyof Traits] as string) = value;
+    }
+    
+    updateCharacter({
+      ...character,
+      traits: updatedTraits
     });
   };
 
   const handleAddCustomOption = (type: "personality" | "ideals" | "flaws") => {
+
+    if (!character) return;
     if (type === "personality" && customPersonality.trim()) {
       setPersonalityOptions((prev) => [...prev, customPersonality.trim()]);
-      setFormData((prev) => {
-        const updatedData = {
-          ...prev,
-          personality: [...prev.personality, customPersonality.trim()],
-        };
-        console.log(updatedData);
-        localStorage.setItem("selectedTraits", JSON.stringify(updatedData));
-        return updatedData;
+      updateCharacter({
+        ...character,
+        traits: {
+          ...character.traits,
+          personality: [...(character.traits?.personality || []), customPersonality.trim()]
+        }
       });
       setCustomPersonality("");
     } else if (type === "ideals" && customIdeals.trim()) {
       setIdealsOptions((prev) => [...prev, customIdeals.trim()]);
-      setFormData((prev) => {
-        const updatedData = {
-          ...prev,
-          ideals: [...prev.ideals, customIdeals.trim()],
-        };
-        localStorage.setItem("selectedTraits", JSON.stringify(updatedData));
-        return updatedData;
+      updateCharacter({
+        ...character,
+        traits: {
+          ...character.traits,
+          ideals: [...(character.traits?.ideals || []), customIdeals.trim()]
+        }
       });
       setCustomIdeals("");
     } else if (type === "flaws" && customFlaws.trim()) {
       setFlawsOptions((prev) => [...prev, customFlaws.trim()]);
-      setFormData((prev) => {
-        const updatedData = {
-          ...prev,
-          flaws: [...prev.flaws, customFlaws.trim()],
-        };
-        localStorage.setItem("selectedTraits", JSON.stringify(updatedData));
-        return updatedData;
+      updateCharacter({
+        ...character,
+        traits: {
+          ...character.traits,
+          flaws: [...(character.traits?.flaws || []), customFlaws.trim()]
+        }
       });
       setCustomFlaws("");
     }
@@ -186,24 +138,28 @@ const CharacterTraitsPage: React.FC = () => {
     type: "personality" | "ideals" | "flaws",
     value: string
   ) => {
-    setFormData((prev) => {
-      const currentValues = prev[type] as string[];
-      let updatedData;
-      if (currentValues.includes(value)) {
-        updatedData = {
-          ...prev,
+    if (!character) return;
+    const currentValues = character.traits?.[type] as string[];
+    let updatedData;
+    if (currentValues.includes(value)) {
+      updatedData = {
+        ...character,
+        traits: {
+          ...character.traits,
           [type]: currentValues.filter((item) => item !== value),
-        };
-      } else {
-        updatedData = {
-          ...prev,
+        },
+      };
+    } else {
+      updatedData = {
+        ...character,
+        traits: {
+          ...character.traits,
           [type]: [...currentValues, value],
-        };
-      }
-      console.log(updatedData);
-      localStorage.setItem("selectedTraits", JSON.stringify(updatedData));
-      return updatedData;
-    });
+        },
+      };
+    }
+    console.log(updatedData);
+    updateCharacter(updatedData);
   };
 
   const handleRandomize = () => {
@@ -247,8 +203,7 @@ const CharacterTraitsPage: React.FC = () => {
       ][Math.floor(Math.random() * 4)],
     };
 
-    localStorage.setItem("selectedTraits", JSON.stringify(randomizedData));
-    setFormData(randomizedData);
+    updateCharacter(randomizedData);
   };
 
   const handleBack = () => {
@@ -270,12 +225,12 @@ const CharacterTraitsPage: React.FC = () => {
 
   const isFormComplete = () => {
     return (
-      formData.name &&
-      formData.personality.length > 0 &&
-      formData.ideals.length > 0 &&
-      formData.flaws.length > 0 &&
-      formData.hauntingMemory &&
-      formData.treasuredPossession
+      character?.name &&
+      (character?.traits?.personality?.length || 0) > 0 &&
+      (character?.traits?.ideals?.length || 0) > 0 &&
+      (character?.traits?.flaws?.length || 0) > 0 &&
+      character?.traits?.hauntingMemory &&
+      character?.traits?.treasuredPossession
     );
   };
 
@@ -307,7 +262,7 @@ const CharacterTraitsPage: React.FC = () => {
               {personalityOptions.map((option, index) => (
                 <Chip
                   key={index}
-                  selected={formData.personality.includes(option)}
+                  selected={character?.traits?.personality?.includes(option)}
                   onClick={() => handleSelectChip("personality", option)}
                 >
                   {option}
@@ -336,7 +291,7 @@ const CharacterTraitsPage: React.FC = () => {
               {idealsOptions.map((option, index) => (
                 <Chip
                   key={index}
-                  selected={formData.ideals.includes(option)}
+                  selected={character?.traits?.ideals?.includes(option)}
                   onClick={() => handleSelectChip("ideals", option)}
                 >
                   {option}
@@ -361,7 +316,7 @@ const CharacterTraitsPage: React.FC = () => {
               {flawsOptions.map((option, index) => (
                 <Chip
                   key={index}
-                  selected={formData.flaws.includes(option)}
+                  selected={character?.traits?.flaws?.includes(option)}
                   onClick={() => handleSelectChip("flaws", option)}
                 >
                   {option}
@@ -385,7 +340,7 @@ const CharacterTraitsPage: React.FC = () => {
             <TextArea
               id="hauntingMemory"
               name="hauntingMemory"
-              value={formData.hauntingMemory}
+              value={character?.traits?.hauntingMemory}
               onChange={handleInputChange}
               placeholder="Describe a memory that haunts your character..."
             />
@@ -397,7 +352,7 @@ const CharacterTraitsPage: React.FC = () => {
             <TextArea
               id="treasuredPossession"
               name="treasuredPossession"
-              value={formData.treasuredPossession}
+              value={character?.traits?.treasuredPossession}
               onChange={handleInputChange}
               placeholder="Describe your character's most treasured possession..."
             />
@@ -405,7 +360,7 @@ const CharacterTraitsPage: React.FC = () => {
         </FormSection>
 
         <BottomNavigation
-          selectedItem={formData.name}
+          selectedItem={character?.name}
           selectedItemLabel="Character Name"
           onNext={handleNext}
           disabled={!isFormComplete()}
