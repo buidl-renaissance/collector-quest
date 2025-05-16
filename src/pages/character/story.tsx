@@ -7,7 +7,7 @@ import { Character, useCharacter } from "@/hooks/useCharacter";
 import Head from "next/head";
 import { Title, Subtitle, NextButton } from "@/components/styled/character";
 import PageTransition from "@/components/PageTransition";
-import { FaArrowRight } from "react-icons/fa";
+import { FaArrowRight, FaSpinner } from "react-icons/fa";
 import BottomNavigation from "@/components/BottomNavigation";
 import { navigateTo } from "@/utils/navigation";
 import Image from "next/image";
@@ -20,6 +20,11 @@ const fadeIn = keyframes`
 const slideUp = keyframes`
   from { transform: translateY(20px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
+`;
+
+const spin = keyframes`
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 `;
 
 const Container = styled.div`
@@ -49,6 +54,22 @@ const SectionTitle = styled.h2`
   font-family: "Cormorant Garamond", serif;
 `;
 
+const LoadingContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  text-align: center;
+`;
+
+const SpinnerIcon = styled.div`
+  color: #bb8930;
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  animation: ${spin} 1.5s linear infinite;
+`;
+
 export default function CharacterStoryPage() {
   const router = useRouter();
   const { character } = useCharacter();
@@ -69,7 +90,7 @@ export default function CharacterStoryPage() {
   }, [character, isLoading, backstory, motivation, generateStory]);
 
   const handleNext = () => {
-    navigateTo(router, "/character/sheet");
+    navigateTo(router, "/character/image");
   };
 
   if (!character) {
@@ -90,9 +111,10 @@ export default function CharacterStoryPage() {
         )} */}
         
         {step === "generate-motivation" && (
-          <SectionTitle style={{ textAlign: "center" }}>
-            Generating motivation...
-          </SectionTitle>
+          <LoadingContainer>
+            <SpinnerIcon><FaSpinner /></SpinnerIcon>
+            <SectionTitle>Generating motivation...</SectionTitle>
+          </LoadingContainer>
         )}
 
         {motivation && (
@@ -103,9 +125,10 @@ export default function CharacterStoryPage() {
         )}
 
         {step === "generate-backstory" && (
-          <SectionTitle style={{ textAlign: "center" }}>
-            Generating backstory...
-          </SectionTitle>
+          <LoadingContainer>
+            <SpinnerIcon><FaSpinner /></SpinnerIcon>
+            <SectionTitle>Generating backstory...</SectionTitle>
+          </LoadingContainer>
         )}
 
         {backstory && (

@@ -47,7 +47,7 @@ const BackstoryPage: React.FC = () => {
   };
 
   const handleNext = () => {
-    navigateTo(router, "/character/sheet");
+    navigateTo(router, "/character/image");
   };
 
   if (raceLoading || classLoading || backstoryLoading) {
@@ -90,7 +90,7 @@ const BackstoryPage: React.FC = () => {
             onClick={handleNext}
             disabled={!backstory || isGeneratingBackstory}
           >
-            Continue to Character Sheet <FaArrowRight />
+            Continue <FaArrowRight />
           </NextButton>
         </ActionButtons>
       </Page>

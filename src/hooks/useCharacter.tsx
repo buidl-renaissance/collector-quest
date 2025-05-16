@@ -53,6 +53,13 @@ export interface Character {
   motivation?: string;
   bio?: string;
   backstory?: string;
+  equipment?: {
+    currency?: {
+      name: string;
+      quantity: number;
+    }[];
+    items?: string[];
+  };
   sex?: string;
   creature?: string;
   image_url?: string;
@@ -122,7 +129,7 @@ export const useCharacter = () => {
     loadCharacterData();
   }, []);
 
-  const updateCharacterTrait = (trait: keyof Traits, value: string) => {
+  const updateCharacterTrait = (trait: keyof Traits, value: string | string[]) => {
     if (!character) return;
     if (typeof character.traits?.[trait] === "string") {
       const updatedData = {

@@ -119,11 +119,11 @@ const ImageGeneratorPage = () => {
   };
 
   const handleNext = () => {
-    navigateTo(router, "/character/alignment");
+    navigateTo(router, "/character/equipment");
   };
 
   const handleSkip = async () => {
-    navigateTo(router, "/character/alignment");
+    navigateTo(router, "/character/equipment");
   };
 
   const handleCameraCapture = async () => {

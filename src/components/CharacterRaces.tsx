@@ -43,10 +43,22 @@ const CharacterRaces: React.FC<CharacterRacesProps> = ({ races, onSelectRace, se
     return grouped;
   }, [races]);
 
+  // Sort sources with Player's Handbook first, then by number of races
+  const sortedSources = useMemo(() => {
+    return Object.entries(racesBySource).sort((a, b) => {
+      // Player's Handbook always comes first
+      if (a[0] === "Player's Handbook") return -1;
+      if (b[0] === "Player's Handbook") return 1;
+      
+      // Then sort by number of races in descending order
+      return b[1].length - a[1].length;
+    });
+  }, [racesBySource]);
+
   return (
     <>
       <RacesContainer>        
-        {Object.entries(racesBySource).map(([source, sourceRaces]) => (
+        {sortedSources.map(([source, sourceRaces]) => (
           <SourceSection key={source}>
             <RacesCategoryTitle>
               <CategoryIcon><FaBook /></CategoryIcon>
