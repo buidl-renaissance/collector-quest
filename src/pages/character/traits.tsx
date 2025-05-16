@@ -32,7 +32,7 @@ import { navigateTo } from "@/utils/navigation";
 const CharacterTraitsPage: React.FC = () => {
   const router = useRouter();
   const [darkMode, setDarkMode] = useState(true);
-  const { character, updateCharacter } = useCharacter();
+  const { character, updateCharacter, saveCharacter } = useCharacter();
   const { selectedClass, loading: classLoading } = useCharacterClass();
   const { selectedRace, loading: raceLoading } = useRace();
 
@@ -212,7 +212,8 @@ const CharacterTraitsPage: React.FC = () => {
     navigateTo(router, "/character/image");
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
+    await saveCharacter();
     navigateTo(router, "/character/motivation");
   };
 

@@ -32,7 +32,7 @@ export class FaceAnalyzer {
    * @param imageData Base64 encoded image data
    * @returns Object containing facial characteristics
    */
-  async analyzeFace(imageData: string): Promise<FacialCharacteristics> {
+  async analyzeFace(imageData: string): Promise<string> {
     // Remove the data URL prefix if present
     const base64Image = imageData.replace(/^data:image\/\w+;base64,/, '');
 
@@ -44,7 +44,7 @@ export class FaceAnalyzer {
           content: [
             {
               type: "text",
-              text: "extract facial characteristics that we can use to fuse with a generated video game character. Focus on: face shape, eye shape and color, nose shape, mouth shape, hair style and color, skin tone, and any distinctive features like scars, tattoos, clothing, accessories, etc. Format the response as a JSON object with these characteristics."
+              text: "extract facial characteristics that we can use to fuse with a generated video game character. Generate detailed descriptions of the face shape, eye shape and color, nose shape, mouth shape, hair style and color, skin tone, and any distinctive features like scars, tattoos, clothing, accessories, etc."
             },
             {
               type: "image_url",
@@ -63,11 +63,12 @@ export class FaceAnalyzer {
       throw new Error('No response content from OpenAI');
     }
 
-    // Clean up the response content by removing markdown formatting
-    const cleanedContent = content.replace(/```json\n?|\n?```/g, '').trim();
+    return content;
+    // // Clean up the response content by removing markdown formatting
+    // const cleanedContent = content.replace(/```json\n?|\n?```/g, '').trim();
     
-    // Parse the response to ensure it's valid JSON
-    return JSON.parse(cleanedContent);
+    // // Parse the response to ensure it's valid JSON
+    // return JSON.parse(cleanedContent);
   }
 
   /**

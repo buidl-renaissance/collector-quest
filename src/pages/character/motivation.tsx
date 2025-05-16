@@ -91,7 +91,8 @@ const MotivationPage: React.FC = () => {
     navigateTo(router, "/character/traits");
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
+    await saveCharacter();
     navigateTo(router, "/character/story");
   };
 
