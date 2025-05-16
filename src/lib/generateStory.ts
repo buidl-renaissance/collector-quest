@@ -22,6 +22,7 @@ export async function generateBackstory(character: Character): Promise<string> {
   const prompt = `Create a rich, detailed backstory for a ${character.sex} ${character.race.name} ${character.class.name} named ${character.name}. 
     
   Character traits:
+  - Name: ${character.name}
   - Personality: ${character.traits.personality?.join(", ")}
   - Ideals: ${character.traits.ideals?.join(", ")}
   - Bonds: ${character.traits.bonds?.join(", ")}
@@ -82,6 +83,7 @@ export async function generateMotivation(character: Character): Promise<string> 
   const prompt = `Create a compelling character motivation based on the following elements:
 
 Character Details:
+- Name: ${character.name}
 - Race: ${character.race.name}
 - Class: ${character.class.name}
 - Sex: ${character.sex}
