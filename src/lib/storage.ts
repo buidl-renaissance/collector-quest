@@ -39,16 +39,15 @@ export const createPendingResult = async (id: string): Promise<StoredResult> => 
  * @returns The updated result
  */
 export const updateResult = async (id: string, result: string): Promise<StoredResult | null> => {
-  const [updatedResult] = await db('results')
+  await db('results')
     .where({ id })
     .update({
       status: 'pending',
       result,
       updatedAt: new Date(),
-    })
-    .returning('*');
+    });
   
-  return updatedResult || null;
+  return await getResult(id);
 };
 
 /**
@@ -58,16 +57,15 @@ export const updateResult = async (id: string, result: string): Promise<StoredRe
  * @returns The updated result
  */
 export const completeResult = async (id: string, result: string): Promise<StoredResult | null> => {
-  const [updatedResult] = await db('results')
+  await db('results')
     .where({ id })
     .update({
       status: 'completed',
       result,
       updatedAt: new Date(),
-    })
-    .returning('*');
+    });
   
-  return updatedResult || null;
+  return await getResult(id);
 };
 
 /**
@@ -77,16 +75,15 @@ export const completeResult = async (id: string, result: string): Promise<Stored
  * @returns The updated result
  */
 export const failResult = async (id: string, error: string): Promise<StoredResult | null> => {
-  const [updatedResult] = await db('results')
+  await db('results')
     .where({ id })
     .update({
       status: 'error',
       error,
       updatedAt: new Date(),
-    })
-    .returning('*');
+    });
   
-  return updatedResult || null;
+  return await getResult(id);
 };
 
 /**
