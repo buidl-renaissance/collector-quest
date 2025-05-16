@@ -1,13 +1,14 @@
-import { useRouter } from 'next/router';
-import { useState, useEffect } from 'react';
-import styled from '@emotion/styled';
-import { keyframes } from '@emotion/react';
-import { useStoryGenerator } from '@/hooks/useStoryGenerator';
-import { Character, useCharacter } from '@/hooks/useCharacter';
-import Head from 'next/head';
-import { Title, Subtitle } from '@/components/styled/character';
-import PageTransition from '@/components/PageTransition';
-
+import { useRouter } from "next/router";
+import { useState, useEffect } from "react";
+import styled from "@emotion/styled";
+import { keyframes } from "@emotion/react";
+import { useStoryGenerator } from "@/hooks/useStoryGenerator";
+import { Character, useCharacter } from "@/hooks/useCharacter";
+import Head from "next/head";
+import { Title, Subtitle, NextButton } from "@/components/styled/character";
+import PageTransition from "@/components/PageTransition";
+import { FaArrowRight } from "react-icons/fa";
+import BottomNavigation from "@/components/BottomNavigation";
 const fadeIn = keyframes`
   from { opacity: 0; }
   to { opacity: 1; }
@@ -22,14 +23,16 @@ const Container = styled.div`
   max-width: 800px;
   margin: 0 auto;
   padding: 2rem;
-  font-family: 'Cormorant Garamond', serif;
+  font-family: "Cormorant Garamond", serif;
   animation: ${fadeIn} 0.5s ease-in;
+  padding-bottom: 100px;
 `;
 
 const Section = styled.div`
   background-color: rgba(26, 26, 46, 0.7);
   border-radius: 8px;
   padding: 1.5rem;
+  margin-top: 2rem;
   margin-bottom: 2rem;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   border: 1px solid #bb8930;
@@ -40,97 +43,31 @@ const SectionTitle = styled.h2`
   color: #bb8930;
   margin-bottom: 1rem;
   font-size: 1.25rem;
-  font-family: 'Cormorant Garamond', serif;
-`;
-
-const ContentBox = styled.div`
-  background-color: rgba(255, 255, 255, 0.1);
-  padding: 1rem;
-  border-radius: 4px;
-  line-height: 1.6;
-`;
-
-const StoryContent = styled(ContentBox)`
-  white-space: pre-wrap;
-`;
-
-const Button = styled.button<{ primary?: boolean }>`
-  background: ${(props) => (props.primary ? "#bb8930" : "#4a4a6a")};
-  color: ${(props) => (props.primary ? "#1a1a1a" : "#ffffff")};
-  border: 2px solid ${(props) => (props.primary ? "#bb8930" : "#4a4a6a")};
-  border-radius: 4px;
-  padding: 0.5rem 1rem;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  margin-top: 1rem;
-
-  &:hover {
-    background: ${(props) => (props.primary ? "#d4a959" : "#5a5a7a")};
-    border-color: ${(props) => (props.primary ? "#d4a959" : "#5a5a7a")};
-  }
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-`;
-
-const LoadingContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin: 2rem 0;
-`;
-
-const ProgressContainer = styled.div`
-  margin-top: 1rem;
-  text-align: center;
-  width: 100%;
-`;
-
-const ProgressBar = styled.div`
-  width: 100%;
-  background-color: rgba(255, 255, 255, 0.2);
-  border-radius: 8px;
-  height: 8px;
-  margin-top: 0.5rem;
-`;
-
-const ProgressIndicator = styled.div`
-  background-color: #bb8930;
-  height: 100%;
-  border-radius: 8px;
-  width: 25%;
-  animation: pulse 1.5s infinite;
-
-  @keyframes pulse {
-    0% { opacity: 0.6; }
-    50% { opacity: 1; }
-    100% { opacity: 0.6; }
-  }
-`;
-
-const ErrorMessage = styled.div`
-  color: #ff6b6b;
-  margin: 1rem 0;
-  padding: 0.75rem;
-  background-color: rgba(255, 107, 107, 0.1);
-  border-radius: 4px;
-  border-left: 3px solid #ff6b6b;
+  font-family: "Cormorant Garamond", serif;
 `;
 
 export default function CharacterStoryPage() {
   const router = useRouter();
   const { character } = useCharacter();
-  const { generateStory, isLoading, backstory, motivation, progress, error: storyError } = useStoryGenerator();
+  const {
+    generateStory,
+    isLoading,
+    backstory,
+    motivation,
+    step,
+    error: storyError,
+  } = useStoryGenerator();
 
   useEffect(() => {
     if (character && !isLoading && !backstory && !motivation) {
       generateStory();
     }
   }, [character, isLoading, backstory, motivation, generateStory]);
-  
+
+  const handleNext = () => {
+    router.push("/character/sheet");
+  };
+
   if (!character) {
     return <Container>Character not found</Container>;
   }
@@ -141,19 +78,46 @@ export default function CharacterStoryPage() {
         <Head>
           <title>{character.name}&apos;s Story</title>
         </Head>
-        
-        <Title>{character.name}&apos;s Story</Title>
-        
-        <Section>
-          <SectionTitle>Motivation</SectionTitle>
-          {character.motivation || motivation || "No motivation provided"}
-        </Section>
-        
-        <Section>
-          <SectionTitle>Backstory</SectionTitle>
-          {character.backstory || backstory || "No backstory provided"}
-        </Section>
 
+        <Title>{character.name}&apos;s Story</Title>
+
+        {step === "generate-motivation" && (
+          <SectionTitle style={{ textAlign: "center" }}>
+            Generating motivation...
+          </SectionTitle>
+        )}
+
+        {motivation && (
+          <Section>
+            <SectionTitle>Motivation</SectionTitle>
+            {character.motivation || motivation || "No motivation provided"}
+          </Section>
+        )}
+
+        {step === "generate-backstory" && (
+          <SectionTitle style={{ textAlign: "center" }}>
+            Generating backstory...
+          </SectionTitle>
+        )}
+
+        {backstory && (
+          <Section>
+            <SectionTitle>Backstory</SectionTitle>
+            {character.backstory || backstory || "No backstory provided"}
+          </Section>
+        )}
+
+        {motivation && backstory && (
+          <BottomNavigation
+            selectedItemLabel={""}
+            selectedItem={"Story"}
+            onNext={handleNext}
+            disabled={
+                !motivation ||
+                !backstory
+            }
+          />
+        )}
       </Container>
     </PageTransition>
   );

@@ -6,6 +6,10 @@ const openai = new OpenAI({
 });
 
 export async function generateBackstory(character: Character): Promise<string> {
+  
+  if (character.backstory) {
+    return character.backstory;
+  }
 
   if (!character.race || !character.class) {
     throw new Error("Character race and class are required");
@@ -60,6 +64,10 @@ export async function generateBackstory(character: Character): Promise<string> {
 }
 
 export async function generateMotivation(character: Character): Promise<string> {
+
+  if (character.motivation) {
+    return character.motivation;
+  }
 
   if (!character.race || !character.class) {
     throw new Error("Character race and class are required");

@@ -23,6 +23,8 @@ interface UseStoryGeneratorReturn {
   backstory: string | null;
   motivation: string | null;
   progress: string | null;
+  step: string | null;
+  result: StoryGenerationResult | null;
 }
 
 export const useStoryGenerator = (): UseStoryGeneratorReturn => {
@@ -33,7 +35,15 @@ export const useStoryGenerator = (): UseStoryGeneratorReturn => {
   const [motivation, setMotivation] = useState<string | null>(null);
   const [resultId, setResultId] = useState<string | null>(null);
   const [progress, setProgress] = useState<string | null>(null);
-  const generationAttempted = useRef(false);
+  const [step, setStep] = useState<string | null>(null);
+  const [result, setResult] = useState<StoryGenerationResult | null>(null);
+
+  useEffect(() => {
+    if (character) {
+      setBackstory(character.backstory || null);
+      setMotivation(character.motivation || null);
+    }
+  }, [character]);
 
   const generateStory = useCallback(async (): Promise<void> => {
     if (!character) {
@@ -84,16 +94,26 @@ export const useStoryGenerator = (): UseStoryGeneratorReturn => {
 
     const pollResult = async () => {
       try {
+        if (result?.status === 'completed') {
+          setIsLoading(false);
+          setStep(null);
+          clearTimeout(timeoutId);
+          return;
+        }
+
         const response = await fetch(`/api/image/status?id=${resultId}`);
-        const result: StoryGenerationResult = await response.json();
-        const resultData: StoryGenerationResultData = result.result ? JSON.parse(result.result) : {};
+        const storyResult: StoryGenerationResult = await response.json();
+        const resultData: StoryGenerationResultData = storyResult.result ? JSON.parse(storyResult.result) : {};
+        setResult(storyResult);
 
         if (resultData.step) {
           setProgress(resultData.message || `Processing: ${resultData.step}`);
+          setStep(resultData.step);
         }
 
-        if (result.status === 'completed') {
+        if (storyResult.status === 'completed') {
           setIsLoading(false);
+          setStep(null);
         }  
         
         if (resultData.motivation) {
@@ -112,8 +132,8 @@ export const useStoryGenerator = (): UseStoryGeneratorReturn => {
           });
         }
 
-        if (!result.success && result.message?.includes('error')) {
-          throw new Error(result.message);
+        if (!storyResult.success && storyResult.message?.includes('error')) {
+          throw new Error(storyResult.message);
         } else {
           // Continue polling
           timeoutId = setTimeout(pollResult, pollInterval);
@@ -132,7 +152,7 @@ export const useStoryGenerator = (): UseStoryGeneratorReturn => {
     return () => {
       if (timeoutId) clearTimeout(timeoutId);
     };
-  }, [resultId, character?.id]);
+  }, [result, resultId, character?.id, updateCharacter, character]);
 
   return {
     generateStory,
@@ -141,5 +161,7 @@ export const useStoryGenerator = (): UseStoryGeneratorReturn => {
     backstory,
     motivation,
     progress,
+    result,
+    step,
   };
 };

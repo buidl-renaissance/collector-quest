@@ -122,20 +122,7 @@ const ImageGeneratorPage = () => {
   };
 
   const handleSkip = async () => {
-    try {
-      setIsSaving(true);
-      setError(null);
-      
-      // Navigate to the name page
-      router.push("/character/traits");
-    } catch (err) {
-      console.error("Error skipping character image:", err);
-      setError(
-        err instanceof Error ? err.message : "Failed to skip character image"
-      );
-    } finally {
-      setIsSaving(false);
-    }
+    router.push("/character/traits");
   };
 
   const handleCameraCapture = async () => {

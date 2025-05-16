@@ -78,7 +78,7 @@ const CharacterTraitsPage: React.FC = () => {
     >
   ) => {
     const { name, value } = e.target;
-    if (!character || !name || !value) return;
+    if (!character || !name) return;
     
     // Create a copy of traits to avoid direct mutation
     const updatedTraits: Traits = { ...character.traits };
@@ -175,9 +175,7 @@ const CharacterTraitsPage: React.FC = () => {
     ];
 
     const randomizedData = {
-      name: ["Thorne Blackwood", "Lyra Stormwhisper", "Galen Fireheart"][
-        Math.floor(Math.random() * 3)
-      ],
+      name: character?.name,
       personality: randomPersonality,
       ideals: randomIdeals,
       bonds: [
@@ -203,7 +201,10 @@ const CharacterTraitsPage: React.FC = () => {
       ][Math.floor(Math.random() * 4)],
     };
 
-    updateCharacter(randomizedData);
+    updateCharacter({
+      ...character,
+      traits: randomizedData
+    });
   };
 
   const handleBack = () => {
