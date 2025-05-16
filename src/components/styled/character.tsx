@@ -71,14 +71,14 @@ export const SelectionFooter = styled.div`
 
 // Typography Components
 export const Title = styled.h1`
-  font-size: 2.5rem;
+  font-size: 2.25rem;
   color: #bb8930;
   margin-bottom: 0.5rem;
   text-align: center;
 `;
 
 export const Subtitle = styled.p`
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   color: #c7bfd4;
   margin-bottom: 2rem;
   text-align: center;

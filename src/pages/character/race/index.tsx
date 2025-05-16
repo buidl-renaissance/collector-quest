@@ -6,11 +6,12 @@ import { FaCrown, FaArrowRight, FaArrowLeft } from "react-icons/fa";
 import CharacterRaces from "@/components/CharacterRaces";
 import { useRace } from "@/hooks/useRace";
 import { useSex } from "@/hooks/useSex";
-import { coreRaces, expandedRaces, Race } from "@/data/races";
+import { Race } from "@/data/races";
 import { getAllRaces } from "@/db/races";
 import { GetServerSideProps } from "next";
 import { BackButton } from "@/components/styled/character";
 import { useCharacter } from "@/hooks/useCharacter";
+import { Title, Subtitle } from "@/components/styled/character";
 
 interface CharacterCreatePageProps {
   races: Race[];
@@ -69,7 +70,7 @@ const CharacterCreatePage: React.FC<CharacterCreatePageProps> = ({
       </BackButton>
 
       <Title>Craft Your Character</Title>
-      <Subtitle>Who will you be in Lord Smearington&apos;s Gallery of the Absurd?</Subtitle>
+      <Subtitle>Who will you be? Start by choosing your race.</Subtitle>
       
       {error && <ErrorMessage>{error}</ErrorMessage>}
       
@@ -115,20 +116,6 @@ const Container = styled.div`
   font-family: 'Cormorant Garamond', serif;
   animation: ${fadeIn} 0.5s ease-in;
   padding-bottom: 120px; /* Make room for the footer */
-`;
-
-const Title = styled.h1`
-  font-size: 2.5rem;
-  color: #bb8930;
-  margin-bottom: 0.5rem;
-  text-align: center;
-`;
-
-const Subtitle = styled.p`
-  font-size: 1.2rem;
-  color: #C7BFD4;
-  margin-bottom: 2rem;
-  text-align: center;
 `;
 
 const ErrorMessage = styled.div`

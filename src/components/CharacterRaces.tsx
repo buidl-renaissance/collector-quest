@@ -45,12 +45,7 @@ const CharacterRaces: React.FC<CharacterRacesProps> = ({ races, onSelectRace, se
 
   return (
     <>
-      <RacesContainer>
-        <RacesHeader>
-          <RacesIcon><FaUser /></RacesIcon>
-          <RacesTitle>Choose Your Race</RacesTitle>
-        </RacesHeader>
-        
+      <RacesContainer>        
         {Object.entries(racesBySource).map(([source, sourceRaces]) => (
           <SourceSection key={source}>
             <RacesCategoryTitle>
@@ -62,7 +57,6 @@ const CharacterRaces: React.FC<CharacterRacesProps> = ({ races, onSelectRace, se
                 <RaceCard 
                   key={race.id}
                   isSelected={selectedRace === race.name}
-                  onClick={() => handleRaceSelect(race)}
                 >
                   <RaceImageContainer onClick={(e) => openRaceModal(race, e)}>
                     <RaceImage src={race.image || '/images/races/default.jpg'} alt={race.name} />
@@ -158,7 +152,6 @@ const RacesCategoryTitle = styled.h3`
   gap: 0.5rem;
   font-size: 1.2rem;
   color: #bb8930;
-  margin: 0.5rem 0;
   border-bottom: 1px solid rgba(187, 137, 48, 0.3);
   padding-bottom: 0.5rem;
 `;
