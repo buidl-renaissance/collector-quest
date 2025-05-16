@@ -129,7 +129,7 @@ export const useCharacter = () => {
     loadCharacterData();
   }, []);
 
-  const updateCharacterTrait = (trait: keyof Traits, value: string | string[]) => {
+  const updateCharacterTrait = (trait: keyof Traits, value: string) => {
     if (!character) return;
     if (typeof character.traits?.[trait] === "string") {
       const updatedData = {
