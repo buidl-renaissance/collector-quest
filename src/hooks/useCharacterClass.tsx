@@ -53,12 +53,13 @@ export function useCharacterClass() {
   }, []);
 
   // Function to update selected class and save to namespaced storage
-  const selectClass = (characterClass: CharacterClass) => {
+  const selectClass = async (characterClass: CharacterClass) => {
     const characterId = getCurrentCharacterId();
     if (!characterId) return;
 
     setSelectedClass(characterClass);
     updateCharacter({ class: characterClass });
+    await saveCharacter();
   };
 
   // Function to clear class selection
