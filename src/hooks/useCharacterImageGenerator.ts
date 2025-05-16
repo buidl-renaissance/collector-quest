@@ -3,7 +3,6 @@ import { useCharacter } from './useCharacter';
 
 interface GenerateImageResult {
   resultId: string;
-  message: string;
 }
 
 interface PollResult {
@@ -17,22 +16,33 @@ interface UseCharacterImageGeneratorResult {
   isGenerating: boolean;
   error: string | null;
   resultId: string | null;
+  resultData: {
+    step?: string;
+    message?: string;
+    imageUrl?: string;
+    success?: boolean;
+  } | null;
   generatedImage: string | null;
   pollStatus: 'idle' | 'polling' | 'completed' | 'failed' | 'error';
 }
 
 const POLL_INTERVAL = 2000; // 2 seconds
-const MAX_POLL_ATTEMPTS = 30; // 1 minute maximum
+const MAX_POLL_ATTEMPTS = 60; // 2 minute maximum
 
 export function useCharacterImageGenerator(): UseCharacterImageGeneratorResult {
+  const { character } = useCharacter();
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [resultId, setResultId] = useState<string | null>(null);
+  const [resultData, setResultData] = useState<{
+    step?: string;
+    message?: string;
+    imageUrl?: string;
+    success?: boolean;
+  } | null>(null);
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
-  const [resultData, setResultData] = useState<string | null>(null);
   const [pollStatus, setPollStatus] = useState<'idle' | 'polling' | 'completed' | 'failed' | 'error'>('idle');
   const [pollAttempts, setPollAttempts] = useState(0);
-  const { character } = useCharacter();
 
   const pollResult = useCallback(async (id: string) => {
     try {
@@ -152,6 +162,7 @@ export function useCharacterImageGenerator(): UseCharacterImageGeneratorResult {
     isGenerating,
     error,
     resultId,
+    resultData,
     generatedImage,
     pollStatus,
   };

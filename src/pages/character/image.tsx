@@ -23,12 +23,33 @@ const ImageGeneratorPage = () => {
     generateImage,
     isGenerating,
     error: generationError,
+    resultData,
     generatedImage,
     pollStatus,
   } = useCharacterImageGenerator();
   const [userImage, setUserImage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+
+  const getStatusMessage = () => {
+    if (!resultData) {
+      return isGenerating ? "Starting image generation..." : "";
+    }
+
+    const step = resultData.step;
+    switch (step) {
+      case "analyze-facial-data":
+        return "Analyzing facial features...";
+      case "generate-character-image":
+        return "Generating your character image...";
+      case "uploading-image":
+        return "Uploading your character image...";
+      case "save-character-image":
+        return "Saving your character image...";
+      default:
+        return resultData.message || "Processing your image...";
+    }
+  };
 
   const handleImageUpload = async (
     event: React.ChangeEvent<HTMLInputElement>
@@ -251,9 +272,8 @@ const ImageGeneratorPage = () => {
           {(isGenerating || pollStatus === "polling") && (
             <LoadingOverlay>
               <LoadingMessage>
-                {isGenerating
-                  ? "Starting image generation..."
-                  : "Generating your character image..."}
+                {getStatusMessage()}
+                {pollStatus === "polling" && <LoadingDots>...</LoadingDots>}
               </LoadingMessage>
             </LoadingOverlay>
           )}
@@ -471,6 +491,17 @@ const SkipButton = styled.button`
     color: #e0dde5;
     border-color: #e0dde5;
   }
+`;
+
+const LoadingDots = styled.span`
+  animation: ${keyframes`
+    0% { opacity: 0.2; }
+    20% { opacity: 1; }
+    100% { opacity: 0.2; }
+  `} 1.4s infinite;
+  display: inline-block;
+  width: 24px;
+  text-align: left;
 `;
 
 export default ImageGeneratorPage;
