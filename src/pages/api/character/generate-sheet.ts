@@ -1,5 +1,5 @@
 import { attacks } from "@/data/attacks";
-import { effects } from "@/data/effects";
+import { Character } from "@/hooks/useCharacter";
 import type { NextApiRequest, NextApiResponse } from "next";
 import OpenAI from "openai";
 
@@ -7,31 +7,8 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-interface CharacterSheetInput {
-  name: string;
-  race: string;
-  class: string;
-  background: string;
-  bio: string;
-  traits: {
-    personality: string[];
-    fear: string[];
-    memory: string;
-    possession: string;
-  };
-  motivation: string;
-  sex: string;
-}
-
 interface CharacterSheet {
-  abilities: {
-    strength: number;
-    dexterity: number;
-    constitution: number;
-    intelligence: number;
-    wisdom: number;
-    charisma: number;
-  };
+  character: Character;
   combatStats: {
     armorClass: number;
     initiative: number;
@@ -70,33 +47,24 @@ export default async function handler(
   }
 
   try {
-    const {
-      name,
-      race,
-      class: characterClass,
-      background,
-      bio,
-      traits,
-      motivation,
-      sex,
-    } = req.body as CharacterSheetInput;
+    const character = req.body as Character;
 
     const prompt = `Generate a D&D character sheet for the following character:
 
-Name: ${name}
-Race: ${race}
-Class: ${characterClass}
-Background: ${background}
-Bio: ${bio}
-Sex: ${sex}
+Name: ${character.name}
+Race: ${JSON.stringify(character.race)}
+Class: ${JSON.stringify(character.class)}
+Background: ${character.traits?.background}
+Bio: ${character.bio}
+Sex: ${character.sex}
 
 Traits:
-- Personality: ${traits.personality?.join(", ")}
-- Fear: ${traits.fear?.join(", ")}
-- Memory: ${traits.memory}
-- Possession: ${traits.possession}
+- Personality: ${character.traits?.personality?.join(", ")}
+- Fear: ${character.traits?.fear?.join(", ")}
+- Memory: ${character.traits?.memory}
+- Possession: ${character.traits?.possession}
 
-Motivation: ${motivation}
+Motivation: ${character.motivation}
 
 Please generate a complete character sheet with the following sections:
 
@@ -125,55 +93,6 @@ Please generate a complete character sheet with the following sections:
 
 6. Proficiencies & Languages (from race, class, and background)
 
-7. Ideals, based on the character's bio
-What drives your character?
-
-These are your character’s guiding principles — what they believe in, what they strive for, or what moral code they follow.
-
-🧠 Mechanics & Use:
-Ideals influence decision-making, alliances, and goals.
-
-Often tied to alignment, but not strictly.
-
-DMs (or systems like Collector Quest) can reward alignment with these ideals using inspiration or story benefits.
-
-Examples in JSON: ${JSON.stringify(effects.ideals)}
-
-8. Bonds, based on the character's bio
-Who or what matters most to your character?
-
-Bonds are personal connections — to people, places, objects, or events — that anchor your character in the world.
-
-🧠 Mechanics & Use:
-Drive quest hooks, emotional stakes, or NPC relationships.
-
-Help guide reactions in moral or social dilemmas.
-
-A Bond can be threatened or used as leverage in narrative.
-
-Examples in JSON: ${JSON.stringify(effects.bonds)}
-
-9. Flaws, based on the character's bio
-What’s your greatest vulnerability or weakness?
-
-Flaws reveal a character’s imperfections — the internal conflicts or bad habits that can lead to drama or mistakes.
-
-🧠 Mechanics & Use:
-Drive complications and story tension.
-
-A Flaw might lead to bad decisions but better roleplay.
-
-Can be used by the DM or system to introduce challenges or even comic relief.
-
-Examples in JSON: ${JSON.stringify(effects.flaws)}
-
-10. Personality Traits, based on the character's bio
-
-Personality traits are a collection of short phrases that describe the character's personality.🎭 Personality Traits in Collector Quest
-Personality traits define how your character thinks and behaves, adding depth to roleplay and shaping interactions with the world. They influence dialogue, decisions, and relationships—both with NPCs and party members. Traits can lead to unique story moments, cause tension or teamwork, and may earn you rewards like inspiration when roleplayed well. Whether you're cautious, curious, or hot-headed, your trait helps make your character feel alive and reactive in the game world.
-
-Examples in JSON: ${JSON.stringify(effects.personality_traits)}
-
 Format the response as a JSON object with the following structure:
 {
   "abilities": {
@@ -197,12 +116,6 @@ Format the response as a JSON object with the following structure:
     "successes": 0,
     "failures": 0
   },
-  "effects": {
-    "ideals": string[],
-    "bonds": string[],
-    "flaws": string[],
-    "personality_traits": string[]
-  },
   "combat": {
     "attacks": {
       "name": string,
@@ -213,7 +126,6 @@ Format the response as a JSON object with the following structure:
       "type": string
     }[],
   },
-  "equipment": string[],
   "features": string[],
   "proficiencies": string[],
   "languages": string[]

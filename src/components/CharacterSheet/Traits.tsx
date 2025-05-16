@@ -1,12 +1,8 @@
 import React from 'react';
+import { Traits } from '@/hooks/useCharacter';
 
 interface TraitsProps {
-  traits: {
-    personality_traits?: string[];
-    ideals?: string[];
-    bonds?: string[];
-    flaws?: string[];
-  };
+  traits: Traits;
 }
 
 const sectionStyle = {
@@ -24,13 +20,15 @@ const valueStyle = {
 
 const itemStyle = { marginBottom: '0.25rem' };
 
-const Traits: React.FC<TraitsProps> = ({ traits }) => (
+const TraitsDisplay: React.FC<TraitsProps> = ({ traits }) => (
   <div style={{ padding: '0.5rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
     <div>
       <div style={sectionStyle}>Personality</div>
       <div style={valueStyle}>
-        {traits.personality_traits?.map((trait, index) => (
-          <div key={`personality-${index}`} style={itemStyle}>{trait}</div>
+        {traits.personality?.map((trait: string, index: number) => (
+          <div key={`personality-${index}`} style={itemStyle}>
+            {trait}
+          </div>
         ))}
       </div>
     </div>
@@ -61,4 +59,4 @@ const Traits: React.FC<TraitsProps> = ({ traits }) => (
   </div>
 );
 
-export default Traits;
+export default TraitsDisplay;

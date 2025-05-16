@@ -13,7 +13,7 @@ import HitDice from "@/components/CharacterSheet/HitDice";
 import Features from "@/components/CharacterSheet/Features";
 import DeathSaves from "@/components/CharacterSheet/DeathSaves";
 import Skills from "@/components/CharacterSheet/Skills";
-import Traits from "@/components/CharacterSheet/Traits";
+import TraitsDisplay from "@/components/CharacterSheet/Traits";
 import Bio from "@/components/CharacterSheet/Bio";
 import ProficienciesAndLanguages from "@/components/CharacterSheet/ProficienciesAndLanguages";
 import CharacterCard from "@/components/CharacterCard";
@@ -362,21 +362,7 @@ const CharacterSheetPage: React.FC = () => {
 
   useEffect(() => {
     if (!characterLoading && character && !characterSheet && !sheetLoading) {
-      console.log("Generating character sheet with data:", {
-        name: character.name,
-        race: character.race?.name || "Unknown",
-        class: character.class?.name || "Unknown",
-        sex: character.sex || "Unknown",
-        creature: character.creature || "Unknown",
-        bio: character.bio || "Unknown",
-        motivation: character.motivation || "Unknown",
-        traits: {
-          personality: character.traits?.personality || [],
-          ideals: character.traits?.ideals || [],
-          bonds: character.traits?.bonds || [],
-          flaws: character.traits?.flaws || [],
-        },
-      });
+      console.log("Generating character sheet with data:", character);
       generateCharacterSheet(character);
     }
   }, [
@@ -393,10 +379,6 @@ const CharacterSheetPage: React.FC = () => {
       console.log("Combat data:", characterSheet.combat);
     }
   }, [characterSheet]);
-
-  const handleBack = () => {
-    router.push("/character/backstory");
-  };
 
   const handleRegenerate = () => {
     if (character) {
@@ -503,12 +485,14 @@ const CharacterSheetPage: React.FC = () => {
             </ContentBox>
           </div>
 
-          <div>
-            <SectionLabel>Traits</SectionLabel>
-            <ContentBox>
-              <Traits traits={characterSheet.effects} />
-            </ContentBox>
-          </div>
+          {character.traits && (
+            <div>
+              <SectionLabel>Traits</SectionLabel>
+              <ContentBox>
+                <TraitsDisplay traits={character.traits} />
+              </ContentBox>
+            </div>
+          )}
         </Grid>
 
         <Grid columns={3} gap="0.75rem">
