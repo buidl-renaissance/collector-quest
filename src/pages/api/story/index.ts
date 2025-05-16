@@ -14,7 +14,7 @@ export default async function handler(
         return res.status(400).json({ error: 'Missing required fields' });
       }
 
-      const slug = defaultSlug ? defaultSlug : title.toLowerCase().replace(/ /g, '-');
+      const slug = defaultSlug ? defaultSlug : title.toLowerCase().replace(/[^a-zA-Z0-9-]/g, '');
 
       // Create the story in the database
       const [createdStory] = await db('stories')

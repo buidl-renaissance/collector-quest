@@ -113,7 +113,7 @@ const CreateStoryPage: React.FC = () => {
 
     setGeneratingContent(true);
     try {
-      const response = await fetch("/api/generate-story", {
+      const response = await fetch("/api/generate-story-details", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
