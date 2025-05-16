@@ -9,7 +9,7 @@ import { useCharacter } from './useCharacter';
  * Handles loading from localStorage and persisting changes
  */
 export function useRace() {
-  const { saveCharacter } = useCharacter();
+  const { saveCharacter, updateCharacter } = useCharacter();
   const [selectedRace, setSelectedRace] = useState<Race | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
@@ -58,8 +58,7 @@ export function useRace() {
     if (!characterId) return;
 
     setSelectedRace(race);
-    setCharacterKey(characterId, 'raceId', race.id);
-    setCharacterKey(characterId, 'race', race);
+    updateCharacter({ race: race });
     (async () => {
       await saveCharacter();
     })();
@@ -71,8 +70,7 @@ export function useRace() {
     if (!characterId) return;
 
     setSelectedRace(null);
-    setCharacterKey(characterId, 'raceId', null);
-    setCharacterKey(characterId, 'race', null);
+    updateCharacter({ race: undefined });
   };
 
   // Navigate to race selection page

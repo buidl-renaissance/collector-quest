@@ -2,12 +2,14 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { CharacterClass } from '@/data/classes';
 import { getCurrentCharacterId, getCharacterKey, setCharacterKey } from '@/utils/storage';
+import { useCharacter } from './useCharacter';
 
 /**
  * Custom hook to manage character class selection state
  * Handles loading from localStorage and persisting changes
  */
 export function useCharacterClass() {
+  const { saveCharacter, updateCharacter } = useCharacter();
   const [selectedClass, setSelectedClass] = useState<CharacterClass | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
@@ -56,8 +58,7 @@ export function useCharacterClass() {
     if (!characterId) return;
 
     setSelectedClass(characterClass);
-    setCharacterKey(characterId, 'classId', characterClass.id);
-    setCharacterKey(characterId, 'class', characterClass);
+    updateCharacter({ class: characterClass });
   };
 
   // Function to clear class selection
@@ -66,8 +67,7 @@ export function useCharacterClass() {
     if (!characterId) return;
 
     setSelectedClass(null);
-    setCharacterKey(characterId, 'classId', null);
-    setCharacterKey(characterId, 'class', null);
+    updateCharacter({ class: undefined });
   };
 
   // Navigate to class selection page
