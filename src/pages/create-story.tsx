@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import styled from "@emotion/styled";
 import { GetServerSideProps } from "next";
 import Link from "next/link";
-import { FaArrowLeft, FaCrown, FaSave } from "react-icons/fa";
+import { FaArrowLeft, FaCrown, FaSave, FaMagic } from "react-icons/fa";
 import { keyframes } from "@emotion/react";
 import { UploadMedia } from "@/components/UploadMedia";
 
@@ -50,7 +50,15 @@ const questBeginsStory = {
     "Welcome, brave soul, to Lord Smearington's Gallery of the Absurd. Before you embark on this journey through realms of imagination and wonder, you must first forge your identity. Who will you be in this land of artistic chaos? A curious explorer? A skeptical critic? Or perhaps a fellow creator seeking inspiration?\n\nDefine your character, and let your choices guide your experience through the twisted corridors and magnificent exhibits that await you in this interdimensional gallery.",
 };
 
-const data = questBeginsStory;
+const blankStory = {
+  title: "",
+  description: "",
+  slug: "",
+  videoUrl: "",
+  script: "",
+};
+
+const data = blankStory;
 
 
 const CreateStoryPage: React.FC = () => {
@@ -62,6 +70,9 @@ const CreateStoryPage: React.FC = () => {
   const [script, setScript] = useState(data.script);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showPromptModal, setShowPromptModal] = useState(false);
+  const [prompt, setPrompt] = useState("");
+  const [generatingContent, setGeneratingContent] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -95,6 +106,38 @@ const CreateStoryPage: React.FC = () => {
     }
   };
 
+  const generateContent = async () => {
+    if (!prompt) {
+      return;
+    }
+
+    setGeneratingContent(true);
+    try {
+      const response = await fetch("/api/generate-story", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ prompt }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to generate content");
+      }
+
+      const data = await response.json();
+      setTitle(data.title);
+      setDescription(data.description);
+      setScript(data.script);
+      setShowPromptModal(false);
+    } catch (err) {
+      console.error("Error generating content:", err);
+      setError("Failed to generate content. Please try again.");
+    } finally {
+      setGeneratingContent(false);
+    }
+  };
+
   return (
     <Container>
       <BackLink href={`/realm`}>
@@ -107,6 +150,25 @@ const CreateStoryPage: React.FC = () => {
         {error && <ErrorMessage>{error}</ErrorMessage>}
 
         <Form onSubmit={handleSubmit}>
+          <GenerateButton 
+            type="button" 
+            onClick={() => setShowPromptModal(true)}
+          >
+            <FaMagic /> Generate Story Content
+          </GenerateButton>
+
+          <FormGroup>
+            <Label htmlFor="imageUrl">Story Video</Label>
+            <UploadMedia
+              mediaUrl={videoUrl}
+              accept="video/*"
+              maxSize={50}
+              onUploadComplete={(url: string) => setVideoUrl(url)}
+              label="Upload a video for your story"
+            />
+            <small>Upload a video that represents your story</small>
+          </FormGroup>
+
           <FormGroup>
             <Label htmlFor="title">Story Title</Label>
             <Input
@@ -129,18 +191,6 @@ const CreateStoryPage: React.FC = () => {
               rows={3}
               required
             />
-          </FormGroup>
-
-          <FormGroup>
-            <Label htmlFor="imageUrl">Story Video</Label>
-            <UploadMedia
-              mediaUrl={videoUrl}
-              accept="video/*"
-              maxSize={50}
-              onUploadComplete={(url: string) => setVideoUrl(url)}
-              label="Upload a video for your story"
-            />
-            <small>Upload a video that represents your story</small>
           </FormGroup>
 
           <FormGroup>
@@ -192,6 +242,39 @@ const CreateStoryPage: React.FC = () => {
           </GuidelineItem>
         </GuidelinesList>
       </StoryGuidelines>
+
+      {showPromptModal && (
+        <ModalOverlay>
+          <Modal>
+            <ModalTitle>Generate Story Content</ModalTitle>
+            <ModalDescription>
+              Enter a prompt to generate a title, description, and script for your story.
+            </ModalDescription>
+            <PromptTextarea
+              value={prompt}
+              onChange={(e) => setPrompt(e.target.value)}
+              placeholder="Describe the story you want to create... (e.g., 'A surreal journey through a museum where paintings come to life')"
+              rows={5}
+            />
+            <ModalButtonGroup>
+              <ModalCancelButton 
+                type="button" 
+                onClick={() => setShowPromptModal(false)}
+                disabled={generatingContent}
+              >
+                Cancel
+              </ModalCancelButton>
+              <ModalGenerateButton 
+                type="button" 
+                onClick={generateContent}
+                disabled={!prompt || generatingContent}
+              >
+                {generatingContent ? "Generating..." : "Generate"}
+              </ModalGenerateButton>
+            </ModalButtonGroup>
+          </Modal>
+        </ModalOverlay>
+      )}
     </Container>
   );
 };
@@ -491,6 +574,50 @@ const SubmitButton = styled.button`
   }
 `;
 
+const GenerateButton = styled.button`
+  background: linear-gradient(135deg, #5a3e85, #3b4c99);
+  color: white;
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  text-decoration: none;
+  text-align: center;
+  transition: all 0.3s ease;
+  border: 1px solid #ffd700;
+  font-family: "Cinzel Decorative", serif;
+  font-size: 1.1rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  cursor: pointer;
+  align-self: center;
+  margin-bottom: 0.5rem;
+  position: relative;
+  overflow: hidden;
+
+  @media (max-width: 768px) {
+    padding: 0.7rem 1.2rem;
+    font-size: 1rem;
+    width: 100%;
+  }
+
+  &:hover {
+    background: linear-gradient(135deg, #3b4c99, #5a3e85);
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+    color: #ffd700;
+  }
+
+  svg {
+    font-size: 1.2rem;
+    animation: ${float} 2s ease-in-out infinite;
+
+    @media (max-width: 768px) {
+      font-size: 1rem;
+    }
+  }
+`;
+
 const ErrorMessage = styled.div`
   background: rgba(255, 0, 0, 0.1);
   color: #ff6b6b;
@@ -655,6 +782,165 @@ const GuidelineItem = styled.li`
 
   &:last-child {
     margin-bottom: 0;
+  }
+`;
+
+// Modal components
+const ModalOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(5px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+`;
+
+const Modal = styled.div`
+  background: linear-gradient(135deg, #3b4c99, #5a3e85);
+  border-radius: 12px;
+  padding: 2rem;
+  width: 100%;
+  max-width: 600px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  border: 2px solid #ffd700;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url("/images/fabric-texture.png");
+    opacity: 0.05;
+    pointer-events: none;
+  }
+
+  @media (max-width: 768px) {
+    padding: 1.5rem;
+  }
+`;
+
+const ModalTitle = styled.h3`
+  font-size: 1.8rem;
+  color: #ffd700;
+  margin-bottom: 1rem;
+  font-family: "Cinzel Decorative", serif;
+  text-align: center;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+
+  @media (max-width: 768px) {
+    font-size: 1.5rem;
+  }
+`;
+
+const ModalDescription = styled.p`
+  color: #c7bfd4;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  font-size: 1.1rem;
+  line-height: 1.5;
+
+  @media (max-width: 768px) {
+    font-size: 1rem;
+    margin-bottom: 1.2rem;
+  }
+`;
+
+const PromptTextarea = styled.textarea`
+  width: 100%;
+  padding: 1rem;
+  border: 1px solid #5a3e85;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-family: "Cormorant Garamond", serif;
+  resize: vertical;
+  background: rgba(255, 255, 255, 0.1);
+  color: #c7bfd4;
+  transition: all 0.3s ease;
+  min-height: 120px;
+  margin-bottom: 1.5rem;
+
+  @media (max-width: 768px) {
+    padding: 0.8rem;
+    font-size: 1rem;
+    min-height: 100px;
+    margin-bottom: 1.2rem;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: #ffd700;
+    box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.2), ${glow} 2s infinite;
+  }
+
+  &::placeholder {
+    color: rgba(199, 191, 212, 0.5);
+    font-style: italic;
+  }
+`;
+
+const ModalButtonGroup = styled.div`
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+`;
+
+const ModalButton = styled.button`
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  text-align: center;
+  transition: all 0.3s ease;
+  font-family: "Cinzel Decorative", serif;
+`;
+
+const ModalCancelButton = styled(ModalButton)`
+  background: rgba(255, 255, 255, 0.1);
+  color: #c7bfd4;
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  flex: 1;
+
+  &:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.2);
+    color: #ffd700;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+`;
+
+const ModalGenerateButton = styled(ModalButton)`
+  background: linear-gradient(135deg, #ffd700, #ffa500);
+  color: #1a1a2e;
+  border: none;
+  flex: 1;
+
+  &:hover:not(:disabled) {
+    background: linear-gradient(135deg, #ffa500, #ffd700);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: linear-gradient(135deg, #666, #999);
   }
 `;
 
