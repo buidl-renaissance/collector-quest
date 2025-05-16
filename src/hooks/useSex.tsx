@@ -45,7 +45,7 @@ export function useSex() {
     if (!characterId) return;
 
     setSelectedSex(null);
-    setNamespacedItem(characterId, 'sex', '');
+    setCharacterKey(characterId, 'sex', '');
   };
 
   const goToSexSelection = () => {
