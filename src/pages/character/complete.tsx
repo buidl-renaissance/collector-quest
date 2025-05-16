@@ -19,7 +19,7 @@ const CompletionPage: React.FC = () => {
   const { selectedClass } = useCharacterClass();
   const { selectedRace } = useRace();
   const { selectedTraits } = useTraits();
-  const { motivationState } = useMotivation();
+  const { motivation } = useMotivation();
   const { character } = useCharacter();
   const { selectedSex } = useSex();
 
@@ -48,7 +48,7 @@ const CompletionPage: React.FC = () => {
       race: selectedRace,
       class: selectedClass,
       traits: selectedTraits,
-      motivation: motivationState,
+      motivation: motivation,
       bio: character?.bio,
     };
 
