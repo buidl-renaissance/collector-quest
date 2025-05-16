@@ -156,7 +156,7 @@ const ImageContainer = styled.div<{ size: string }>`
       case "small":
         return "100px";
       case "large":
-        return "300px";
+        return "100%";
       default:
         return "200px";
     }
@@ -166,11 +166,12 @@ const ImageContainer = styled.div<{ size: string }>`
       case "small":
         return "100px";
       case "large":
-        return "300px";
+        return "100%";
       default:
         return "200px";
     }
   }};
+  max-width: 300px;
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);

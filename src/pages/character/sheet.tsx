@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import {
-  FaArrowLeft,
-  FaTimes,
-} from "react-icons/fa";
+import { FaArrowLeft, FaTimes } from "react-icons/fa";
 import styled from "@emotion/styled";
 import { useCharacter } from "@/hooks/useCharacter";
 import { useCharacterSheet } from "@/hooks/useCharacterSheet";
@@ -11,14 +8,15 @@ import Page from "@/components/Page";
 import { Container, LoadingMessage } from "@/components/styled/layout";
 import { BackButton } from "@/components/styled/character";
 import Emblems from "@/components/CharacterSheet/Emblems";
-import Attacks from '@/components/CharacterSheet/Attacks';
-import HitDice from '@/components/CharacterSheet/HitDice';
-import Features from '@/components/CharacterSheet/Features';
-import DeathSaves from '@/components/CharacterSheet/DeathSaves';
-import Skills from '@/components/CharacterSheet/Skills';
-import Traits from '@/components/CharacterSheet/Traits';
-import Bio from '@/components/CharacterSheet/Bio';
-import ProficienciesAndLanguages from '@/components/CharacterSheet/ProficienciesAndLanguages';
+import Attacks from "@/components/CharacterSheet/Attacks";
+import HitDice from "@/components/CharacterSheet/HitDice";
+import Features from "@/components/CharacterSheet/Features";
+import DeathSaves from "@/components/CharacterSheet/DeathSaves";
+import Skills from "@/components/CharacterSheet/Skills";
+import Traits from "@/components/CharacterSheet/Traits";
+import Bio from "@/components/CharacterSheet/Bio";
+import ProficienciesAndLanguages from "@/components/CharacterSheet/ProficienciesAndLanguages";
+import CharacterCard from "@/components/CharacterCard";
 
 // Styled Components
 const CharacterSheetContainer = styled.div`
@@ -350,7 +348,6 @@ const CharacterSheetPage: React.FC = () => {
     content: null,
   });
 
-
   const openModal = (title: string, content: React.ReactNode) => {
     setModalContent({
       isOpen: true,
@@ -431,12 +428,15 @@ const CharacterSheetPage: React.FC = () => {
 
   return (
     <Page width="wide">
-      <BackButton onClick={handleBack}>
+      <Header>COLLECTOR QUEST</Header>
+      {/* <BackButton onClick={handleBack}>
         <FaArrowLeft /> Back to Summary
-      </BackButton>
+      </BackButton> */}
+
+      <CharacterCard character={character} />
 
       <CharacterSheetContainer>
-        <Header>COLLECTOR QUEST</Header>
+        <Header>CHARACTER SHEET</Header>
 
         <Section>
           <Grid columns={3} gap="0.75rem">
@@ -461,7 +461,11 @@ const CharacterSheetPage: React.FC = () => {
           </Grid>
         </Section>
 
-        <Grid columns={3} gap="0.75rem" style={{ marginBottom: "1rem", alignItems: "flex-start" }}>
+        <Grid
+          columns={3}
+          gap="0.75rem"
+          style={{ marginBottom: "1rem", alignItems: "flex-start" }}
+        >
           <Emblems abilities={characterSheet.abilities} />
 
           <div>
@@ -568,15 +572,33 @@ const CharacterSheetPage: React.FC = () => {
                       openModal(
                         "Proficiencies & Languages",
                         <>
-                          <div style={{ padding: '1rem' }}>
-                            <h3 style={{ color: '#d6b87b', fontFamily: 'Cinzel, serif', marginBottom: '0.5rem' }}>Proficiencies</h3>
-                            <ul style={{ color: '#f5e6d3', marginBottom: '1rem' }}>
+                          <div style={{ padding: "1rem" }}>
+                            <h3
+                              style={{
+                                color: "#d6b87b",
+                                fontFamily: "Cinzel, serif",
+                                marginBottom: "0.5rem",
+                              }}
+                            >
+                              Proficiencies
+                            </h3>
+                            <ul
+                              style={{ color: "#f5e6d3", marginBottom: "1rem" }}
+                            >
                               {characterSheet.proficiencies.map((prof, idx) => (
                                 <li key={idx}>{prof}</li>
                               ))}
                             </ul>
-                            <h3 style={{ color: '#d6b87b', fontFamily: 'Cinzel, serif', marginBottom: '0.5rem' }}>Languages</h3>
-                            <ul style={{ color: '#f5e6d3' }}>
+                            <h3
+                              style={{
+                                color: "#d6b87b",
+                                fontFamily: "Cinzel, serif",
+                                marginBottom: "0.5rem",
+                              }}
+                            >
+                              Languages
+                            </h3>
+                            <ul style={{ color: "#f5e6d3" }}>
                               {characterSheet.languages.map((lang, idx) => (
                                 <li key={idx}>{lang}</li>
                               ))}
@@ -587,7 +609,6 @@ const CharacterSheetPage: React.FC = () => {
                     }
                   />
                 </div>
-
               </Grid>
             </Grid>
           </CombatSection>

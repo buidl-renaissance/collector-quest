@@ -8,32 +8,34 @@ interface CharacterCardProps {
   character: Character;
   onSelect?: () => void;
   showEditButton?: boolean;
+  size?: "small" | "large";
 }
 
 const CharacterCard: React.FC<CharacterCardProps> = ({
   character,
   onSelect,
   showEditButton = false,
+  size = "large",
 }) => {
   return (
     <Card>
       <CardHeader>
-      <CharacterName>{character.name}</CharacterName>
-          {character.level && (
-            <CharacterLevel>Level {character.level}</CharacterLevel>
-          )}
+        <CharacterName>{character.name}</CharacterName>
+        {character.level && (
+          <CharacterLevel>Level {character.level}</CharacterLevel>
+        )}
       </CardHeader>
       <CardContent>
         <CharacterImage
           race={character.race}
           characterClass={character.class}
-          size="large"
+          size={size}
         />
         {character.race && character.class && (
           <CharacterDescription
             race={character.race}
             characterClass={character.class}
-            size="large"
+            size={size}
           />
         )}
       </CardContent>
@@ -42,7 +44,6 @@ const CharacterCard: React.FC<CharacterCardProps> = ({
 };
 
 export default CharacterCard;
-
 
 const Card = styled.div`
   background-color: #2a2e35;
