@@ -32,7 +32,7 @@ import { navigateTo } from "@/utils/navigation";
 const CharacterTraitsPage: React.FC = () => {
   const router = useRouter();
   const [darkMode, setDarkMode] = useState(true);
-  const { character, updateCharacter, saveCharacter } = useCharacter();
+  const { character, updateCharacter, saveCharacter, updateCharacterTrait } = useCharacter();
   const { selectedClass, loading: classLoading } = useCharacterClass();
   const { selectedRace, loading: raceLoading } = useRace();
 
@@ -139,28 +139,7 @@ const CharacterTraitsPage: React.FC = () => {
     type: "personality" | "ideals" | "flaws",
     value: string
   ) => {
-    if (!character) return;
-    const currentValues = character.traits?.[type] as string[] ?? [];
-    let updatedData;
-    if (currentValues.includes(value)) {
-      updatedData = {
-        ...character,
-        traits: {
-          ...character.traits,
-          [type]: currentValues.filter((item) => item !== value),
-        },
-      };
-    } else {
-      updatedData = {
-        ...character,
-        traits: {
-          ...character.traits,
-          [type]: [...currentValues, value],
-        },
-      };
-    }
-    console.log(updatedData);
-    updateCharacter(updatedData);
+    updateCharacterTrait(type, value);
   };
 
   const handleRandomize = () => {
@@ -240,9 +219,9 @@ const CharacterTraitsPage: React.FC = () => {
   return (
     <PageTransition>
       <Page width="narrow">
-        <BackButton onClick={handleBack}>
+        {/* <BackButton onClick={handleBack}>
           <FaArrowLeft /> Back to Character Image
-        </BackButton>
+        </BackButton> */}
 
         <HeroSection>
           <Title>Forge Your Legend in Seconds</Title>

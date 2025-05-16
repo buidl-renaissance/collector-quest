@@ -6,7 +6,6 @@ const openai = new OpenAI({
 });
 
 export async function generateBackstory(character: Character): Promise<string> {
-  
   if (character.backstory) {
     return character.backstory;
   }
@@ -19,13 +18,17 @@ export async function generateBackstory(character: Character): Promise<string> {
     throw new Error("Character traits are required");
   }
 
-  const prompt = `Create a rich, detailed backstory for a ${character.sex} ${character.race.name} ${character.class.name} named ${character.name}. 
+  const prompt = `Create a rich, detailed backstory for a ${character.sex} ${
+    character.race.name
+  } ${character.class.name} named ${character.name}. 
     
   Character traits:
   - Name: ${character.name}
   - Personality: ${character.traits.personality?.join(", ")}
   - Ideals: ${character.traits.ideals?.join(", ")}
   - Bonds: ${character.traits.bonds?.join(", ")}
+  - Alignment: ${character.traits?.alignment}
+  - Deity: ${character.traits?.deity}
   - Flaws: ${character.traits.flaws?.join(", ")}
   - Actions: ${character.traits.actions?.join(", ")}
   - Driving Forces:  ${character.traits.forces?.join(", ")}
@@ -64,8 +67,9 @@ export async function generateBackstory(character: Character): Promise<string> {
   }
 }
 
-export async function generateMotivation(character: Character): Promise<string> {
-
+export async function generateMotivation(
+  character: Character
+): Promise<string> {
   if (character.motivation) {
     return character.motivation;
   }
@@ -78,7 +82,6 @@ export async function generateMotivation(character: Character): Promise<string> 
     throw new Error("Character traits are required");
   }
 
-
   // Create a detailed prompt for the AI
   const prompt = `Create a compelling character motivation based on the following elements:
 
@@ -87,18 +90,20 @@ Character Details:
 - Race: ${character.race.name}
 - Class: ${character.class.name}
 - Sex: ${character.sex}
+- Alignment: ${character.traits?.alignment}
+- Deity: ${character.traits?.deity}
 
 Personality & Traits:
-- Personality: ${character.traits.personality?.join(', ')}
-- Ideals: ${character.traits.ideals?.join(', ')}
-- Flaws: ${character.traits.flaws?.join(', ')}
+- Personality: ${character.traits.personality?.join(", ")}
+- Ideals: ${character.traits.ideals?.join(", ")}
+- Flaws: ${character.traits.flaws?.join(", ")}
 - Haunting Memory: ${character.traits.hauntingMemory}
 - Treasured Possession: ${character.traits.treasuredPossession}
 
 Motivational Elements:
-- Actions: ${character.traits.actions?.join(', ')}
-- Driving Forces: ${character.traits.forces?.join(', ')}
-- Archetype: ${character.traits.archetype || 'None'}
+- Actions: ${character.traits.actions?.join(", ")}
+- Driving Forces: ${character.traits.forces?.join(", ")}
+- Archetype: ${character.traits.archetype || "None"}
 
 Generate a rich, nuanced motivation that:
 1. Incorporates all selected actions and forces
@@ -120,20 +125,21 @@ The output should be a single, cohesive paragraph that reads like a character st
       messages: [
         {
           role: "system",
-          content: "You are a creative writing expert specializing in character development and motivation. Your task is to generate rich, nuanced character motivations that incorporate multiple elements while maintaining narrative coherence."
+          content:
+            "You are a creative writing expert specializing in character development and motivation. Your task is to generate rich, nuanced character motivations that incorporate multiple elements while maintaining narrative coherence.",
         },
         {
           role: "user",
-          content: prompt
-        }
+          content: prompt,
+        },
       ],
       temperature: 0.8,
       max_tokens: 500,
     });
 
-    return completion.choices[0]?.message?.content || '';
+    return completion.choices[0]?.message?.content || "";
   } catch (error) {
-    console.error('Error generating motivation:', error);
-    throw new Error('Failed to generate motivation');
+    console.error("Error generating motivation:", error);
+    throw new Error("Failed to generate motivation");
   }
 }
