@@ -80,7 +80,7 @@ const CharacterRaces: React.FC<CharacterRacesProps> = ({ races, onSelectRace, se
               <RaceModalTitle>{modalRace.name}</RaceModalTitle>
               <RaceModalSource>Source: {modalRace.source || 'Unknown'}</RaceModalSource>
               <RaceModalDescription>{modalRace.description}</RaceModalDescription>
-              {modalRace.traits && modalRace.traits.length > 0 && (
+              {/* {modalRace.traits && modalRace.traits.length > 0 && (
                 <RaceModalTraits>
                   <RaceModalSubtitle>Racial Traits:</RaceModalSubtitle>
                   <ul>
@@ -89,7 +89,7 @@ const CharacterRaces: React.FC<CharacterRacesProps> = ({ races, onSelectRace, se
                     ))}
                   </ul>
                 </RaceModalTraits>
-              )}
+              )} */}
               <SelectButton 
                 isSelected={selectedRace === modalRace.name}
                 onClick={() => {
