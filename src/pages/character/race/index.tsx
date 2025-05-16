@@ -114,7 +114,7 @@ const Container = styled.div`
   padding: 2rem;
   font-family: 'Cormorant Garamond', serif;
   animation: ${fadeIn} 0.5s ease-in;
-  padding-bottom: 80px; /* Make room for the footer */
+  padding-bottom: 120px; /* Make room for the footer */
 `;
 
 const Title = styled.h1`
