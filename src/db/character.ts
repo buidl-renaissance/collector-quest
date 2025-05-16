@@ -72,6 +72,7 @@ export class CharacterDB {
     if (character.backstory) updateData.backstory = character.backstory;
     if (character.sex) updateData.sex = character.sex;
     if (character.creature) updateData.creature = character.creature;
+    if (character.equipment) updateData.equipment = JSON.stringify(character.equipment);
 
     const count = await client("characters").where({ id }).update(updateData);
     return count > 0;
