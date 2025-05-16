@@ -97,6 +97,7 @@ export const generateStoryFunction = inngest.createFunction(
       completeResult(
         resultId,
         JSON.stringify({
+          step: "complete",
           message: "Backstory and motivation generated successfully",
           backstory: backstoryResult,
           motivation: motivationResult,

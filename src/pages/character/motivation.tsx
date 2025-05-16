@@ -16,6 +16,7 @@ import { Title, Subtitle } from "@/components/styled/typography";
 import { useMotivation } from "@/hooks/useMotivation";
 import BottomNavigation from "@/components/BottomNavigation";
 import { useCharacter } from "@/hooks/useCharacter";
+import { navigateTo } from "@/utils/navigation";
 
 const MotivationPage: React.FC = () => {
   const router = useRouter();
@@ -86,15 +87,12 @@ const MotivationPage: React.FC = () => {
     }
   }, [selectedRace, selectedClass, raceLoading, classLoading, router]);
 
-  const handleNext = async () => {
-    if (selectedRace && selectedClass) {
-      await saveCharacter();
-      router.push("/character/story");
-    }
+  const handleBack = () => {
+    navigateTo(router, "/character/traits");
   };
 
-  const handleBack = () => {
-    router.push("/character/traits");
+  const handleNext = () => {
+    navigateTo(router, "/character/story");
   };
 
   if (raceLoading || classLoading) {

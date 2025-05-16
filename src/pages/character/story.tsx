@@ -9,6 +9,9 @@ import { Title, Subtitle, NextButton } from "@/components/styled/character";
 import PageTransition from "@/components/PageTransition";
 import { FaArrowRight } from "react-icons/fa";
 import BottomNavigation from "@/components/BottomNavigation";
+import { navigateTo } from "@/utils/navigation";
+import Image from "next/image";
+
 const fadeIn = keyframes`
   from { opacity: 0; }
   to { opacity: 1; }
@@ -49,6 +52,7 @@ const SectionTitle = styled.h2`
 export default function CharacterStoryPage() {
   const router = useRouter();
   const { character } = useCharacter();
+//   const [characterImage, setCharacterImage] = useState<string | null>(character?.image_url || character?.race?.image || null);
   const {
     generateStory,
     isLoading,
@@ -65,7 +69,7 @@ export default function CharacterStoryPage() {
   }, [character, isLoading, backstory, motivation, generateStory]);
 
   const handleNext = () => {
-    router.push("/character/sheet");
+    navigateTo(router, "/character/sheet");
   };
 
   if (!character) {
@@ -81,6 +85,10 @@ export default function CharacterStoryPage() {
 
         <Title>{character.name}&apos;s Story</Title>
 
+        {/* {characterImage && (
+          <Image src={characterImage} alt={character.name} width={300} height={300} />
+        )} */}
+        
         {step === "generate-motivation" && (
           <SectionTitle style={{ textAlign: "center" }}>
             Generating motivation...

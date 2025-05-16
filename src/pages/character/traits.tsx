@@ -27,6 +27,7 @@ import {
 } from "@/components/styled/forms";
 import { FormGroup, TextArea } from "@/components/styled/forms";
 import { FormSection } from "@/components/styled/forms";
+import { navigateTo } from "@/utils/navigation";
 
 const CharacterTraitsPage: React.FC = () => {
   const router = useRouter();
@@ -208,11 +209,11 @@ const CharacterTraitsPage: React.FC = () => {
   };
 
   const handleBack = () => {
-    router.push("/character/image");
+    navigateTo(router, "/character/image");
   };
 
   const handleNext = () => {
-    router.push("/character/motivation");
+    navigateTo(router, "/character/motivation");
   };
 
   // Redirect if no race or class is selected

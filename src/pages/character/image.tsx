@@ -4,6 +4,7 @@ import { keyframes } from "@emotion/react";
 import { useRouter } from "next/router";
 import { useCharacter } from "@/hooks/useCharacter";
 import { useCharacterImageGenerator } from "@/hooks/useCharacterImageGenerator";
+import { navigateTo } from "@/utils/navigation";
 
 // Animations
 const fadeIn = keyframes`
@@ -118,11 +119,11 @@ const ImageGeneratorPage = () => {
   };
 
   const handleNext = () => {
-    router.push("/character/traits");
+    navigateTo(router, "/character/traits");
   };
 
   const handleSkip = async () => {
-    router.push("/character/traits");
+    navigateTo(router, "/character/traits");
   };
 
   const handleCameraCapture = async () => {

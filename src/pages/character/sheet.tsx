@@ -428,15 +428,15 @@ const CharacterSheetPage: React.FC = () => {
 
   return (
     <Page width="wide">
-      <Header>COLLECTOR QUEST</Header>
+      {/* <Header>COLLECTOR QUEST</Header> */}
       {/* <BackButton onClick={handleBack}>
         <FaArrowLeft /> Back to Summary
       </BackButton> */}
 
-      <CharacterCard character={character} />
+      {/* <CharacterCard character={character} /> */}
 
       <CharacterSheetContainer>
-        <Header>CHARACTER SHEET</Header>
+        <Header>COLLECTOR QUEST</Header>
 
         <Section>
           <Grid columns={3} gap="0.75rem">

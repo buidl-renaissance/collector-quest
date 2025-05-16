@@ -17,6 +17,7 @@ import { BackButton } from "@/components/styled/character";
 import { NextButton } from "@/components/styled/buttons";
 import BackstoryDisplay from "@/components/StoryDisplay";
 import { useBackstory } from "@/hooks/useBackstory";
+import { navigateTo } from "@/utils/navigation";
 
 const BackstoryPage: React.FC = () => {
   const router = useRouter();
@@ -42,13 +43,11 @@ const BackstoryPage: React.FC = () => {
   }, [selectedRace, selectedClass, raceLoading, classLoading, router]);
 
   const handleBack = () => {
-    router.push("/character/motivation");
+    navigateTo(router, "/character/motivation");
   };
 
   const handleNext = () => {
-    if (character && backstory) {
-      router.push("/character/sheet");
-    }
+    navigateTo(router, "/character/sheet");
   };
 
   if (raceLoading || classLoading || backstoryLoading) {
