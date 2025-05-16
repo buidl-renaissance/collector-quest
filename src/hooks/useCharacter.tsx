@@ -178,6 +178,10 @@ export const useCharacter = () => {
         });
       } else if (typeof value === "string") {
         setCharacterKey(characterId, key, value);
+      } else if (key === "race" && value) {
+        setCharacterKey(characterId, "race", value);
+      } else if (key === "class" && value) {
+        setCharacterKey(characterId, "class", value);
       }
     });
 
