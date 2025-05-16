@@ -51,6 +51,43 @@ const ImageGeneratorPage = () => {
     }
   };
 
+  const cropImageToWidth = (imageData: string, targetWidth: number): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        if (!ctx) {
+          reject(new Error('Could not get canvas context'));
+          return;
+        }
+        
+        // Calculate dimensions while maintaining aspect ratio
+        const aspectRatio = img.height / img.width;
+        const newWidth = targetWidth;
+        const newHeight = targetWidth * aspectRatio;
+        
+        // Set canvas dimensions
+        canvas.width = newWidth;
+        canvas.height = newHeight;
+        
+        // Draw the image on the canvas
+        ctx.drawImage(img, 0, 0, newWidth, newHeight);
+        
+        // Get the resized image as a data URL
+        const croppedImageData = canvas.toDataURL('image/jpeg');
+        resolve(croppedImageData);
+      };
+      
+      img.onerror = () => {
+        reject(new Error('Failed to load image'));
+      };
+      
+      img.src = imageData;
+    });
+  };
+
   const handleImageUpload = async (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -60,9 +97,12 @@ const ImageGeneratorPage = () => {
     const reader = new FileReader();
     reader.onload = async (e) => {
       const result = e.target?.result as string;
-      setUserImage(result);
       try {
-        const { resultId } = await generateImage(result);
+        // Crop the image to 600px width
+        const croppedImage = await cropImageToWidth(result, 600);
+        setUserImage(croppedImage);
+        
+        const { resultId } = await generateImage(croppedImage);
         // Here you would typically start polling for the result
         // For now, we'll just show a success message
         setError(null);
@@ -207,14 +247,20 @@ const ImageGeneratorPage = () => {
         ctx?.drawImage(video, 0, 0);
 
         const imageData = canvas.toDataURL("image/jpeg");
-        setUserImage(imageData);
-        generateImage(imageData).catch((err) => {
-          setError(
-            err instanceof Error
-              ? err.message
-              : "Failed to generate character image"
-          );
-        });
+        
+        // Crop the captured image to 600px width
+        cropImageToWidth(imageData, 600)
+          .then(croppedImage => {
+            setUserImage(croppedImage);
+            return generateImage(croppedImage);
+          })
+          .catch((err) => {
+            setError(
+              err instanceof Error
+                ? err.message
+                : "Failed to generate character image"
+            );
+          });
 
         // Clean up
         stream.getTracks().forEach((track) => track.stop());
