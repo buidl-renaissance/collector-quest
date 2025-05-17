@@ -99,7 +99,7 @@ const StoryPage: React.FC<{ storyId: string }> = ({ storyId }) => {
 
   return (
     <Container>
-      <Story story={story}>
+      <Story story={story} hideDescription={true}>
         <PreRegister />
       </Story>
     </Container>

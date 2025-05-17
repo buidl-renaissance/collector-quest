@@ -7,9 +7,10 @@ import { Story as StoryInterface } from '@/lib/interfaces';
 interface StoryProps {
   story: StoryInterface;
   children?: React.ReactNode;
+  hideDescription?: boolean;
 }
 
-const Story: React.FC<StoryProps> = ({ story, children }) => {
+const Story: React.FC<StoryProps> = ({ story, children, hideDescription = false }) => {
   const [isVideoLoading, setIsVideoLoading] = useState(true);
 
   if (!story) {
@@ -27,7 +28,7 @@ const Story: React.FC<StoryProps> = ({ story, children }) => {
           <FaCrown />
         </CrownDivider>
         <StoryTitle>{story.title}</StoryTitle>
-        <StoryDescription>{story.description}</StoryDescription>
+        {!hideDescription && <StoryDescription>{story.description}</StoryDescription>}
       </StoryHeader>
       
       <ContentSection>
