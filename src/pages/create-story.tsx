@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import styled from "@emotion/styled";
 import { GetServerSideProps } from "next";
 import Link from "next/link";
-import { FaArrowLeft, FaCrown, FaSave, FaMagic } from "react-icons/fa";
+import { FaArrowLeft, FaCrown, FaSave, FaMagic, FaSpinner } from "react-icons/fa";
 import { keyframes } from "@emotion/react";
 import { UploadMedia } from "@/components/UploadMedia";
 
@@ -296,7 +296,13 @@ const CreateStoryPage: React.FC = () => {
                 onClick={generateContent}
                 disabled={(!prompt && !imageUrl) || generatingContent}
               >
-                {generatingContent ? "Generating..." : "Generate"}
+                {generatingContent ? (
+                  <>
+                    <FaSpinner className="spinner" /> Generating...
+                  </>
+                ) : (
+                  "Generate"
+                )}
               </ModalGenerateButton>
             </ModalButtonGroup>
           </Modal>
@@ -986,6 +992,15 @@ const ModalGenerateButton = styled(ModalButton)`
   border: none;
   flex: 1;
   order: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 2.5rem;
+
+  svg {
+    font-size: 1rem;
+  }
 
   &:hover:not(:disabled) {
     background: linear-gradient(135deg, #ffa500, #ffd700);
@@ -994,9 +1009,24 @@ const ModalGenerateButton = styled(ModalButton)`
   }
 
   &:disabled {
-    opacity: 0.5;
+    opacity: 0.7;
     cursor: not-allowed;
     background: linear-gradient(135deg, #666, #999);
+    transform: none;
+    box-shadow: none;
+  }
+
+  @keyframes spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .spinner {
+    animation: spin 1s linear infinite;
   }
 `;
 

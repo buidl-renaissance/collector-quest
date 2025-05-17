@@ -88,10 +88,14 @@ export default async function handler(
 
     const response = completion.choices[0]?.message?.content;
 
+    console.log(response);
+
     if (!response) {
       throw new Error("No response from OpenAI");
     }
 
+    console.log(response);
+    
     // Parse the JSON response
     const storyDetails = JSON.parse(response);
 
