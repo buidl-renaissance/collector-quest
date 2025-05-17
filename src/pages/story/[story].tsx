@@ -3,15 +3,17 @@ import { useRouter } from 'next/router';
 import styled from '@emotion/styled';
 import { GetServerSideProps } from 'next';
 import Link from 'next/link';
-import { FaArrowLeft, FaCrown } from 'react-icons/fa';
+import { FaArrowLeft, FaCrown, FaImage } from 'react-icons/fa';
 import { useWallet } from '@suiet/wallet-kit';
 import { keyframes } from '@emotion/react';
-import { Story as StoryInterface } from '@/lib/interfaces';
+import { Artwork, Story as StoryInterface } from '@/lib/interfaces';
 import Story from '@/components/Story';
 import { ArtworkCard } from '@/components/ArtworkCard';
 import ArtworkGrid from '@/components/ArtworkGrid';
 import { markStoryAsVisited } from '@/lib/visited';
 import { BackButton } from "@/components/styled/character";
+import SelectArtworkModal from '@/components/SelectArtworkModal';
+import useIsAdmin from '@/hooks/useIsAdmin';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const { story } = context.params || {};
@@ -37,6 +39,8 @@ const StoryPage: React.FC<{ storyId: string }> = ({ storyId }) => {
   const [error, setError] = useState('');
   const [response, setResponse] = useState('');
   const [artwork, setArtwork] = useState<any[]>([]);
+  const { isAdmin } = useIsAdmin();
+  const [showArtworkModal, setShowArtworkModal] = useState(false);
 
   useEffect(() => {
     const fetchStoryDetails = async () => {
@@ -104,6 +108,16 @@ const StoryPage: React.FC<{ storyId: string }> = ({ storyId }) => {
     router.push('/realm');
   };
 
+  const handleSelectArtwork = (artwork: Artwork[]) => {
+    console.log('Selected artwork:', artwork);
+    // Here you would handle the selected artwork
+    // For example, you might want to associate it with the story
+    fetch(`/api/story/${storyId}`, {
+      method: 'PUT',
+      body: JSON.stringify({ artwork: artwork.map(a => a.id).join(',') }),
+    });
+  };
+
   if (loading) {
     return (
       <Container>
@@ -143,8 +157,7 @@ const StoryPage: React.FC<{ storyId: string }> = ({ storyId }) => {
         <FaArrowLeft /> Explore Realm
       </BackButton>
       
-      <Story story={story}>
-
+      <Story story={story} hideDescription={false}>
         {artwork.length > 0 && (
           <ArtworkSection>  
             <ArtworkTitle>Featured Artwork</ArtworkTitle>
@@ -165,6 +178,21 @@ const StoryPage: React.FC<{ storyId: string }> = ({ storyId }) => {
           </SubmitButton>
         </ResponseSection> */}
       </Story>
+
+      {isAdmin && (
+        <AdminSection>
+          <AdminButton onClick={() => setShowArtworkModal(true)}>
+            <FaImage /> Select Artwork
+          </AdminButton>
+        </AdminSection>
+      )}
+
+      {showArtworkModal && (
+        <SelectArtworkModal 
+          onClose={() => setShowArtworkModal(false)} 
+          onSelect={handleSelectArtwork} 
+        />
+      )}
     </Container>
   );
 };
@@ -263,6 +291,34 @@ const BackLink = styled(Link)`
   &:hover {
     color: #5A3E85;
     text-decoration: underline;
+  }
+`;
+
+const AdminSection = styled.div`
+  margin-top: 2rem;
+  display: flex;
+  justify-content: center;
+`;
+
+const AdminButton = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: linear-gradient(90deg, #b6551c, #bb8930);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 15px rgba(182, 85, 28, 0.3);
+  font-family: "Cinzel", serif;
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 0 20px rgba(187, 137, 48, 0.5);
+    background: linear-gradient(90deg, #b6551c, #9f3515);
   }
 `;
 

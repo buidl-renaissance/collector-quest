@@ -4,6 +4,7 @@ import { keyframes } from "@emotion/react";
 import Link from "next/link";
 import Head from "next/head";
 import { FaPlus, FaUsers, FaUserTag, FaUserSecret, FaBook, FaUserCheck, FaToggleOn, FaToggleOff } from "react-icons/fa";
+import useIsAdmin from "@/hooks/useIsAdmin";
 
 // Animations
 const fadeIn = keyframes`
@@ -156,29 +157,10 @@ const AdminToggleButton = styled.button`
   }
 `;
 
-const ADMIN_MODE_KEY = 'admin_mode_enabled';
 
 const AdminPage: React.FC = () => {
-  const [adminModeEnabled, setAdminModeEnabled] = useState(false);
+  const { isAdmin, toggleAdminMode } = useIsAdmin();
   
-  useEffect(() => {
-    // Load admin mode status from localStorage on component mount
-    if (typeof window !== 'undefined') {
-      const storedAdminMode = localStorage.getItem(ADMIN_MODE_KEY);
-      setAdminModeEnabled(storedAdminMode === 'true');
-    }
-  }, []);
-  
-  const toggleAdminMode = () => {
-    const newAdminMode = !adminModeEnabled;
-    setAdminModeEnabled(newAdminMode);
-    
-    // Store the admin mode status in localStorage
-    if (typeof window !== 'undefined') {
-      localStorage.setItem(ADMIN_MODE_KEY, newAdminMode.toString());
-    }
-  };
-
   return (
     <>
       <Head>
@@ -193,7 +175,7 @@ const AdminPage: React.FC = () => {
           </Title>
           
           <AdminToggleButton onClick={toggleAdminMode}>
-            {adminModeEnabled ? (
+            {isAdmin ? (
               <>
                 <FaToggleOn /> Admin Mode: Enabled
               </>

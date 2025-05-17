@@ -14,10 +14,13 @@ interface StoryProps {
 const Story: React.FC<StoryProps> = ({ story, children, hideDescription = false }) => {
   const [isVideoLoading, setIsVideoLoading] = useState(true);
   const [hasPreRegistered, setHasPreRegistered] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     const preRegisteredEmail = localStorage.getItem('preRegisteredEmail');
     setHasPreRegistered(!!preRegisteredEmail);
+    const isAdmin = localStorage.getItem('isAdmin');
+    setIsAdmin(!!isAdmin);
   }, []);
 
   if (!story) {
