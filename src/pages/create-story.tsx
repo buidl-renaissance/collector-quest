@@ -262,7 +262,7 @@ const CreateStoryPage: React.FC = () => {
                 onUploadComplete={(url: string) => setImageUrl(url)}
                 label="Upload an image to inspire your story"
               />
-              <small>Upload an image that represents your story's theme or mood</small>
+              <small>Upload an image that represents your story&apos;s theme or mood</small>
             </FormGroup>
 
             <PromptTextarea
