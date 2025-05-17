@@ -210,7 +210,7 @@ const PreRegister: React.FC<PreRegisterProps> = ({ onSuccess }) => {
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(true);
+  const [isSuccess, setIsSuccess] = useState(false);
 
   const formatPhoneNumber = (value: string) => {
     // Remove all non-numeric characters
