@@ -181,9 +181,14 @@ const StoryPage: React.FC<{ storyId: string }> = ({ storyId }) => {
 
       {isAdmin && (
         <AdminSection>
-          <AdminButton onClick={() => setShowArtworkModal(true)}>
-            <FaImage /> Select Artwork
-          </AdminButton>
+          <AdminButtonsContainer>
+            <AdminButton onClick={() => setShowArtworkModal(true)}>
+              <FaImage /> Select Artwork
+            </AdminButton>
+            <AdminButton onClick={() => window.open('https://artnightdetroit.com/artwork/create', '_blank')}>
+              <FaImage /> Create Artwork
+            </AdminButton>
+          </AdminButtonsContainer>
         </AdminSection>
       )}
 
@@ -300,6 +305,13 @@ const AdminSection = styled.div`
   justify-content: center;
 `;
 
+const AdminButtonsContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+`;
+
 const AdminButton = styled.button`
   display: flex;
   align-items: center;
@@ -314,6 +326,7 @@ const AdminButton = styled.button`
   transition: all 0.3s ease;
   box-shadow: 0 0 15px rgba(182, 85, 28, 0.3);
   font-family: "Cinzel", serif;
+  width: 100%;
 
   &:hover {
     transform: translateY(-3px);
