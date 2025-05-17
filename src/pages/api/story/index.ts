@@ -14,20 +14,27 @@ export default async function handler(
         return res.status(400).json({ error: 'Missing required fields' });
       }
 
-      const slug = defaultSlug ? defaultSlug : title.toLowerCase().replace(/[^a-zA-Z0-9-]/g, '');
+      const slug = defaultSlug ? defaultSlug : title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-zA-Z0-9-]/g, '');
 
-      // Create the story in the database
+      // Insert the story
+      await db('stories').insert({
+        title,
+        slug,
+        description,
+        videoUrl,
+        script,
+        realmId,
+        artwork: ''
+      });
+
+      // Fetch the created story
       const [createdStory] = await db('stories')
-        .insert({
-          title,
-          slug,
-          description,
-          videoUrl,
-          script,
-          realmId,
-          artwork: ''
-        })
-        .returning('*');
+        .where({ slug })
+        .select('*');
+
+      if (!createdStory) {
+        throw new Error('Failed to create story');
+      }
 
       return res.status(201).json(createdStory);
     } catch (error) {
