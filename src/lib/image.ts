@@ -140,3 +140,43 @@ export const convertResizedToDefault = (url: string): string => {
 export const convertTilesToDefault = (url: string): string => {
   return convertImageUrl(url, "uploads/resized/tiles", "uploads");
 };
+
+/**
+ * Compresses a base64 image to a specified width
+ *
+ * @param base64 The original base64 image string
+ * @param size The target width in pixels (default: 600)
+ * @returns The base64 string of the compressed image
+ */
+export const compressImageTo600px = (base64: string, size: number = 600): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      
+      // Calculate height to maintain aspect ratio
+      const aspectRatio = img.height / img.width;
+      const targetWidth = size;
+      const targetHeight = targetWidth * aspectRatio;
+      
+      // Set canvas dimensions
+      canvas.width = targetWidth;
+      canvas.height = targetHeight;
+      
+      // Draw resized image on canvas
+      ctx?.drawImage(img, 0, 0, targetWidth, targetHeight);
+      
+      // Convert canvas to base64
+      const compressedBase64 = canvas.toDataURL('image/jpeg');
+      resolve(compressedBase64);
+    };
+    
+    img.onerror = (error) => {
+      reject(error);
+    };
+    
+    // Set source of image to the base64 string
+    img.src = base64;
+  });
+};

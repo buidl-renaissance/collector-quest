@@ -131,7 +131,7 @@ const StoryPage: React.FC<{ storyId: string }> = ({ storyId }) => {
 
   return (
     <Container>
-      <BackLink href={`/explore`}>
+      <BackLink href={`/realm`}>
         <FaArrowLeft /> Explore
       </BackLink>
       
