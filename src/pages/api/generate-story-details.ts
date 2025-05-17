@@ -24,7 +24,7 @@ export default async function handler(
     if (imageUrl) {
       // Analyze the image using GPT-4 Vision
       const imageCompletion = await openai.chat.completions.create({
-        model: "gpt-4-vision-preview",
+        model: "gpt-4o-mini",
         messages: [
           {
             role: "system",
@@ -37,7 +37,12 @@ export default async function handler(
             role: "user",
             content: [
               { type: "text", text: "Analyze this image and provide key details that could inspire a story:" },
-              { type: "image_url", image_url: imageUrl }
+              { 
+                type: "image_url", 
+                image_url: {
+                  url: imageUrl
+                }
+              }
             ]
           }
         ],
