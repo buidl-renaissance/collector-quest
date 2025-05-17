@@ -71,8 +71,8 @@ export default async function handler(
           
           Please provide:
           1. A captivating title
-          2. A brief description (2-3 sentences)
-          3. A script for the story (100-500 words)
+          2. A brief description (1-2 sentences)
+          3. A script for the story (100 words)
           
           Format the response as JSON with these fields:
           {
@@ -88,16 +88,25 @@ export default async function handler(
 
     const response = completion.choices[0]?.message?.content;
 
-    console.log(response);
-
     if (!response) {
       throw new Error("No response from OpenAI");
     }
 
-    console.log(response);
-    
-    // Parse the JSON response
-    const storyDetails = JSON.parse(response);
+    let storyDetails;
+    try {
+      // Clean the response string by removing any control characters
+      const cleanedResponse = response.replace(/[\u0000-\u001F\u007F-\u009F]/g, '');
+      storyDetails = JSON.parse(cleanedResponse);
+    } catch (parseError) {
+      console.error("Error parsing JSON response:", parseError);
+      console.error("Raw response:", response);
+      throw new Error("Failed to parse story details from OpenAI response");
+    }
+
+    // Validate the required fields
+    if (!storyDetails.title || !storyDetails.description || !storyDetails.script) {
+      throw new Error("Incomplete story details in OpenAI response");
+    }
 
     return res.status(200).json(storyDetails);
   } catch (error) {
