@@ -99,10 +99,6 @@ const StoryPage: React.FC<{ storyId: string }> = ({ storyId }) => {
 
   return (
     <Container>
-      <BackLink href={`/realm`}>
-        <FaArrowLeft /> Back to Realm
-      </BackLink>
-      
       <Story story={story}>
         <PreRegister />
       </Story>
