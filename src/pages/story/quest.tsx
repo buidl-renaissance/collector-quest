@@ -9,6 +9,9 @@ import { keyframes } from '@emotion/react';
 import { Story as StoryInterface } from '@/lib/interfaces';
 import Story from '@/components/Story';
 import BuildCharacter, { Character } from '@/components/BuildCharacter';
+import PreRegisterPage from '../pre-register';
+import PreRegister from '@/components/PreRegister';
+import { Title } from '@/components/styled/character';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {  
   return {
@@ -101,7 +104,7 @@ const StoryPage: React.FC<{ storyId: string }> = ({ storyId }) => {
       </BackLink>
       
       <Story story={story}>
-        <BuildCharacter onCharacterCreated={handleCharacterCreated} />
+        <PreRegister />
       </Story>
     </Container>
   );
