@@ -152,7 +152,7 @@ const StoryPage: React.FC<{ storyId: string }> = ({ storyId }) => {
           </ArtworkSection>
         )}
 
-        <ResponseSection>
+        {/* <ResponseSection>
           <ResponseTitle>Your Response</ResponseTitle>
           <ResponseTextarea 
             value={response}
@@ -163,7 +163,7 @@ const StoryPage: React.FC<{ storyId: string }> = ({ storyId }) => {
           <SubmitButton onClick={handleSubmitResponse}>
             Submit Response
           </SubmitButton>
-        </ResponseSection>
+        </ResponseSection> */}
       </Story>
     </Container>
   );

@@ -88,6 +88,11 @@ const TitleContainer = styled.div`
   flex-direction: column;
   align-items: center;
   gap: 0.5rem;
+  p {
+    text-align: center;
+    font-size: 0.9rem;
+    color: #bb8930;
+  }
 `;
 
 const Form = styled.form`
@@ -331,10 +336,13 @@ const PreRegister: React.FC<PreRegisterProps> = ({ onSuccess }) => {
         ) : (
           <Form onSubmit={handleSubmit}>
             <TitleContainer>
-              <Title>COLLECTOR QUEST</Title>
               <Subtitle>
-                Pre-Registration
+                COMING SOON
               </Subtitle>
+              <Title>COLLECTOR QUEST</Title>
+              <p>
+                Pre-Register to be one of the first to experience the Collector Quest.
+              </p>
             </TitleContainer>
 
             <FormGroup>
