@@ -341,7 +341,7 @@ const PreRegister: React.FC<PreRegisterProps> = ({ onSuccess }) => {
               </Subtitle>
               <Title>COLLECTOR QUEST</Title>
               <p>
-                Pre-Register to be one of the first to experience the Collector Quest.
+                Pre-Register to be one of the first to experience the COLLECTOR QUEST.
               </p>
             </TitleContainer>
 
