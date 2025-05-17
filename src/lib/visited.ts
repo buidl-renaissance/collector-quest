@@ -7,9 +7,9 @@ export const getVisitedStories = (): string[] => {
   }
   
   try {
-    const visited = localStorage.getItem(VISITED_STORIES_KEY);
+  const visited = localStorage.getItem(VISITED_STORIES_KEY);
     console.log('getVisitedStories: retrieved from localStorage:', visited);
-    return visited ? JSON.parse(visited) : [];
+  return visited ? JSON.parse(visited) : [];
   } catch (error) {
     console.error('Error reading visited stories from localStorage:', error);
     return [];
@@ -24,10 +24,10 @@ export const markStoryAsVisited = (storyId: string): void => {
   
   try {
     console.log('markStoryAsVisited: marking story as visited:', storyId);
-    const visited = getVisitedStories();
-    if (!visited.includes(storyId)) {
-      visited.push(storyId);
-      localStorage.setItem(VISITED_STORIES_KEY, JSON.stringify(visited));
+  const visited = getVisitedStories();
+  if (!visited.includes(storyId)) {
+    visited.push(storyId);
+    localStorage.setItem(VISITED_STORIES_KEY, JSON.stringify(visited));
       console.log('markStoryAsVisited: updated localStorage with:', visited);
     } else {
       console.log('markStoryAsVisited: story already visited:', storyId);
@@ -44,7 +44,7 @@ export const isStoryVisited = (storyId: string): boolean => {
   }
   
   try {
-    const visited = getVisitedStories();
+  const visited = getVisitedStories();
     const isVisited = visited.includes(storyId);
     console.log('isStoryVisited: checking story:', storyId, 'result:', isVisited);
     return isVisited;

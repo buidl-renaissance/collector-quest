@@ -1,9 +1,9 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import styled from "@emotion/styled";
 import { keyframes } from "@emotion/react";
 import Link from "next/link";
 import Head from "next/head";
-import { FaPlus, FaUsers, FaUserTag, FaUserSecret, FaBook, FaUserCheck } from "react-icons/fa";
+import { FaPlus, FaUsers, FaUserTag, FaUserSecret, FaBook, FaUserCheck, FaToggleOn, FaToggleOff } from "react-icons/fa";
 
 // Animations
 const fadeIn = keyframes`
@@ -134,7 +134,51 @@ const CardDescription = styled.p`
   opacity: 0.8;
 `;
 
+const AdminToggleButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: rgba(58, 38, 6, 0.8);
+  border: 1px solid rgba(187, 137, 48, 0.5);
+  color: #bb8930;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  font-family: "Cinzel", serif;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 2rem;
+  
+  &:hover {
+    background: rgba(58, 38, 6, 1);
+    box-shadow: 0 0 10px rgba(187, 137, 48, 0.5);
+  }
+`;
+
+const ADMIN_MODE_KEY = 'admin_mode_enabled';
+
 const AdminPage: React.FC = () => {
+  const [adminModeEnabled, setAdminModeEnabled] = useState(false);
+  
+  useEffect(() => {
+    // Load admin mode status from localStorage on component mount
+    if (typeof window !== 'undefined') {
+      const storedAdminMode = localStorage.getItem(ADMIN_MODE_KEY);
+      setAdminModeEnabled(storedAdminMode === 'true');
+    }
+  }, []);
+  
+  const toggleAdminMode = () => {
+    const newAdminMode = !adminModeEnabled;
+    setAdminModeEnabled(newAdminMode);
+    
+    // Store the admin mode status in localStorage
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(ADMIN_MODE_KEY, newAdminMode.toString());
+    }
+  };
+
   return (
     <>
       <Head>
@@ -147,6 +191,18 @@ const AdminPage: React.FC = () => {
           <Title>
             <MagicSpan>Administration Dashboard</MagicSpan>
           </Title>
+          
+          <AdminToggleButton onClick={toggleAdminMode}>
+            {adminModeEnabled ? (
+              <>
+                <FaToggleOn /> Admin Mode: Enabled
+              </>
+            ) : (
+              <>
+                <FaToggleOff /> Admin Mode: Disabled
+              </>
+            )}
+          </AdminToggleButton>
           
           <AdminGrid>
             <AdminCard href="/create-story">

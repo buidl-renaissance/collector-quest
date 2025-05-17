@@ -158,8 +158,8 @@ const CreateStoryPage: React.FC = () => {
         {error && <ErrorMessage>{error}</ErrorMessage>}
 
         <Form onSubmit={handleSubmit}>
-          <GenerateButton
-            type="button"
+          <GenerateButton 
+            type="button" 
             onClick={() => setShowPromptModal(true)}
           >
             <FaMagic /> Generate Story Content
@@ -255,11 +255,11 @@ const CreateStoryPage: React.FC = () => {
         <ModalOverlay>
           <Modal>
             <ModalContent>
-              <ModalTitle>Generate Story Content</ModalTitle>
-              <ModalDescription>
+            <ModalTitle>Generate Story Content</ModalTitle>
+            <ModalDescription>
                 Enter a prompt and/or upload an image to generate a title,
                 description, and script for your story.
-              </ModalDescription>
+            </ModalDescription>
 
               <FormGroup>
                 <Label>Upload Image (Optional)</Label>
@@ -276,23 +276,23 @@ const CreateStoryPage: React.FC = () => {
                 </small>
               </FormGroup>
 
-              <PromptTextarea
-                value={prompt}
-                onChange={(e) => setPrompt(e.target.value)}
-                placeholder="Describe the story you want to create... (e.g., 'A surreal journey through a museum where paintings come to life')"
-                rows={5}
-              />
+            <PromptTextarea
+              value={prompt}
+              onChange={(e) => setPrompt(e.target.value)}
+              placeholder="Describe the story you want to create... (e.g., 'A surreal journey through a museum where paintings come to life')"
+              rows={5}
+            />
             </ModalContent>
             <ModalButtonGroup>
-              <ModalCancelButton
-                type="button"
+              <ModalCancelButton 
+                type="button" 
                 onClick={() => setShowPromptModal(false)}
                 disabled={generatingContent}
               >
                 Cancel
               </ModalCancelButton>
-              <ModalGenerateButton
-                type="button"
+              <ModalGenerateButton 
+                type="button" 
                 onClick={generateContent}
                 disabled={(!prompt && !imageUrl) || generatingContent}
               >

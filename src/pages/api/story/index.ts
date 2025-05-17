@@ -18,13 +18,13 @@ export default async function handler(
 
       // Insert the story
       await db('stories').insert({
-        title,
-        slug,
-        description,
-        videoUrl,
-        script,
-        realmId,
-        artwork: ''
+          title,
+          slug,
+          description,
+          videoUrl,
+          script,
+          realmId,
+          artwork: ''
       });
 
       // Fetch the created story

@@ -57,6 +57,7 @@ const RealmDetailPage: React.FC = () => {
   const [visitedStories, setVisitedStories] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [isAdmin, setIsAdmin] = useState(false);
   const [showAddGuardianModal, setShowAddGuardianModal] = useState(false);
   const [newGuardian, setNewGuardian] = useState("");
   const [addingGuardian, setAddingGuardian] = useState(false);
@@ -84,6 +85,10 @@ const RealmDetailPage: React.FC = () => {
         const storiesData = await fetch("/api/story")
           .then((res) => res.json())
           .then((data) => data);
+
+        // Check if admin is enabled in localStorage
+        const isAdminEnabled = localStorage.getItem('admin_mode_enabled') === 'true';
+        setIsAdmin(isAdminEnabled);
 
         setStories(storiesData);
         setRealm(mockRealm);
@@ -291,19 +296,21 @@ const RealmDetailPage: React.FC = () => {
                 />
               ))}
             </StoriesGrid>
-            <CreateStoryLink href="/create-story">
-              <FaCrown /> <span>Create New Story</span>
-            </CreateStoryLink>
+            {isAdmin && (
+              <CreateStoryLink href="/create-story">
+                <FaCrown /> <span>Create New Story</span>
+              </CreateStoryLink>
+            )}
           </InfoSection>
 
-          <ActionButtons>
+          {/* <ActionButtons>
             <ActionButton href={`/gallery`}>View Gallery</ActionButton>
             {wallet.connected && (
               <ActionButton href={`/submit`} primary={true}>
                 Submit Artwork
               </ActionButton>
             )}
-          </ActionButtons>
+          </ActionButtons> */}
         </RealmInfo>
       </Container>
     </PageWrapper>
