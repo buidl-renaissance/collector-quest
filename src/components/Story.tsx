@@ -221,7 +221,7 @@ const ScriptContainer = styled.div`
 
 const ScriptTitle = styled.h2`
   font-size: 1.5rem;
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.5rem;
   color: #FFD700;
   font-family: 'Cinzel Decorative', 'Playfair Display SC', serif;
   
