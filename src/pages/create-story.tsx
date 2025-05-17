@@ -60,7 +60,6 @@ const blankStory = {
 
 const data = blankStory;
 
-
 const CreateStoryPage: React.FC = () => {
   const router = useRouter();
   const [title, setTitle] = useState(data.title);
@@ -89,7 +88,14 @@ const CreateStoryPage: React.FC = () => {
     try {
       const response = await fetch("/api/story", {
         method: "POST",
-        body: JSON.stringify({ realmId: "lord-smearington", defaultSlug: slug, title, description, videoUrl, script }),
+        body: JSON.stringify({
+          realmId: "lord-smearington",
+          defaultSlug: slug,
+          title,
+          description,
+          videoUrl,
+          script,
+        }),
       });
       const data = await response.json();
 
@@ -152,8 +158,8 @@ const CreateStoryPage: React.FC = () => {
         {error && <ErrorMessage>{error}</ErrorMessage>}
 
         <Form onSubmit={handleSubmit}>
-          <GenerateButton 
-            type="button" 
+          <GenerateButton
+            type="button"
             onClick={() => setShowPromptModal(true)}
           >
             <FaMagic /> Generate Story Content
@@ -248,40 +254,45 @@ const CreateStoryPage: React.FC = () => {
       {showPromptModal && (
         <ModalOverlay>
           <Modal>
-            <ModalTitle>Generate Story Content</ModalTitle>
-            <ModalDescription>
-              Enter a prompt and/or upload an image to generate a title, description, and script for your story.
-            </ModalDescription>
-            
-            <FormGroup>
-              <Label>Upload Image (Optional)</Label>
-              <UploadMedia
-                mediaUrl={imageUrl}
-                accept="image/*"
-                maxSize={10}
-                onUploadComplete={(url: string) => setImageUrl(url)}
-                label="Upload an image to inspire your story"
-              />
-              <small>Upload an image that represents your story&apos;s theme or mood</small>
-            </FormGroup>
+            <ModalContent>
+              <ModalTitle>Generate Story Content</ModalTitle>
+              <ModalDescription>
+                Enter a prompt and/or upload an image to generate a title,
+                description, and script for your story.
+              </ModalDescription>
 
-            <PromptTextarea
-              value={prompt}
-              onChange={(e) => setPrompt(e.target.value)}
-              placeholder="Describe the story you want to create... (e.g., &apos;A surreal journey through a museum where paintings come to life&apos;)"
-              rows={5}
-            />
-            
+              <FormGroup>
+                <Label>Upload Image (Optional)</Label>
+                <UploadMedia
+                  mediaUrl={imageUrl}
+                  accept="image/*"
+                  maxSize={10}
+                  onUploadComplete={(url: string) => setImageUrl(url)}
+                  label="Upload an image to inspire your story"
+                />
+                <small>
+                  Upload an image that represents your story&apos;s theme or
+                  mood
+                </small>
+              </FormGroup>
+
+              <PromptTextarea
+                value={prompt}
+                onChange={(e) => setPrompt(e.target.value)}
+                placeholder="Describe the story you want to create... (e.g., 'A surreal journey through a museum where paintings come to life')"
+                rows={5}
+              />
+            </ModalContent>
             <ModalButtonGroup>
-              <ModalCancelButton 
-                type="button" 
+              <ModalCancelButton
+                type="button"
                 onClick={() => setShowPromptModal(false)}
                 disabled={generatingContent}
               >
                 Cancel
               </ModalCancelButton>
-              <ModalGenerateButton 
-                type="button" 
+              <ModalGenerateButton
+                type="button"
                 onClick={generateContent}
                 disabled={(!prompt && !imageUrl) || generatingContent}
               >
@@ -815,18 +826,22 @@ const ModalOverlay = styled.div`
   justify-content: center;
   z-index: 1000;
   padding: 1rem;
+  overflow-y: auto;
 `;
 
 const Modal = styled.div`
   background: linear-gradient(135deg, #3b4c99, #5a3e85);
   border-radius: 12px;
-  padding: 2rem;
   width: 100%;
   max-width: 600px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
   border: 2px solid #ffd700;
   position: relative;
   overflow: hidden;
+  margin: auto;
+  max-height: calc(100vh - 2rem);
+  display: flex;
+  flex-direction: column;
 
   &::before {
     content: "";
@@ -841,7 +856,20 @@ const Modal = styled.div`
   }
 
   @media (max-width: 768px) {
-    padding: 1.5rem;
+    margin: 1rem;
+  }
+`;
+
+const ModalContent = styled.div`
+  overflow-y: auto;
+  flex: 1;
+  padding: 1rem 1rem 0 1rem;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  &::-webkit-scrollbar {
+    display: none;
   }
 `;
 
@@ -907,21 +935,31 @@ const PromptTextarea = styled.textarea`
 const ModalButtonGroup = styled.div`
   display: flex;
   justify-content: space-between;
-  gap: 1rem;
+  gap: 0.8rem;
+  padding: 1rem 1.5rem;
+  background: linear-gradient(
+    135deg,
+    rgba(59, 76, 153, 0.95),
+    rgba(90, 62, 133, 0.95)
+  );
+  border-top: 1px solid rgba(255, 215, 0, 0.2);
+  position: sticky;
+  bottom: 0;
+  backdrop-filter: blur(10px);
 
   @media (max-width: 768px) {
-    flex-direction: column;
-    gap: 0.8rem;
+    padding: 1rem;
   }
 `;
 
 const ModalButton = styled.button`
-  padding: 0.8rem 1.5rem;
-  border-radius: 8px;
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
   font-weight: 600;
   text-align: center;
   transition: all 0.3s ease;
   font-family: "Cinzel Decorative", serif;
+  font-size: 0.9rem;
 `;
 
 const ModalCancelButton = styled(ModalButton)`
@@ -929,6 +967,7 @@ const ModalCancelButton = styled(ModalButton)`
   color: #c7bfd4;
   border: 1px solid rgba(255, 215, 0, 0.3);
   flex: 1;
+  order: 1;
 
   &:hover:not(:disabled) {
     background: rgba(255, 255, 255, 0.2);
@@ -946,6 +985,7 @@ const ModalGenerateButton = styled(ModalButton)`
   color: #1a1a2e;
   border: none;
   flex: 1;
+  order: 2;
 
   &:hover:not(:disabled) {
     background: linear-gradient(135deg, #ffa500, #ffd700);
