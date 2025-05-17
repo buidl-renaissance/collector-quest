@@ -186,6 +186,7 @@ const RealmDetailPage: React.FC = () => {
             <FaCrown />
           </CrownDivider>
           <RealmTitle>{realm.name}</RealmTitle>
+          
           {realm.imageUrl && (
             <RealmImageWrapper>
               <RealmImage src={realm.imageUrl} alt={realm.name} />
@@ -193,17 +194,18 @@ const RealmDetailPage: React.FC = () => {
           )}
         </RealmHeader>
 
-        <RealmInfo>
-          <InfoSection>
-            <SectionTitle>
-              <SectionTitleGlow>
-                Description
-              </SectionTitleGlow>
-            </SectionTitle>
-            <Description>{realm.description}</Description>
-          </InfoSection>
+        <StatsSection>
+          <StatsContent>
+            <StatItem>
+              <StatValue>{visitedStories.length}/{stories.length}</StatValue>
+              <StatLabel>Stories Unlocked</StatLabel>
+            </StatItem>
+          </StatsContent>
+        </StatsSection>
 
-          {realm.location && (
+        <RealmInfo>
+      
+          {/* {realm.location && (
             <InfoSection>
               <SectionTitle>
                 <SectionTitleGlow>
@@ -212,7 +214,7 @@ const RealmDetailPage: React.FC = () => {
               </SectionTitle>
               <InfoText>{realm.location}</InfoText>
             </InfoSection>
-          )}
+          )} */}
 
           {/* <InfoSection>
             <SectionTitle>
@@ -276,9 +278,9 @@ const RealmDetailPage: React.FC = () => {
 
           <InfoSection>
             <SectionTitle>
-              <SectionTitleGlow>
+              {/* <SectionTitleGlow>
                 <FaBookOpen /> <span>Stories</span>
-              </SectionTitleGlow>
+              </SectionTitleGlow> */}
             </SectionTitle>
             <StoriesGrid>
               {stories.map((story) => (
@@ -749,6 +751,38 @@ const ActionButton = styled(Link)<ActionButtonProps>`
       props.primary ? "#5A3E85" : "rgba(255, 215, 0, 0.1)"};
     box-shadow: 0 0 15px rgba(255, 215, 0, 0.7);
   }
+`;
+
+const StatsSection = styled.div`
+  margin: 1rem 0 2rem;
+`;
+
+const StatsContent = styled.div`
+  display: flex;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  padding: 1rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 215, 0, 0.3);
+`;
+
+const StatItem = styled.div`
+  text-align: center;
+`;
+
+const StatValue = styled.div`
+  font-size: 1.8rem;
+  color: #ffd700;
+  font-family: "Cinzel Decorative", "Playfair Display SC", serif;
+  margin-bottom: 0.5rem;
+`;
+
+const StatLabel = styled.div`
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.8);
+  text-transform: uppercase;
+  letter-spacing: 1px;
 `;
 
 export default RealmDetailPage;
