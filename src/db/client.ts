@@ -144,4 +144,53 @@ export async function getAllStories() {
   }
 }
 
+/**
+ * Mark a story as visited by a user
+ */
+export async function markStoryAsVisited(storyId: string, userId: string) {
+  try {
+    await db('visited_stories').insert({
+      storyId,
+      userId,
+    }).onConflict(['storyId', 'userId']).ignore();
+    
+    return { success: true };
+  } catch (error) {
+    console.error('Error marking story as visited:', error);
+    return { success: false, error };
+  }
+}
+
+/**
+ * Check if a story has been visited by a user
+ */
+export async function isStoryVisited(storyId: string, userId: string) {
+  try {
+    const visited = await db('visited_stories')
+      .where({ storyId, userId })
+      .first();
+    
+    return { success: true, visited: !!visited };
+  } catch (error) {
+    console.error('Error checking if story is visited:', error);
+    return { success: false, error };
+  }
+}
+
+/**
+ * Get all visited stories for a user
+ */
+export async function getVisitedStories(userId: string) {
+  try {
+    const visitedStories = await db('visited_stories')
+      .where({ userId })
+      .select('storyId');
+    
+    return { success: true, data: visitedStories.map(vs => vs.storyId) };
+  } catch (error) {
+    console.error('Error fetching visited stories:', error);
+    return { success: false, error };
+  }
+}
+
 export default db;

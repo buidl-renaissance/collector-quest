@@ -10,6 +10,7 @@ import { Story as StoryInterface } from '@/lib/interfaces';
 import Story from '@/components/Story';
 import { ArtworkCard } from '@/components/ArtworkCard';
 import ArtworkGrid from '@/components/ArtworkGrid';
+import { markStoryAsVisited } from '@/lib/visited';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const { story } = context.params || {};
@@ -35,15 +36,14 @@ const StoryPage: React.FC<{ storyId: string }> = ({ storyId }) => {
   const [error, setError] = useState('');
   const [response, setResponse] = useState('');
   const [artwork, setArtwork] = useState<any[]>([]);
+
   useEffect(() => {
     const fetchStoryDetails = async () => {
       try {
-        
         const storyData: StoryInterface = await fetch(`/api/story/${storyId}`)
           .then(res => res.json())
           .then(data => data);
         
-        // Mock data
         setStory(storyData);
 
         if (storyData.artwork) {
@@ -53,6 +53,9 @@ const StoryPage: React.FC<{ storyId: string }> = ({ storyId }) => {
               setArtwork(result.data);
             });
         }
+
+        // Mark the story as visited
+        markStoryAsVisited(storyId);
         
         setLoading(false);
       } catch (err) {

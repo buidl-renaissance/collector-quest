@@ -19,6 +19,7 @@ import { keyframes } from "@emotion/react";
 import { Story } from "@/lib/interfaces";
 import StoryCard from "@/components/StoryCard";
 import Modal from "@/components/Modal";
+import { getVisitedStories } from '@/lib/visited';
 
 // Define the Realm type based on the RealmData interface
 interface Realm {
@@ -53,6 +54,7 @@ const RealmDetailPage: React.FC = () => {
   const wallet = useWallet();
   const [realm, setRealm] = useState<Realm | null>(null);
   const [stories, setStories] = useState<Story[]>([]);
+  const [visitedStories, setVisitedStories] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [showAddGuardianModal, setShowAddGuardianModal] = useState(false);
@@ -85,6 +87,7 @@ const RealmDetailPage: React.FC = () => {
 
         setStories(storiesData);
         setRealm(mockRealm);
+        setVisitedStories(getVisitedStories());
         setLoading(false);
       } catch (err) {
         console.error("Error fetching realm details:", err);
@@ -279,7 +282,11 @@ const RealmDetailPage: React.FC = () => {
             </SectionTitle>
             <StoriesGrid>
               {stories.map((story) => (
-                <StoryCard key={story.id} story={story} />
+                <StoryCard 
+                  key={story.id} 
+                  story={story} 
+                  isVisited={visitedStories.includes(story.id)}
+                />
               ))}
             </StoriesGrid>
             <CreateStoryLink href="/create-story">
