@@ -14,12 +14,40 @@ export default async function handler(
   }
 
   try {
-    const { prompt } = req.body;
+    const { prompt, imageUrl } = req.body;
 
-    if (!prompt) {
-      return res.status(400).json({ error: "Prompt is required" });
+    if (!prompt && !imageUrl) {
+      return res.status(400).json({ error: "Either prompt or imageUrl is required" });
     }
 
+    let imageAnalysis = "";
+    if (imageUrl) {
+      // Analyze the image using GPT-4 Vision
+      const imageCompletion = await openai.chat.completions.create({
+        model: "gpt-4-vision-preview",
+        messages: [
+          {
+            role: "system",
+            content: `You are an art critic and storyteller for Lord Smearington's Gallery of the Absurd.
+            Analyze the provided image and describe its key elements, mood, and potential story elements.
+            Focus on visual details, symbolism, and emotional impact.
+            Keep your analysis concise but insightful.`
+          },
+          {
+            role: "user",
+            content: [
+              { type: "text", text: "Analyze this image and provide key details that could inspire a story:" },
+              { type: "image_url", image_url: imageUrl }
+            ]
+          }
+        ],
+        max_tokens: 500
+      });
+
+      imageAnalysis = imageCompletion.choices[0]?.message?.content || "";
+    }
+
+    // Generate story based on both prompt and image analysis
     const completion = await openai.chat.completions.create({
       model: "gpt-4",
       messages: [
@@ -32,12 +60,14 @@ export default async function handler(
         },
         {
           role: "user",
-          content: `Generate a story with the following prompt: ${prompt}
+          content: `Generate a story based on:
+          ${prompt ? `Prompt: ${prompt}` : ""}
+          ${imageAnalysis ? `\nImage Analysis: ${imageAnalysis}` : ""}
           
           Please provide:
           1. A captivating title
-          2. A brief description (1-2 sentences)
-          3. A script for the story (100 words)
+          2. A brief description (2-3 sentences)
+          3. A script for the story (100-500 words)
           
           Format the response as JSON with these fields:
           {

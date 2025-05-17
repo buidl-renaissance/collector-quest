@@ -73,6 +73,7 @@ const CreateStoryPage: React.FC = () => {
   const [showPromptModal, setShowPromptModal] = useState(false);
   const [prompt, setPrompt] = useState("");
   const [generatingContent, setGeneratingContent] = useState(false);
+  const [imageUrl, setImageUrl] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -107,7 +108,8 @@ const CreateStoryPage: React.FC = () => {
   };
 
   const generateContent = async () => {
-    if (!prompt) {
+    if (!prompt && !imageUrl) {
+      setError("Please provide either a prompt or an image");
       return;
     }
 
@@ -118,7 +120,7 @@ const CreateStoryPage: React.FC = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ prompt }),
+        body: JSON.stringify({ prompt, imageUrl }),
       });
 
       if (!response.ok) {
@@ -248,14 +250,28 @@ const CreateStoryPage: React.FC = () => {
           <Modal>
             <ModalTitle>Generate Story Content</ModalTitle>
             <ModalDescription>
-              Enter a prompt to generate a title, description, and script for your story.
+              Enter a prompt and/or upload an image to generate a title, description, and script for your story.
             </ModalDescription>
+            
+            <FormGroup>
+              <Label>Upload Image (Optional)</Label>
+              <UploadMedia
+                mediaUrl={imageUrl}
+                accept="image/*"
+                maxSize={10}
+                onUploadComplete={(url: string) => setImageUrl(url)}
+                label="Upload an image to inspire your story"
+              />
+              <small>Upload an image that represents your story's theme or mood</small>
+            </FormGroup>
+
             <PromptTextarea
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
-              placeholder="Describe the story you want to create... (e.g., 'A surreal journey through a museum where paintings come to life')"
+              placeholder="Describe the story you want to create... (e.g., &apos;A surreal journey through a museum where paintings come to life&apos;)"
               rows={5}
             />
+            
             <ModalButtonGroup>
               <ModalCancelButton 
                 type="button" 
@@ -267,7 +283,7 @@ const CreateStoryPage: React.FC = () => {
               <ModalGenerateButton 
                 type="button" 
                 onClick={generateContent}
-                disabled={!prompt || generatingContent}
+                disabled={(!prompt && !imageUrl) || generatingContent}
               >
                 {generatingContent ? "Generating..." : "Generate"}
               </ModalGenerateButton>
