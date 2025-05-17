@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import db from "@/db/client";
 import crypto from "crypto";
-
+import { v4 as uuidv4 } from "uuid";
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -45,8 +45,11 @@ export default async function handler(
     const verificationCode = crypto.randomBytes(32).toString("hex");
     const verificationCodeExpiration = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours from now
 
+    const id = uuidv4();
+
     // Insert new pre-registration
-    const [id] = await db("characters").insert({
+    await db("characters").insert({
+      id,
       name: '',
       real_name: name,
       email,
