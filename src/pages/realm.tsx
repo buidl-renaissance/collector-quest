@@ -19,7 +19,8 @@ import { keyframes } from "@emotion/react";
 import { Story } from "@/lib/interfaces";
 import StoryCard from "@/components/StoryCard";
 import Modal from "@/components/Modal";
-import { getVisitedStories } from '@/lib/visited';
+import { getVisitedStories } from "@/lib/visited";
+import PreRegister from "@/components/PreRegister";
 
 // Define the Realm type based on the RealmData interface
 interface Realm {
@@ -58,6 +59,7 @@ const RealmDetailPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [isAdmin, setIsAdmin] = useState(false);
+  const [hasPreRegistered, setHasPreRegistered] = useState(true);
   const [showAddGuardianModal, setShowAddGuardianModal] = useState(false);
   const [newGuardian, setNewGuardian] = useState("");
   const [addingGuardian, setAddingGuardian] = useState(false);
@@ -87,8 +89,13 @@ const RealmDetailPage: React.FC = () => {
           .then((data) => data);
 
         // Check if admin is enabled in localStorage
-        const isAdminEnabled = localStorage.getItem('admin_mode_enabled') === 'true';
+        const isAdminEnabled =
+          localStorage.getItem("admin_mode_enabled") === "true";
         setIsAdmin(isAdminEnabled);
+
+        // Check if user has pre-registered
+        const preRegisteredEmail = localStorage.getItem("preRegisteredEmail");
+        setHasPreRegistered(!!preRegisteredEmail);
 
         setStories(storiesData);
         setRealm(mockRealm);
@@ -129,7 +136,6 @@ const RealmDetailPage: React.FC = () => {
       setAddingGuardian(false);
     }
   };
-  
 
   if (loading) {
     return (
@@ -191,7 +197,7 @@ const RealmDetailPage: React.FC = () => {
             <FaCrown />
           </CrownDivider>
           <RealmTitle>{realm.name}</RealmTitle>
-          
+
           {realm.imageUrl && (
             <RealmImageWrapper>
               <RealmImage src={realm.imageUrl} alt={realm.name} />
@@ -199,17 +205,24 @@ const RealmDetailPage: React.FC = () => {
           )}
         </RealmHeader>
 
+        {!hasPreRegistered && (
+          <PreRegisterSection>
+            <PreRegister />
+          </PreRegisterSection>
+        )}
+
         <StatsSection>
           <StatsContent>
             <StatItem>
-              <StatValue>{visitedStories.length}/{stories.length}</StatValue>
+              <StatValue>
+                {visitedStories.length}/{stories.length}
+              </StatValue>
               <StatLabel>Stories Unlocked</StatLabel>
             </StatItem>
           </StatsContent>
         </StatsSection>
 
         <RealmInfo>
-      
           {/* {realm.location && (
             <InfoSection>
               <SectionTitle>
@@ -289,9 +302,9 @@ const RealmDetailPage: React.FC = () => {
             </SectionTitle>
             <StoriesGrid>
               {stories.map((story) => (
-                <StoryCard 
-                  key={story.slug} 
-                  story={story} 
+                <StoryCard
+                  key={story.slug}
+                  story={story}
                   isVisited={visitedStories.includes(story.slug)}
                 />
               ))}
@@ -790,6 +803,18 @@ const StatLabel = styled.div`
   color: rgba(255, 255, 255, 0.8);
   text-transform: uppercase;
   letter-spacing: 1px;
+`;
+
+const PreRegisterSection = styled.div`
+  margin-top: 2rem;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  overflow: hidden;
+
+  @media (min-width: 768px) {
+    margin-top: 3rem;
+  }
 `;
 
 export default RealmDetailPage;

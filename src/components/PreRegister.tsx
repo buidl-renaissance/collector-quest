@@ -310,6 +310,8 @@ const PreRegister: React.FC<PreRegisterProps> = ({ onSuccess }) => {
       }
 
       setIsSuccess(true);
+      // Save email to localStorage
+      localStorage.setItem('preRegisteredEmail', formData.email);
       // Reset form after successful submission
       setFormData({ name: "", email: "", phone: "" });
       onSuccess?.();

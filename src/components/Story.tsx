@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from '@emotion/styled';
 import { keyframes } from '@emotion/react';
 import { FaCrown, FaSpinner } from 'react-icons/fa';
 import { Story as StoryInterface } from '@/lib/interfaces';
+import PreRegister from './PreRegister';
 
 interface StoryProps {
   story: StoryInterface;
@@ -12,6 +13,12 @@ interface StoryProps {
 
 const Story: React.FC<StoryProps> = ({ story, children, hideDescription = false }) => {
   const [isVideoLoading, setIsVideoLoading] = useState(true);
+  const [hasPreRegistered, setHasPreRegistered] = useState(true);
+
+  useEffect(() => {
+    const preRegisteredEmail = localStorage.getItem('preRegisteredEmail');
+    setHasPreRegistered(!!preRegisteredEmail);
+  }, []);
 
   if (!story) {
     return <ErrorMessage>Story not found</ErrorMessage>;
@@ -63,6 +70,12 @@ const Story: React.FC<StoryProps> = ({ story, children, hideDescription = false 
         {children}
 
       </ContentSection>
+
+      {!hasPreRegistered && (
+        <PreRegisterSection>
+          <PreRegister />
+        </PreRegisterSection>
+      )}
     </StoryContainer>
   );
 };
@@ -239,6 +252,18 @@ const ScriptText = styled.p`
   @media (min-width: 768px) {
     font-size: 1.1rem;
     line-height: 1.8;
+  }
+`;
+
+const PreRegisterSection = styled.div`
+  margin-top: 2rem;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  
+  @media (min-width: 768px) {
+    margin-top: 4rem;
+    padding: 3rem;
   }
 `;
 
