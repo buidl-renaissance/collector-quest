@@ -12,6 +12,7 @@ import BuildCharacter, { Character } from '@/components/BuildCharacter';
 import PreRegisterPage from '../pre-register';
 import PreRegister from '@/components/PreRegister';
 import { Title } from '@/components/styled/character';
+import { markStoryAsVisited } from '@/lib/visited';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {  
   return {
@@ -46,6 +47,8 @@ const StoryPage: React.FC<{ storyId: string }> = ({ storyId }) => {
         // Mock data
         setStory(storyData);
         
+        markStoryAsVisited(storyData.slug);
+
         setLoading(false);
       } catch (err) {
         console.error('Error fetching story details:', err);
