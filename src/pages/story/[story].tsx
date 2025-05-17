@@ -11,6 +11,7 @@ import Story from '@/components/Story';
 import { ArtworkCard } from '@/components/ArtworkCard';
 import ArtworkGrid from '@/components/ArtworkGrid';
 import { markStoryAsVisited } from '@/lib/visited';
+import { BackButton } from "@/components/styled/character";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const { story } = context.params || {};
@@ -99,6 +100,10 @@ const StoryPage: React.FC<{ storyId: string }> = ({ storyId }) => {
     }
   };
 
+  const handleBack = () => {
+    router.push('/realm');
+  };
+
   if (loading) {
     return (
       <Container>
@@ -134,9 +139,9 @@ const StoryPage: React.FC<{ storyId: string }> = ({ storyId }) => {
 
   return (
     <Container>
-      <BackLink href={`/realm`}>
-        <FaArrowLeft /> Explore
-      </BackLink>
+      <BackButton onClick={handleBack}>
+        <FaArrowLeft /> Explore Realm
+      </BackButton>
       
       <Story story={story}>
 
