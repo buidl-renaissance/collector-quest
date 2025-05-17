@@ -10,11 +10,29 @@ interface StoryCardProps {
 }
 
 const StoryCard: React.FC<StoryCardProps> = ({ story, isVisited = false }) => {
+  if (!isVisited) {
+    return (
+      <StoryCardLockedWrapper visited={isVisited}>
+        <StoryCardContent>
+          <StoryTitle>{story.title}</StoryTitle>
+          <StoryDescription visited={isVisited}>{story.description}</StoryDescription>
+          {isVisited ? (
+            <StoryReadMore>Read Story</StoryReadMore>
+          ) : (
+            <LockedMessage>
+              <FaLock /> Visit to Unlock
+            </LockedMessage>
+          )}
+        </StoryCardContent>
+      </StoryCardLockedWrapper>
+    );
+  }
+
   return (
-    <StoryCardWrapper href={isVisited ? `/story/${story.slug}` : ''} visited={isVisited}>
+    <StoryCardWrapper href={`/story/${story.slug}`} visited={isVisited}>
       <StoryCardContent>
         <StoryTitle>{story.title}</StoryTitle>
-        <StoryDescription>{story.description}</StoryDescription>
+        <StoryDescription visited={isVisited}>{story.description}</StoryDescription>
         {isVisited ? (
           <StoryReadMore>Read Story</StoryReadMore>
         ) : (
@@ -27,14 +45,32 @@ const StoryCard: React.FC<StoryCardProps> = ({ story, isVisited = false }) => {
   );
 };
 
-const StoryCardWrapper = styled(Link)<{ visited: boolean }>`
-  text-decoration: none;
-  color: inherit;
-  background: ${props => props.visited ? 'rgba(28, 28, 28, 0.2)' : 'rgba(28, 28, 28, 0.4)'};
+const StoryCardLockedWrapper = styled.div<{ visited: boolean }>`
+  background: ${props => props.visited ? 'rgba(72, 65, 107, 0.9)' : 'rgba(255, 255, 255, 0.1)'};
   border-radius: 8px;
   overflow: hidden;
   transition: all 0.3s ease;
-  border: 1px solid ${props => props.visited ? 'rgba(255, 215, 0, 0.2)' : 'rgba(255, 215, 0, 0.1)'};
+  border: 1px solid ${props => props.visited ? 'rgba(255, 215, 0, 0.3)' : 'rgba(255, 215, 0, 0.1)'};
+  height: 100%;
+  display: block;
+  position: relative;
+  cursor: ${props => props.visited ? 'pointer' : 'not-allowed'};
+
+  &:hover {
+    transform: ${props => props.visited ? 'translateY(-5px)' : 'none'};
+    box-shadow: ${props => props.visited ? '0 0 15px rgba(255, 215, 0, 0.4)' : 'none'};
+    border-color: ${props => props.visited ? 'rgba(255, 215, 0, 0.5)' : 'rgba(255, 215, 0, 0.1)'};
+  }
+`;
+
+const StoryCardWrapper = styled(Link)<{ visited: boolean }>`
+  text-decoration: none;
+  color: inherit;
+  background: ${props => props.visited ? 'rgba(72, 65, 107, 0.9)' : 'rgba(255, 255, 255, 0.1)'};
+  border-radius: 8px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  border: 1px solid ${props => props.visited ? 'rgba(255, 215, 0, 0.3)' : 'rgba(255, 215, 0, 0.1)'};
   height: 100%;
   display: block;
   position: relative;
@@ -61,9 +97,9 @@ const StoryTitle = styled.h3`
   font-family: "Cinzel Decorative", "Playfair Display SC", serif;
 `;
 
-const StoryDescription = styled.p`
+const StoryDescription = styled.p<{ visited?: boolean }>`
   font-size: 1rem;
-  color: #fff;
+  color: ${props => props.visited ? '#fff' : 'rgba(255, 255, 255, 0.6)'};
   margin: 0 0 1rem 0;
   flex-grow: 1;
   opacity: 0.8;

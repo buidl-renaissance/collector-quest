@@ -55,7 +55,7 @@ const StoryPage: React.FC<{ storyId: string }> = ({ storyId }) => {
         }
 
         // Mark the story as visited
-        markStoryAsVisited(storyId);
+        markStoryAsVisited(storyData.slug);
         
         setLoading(false);
       } catch (err) {

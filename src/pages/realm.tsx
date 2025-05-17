@@ -283,9 +283,9 @@ const RealmDetailPage: React.FC = () => {
             <StoriesGrid>
               {stories.map((story) => (
                 <StoryCard 
-                  key={story.id} 
+                  key={story.slug} 
                   story={story} 
-                  isVisited={visitedStories.includes(story.id)}
+                  isVisited={visitedStories.includes(story.slug)}
                 />
               ))}
             </StoriesGrid>
