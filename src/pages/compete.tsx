@@ -322,23 +322,6 @@ const SectionTitle = styled.h2`
   }
 `;
 
-const SectionTitleGlow = styled.div`
-  display: inline-flex;
-  align-items: center;
-  padding: 0.5rem 1.5rem;
-  border-radius: 50px;
-  background: rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(167, 125, 62, 0.3);
-  box-shadow: 0 0 10px rgba(167, 125, 62, 0.5);
-  animation: ${glow} 3s ease-in-out infinite;
-  
-  svg {
-    margin-right: 0.5rem;
-    font-size: 1.25rem;
-    color: #a77d3e;
-  }
-`;
-
 const ActionButton = styled.button<{ secondary?: boolean }>`
   background: ${props => props.secondary ? 'transparent' : 'rgba(167, 125, 62, 0.2)'};
   color: ${props => props.secondary ? '#a77d3e' : '#a77d3e'};
