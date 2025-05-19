@@ -53,18 +53,11 @@ const NamePage = () => {
     }
   };
 
-  const handleBack = () => {
-    router.push("/character/class");
-  };
-
   const isNameValid = name.trim().length > 2;
 
   return (
     <PageTransition>
       <Page width="narrow">
-        {/* <BackButton onClick={handleBack}>
-          <FaArrowLeft /> Back to Class Selection
-        </BackButton> */}
 
         <Title>Name Your Character</Title>
         

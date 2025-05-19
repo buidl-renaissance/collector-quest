@@ -1,6 +1,5 @@
 import React from 'react';
 import styled from '@emotion/styled';
-import { keyframes } from '@emotion/react';
 import { FaArrowRight } from 'react-icons/fa';
 
 interface BottomNavigationProps {
@@ -10,40 +9,59 @@ interface BottomNavigationProps {
   disabled?: boolean;
 }
 
-const slideUp = keyframes`
-  from { transform: translateY(100%); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
-`;
+const BottomNavigation: React.FC<BottomNavigationProps> = ({
+  selectedItem,
+  selectedItemLabel,
+  onNext,
+  disabled = false,
+}) => {
+  return (
+    <NavigationContainer>
+      {selectedItem && selectedItemLabel && (
+        <SelectedItem>
+          <SelectedItemLabel>{selectedItemLabel}:</SelectedItemLabel>
+          <SelectedItemValue>{selectedItem}</SelectedItemValue>
+        </SelectedItem>
+      )}
+      <NextButton onClick={onNext} disabled={disabled}>
+        Next Step <FaArrowRight />
+      </NextButton>
+    </NavigationContainer>
+  );
+};
 
-const SelectionFooter = styled.div`
+const NavigationContainer = styled.div`
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
-  background-color: rgba(26, 26, 46, 0.95);
-  border-top: 2px solid #bb8930;
-  padding: 1rem 2rem;
+  background: rgba(26, 26, 46, 0.95);
+  backdrop-filter: blur(10px);
+  padding: 1rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  animation: ${slideUp} 0.3s ease-out;
-  z-index: 100;
+  border-top: 1px solid #bb8930;
+  z-index: 1000;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
 `;
 
-const SelectedItemInfo = styled.div`
+const SelectedItem = styled.div`
   display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  flex-direction: column;
+  gap: 0.25rem;
 `;
 
 const SelectedItemLabel = styled.span`
-  color: #C7BFD4;
+  color: #bb8930;
+  font-size: 0.9rem;
 `;
 
-const SelectedItemName = styled.span`
-  color: #bb8930;
-  font-weight: bold;
-  font-size: 1.1rem;
+const SelectedItemValue = styled.span`
+  color: #e0dde5;
+  font-size: 1rem;
+  font-weight: 500;
 `;
 
 const NextButton = styled.button<{ disabled?: boolean }>`
@@ -65,26 +83,5 @@ const NextButton = styled.button<{ disabled?: boolean }>`
     background-color: ${props => props.disabled ? '#666' : '#d4a959'};
   }
 `;
-
-const BottomNavigation: React.FC<BottomNavigationProps> = ({
-  selectedItem,
-  selectedItemLabel = 'Selected',
-  onNext,
-  disabled = false
-}) => {
-  return (
-    <SelectionFooter>
-      {selectedItem && (
-        <SelectedItemInfo>
-          {selectedItemLabel?.length > 0 && <SelectedItemLabel>{selectedItemLabel}:</SelectedItemLabel>}
-          <SelectedItemName>{selectedItem}</SelectedItemName>
-        </SelectedItemInfo>
-      )}
-      <NextButton onClick={onNext} disabled={disabled}>
-        Next Step <FaArrowRight />
-      </NextButton>
-    </SelectionFooter>
-  );
-};
 
 export default BottomNavigation; 
