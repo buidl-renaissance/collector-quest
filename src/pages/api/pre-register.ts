@@ -14,8 +14,8 @@ export default async function handler(
     const { name, email, phone } = req.body;
 
     // Validate required fields
-    if (!name || !email) {
-      return res.status(400).json({ error: "Name and email are required" });
+    if (!email) {
+      return res.status(400).json({ error: "Email is required" });
     }
 
     // Validate email format
@@ -51,7 +51,7 @@ export default async function handler(
     await db("characters").insert({
       id,
       name: '',
-      real_name: name,
+      real_name: name ?? '',
       email,
       status: "pre_registered",
       phone: phone || null,

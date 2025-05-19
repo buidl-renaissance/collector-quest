@@ -1,709 +1,612 @@
-import React from "react";
-import { keyframes } from "@emotion/react";
-import { FaPalette, FaStar, FaCrown } from "react-icons/fa";
+import React, { useState, useEffect } from "react";
+import { GetServerSideProps } from "next";
 import Link from "next/link";
 import styled from "@emotion/styled";
-import Events from "@/components/Events";
-import { useRouter } from "next/router";
+import { keyframes } from "@emotion/react";
+import {
+  FaDungeon,
+  FaDice,
+  FaScroll,
+  FaBook,
+} from "react-icons/fa";
 
-export const getServerSideProps = async () => {
+export const getServerSideProps: GetServerSideProps = async (context) => {
   return {
     props: {
       metadata: {
-        title: "Lord Smearington's Absurd Gallery",
+        title: `Collector Quest | A Turn-Based AI Dungeon Game`,
         description:
-          "Lord Smearington, the inter-dimensional art prophet, reveals the mystical magic in every canvas. Built for the Sui Overflow 2025 Hackathon, this gallery leverages blockchain technology to build the first-of-its-kind inter-dimensional art gallery experience, where you are the narrator of an absurd story.",
-        url: "https://lord.smearington.theethical.ai",
-        image: "/images/lord-smearington.jpg",
+          "Embark on infinite adventures in this turn-based AI storytelling game. Create a hero, forge unique quests, and build your collection of legendary tales.",
+        image: "/images/collector-quest-banner.jpg",
+        url: `https://collectorquest.theethical.ai`,
       },
     },
   };
 };
 
-export default function Home() {
-  const router = useRouter();
+const IndexPage: React.FC = () => {
+  const [email, setEmail] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [error, setError] = useState("");
+  const [parallaxOffset, setParallaxOffset] = useState(0);
 
-  const handleCreateCharacter = () => {
-    router.push('/character/sex');
+  useEffect(() => {
+    const handleScroll = () => {
+      setParallaxOffset(window.scrollY * 0.3);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setError("");
+
+    if (!email || !/^\S+@\S+\.\S+$/.test(email)) {
+      setError("Please enter a valid email address");
+      setIsSubmitting(false);
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/pre-register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to pre-register');
+      }
+
+      // Save email to localStorage
+      localStorage.setItem('preRegisteredEmail', email);
+      setIsSubmitted(true);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to register. Please try again later.");
+      console.error("Registration error:", err);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
-    <Box>
-      {/* Hero Section */}
-      <HeroSection>
-        {/* Animated background effects */}
-        <HeroBackground />
+    <PageWrapper>
+      <ParallaxBackground style={{ transform: `translateY(${parallaxOffset}px)` }} />
+      
+      <Container>
+        <HeroSection>
+          <Title>
+            <MagicSpan>Collector Quest</MagicSpan>
+          </Title>
+          <Subtitle>Forge your legacy. Collect the extraordinary.</Subtitle>
+          <ComingSoonBadge>Coming Soon</ComingSoonBadge>
+        </HeroSection>
 
-        {/* Floating elements */}
-        {[...Array(15)].map((_, i) => (
-          <FloatingElement
-            key={i}
-            top={`${Math.random() * 100}%`}
-            left={`${Math.random() * 100}%`}
-            animationDuration={`${Math.random() * 5 + 3}s`}
-          >
-            {i % 3 === 0 ? (
-              <FloatingIcon className="fa-palette">
-                <FaPalette />
-              </FloatingIcon>
-            ) : i % 3 === 1 ? (
-              <FloatingIcon className="fa-crown">
-                <FaCrown />
-              </FloatingIcon>
-            ) : (
-              <FloatingIcon className="fa-star">
-                <FaStar />
-              </FloatingIcon>
-            )}
-          </FloatingElement>
-        ))}
+        <ImageSection>
+          <ImageContainer>
+            <Image
+              src="/images/COLLECTOR-Master-Card.png"
+              alt="Collector Quest"
+            />
+          </ImageContainer>
+        </ImageSection>
 
-        {/* Floating stars */}
-        {[...Array(8)].map((_, i) => (
-          <FloatingStar
-            key={`star-${i}`}
-            top={`${Math.random() * 80 + 10}%`}
-            left={`${Math.random() * 80 + 10}%`}
-            animationDuration={`${Math.random() * 4 + 3}s`}
-          >
-            <StarIcon
-              color={`hsl(${Math.random() * 60 + 280}, 100%, 75%)`}
-              fontSize={`${Math.random() * 20 + 10}px`}
-            >
-              <FaStar />
-            </StarIcon>
-          </FloatingStar>
-        ))}
+        <Section>
+          <SectionIcon>
+            <FaScroll />
+          </SectionIcon>
+          <SectionTitle>What Is Collector Quest?</SectionTitle>
+          <Description>
+            Collector Quest is a turn-based storytelling game powered by AI. You
+            create a hero—I craft the world. Together, we forge one-of-a-kind
+            adventures that you can save, share, and collect.
+          </Description>
+          <Tagline>
+            No dice. No downloads. Just imagination and consequence.
+          </Tagline>
+        </Section>
 
-        <HeroContainer>
-          <HeroContent>
-            <CrownIcon>
-              <FaCrown />
-            </CrownIcon>
-            <HeroBox>
-              <HeroTitle>
-                <span style={{ fontSize: "1rem" }}>You are invited to</span>{" "}
-                <br />
-                Lord Smearington&apos;s <br />
-                Absurd Gallery
-              </HeroTitle>
-              <HeroSubtitle as="h2">
-                An Interdimensional Art Gallery Experience
-              </HeroSubtitle>
-              <HeroDescription>
-                A Sui Overflow 2025 Hackathon Project – Minted on Sui, Judged by
-                Madness
-              </HeroDescription>
+        <PreRegisterSection>
+          <SectionIcon>
+            <FaBook />
+          </SectionIcon>
+          <SectionTitle>Be The First To Know</SectionTitle>
+          <Description>
+            Join our waitlist to receive early access and exclusive updates about Collector Quest.
+          </Description>
+          
+          {!isSubmitted ? (
+            <PreRegisterForm onSubmit={handleSubmit}>
+              <PreRegisterInput 
+                type="email" 
+                placeholder="Enter your email address" 
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={isSubmitting}
+              />
+              <PreRegisterButton type="submit" disabled={isSubmitting}>
+                {isSubmitting ? <LoadingSpinner /> : "Pre-Register"}
+              </PreRegisterButton>
+              {error && <ErrorMessage>{error}</ErrorMessage>}
+            </PreRegisterForm>
+          ) : (
+            <SuccessMessage>
+              <SectionIcon>
+                <FaDice />
+              </SectionIcon>
+              Thank you for registering! We&apos;ll notify you when Collector Quest launches.
+            </SuccessMessage>
+          )}
+        </PreRegisterSection>
 
-              <ButtonGroup>
-                <SecondaryButton>
-                  <Link href="/rsvp">
-                    <Flex style={{ alignItems: "center" }}>RSVP </Flex>
-                  </Link>
-                </SecondaryButton>
-              </ButtonGroup>
-            </HeroBox>
-          </HeroContent>
-        </HeroContainer>
-      </HeroSection>
+        <FeatureSection>
+          <FeatureGrid>
+            <FeatureItem>
+              <FeatureIcon><FaDungeon /></FeatureIcon>
+              <FeatureTitle>Infinite Adventures</FeatureTitle>
+              <FeatureDescription>Every quest is uniquely crafted for your character</FeatureDescription>
+            </FeatureItem>
+            <FeatureItem>
+              <FeatureIcon><FaDice /></FeatureIcon>
+              <FeatureTitle>Dynamic Storytelling</FeatureTitle>
+              <FeatureDescription>Your choices shape the narrative and consequences</FeatureDescription>
+            </FeatureItem>
+            <FeatureItem>
+              <FeatureIcon><FaScroll /></FeatureIcon>
+              <FeatureTitle>Collectible Quests</FeatureTitle>
+              <FeatureDescription>Build your library of completed adventures</FeatureDescription>
+            </FeatureItem>
+            <FeatureItem>
+              <FeatureIcon><FaBook /></FeatureIcon>
+              <FeatureTitle>Growing World</FeatureTitle>
+              <FeatureDescription>Discover new realms, items, and characters</FeatureDescription>
+            </FeatureItem>
+          </FeatureGrid>
+        </FeatureSection>
 
-      {/* About Section */}
-      <AboutSection>
-        <AboutBackground />
+        <FounderBadge>
+          <BadgeIcon><FaScroll /></BadgeIcon>
+          <BadgeText>Founding Relic Bearer</BadgeText>
+        </FounderBadge>
+      </Container>
 
-        <AboutContainer>
-          <AboutContent>
-            <AboutTextBox>
-              {/* <AboutBadge>THE VISIONARY</AboutBadge> */}
-              <AboutHeading as="h2">Who Is Lord Smearington?</AboutHeading>
-              <AboutText>
-                Lord Smearington, the inter-dimensional art prophet, reveals the
-                mystical magic in every canvas. Built for the Sui Overflow 2025
-                Hackathon, this gallery leverages blockchain technology to build
-                the first-of-its-kind inter-dimensional art gallery experience,
-                where you are the narrator of an absurd story.
-              </AboutText>
-            </AboutTextBox>
-
-            <ImageBox>
-              <ImageGlow />
-              <ImageContainer>
-                <ProfileImage
-                  src="/images/lord-smearington.jpg"
-                  alt="Lord Smearington"
-                />
-                <ProfileBadge>The Prophet</ProfileBadge>
-              </ImageContainer>
-            </ImageBox>
-          </AboutContent>
-        </AboutContainer>
-      </AboutSection>
-
-      {/* Community Section */}
-      <CommunitySection>
-        <CommunityBackground />
-
-        <CommunityContainer>
-          <CommunitySectionTitle>
-            <CrownDivider>
-              <FaCrown />
-            </CrownDivider>
-            Join Our Community
-            <CrownDivider>
-              <FaCrown />
-            </CrownDivider>
-          </CommunitySectionTitle>
-
-          <CommunityContent>
-            <Events />
-          </CommunityContent>
-        </CommunityContainer>
-      </CommunitySection>
-    </Box>
+      <Footer>
+        <FooterCastle />
+        <FooterText>Generated by <br />Escada Gordon & WiredInSamurai</FooterText>
+        {/* <FooterLinks>
+          <FooterLink href="/about">About</FooterLink>
+          <FooterLink href="/terms">Terms</FooterLink>
+          <FooterLink href="/socials">Socials</FooterLink>
+        </FooterLinks> */}
+      </Footer>
+    </PageWrapper>
   );
-}
+};
 
-// Animation keyframes
+// Animations
 const float = keyframes`
   0% { transform: translateY(0px) rotate(0deg); }
-  50% { transform: translateY(-10px) rotate(2deg); }
+  50% { transform: translateY(-10px) rotate(5deg); }
   100% { transform: translateY(0px) rotate(0deg); }
 `;
 
-const pulse = keyframes`
-  0% { transform: scale(1); box-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
-  50% { transform: scale(1.05); box-shadow: 0 0 20px rgba(255, 215, 0, 0.7); }
-  100% { transform: scale(1); box-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
-`;
-
 const shimmer = keyframes`
-  0% { background-position: -200% center; }
-  100% { background-position: 200% center; }
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 `;
 
-// Styled components
-const Box = styled.div`
-  font-family: "Cormorant Garamond", serif;
+const glow = keyframes`
+  0% { text-shadow: 0 0 10px rgba(108, 73, 7, 0.5); }
+  50% { text-shadow: 0 0 20px rgba(187, 137, 48, 0.8), 0 0 30px rgba(182, 85, 28, 0.6); }
+  100% { text-shadow: 0 0 10px rgba(108, 73, 7, 0.5); }
+`;
+
+const unfurl = keyframes`
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+`;
+
+const pulse = keyframes`
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+`;
+
+// Styled Components
+const PageWrapper = styled.div`
+  min-height: 100vh;
+  background: linear-gradient(135deg, rgba(58, 38, 6, 0.9) 0%, rgba(108, 58, 20, 0.9) 50%, rgba(58, 38, 6, 0.9) 100%);
+  color: #e6e6e6;
+  position: relative;
+  overflow: hidden;
+  font-family: "EB Garamond", "Merriweather", serif;
+
+  &::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('/images/collector-quest-background.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.15;
+    z-index: 0;
+  }
+`;
+
+const ParallaxBackground = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url('/images/parchment-texture.jpg');
+  background-size: cover;
+  opacity: 0.05;
+  z-index: 1;
 `;
 
 const Container = styled.div`
-  width: 100%;
-  max-width: 1200px;
+  max-width: 800px;
   margin: 0 auto;
-  padding: 0 1.5rem;
+  padding: 2rem 1rem;
   position: relative;
+  z-index: 2;
 
-  @media (max-width: 768px) {
-    padding: 0 1rem;
+  @media (min-width: 768px) {
+    padding: 3rem 2rem;
   }
 `;
 
-const Flex = styled.div`
+const ImageSection = styled.div`
+  margin-bottom: 3rem;
+  padding: 1rem 0;
+`;
+
+const ImageContainer = styled.div`
+  position: relative;
+  width: 100%;
+  height: auto;
   display: flex;
-
-  @media (max-width: 768px) {
-    flex-direction: column;
-  }
-`;
-
-const VStack = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
-
-const HStack = styled.div`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-
-  @media (max-width: 768px) {
-    flex-direction: column;
-    align-items: stretch;
-  }
-`;
-
-const Heading = styled.h1`
-  font-family: "Cinzel Decorative", "Playfair Display SC", serif;
-  font-weight: bold;
-`;
-
-const Text = styled.p`
-  font-family: "Cormorant Garamond", "Lato", sans-serif;
-`;
-
-const Badge = styled.span`
-  display: inline-block;
-  padding: 0.5rem 1rem;
-  background-color: #5a3e85;
-  color: white;
-  border-radius: 0.25rem;
-  border: 1px solid #ffd700;
-`;
-
-const Button = styled.button`
-  padding: 0.5rem 1rem;
-  background-color: #3b4c99;
-  color: white;
-  border: 2px solid #ffd700;
-  border-radius: 0.25rem;
-  font-family: "Cinzel Decorative", serif;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
-      0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    background-color: #5a3e85;
-  }
-
-  @media (max-width: 480px) {
-    width: 100%;
-  }
+  justify-content: center;
 `;
 
 const Image = styled.img`
-  max-width: 100%;
-  height: auto;
-`;
-
-const IconWrapper = styled.span`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-`;
-
-// Hero section styled components
-const HeroSection = styled(Box)`
-  position: relative;
-  min-height: 100vh;
-  background: linear-gradient(to bottom right, #3b4c99, #5a3e85);
-  overflow: hidden;
-  @media (max-width: 768px) {
-    min-height: 60vh;
-  }
-`;
-
-const HeroBackground = styled(Box)`
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  opacity: 0.2;
-  background-image: url("/images/unicorn-nft-bg.png");
-  background-size: cover;
-  background-position: center;
-  filter: blur(2px);
-  z-index: 0;
-  &:after {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: url("/images/fabric-texture.png");
-    opacity: 0.3;
-    mix-blend-mode: overlay;
-  }
-`;
-
-const FloatingElement = styled(Box)<{
-  top: string;
-  left: string;
-  animationDuration: string;
-}>`
-  position: absolute;
-  top: ${(props) => props.top};
-  left: ${(props) => props.left};
-  z-index: 1;
-  animation: ${float} ${(props) => props.animationDuration} infinite ease-in-out;
-  opacity: 0.6;
-
-  @media (max-width: 768px) {
-    /* display: none; */
-    opacity: 0.2;
-  }
-`;
-
-const FloatingIcon = styled.div`
-  color: #ffd700;
-  font-size: 1.5rem;
-  filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.7));
-  opacity: 0.6;
-
-  &.fa-palette {
-    color: #f4c4f3;
-  }
-
-  &.fa-crown {
-    color: #ffd700;
-    font-size: 2rem;
-  }
-
-  &.fa-star {
-    color: #c7bfd4;
-  }
-`;
-
-const FloatingStar = styled(Box)<{
-  top: string;
-  left: string;
-  animationDuration: string;
-}>`
-  position: absolute;
-  top: ${(props) => props.top};
-  left: ${(props) => props.left};
-  z-index: 1;
-  animation: ${float} ${(props) => props.animationDuration} infinite ease-in-out;
-  opacity: 0.6;
-
-  @media (max-width: 768px) {
-    display: none;
-  }
-`;
-
-const StarIcon = styled(IconWrapper)<{ color: string; fontSize: string }>`
-  color: ${(props) => props.color};
-  font-size: ${(props) => props.fontSize};
-`;
-
-const HeroContainer = styled(Container)`
-  position: relative;
-  z-index: 2;
-`;
-
-const HeroContent = styled(VStack)`
-  gap: 2rem;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  color: white;
-  padding: 0.5rem;
-  @media (max-width: 768px) {
-    height: 60vh;
-  }
-`;
-
-const CrownIcon = styled.div`
-  color: #ffd700;
-  font-size: 3rem;
-  margin-bottom: -1.5rem;
-  filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.7));
-`;
-
-const HeroBox = styled(Box)`
-  padding: 2rem;
-  border-radius: 0.75rem;
-  background: rgba(59, 76, 153, 0.7);
-  backdrop-filter: blur(10px);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  text-align: center;
-  border: 3px solid #ffd700;
-  max-width: 900px;
   width: 100%;
-
-  @media (max-width: 768px) {
-    padding: 1.5rem;
-  }
+  height: auto;
+  max-height: 64vh;
+  object-fit: contain;
 `;
 
-const HeroTitle = styled(Heading)`
-  font-size: 3rem;
-  margin-bottom: 1rem;
-  font-weight: 800;
-  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
-  animation: ${pulse} 3s infinite ease-in-out;
-  background: linear-gradient(90deg, #f4c4f3, #fc67fa, #f4c4f3);
-  background-size: 200% auto;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  animation: ${shimmer} 6s linear infinite;
-  letter-spacing: 0.05em;
-
-  @media (max-width: 768px) {
-    font-size: 2rem;
-  }
-
-  @media (max-width: 480px) {
-    font-size: 1.3rem;
-  }
-`;
-
-const HeroSubtitle = styled(Heading)`
-  font-size: 1.25rem;
-  margin-bottom: 2rem;
-  font-style: italic;
-  text-shadow: 0 0 5px rgba(255, 215, 0, 0.7);
-  letter-spacing: 0.025em;
-  color: #c7bfd4;
-
-  @media (max-width: 480px) {
-    font-size: 1rem;
-    margin-bottom: 1.5rem;
-  }
-`;
-
-const HeroDescription = styled(Text)`
-  font-size: 1.25rem;
-  margin-bottom: 2.5rem;
-  max-width: 800px;
-  margin-left: auto;
-  margin-right: auto;
-  line-height: 1.8;
-  color: #c7bfd4;
-
-  @media (max-width: 768px) {
-    font-size: 1rem;
-    margin-bottom: 2rem;
-    line-height: 1.6;
-  }
-`;
-
-const ButtonGroup = styled(HStack)`
-  gap: 1.5rem;
-  flex-wrap: wrap;
-  justify-content: center;
-
-  @media (max-width: 768px) {
-    gap: 1rem;
-  }
-
-  @media (max-width: 480px) {
-    gap: 0.75rem;
-  }
-`;
-
-const SecondaryButton = styled(Button)`
-  font-size: 1rem;
-  border-radius: 0.5rem;
-  padding: 0.75rem 1.5rem;
-  background-color: #5a3e85;
-  border: 2px solid #ffd700;
-  font-weight: 600;
-  font-family: "Cinzel Decorative", serif;
-  letter-spacing: 0.35em;
-
-  &:hover {
-    background-color: #3b4c99;
-    box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
-  }
-
-  @media (max-width: 480px) {
-    padding: 0.75rem 1rem;
-    font-size: 0.875rem;
-  }
-`;
-
-// About section styled components
-const AboutSection = styled(Box)`
-  padding: 6rem 0;
-  background: #1a1a2e;
-  color: white;
-  position: relative;
-  overflow: hidden;
-
-  @media (max-width: 768px) {
-    padding: 4rem 0;
-  }
-`;
-
-const AboutBackground = styled(Box)`
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: radial-gradient(circle at 80% 20%, #5a3e85 0%, transparent 60%);
-  opacity: 0.4;
-`;
-
-const AboutContainer = styled(Container)`
-  position: relative;
-`;
-
-const AboutContent = styled(Flex)`
-  align-items: center;
-  justify-content: space-between;
-  gap: 4rem;
-
-  @media (max-width: 992px) {
-    flex-direction: column;
-    gap: 3rem;
-  }
-`;
-
-const AboutTextBox = styled(Box)`
-  flex: 1;
-  max-width: 600px;
-
-  @media (max-width: 992px) {
-    max-width: 100%;
-  }
-`;
-
-const AboutBadge = styled(Badge)`
-  margin-bottom: 1rem;
-  padding: 0.5rem 1rem;
-  background-color: #3b4c99;
-  border-radius: 0.5rem;
-  font-size: 0.875rem;
-  letter-spacing: 0.025em;
-  font-weight: bold;
-  border: 1px solid #ffd700;
-`;
-
-const AboutHeading = styled(Heading)`
-  font-size: 2.25rem;
-  margin-bottom: 1.5rem;
-  background: linear-gradient(to right, #f4c4f3, #fc67fa);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  letter-spacing: -0.025em;
-  font-weight: 800;
-  text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
-
-  @media (max-width: 768px) {
-    font-size: 1.75rem;
-  }
-`;
-
-const AboutText = styled(Text)`
-  font-size: 1.25rem;
-  line-height: 1.8;
-  margin-bottom: 2rem;
-  color: #c7bfd4;
-
-  @media (max-width: 768px) {
-    font-size: 1.125rem;
-    line-height: 1.6;
-  }
-`;
-
-const ImageBox = styled(Box)`
-  flex: 1;
-  max-width: 400px;
-  position: relative;
-
-  @media (max-width: 992px) {
-    max-width: 300px;
-    margin: 0 auto;
-  }
-`;
-
-const ImageGlow = styled(Box)`
-  position: absolute;
-  top: -20px;
-  left: -20px;
-  right: -20px;
-  bottom: -20px;
-  border-radius: 9999px;
-  background: linear-gradient(to bottom right, #5a3e85, #fc67fa);
-  filter: blur(25px);
-  opacity: 0.6;
-  z-index: 0;
-`;
-
-const ImageContainer = styled(Box)`
-  position: relative;
-  z-index: 1;
-`;
-
-const ProfileImage = styled(Image)`
-  border-radius: 0.75rem;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
-    0 10px 10px -5px rgba(0, 0, 0, 0.04);
-  transform: rotate(3deg);
-  border: 4px solid #ffd700;
-  animation: ${pulse} 5s infinite ease-in-out;
-  transition: all 0.3s ease;
-`;
-
-const ProfileBadge = styled(Box)`
-  position: absolute;
-  top: -15px;
-  right: -15px;
-  background-color: #3b4c99;
-  color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 0.5rem;
-  transform: rotate(15deg);
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
-    0 10px 10px -5px rgba(0, 0, 0, 0.04);
-  font-weight: bold;
-  letter-spacing: 0.025em;
-  border: 2px solid #ffd700;
-
-  @media (max-width: 480px) {
-    padding: 0.25rem 0.75rem;
-    font-size: 0.75rem;
-    top: -10px;
-    right: -10px;
-  }
-`;
-
-// Community section styled components
-const CommunitySection = styled(Box)`
-  padding: 6rem 0;
-  background: #1a1a2e;
-  color: white;
-  position: relative;
-  overflow: hidden;
-
-  @media (max-width: 768px) {
-    padding: 4rem 0;
-  }
-`;
-
-const CommunityBackground = styled(Box)`
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: radial-gradient(circle at 20% 80%, #fc67fa 0%, transparent 60%);
-  opacity: 0.2;
-`;
-
-const CommunityContainer = styled(Container)`
-  position: relative;
-  z-index: 2;
-`;
-
-const CrownDivider = styled.span`
-  display: inline-block;
-  color: #ffd700;
-  font-size: 1.5rem;
-  margin: 0 1rem;
-  vertical-align: middle;
-`;
-
-const CommunitySectionTitle = styled(Heading)`
-  font-size: 2.5rem;
-  margin-bottom: 3rem;
+const HeroSection = styled.div`
   text-align: center;
-  color: #f4c4f3;
-  letter-spacing: -0.025em;
-  font-weight: 800;
+  padding: 1rem 0;
+`;
+
+const ComingSoonBadge = styled.div`
+  display: inline-block;
+  background: linear-gradient(90deg, #b6551c, #bb8930);
+  color: #fff;
+  font-family: "Cinzel", serif;
+  padding: 0.5rem 1.5rem;
+  border-radius: 20px;
+  margin: 1.5rem auto;
+  font-size: 1.2rem;
+  font-weight: bold;
+  animation: ${pulse} 2s infinite ease-in-out;
+  box-shadow: 0 0 15px rgba(182, 85, 28, 0.5);
+`;
+
+const Title = styled.h1`
+  font-size: 2.5rem;
+  font-family: "Cinzel Decorative", "Uncial Antiqua", serif;
+  margin-bottom: 1rem;
+
+  @media (min-width: 768px) {
+    font-size: 3.5rem;
+  }
+`;
+
+const MagicSpan = styled.span`
+  background: linear-gradient(90deg, #bb8930, #b6551c, #bb8930);
+  background-size: 200% auto;
+  color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: ${shimmer} 3s linear infinite;
+`;
+
+const Subtitle = styled.h2`
+  font-size: 1.2rem;
+  font-weight: normal;
+  margin-bottom: 1.5rem;
+  color: #bb8930;
+
+  @media (min-width: 768px) {
+    font-size: 1.5rem;
+  }
+`;
+
+const Section = styled.section`
+  margin-bottom: 3rem;
+  padding: 1.5rem;
+  background: rgba(58, 38, 6, 0.7);
+  border-radius: 8px;
+  border: 1px solid rgba(187, 137, 48, 0.3);
+
+  @media (min-width: 768px) {
+    padding: 2rem;
+  }
+`;
+
+const PreRegisterSection = styled(Section)`
+  background: rgba(58, 38, 6, 0.8);
+  border: 1px solid rgba(187, 137, 48, 0.5);
+`;
+
+const PreRegisterForm = styled.form`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  
+  @media (min-width: 768px) {
+    flex-direction: row;
+  }
+`;
+
+const PreRegisterInput = styled.input`
+  padding: 0.75rem 1rem;
+  border-radius: 4px;
+  border: 1px solid #bb8930;
+  background: rgba(58, 38, 6, 0.5);
+  color: #e6e6e6;
+  font-family: inherit;
+  flex: 1;
+  
+  &::placeholder {
+    color: rgba(230, 230, 230, 0.6);
+  }
+  
+  &:focus {
+    outline: none;
+    border-color: #b6551c;
+    box-shadow: 0 0 0 2px rgba(182, 85, 28, 0.3);
+  }
+`;
+
+const PreRegisterButton = styled.button`
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  border: none;
+  background: linear-gradient(90deg, #bb8930, #b6551c);
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: "Cinzel", serif;
   display: flex;
   align-items: center;
   justify-content: center;
-  text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
-
-  @media (max-width: 768px) {
-    font-size: 1.75rem;
-    margin-bottom: 2rem;
+  min-width: 150px;
+  
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
   }
 `;
 
-const CommunityContent = styled(Flex)`
-  gap: 2rem;
-  align-items: stretch;
+const ErrorMessage = styled.div`
+  color: #ff6b6b;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+`;
 
-  @media (max-width: 992px) {
-    flex-direction: column;
+const SuccessMessage = styled.div`
+  background: rgba(187, 137, 48, 0.1);
+  border: 1px solid #bb8930;
+  border-radius: 8px;
+  padding: 1.5rem;
+  text-align: center;
+  margin-top: 1.5rem;
+  animation: ${unfurl} 0.5s ease-out;
+`;
+
+const FeatureSection = styled(Section)`
+  background: rgba(58, 38, 6, 0.6);
+`;
+
+const FeatureGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+`;
+
+const FeatureItem = styled.div`
+  background: rgba(187, 137, 48, 0.1);
+  border-radius: 8px;
+  padding: 1.5rem;
+  text-align: center;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-5px);
+    background: rgba(187, 137, 48, 0.2);
   }
 `;
+
+const FeatureIcon = styled.div`
+  font-size: 2rem;
+  color: #bb8930;
+  margin-bottom: 1rem;
+  display: inline-flex;
+  align-items: center;
+`;
+
+const FeatureTitle = styled.h4`
+  font-size: 1.1rem;
+  color: #bb8930;
+  margin-bottom: 0.5rem;
+  font-family: "Cinzel", serif;
+`;
+
+const FeatureDescription = styled.p`
+  font-size: 0.9rem;
+`;
+
+const SectionIcon = styled.div`
+  font-size: 1.8rem;
+  color: #bb8930;
+  margin-bottom: 1rem;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const SectionTitle = styled.h3`
+  font-size: 1.5rem;
+  color: #b6551c;
+  margin-bottom: 1rem;
+  font-family: "Cinzel Decorative", "Uncial Antiqua", serif;
+  text-align: center;
+
+  @media (min-width: 768px) {
+    font-size: 1.8rem;
+  }
+`;
+
+const Description = styled.p`
+  font-size: 1rem;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+  text-align: center;
+
+  @media (min-width: 768px) {
+    font-size: 1.1rem;
+  }
+`;
+
+const Tagline = styled.p`
+  font-weight: bold;
+  color: #bb8930;
+  font-size: 1.1rem;
+  margin: 1rem 0;
+  text-align: center;
+
+  @media (min-width: 768px) {
+    font-size: 1.2rem;
+  }
+`;
+
+const FounderBadge = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: rgba(27, 58, 84, 0.2);
+  border: 1px solid #1b3a54;
+  border-radius: 20px;
+  padding: 0.5rem 1rem;
+  margin: 2rem auto;
+  max-width: fit-content;
+`;
+
+const BadgeIcon = styled.div`
+  color: #bb8930;
+  font-size: 1rem;
+`;
+
+const BadgeText = styled.span`
+  color: #bb8930;
+  font-size: 0.9rem;
+  font-family: "Cinzel", serif;
+`;
+
+const Footer = styled.footer`
+  background: rgba(58, 38, 6, 0.95);
+  padding: 1.5rem 1rem;
+  text-align: center;
+  position: relative;
+  border-top: 1px solid rgba(187, 137, 48, 0.3);
+  backdrop-filter: blur(10px);
+`;
+
+const FooterCastle = styled.div`
+  height: 40px;
+  background-image: url('/images/castle-silhouette.png');
+  background-repeat: repeat-x;
+  background-position: center bottom;
+  margin-bottom: 0.75rem;
+  opacity: 0.7;
+`;
+
+const FooterText = styled.p`
+  color: #bb8930;
+  margin: 0;
+  font-size: 0.9rem;
+  font-family: "Cinzel", serif;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+`;
+
+const FooterLinks = styled.div`
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-top: 0.75rem;
+`;
+
+const FooterLink = styled(Link)`
+  color: #bb8930;
+  text-decoration: none;
+  font-size: 0.85rem;
+  transition: all 0.3s ease;
+  font-family: "Cinzel", serif;
+  
+  &:hover {
+    color: #b6551c;
+    text-shadow: 0 0 8px rgba(187, 137, 48, 0.5);
+  }
+`;
+
+const LoadingSpinner = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+
+  &::after {
+    content: '';
+    width: 1.2rem;
+    height: 1.2rem;
+    border: 2px solid #fff;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+`;
+
+export default IndexPage;

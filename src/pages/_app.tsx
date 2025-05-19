@@ -67,8 +67,8 @@ export default function App({ Component, pageProps }: AppProps) {
         />
         <CharacterProvider>
           <NextSeo
-            title={metadata.title || "Lord Smearington"}
-            description={metadata.description || "Interdimensional Art Prophet"}
+            title={metadata.title || "COLLECTOR QUEST | A Turn-Based AI Dungeon Game"}
+            description={metadata.description || "Embark on infinite adventures in this turn-based AI storytelling game. Create a hero, forge unique quests, and build your collection of legendary tales."}
             openGraph={{
               title: metadata.title,
               description: metadata.description,
