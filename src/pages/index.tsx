@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { GetServerSideProps } from "next";
 import Link from "next/link";
 import styled from "@emotion/styled";
@@ -31,6 +31,7 @@ const IndexPage: React.FC = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [error, setError] = useState("");
   const [parallaxOffset, setParallaxOffset] = useState(0);
+  const preRegisterRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -40,6 +41,15 @@ const IndexPage: React.FC = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  const scrollToPreRegister = () => {
+    const yOffset = -20;
+    const element = preRegisterRef.current;
+    if (element) {
+      const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+      window.scrollTo({ top: y, behavior: 'smooth' });
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -86,7 +96,7 @@ const IndexPage: React.FC = () => {
             <MagicSpan>Collector Quest</MagicSpan>
           </Title>
           <Subtitle>Forge your legacy. Collect the extraordinary.</Subtitle>
-          <ComingSoonBadge>Coming Soon</ComingSoonBadge>
+          <ComingSoonBadge onClick={scrollToPreRegister}>Coming Soon</ComingSoonBadge>
         </HeroSection>
 
         <ImageSection>
@@ -113,7 +123,7 @@ const IndexPage: React.FC = () => {
           </Tagline>
         </Section>
 
-        <PreRegisterSection>
+        <PreRegisterSection ref={preRegisterRef}>
           <SectionIcon>
             <FaBook />
           </SectionIcon>
@@ -298,6 +308,12 @@ const ComingSoonBadge = styled.div`
   font-weight: bold;
   animation: ${pulse} 2s infinite ease-in-out;
   box-shadow: 0 0 15px rgba(182, 85, 28, 0.5);
+  cursor: pointer;
+  transition: transform 0.3s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+  }
 `;
 
 const Title = styled.h1`
@@ -345,6 +361,7 @@ const Section = styled.section`
 const PreRegisterSection = styled(Section)`
   background: rgba(58, 38, 6, 0.8);
   border: 1px solid rgba(187, 137, 48, 0.5);
+  scroll-margin-top: 20px;
 `;
 
 const PreRegisterForm = styled.form`
