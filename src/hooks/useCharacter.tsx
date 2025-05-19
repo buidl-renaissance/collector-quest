@@ -194,6 +194,8 @@ export const useCharacter = () => {
         setCharacterKey(characterId, "race", value);
       } else if (key === "class" && value) {
         setCharacterKey(characterId, "class", value);
+      } else if (key === "equipment" && value) {
+        setCharacterKey(characterId, "equipment", value);
       }
     });
 

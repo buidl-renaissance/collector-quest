@@ -140,10 +140,9 @@ const GoldAmount = styled.div`
 
 const EquipmentPage: React.FC = () => {
   const router = useRouter();
-  const { character, updateCharacter, saveCharacter } = useCharacter();
   const { selectedRace, loading: raceLoading } = useRace();
   const { selectedClass, loading: classLoading } = useCharacterClass();
-  const { generateEquipment, isGenerating, error: generationError, status, equipment } = useEquipment(character);
+  const { generateEquipment, isGenerating, error: generationError, status, equipment } = useEquipment();
   const [equipmentOption, setEquipmentOption] = useState<'standard' | 'gold'>('standard');
   const [goldAmount, setGoldAmount] = useState<number>(0);
   

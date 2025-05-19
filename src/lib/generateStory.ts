@@ -21,25 +21,32 @@ export async function generateBackstory(character: Character): Promise<string> {
   const prompt = `Create a rich, detailed backstory for a ${character.sex} ${
     character.race.name
   } ${character.class.name} named ${character.name}. 
-    
-  Character traits:
+
+  Character Details:
   - Name: ${character.name}
-  - Personality: ${character.traits.personality?.join(", ")}
-  - Ideals: ${character.traits.ideals?.join(", ")}
-  - Bonds: ${character.traits.bonds?.join(", ")}
+  - Race: ${character.race.name}
+      Race Description: ${character.race.description}
+  - Class: ${character.class.name}
+      Class Description: ${character.class.description}
+  - Sex: ${character.sex}
+  - Background: ${character.traits?.background}
   - Alignment: ${character.traits?.alignment}
   - Deity: ${character.traits?.deity}
+
+  Personality & Traits:
+  - Personality: ${character.traits.personality?.join(", ")}
+  - Ideals: ${character.traits.ideals?.join(", ")}
   - Flaws: ${character.traits.flaws?.join(", ")}
-  - Actions: ${character.traits.actions?.join(", ")}
-  - Driving Forces:  ${character.traits.forces?.join(", ")}
   - Haunting Memory: ${character.traits.hauntingMemory}
   - Treasured Possession: ${character.traits.treasuredPossession}
-  
+
   Primary Motivation: ${character.motivation}
   
-  Race Description: ${character.race.description}
-  Class Description: ${character.class.description}
-  
+  Motivational Elements:
+  - Actions: ${character.traits.actions?.join(", ")}
+  - Driving Forces: ${character.traits.forces?.join(", ")}
+  - Archetype: ${character.traits.archetype || "None"}
+    
   Write a compelling backstory that weaves together these elements into a cohesive narrative. The backstory should be written in third person and be approximately 3-4 paragraphs long.`;
 
   try {
@@ -55,7 +62,7 @@ export async function generateBackstory(character: Character): Promise<string> {
           content: prompt,
         },
       ],
-      model: "gpt-4-turbo-preview",
+      model: "gpt-4o-mini",
       temperature: 0.8,
       max_tokens: 1000,
     });
@@ -90,6 +97,7 @@ Character Details:
 - Race: ${character.race.name}
 - Class: ${character.class.name}
 - Sex: ${character.sex}
+- Background: ${character.traits?.background}
 - Alignment: ${character.traits?.alignment}
 - Deity: ${character.traits?.deity}
 
@@ -121,7 +129,7 @@ The output should be a single, cohesive paragraph that reads like a character st
 
   try {
     const completion = await openai.chat.completions.create({
-      model: "gpt-4",
+      model: "gpt-4o-mini",
       messages: [
         {
           role: "system",

@@ -39,6 +39,11 @@ export class CharacterDB {
       traits = JSON.parse(traits);
     }
 
+    let equipment = result.equipment;
+    if (typeof equipment === 'string') {
+      equipment = JSON.parse(equipment);
+    }
+
     return {
       name: result.name,
       race: race ?? undefined,
@@ -51,6 +56,7 @@ export class CharacterDB {
       sex: result.sex,
       creature: result.creature,
       image_url: result.image_url,
+      equipment: equipment ?? undefined,
     };
   }
 

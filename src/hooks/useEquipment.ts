@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Character } from "./useCharacter";
-
+import { useCharacter } from "./useCharacter";
 interface EquipmentItem {
   name: string;
   quantity: number;
@@ -20,11 +20,12 @@ interface GenerationStatus {
   equipment?: Equipment;
 }
 
-export const useEquipment = (character: Character | null) => {
+export const useEquipment = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [status, setStatus] = useState<GenerationStatus | null>(null);
   const [equipment, setEquipment] = useState<Equipment | null>(null);
+  const { character, updateCharacter } = useCharacter();
   const [hasAttemptedGeneration, setHasAttemptedGeneration] = useState(false);
 
   const generateEquipment = async () => {
@@ -83,6 +84,9 @@ export const useEquipment = (character: Character | null) => {
       if (result?.equipment) {
         setEquipment(result.equipment);
         setIsGenerating(false);
+        if (character) {
+          updateCharacter({ equipment: result.equipment });
+        }
       } else if (result?.step !== "complete") {
         // Continue polling if not complete
         setTimeout(() => pollStatus(resultId), 1000);

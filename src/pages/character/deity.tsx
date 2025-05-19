@@ -57,7 +57,7 @@ const DeityPage: React.FC = () => {
           setShowSkipMessage(true);
           const timer = setTimeout(() => {
             router.push("/character/traits");
-          }, 5000);
+          }, 3000);
           return () => clearTimeout(timer);
         }
       }

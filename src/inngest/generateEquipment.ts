@@ -12,25 +12,33 @@ interface GenerateEquipmentEvent {
   };
 }
 
-interface EquipmentResult {
-  weapons: { name: string; quantity: number }[];
-  armor: { name: string; quantity: number }[];
-  adventuringGear: { name: string; quantity: number }[];
-  tools: { name: string; quantity: number }[];
-  currency: { name: string; quantity: number }[];
-}
-
 export const generateEquipment = inngest.createFunction(
   { name: "Generate Equipment", id: "generate-equipment" },
   { event: "equipment/generate" },
   async ({ event, step }) => {
-    const { characterId } = event.data as GenerateEquipmentEvent["data"];
-
-    const characterDB = new CharacterDB();
-    const character = await characterDB.getCharacter(characterId);
+    const { characterId, character } = event.data as GenerateEquipmentEvent["data"];
 
     if (!character) {
       throw new Error("Character not found");
+    }
+
+    const characterDB = new CharacterDB();
+
+    if (character.equipment) {
+      completeResult(
+        event.data.resultId,
+        JSON.stringify({
+          success: true,
+          step: "complete",
+          message: "Equipment generated successfully",
+          equipment: character.equipment,
+        })
+      );
+
+      return {
+        success: true,
+        equipment: character.equipment,
+      };
     }
 
     // Step 1: Analyze character details
