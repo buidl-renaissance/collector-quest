@@ -28,6 +28,7 @@ const DeityPage: React.FC = () => {
   const { selectedClass, loading: classLoading } = useCharacterClass();
   const [selectedDeity, setSelectedDeity] = useState<Deity | null>(null);
   const [showDeitySelection, setShowDeitySelection] = useState(true);
+  const [showSkipMessage, setShowSkipMessage] = useState(false);
 
   // Check if deity selection is relevant for this character
   useEffect(() => {
@@ -35,25 +36,33 @@ const DeityPage: React.FC = () => {
       // Determine if deity selection is mandatory, optional, or irrelevant
       if (selectedClass.name === "Cleric" || selectedClass.name === "Paladin") {
         setShowDeitySelection(true);
+        setShowSkipMessage(false);
       } else if (["Druid", "Monk", "Warlock"].includes(selectedClass.name)) {
         // Optional for these classes
         setShowDeitySelection(true);
+        setShowSkipMessage(false);
       } else {
         // For other classes, check if they already selected a deity
         if (character?.traits?.deity) {
           setShowDeitySelection(true);
+          setShowSkipMessage(false);
           // Find the deity in our list
           const foundDeity = deities.find(d => d.name === character?.traits?.deity);
           if (foundDeity) {
             setSelectedDeity(foundDeity);
           }
         } else {
-          // Skip this step for classes where deity isn't relevant
+          // Show skip message and redirect after delay
           setShowDeitySelection(false);
+          setShowSkipMessage(true);
+          const timer = setTimeout(() => {
+            router.push("/character/traits");
+          }, 5000);
+          return () => clearTimeout(timer);
         }
       }
     }
-  }, [selectedClass, classLoading, character]);
+  }, [selectedClass, classLoading, character, router]);
 
   // Redirect if no race or class is selected
   useEffect(() => {
@@ -62,9 +71,6 @@ const DeityPage: React.FC = () => {
         router.push("/character/race");
       } else if (!selectedClass) {
         router.push("/character/class");
-      } else if (!showDeitySelection) {
-        // Skip this step if deity selection isn't relevant
-        router.push("/character/traits");
       }
     }
   }, [selectedRace, selectedClass, raceLoading, classLoading, router, showDeitySelection]);
@@ -91,6 +97,22 @@ const DeityPage: React.FC = () => {
           Loading...
         </LoadingMessage>
       </Page>
+    );
+  }
+
+  if (showSkipMessage) {
+    return (
+      <PageTransition>
+        <Page darkMode={true}>
+          <SkipMessage>
+            <DeityIcon><FaPray /></DeityIcon>
+            <SkipTitle>Deity Selection Not Required</SkipTitle>
+            <SkipText>
+              Deity selection does not apply to your selected class. Redirecting to the next step...
+            </SkipText>
+          </SkipMessage>
+        </Page>
+      </PageTransition>
     );
   }
 
@@ -293,6 +315,30 @@ const SkipButton = styled.button`
   &:hover {
     background-color: rgba(199, 191, 212, 0.1);
   }
+`;
+
+const SkipMessage = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  text-align: center;
+  padding: 2rem;
+  animation: ${fadeIn} 0.5s ease;
+`;
+
+const SkipTitle = styled.h2`
+  color: #bb8930;
+  font-size: 2rem;
+  margin: 1rem 0;
+`;
+
+const SkipText = styled.p`
+  color: #C7BFD4;
+  font-size: 1.2rem;
+  max-width: 600px;
+  line-height: 1.6;
 `;
 
 export default DeityPage;
