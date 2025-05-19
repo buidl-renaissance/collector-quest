@@ -1,8 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/router";
 import styled from "@emotion/styled";
 import { keyframes } from "@emotion/react";
-import { FaArrowRight, FaArrowLeft, FaBalanceScale } from "react-icons/fa";
+import { FaArrowRight, FaArrowLeft, FaBalanceScale, FaTimes } from "react-icons/fa";
 import { useCharacter } from "@/hooks/useCharacter";
 import { useRace } from "@/hooks/useRace";
 import { useCharacterClass } from "@/hooks/useCharacterClass";
@@ -18,12 +18,14 @@ import {
 import PageTransition from "@/components/PageTransition";
 import Page from "@/components/Page";
 import BottomNavigation from "@/components/BottomNavigation";
+
 const AlignmentPage: React.FC = () => {
   const router = useRouter();
   const { character, updateCharacter, saveCharacter, updateCharacterTrait } = useCharacter();
   const { selectedRace, loading: raceLoading } = useRace();
   const { selectedClass, loading: classLoading } = useCharacterClass();
   const [selectedAlignment, setSelectedAlignment] = React.useState(character?.traits?.alignment || "");
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Redirect if no race or class is selected
   React.useEffect(() => {
@@ -50,75 +52,100 @@ const AlignmentPage: React.FC = () => {
     router.push('/character/deity');
   };
 
+  const handleLearnMoreClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsModalOpen(true);
+  };
+
   return (
-      <Page darkMode={true}>
-        <BackButton onClick={handleBack}>
-          <FaArrowLeft /> Back to Background
-        </BackButton>
+    <Page darkMode={true}>
+      <BackButton onClick={handleBack}>
+        <FaArrowLeft /> Back to Background
+      </BackButton>
 
-        <HeroSection>
-          <Title>Choose Your Moral Compass</Title>
-          <Subtitle>
-            Your alignment reflects your character&apos;s ethical and moral stance in the world
-          </Subtitle>
-        </HeroSection>
+      <HeroSection>
+        <Title>Choose Your Moral Compass</Title>
+        <Subtitle>
+          Your alignment reflects your character&apos;s ethical and moral stance in the world.{" "}
+          <LearnMore href="#" onClick={handleLearnMoreClick}>
+            Learn more.
+          </LearnMore>
+        </Subtitle>
+      </HeroSection>
 
-        <AlignmentSection>
-          <AlignmentHeader>
-            <AlignmentTitle>Alignment</AlignmentTitle>
-          </AlignmentHeader>
+      <AlignmentSection>
+        <AlignmentHeader>
+          <AlignmentTitle>Alignment</AlignmentTitle>
+        </AlignmentHeader>
 
-          <AlignmentGrid>
-            {alignments.map((alignment) => (
-              <AlignmentCard 
-                key={alignment.name}
-                isSelected={selectedAlignment === alignment.name}
-                onClick={() => handleAlignmentSelect(alignment.name)}
-              >
-                <AlignmentName>{alignment.name}</AlignmentName>
-                <AlignmentDescription>{alignment.description}</AlignmentDescription>
-                <AlignmentExample>Example: {alignment.example}</AlignmentExample>
-              </AlignmentCard>
-            ))}
-          </AlignmentGrid>
-        </AlignmentSection>
+        <AlignmentGrid>
+          {alignments.map((alignment) => (
+            <AlignmentCard 
+              key={alignment.name}
+              isSelected={selectedAlignment === alignment.name}
+              onClick={() => handleAlignmentSelect(alignment.name)}
+            >
+              <AlignmentName>{alignment.name}</AlignmentName>
+              <AlignmentDescription>{alignment.description}</AlignmentDescription>
+              <AlignmentExample>Example: {alignment.example}</AlignmentExample>
+            </AlignmentCard>
+          ))}
+        </AlignmentGrid>
+      </AlignmentSection>
 
-        <AlignmentInfo>
-          <InfoTitle>🧭 What Is Alignment?</InfoTitle>
-          <InfoText>
-            Alignment is represented as a combination of an ethical axis (Lawful, Neutral, or Chaotic) 
-            and a moral axis (Good, Neutral, or Evil), creating nine possible combinations that guide 
-            how your character views the world and makes decisions.
-          </InfoText>
-          
-          <InfoTitle>💡 How to Use Alignment in Play</InfoTitle>
-          <InfoList>
-            <InfoListItem>
-              <strong>Guides Roleplaying:</strong> Helps you decide how your character might react to moral dilemmas or authority.
-            </InfoListItem>
-            <InfoListItem>
-              <strong>Interacts with Ideals/Bonds/Flaws:</strong> Aligns (or clashes) with those traits for added depth.
-            </InfoListItem>
-            <InfoListItem>
-              <strong>Informs Reputation:</strong> Influences how NPCs and factions perceive your character.
-            </InfoListItem>
-          </InfoList>
-        </AlignmentInfo>
+      {isModalOpen && (
+        <ModalOverlay onClick={() => setIsModalOpen(false)}>
+          <ModalContent onClick={(e) => e.stopPropagation()}>
+            <ModalHeader>
+              <ModalTitle>Understanding Alignment</ModalTitle>
+              <CloseButton onClick={() => setIsModalOpen(false)}>
+                <FaTimes />
+              </CloseButton>
+            </ModalHeader>
+            <ModalBody>
+              <InfoTitle>🧭 What Is Alignment?</InfoTitle>
+              <InfoText>
+                Alignment is represented as a combination of an ethical axis (Lawful, Neutral, or Chaotic) 
+                and a moral axis (Good, Neutral, or Evil), creating nine possible combinations that guide 
+                how your character views the world and makes decisions.
+              </InfoText>
+              
+              <InfoTitle>💡 How to Use Alignment in Play</InfoTitle>
+              <InfoList>
+                <InfoListItem>
+                  <strong>Guides Roleplaying:</strong> Helps you decide how your character might react to moral dilemmas or authority.
+                </InfoListItem>
+                <InfoListItem>
+                  <strong>Interacts with Ideals/Bonds/Flaws:</strong> Aligns (or clashes) with those traits for added depth.
+                </InfoListItem>
+                <InfoListItem>
+                  <strong>Informs Reputation:</strong> Influences how NPCs and factions perceive your character.
+                </InfoListItem>
+              </InfoList>
+            </ModalBody>
+          </ModalContent>
+        </ModalOverlay>
+      )}
 
-        {selectedAlignment && (
-          <BottomNavigation
-            onNext={handleNext}
-            selectedItem={selectedAlignment}
-            selectedItemLabel="Alignment"
-          />
-        )}
-      </Page>
+      {selectedAlignment && (
+        <BottomNavigation
+          onNext={handleNext}
+          selectedItem={selectedAlignment}
+          selectedItemLabel="Alignment"
+        />
+      )}
+    </Page>
   );
 };
 
 const fadeIn = keyframes`
   from { opacity: 0; }
   to { opacity: 1; }
+`;
+
+const slideUp = keyframes`
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
 `;
 
 const alignments = [
@@ -266,6 +293,70 @@ const InfoListItem = styled.li`
   color: #c7bfd4;
   margin-bottom: 0.5rem;
   line-height: 1.5;
+`;
+
+const LearnMore = styled.a`
+  color: #bb8930;
+`;
+
+const ModalOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: ${fadeIn} 0.3s ease;
+`;
+
+const ModalContent = styled.div`
+  background: #1a1a2e;
+  border: 2px solid #bb8930;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: ${slideUp} 0.3s ease;
+`;
+
+const ModalHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border-bottom: 1px solid #bb8930;
+`;
+
+const ModalTitle = styled.h2`
+  color: #bb8930;
+  margin: 0;
+  font-size: 1.5rem;
+`;
+
+const CloseButton = styled.button`
+  background: none;
+  border: none;
+  color: #bb8930;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.3s ease;
+
+  &:hover {
+    color: #d4a959;
+  }
+`;
+
+const ModalBody = styled.div`
+  padding: 1.5rem;
 `;
 
 export default AlignmentPage;
