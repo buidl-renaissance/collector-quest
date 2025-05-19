@@ -5,6 +5,8 @@ import { useRouter } from "next/router";
 import { useCharacter } from "@/hooks/useCharacter";
 import { useCharacterImageGenerator } from "@/hooks/useCharacterImageGenerator";
 import { navigateTo } from "@/utils/navigation";
+import { NextButton } from "@/components/styled/buttons";
+import { FaArrowRight } from "react-icons/fa";
 
 // Animations
 const fadeIn = keyframes`
@@ -323,7 +325,11 @@ const ImageGeneratorPage = () => {
       )}
 
       <BottomActions>
-        <SkipButton onClick={handleSkip}>Skip Image Generation</SkipButton>
+        {!userImage ? (
+          <SkipButton onClick={handleSkip}>Skip Image Generation</SkipButton>
+        ) : (
+          <NextButton onClick={handleNext}>Next <FaArrowRight /></NextButton>
+        )}
       </BottomActions>
     </Container>
   );
@@ -348,7 +354,7 @@ const Title = styled.h1`
 const Description = styled.p`
   color: #c7bfd4;
   text-align: center;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
   line-height: 1.6;
   font-size: 1rem;
 `;

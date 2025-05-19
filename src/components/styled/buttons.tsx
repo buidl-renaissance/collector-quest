@@ -25,20 +25,18 @@ export const NextButton = styled.button<{ disabled?: boolean }>`
   align-items: center;
   gap: 0.5rem;
   padding: 0.8rem 1.5rem;
-  background-color: #bb8930;
+  background-color: ${props => props.disabled ? '#666' : '#bb8930'};
   color: #1a1a2e;
   border: none;
   border-radius: 4px;
-  font-family: "Cormorant Garamond", serif;
+  font-family: 'Cormorant Garamond', serif;
   font-weight: bold;
   font-size: 1rem;
-  cursor: pointer;
+  cursor: ${props => props.disabled ? 'not-allowed' : 'pointer'};
   transition: background-color 0.3s;
-  opacity: ${(props) => (props.disabled ? 0.5 : 1)};
-  pointer-events: ${(props) => (props.disabled ? "none" : "auto")};
-
+  
   &:hover {
-    background-color: #d4a959;
+    background-color: ${props => props.disabled ? '#666' : '#d4a959'};
   }
 `;
 

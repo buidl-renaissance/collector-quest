@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from '@emotion/styled';
 import { FaArrowRight } from 'react-icons/fa';
+import { NextButton } from './styled/buttons';
 
 interface BottomNavigationProps {
   selectedItem?: string;
@@ -62,26 +63,6 @@ const SelectedItemValue = styled.span`
   color: #e0dde5;
   font-size: 1rem;
   font-weight: 500;
-`;
-
-const NextButton = styled.button<{ disabled?: boolean }>`
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.8rem 1.5rem;
-  background-color: ${props => props.disabled ? '#666' : '#bb8930'};
-  color: #1a1a2e;
-  border: none;
-  border-radius: 4px;
-  font-family: 'Cormorant Garamond', serif;
-  font-weight: bold;
-  font-size: 1rem;
-  cursor: ${props => props.disabled ? 'not-allowed' : 'pointer'};
-  transition: background-color 0.3s;
-  
-  &:hover {
-    background-color: ${props => props.disabled ? '#666' : '#d4a959'};
-  }
 `;
 
 export default BottomNavigation; 
