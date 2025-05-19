@@ -65,7 +65,6 @@ const AlignmentPage: React.FC = () => {
 
         <AlignmentSection>
           <AlignmentHeader>
-            <AlignmentIcon><FaBalanceScale /></AlignmentIcon>
             <AlignmentTitle>Alignment</AlignmentTitle>
           </AlignmentHeader>
 
@@ -173,7 +172,7 @@ const alignments = [
 const AlignmentSection = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1rem;
   padding: 1rem;
   background-color: rgba(26, 26, 46, 0.7);
   border-radius: 8px;
@@ -186,19 +185,6 @@ const AlignmentHeader = styled.div`
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  margin-bottom: 1rem;
-`;
-
-const AlignmentIcon = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 2.5rem;
-  height: 2.5rem;
-  background: linear-gradient(135deg, #bb8930, #b6551c);
-  border-radius: 50%;
-  color: #fff;
-  font-size: 1.2rem;
 `;
 
 const AlignmentTitle = styled.h2`
