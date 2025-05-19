@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "@emotion/styled";
 import { keyframes } from "@emotion/react";
 import { useRouter } from "next/router";
@@ -28,9 +28,14 @@ const ImageGeneratorPage = () => {
     generatedImage,
     pollStatus,
   } = useCharacterImageGenerator();
-  const [userImage, setUserImage] = useState<string | null>(null);
+  const [userImage, setUserImage] = useState<string | null>();
   const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [generateNewImage, setGenerateNewImage] = useState(false);
+
+  useEffect(() => {
+    setUserImage(character?.image_url ?? null);
+  }, [character]);
 
   const getStatusMessage = () => {
     if (!resultData) {
@@ -52,39 +57,42 @@ const ImageGeneratorPage = () => {
     }
   };
 
-  const cropImageToWidth = (imageData: string, targetWidth: number): Promise<string> => {
+  const cropImageToWidth = (
+    imageData: string,
+    targetWidth: number
+  ): Promise<string> => {
     return new Promise((resolve, reject) => {
       const img = new Image();
       img.onload = () => {
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
+
         if (!ctx) {
-          reject(new Error('Could not get canvas context'));
+          reject(new Error("Could not get canvas context"));
           return;
         }
-        
+
         // Calculate dimensions while maintaining aspect ratio
         const aspectRatio = img.height / img.width;
         const newWidth = targetWidth;
         const newHeight = targetWidth * aspectRatio;
-        
+
         // Set canvas dimensions
         canvas.width = newWidth;
         canvas.height = newHeight;
-        
+
         // Draw the image on the canvas
         ctx.drawImage(img, 0, 0, newWidth, newHeight);
-        
+
         // Get the resized image as a data URL
-        const croppedImageData = canvas.toDataURL('image/jpeg');
+        const croppedImageData = canvas.toDataURL("image/jpeg");
         resolve(croppedImageData);
       };
-      
+
       img.onerror = () => {
-        reject(new Error('Failed to load image'));
+        reject(new Error("Failed to load image"));
       };
-      
+
       img.src = imageData;
     });
   };
@@ -102,7 +110,7 @@ const ImageGeneratorPage = () => {
         // Crop the image to 600px width
         const croppedImage = await cropImageToWidth(result, 600);
         setUserImage(croppedImage);
-        
+
         const { resultId } = await generateImage(croppedImage);
         // Here you would typically start polling for the result
         // For now, we'll just show a success message
@@ -211,10 +219,10 @@ const ImageGeneratorPage = () => {
         ctx?.drawImage(video, 0, 0);
 
         const imageData = canvas.toDataURL("image/jpeg");
-        
+
         // Crop the captured image to 600px width
         cropImageToWidth(imageData, 600)
-          .then(croppedImage => {
+          .then((croppedImage) => {
             setUserImage(croppedImage);
             return generateImage(croppedImage);
           })
@@ -262,19 +270,21 @@ const ImageGeneratorPage = () => {
         <ErrorMessage>{error || generationError}</ErrorMessage>
       )}
 
-      <Section>
-        <SectionTitle>Upload Your Photo</SectionTitle>
-        <ButtonGroup>
-          <Button onClick={handleCameraCapture}>Take Photo</Button>
-          <FileInput
-            type="file"
-            accept="image/*"
-            onChange={handleImageUpload}
-            id="image-upload"
-          />
-          <UploadLabel htmlFor="image-upload">Upload Photo</UploadLabel>
-        </ButtonGroup>
-      </Section>
+      {(!userImage || generateNewImage) && (
+        <Section>
+          <SectionTitle>Upload Your Photo</SectionTitle>
+          <ButtonGroup>
+            <Button onClick={handleCameraCapture}>Take Photo</Button>
+            <FileInput
+              type="file"
+              accept="image/*"
+              onChange={handleImageUpload}
+              id="image-upload"
+            />
+            <UploadLabel htmlFor="image-upload">Upload Photo</UploadLabel>
+          </ButtonGroup>
+        </Section>
+      )}
 
       {userImage && !generatedImage && (
         <ImageContainer>
@@ -287,6 +297,16 @@ const ImageGeneratorPage = () => {
               </LoadingMessage>
             </LoadingOverlay>
           )}
+          <ButtonGroup>
+            <Button
+              onClick={() => {
+                setUserImage(null);
+                setGenerateNewImage(true);
+              }}
+            >
+              Generate New Image
+            </Button>
+          </ButtonGroup>
         </ImageContainer>
       )}
 
@@ -330,7 +350,7 @@ const Description = styled.p`
   text-align: center;
   margin-bottom: 2rem;
   line-height: 1.6;
-  font-size: 1.1rem;
+  font-size: 1rem;
 `;
 
 const Section = styled.div`
@@ -355,6 +375,7 @@ const ButtonGroup = styled.div`
   gap: 0.5rem;
   margin-top: 0.75rem;
   flex-wrap: wrap;
+  margin-bottom: 1rem;
 `;
 
 const Button = styled.button<{ primary?: boolean }>`
@@ -480,7 +501,7 @@ const BottomActions = styled.div`
   border-top: 2px solid #bb8930;
   padding: 1rem 2rem;
   display: flex;
-  justify-content: center;
+  justify-content: flex-end;
   z-index: 100;
 `;
 
