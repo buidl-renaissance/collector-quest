@@ -6,6 +6,7 @@ import { FaArrowLeft, FaArrowRight, FaShoppingBag, FaCoins, FaDice, FaCheck, FaR
 import { useCharacter } from "@/hooks/useCharacter";
 import { useRace } from "@/hooks/useRace";
 import { useCharacterClass } from "@/hooks/useCharacterClass";
+import { useEquipment } from "@/hooks/useEquipment";
 import PageTransition from "@/components/PageTransition";
 import Page from "@/components/Page";
 import { Title, Subtitle } from "@/components/styled/typography";
@@ -33,13 +34,13 @@ const Container = styled.div`
 `;
 
 const Section = styled.div`
-  background-color: rgba(26, 26, 46, 0.7);
-  border-radius: 8px;
-  padding: 1.5rem;
+  /* background-color: rgba(26, 26, 46, 0.7);
+  border-radius: 8px; */
+  /* padding: 1.5rem; */
   margin-top: 2rem;
   margin-bottom: 2rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  border: 1px solid #bb8930;
+  /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); */
+  /* border: 1px solid #bb8930; */
   animation: ${slideUp} 0.5s ease-out;
 `;
 
@@ -142,49 +143,19 @@ const EquipmentPage: React.FC = () => {
   const { character, updateCharacter, saveCharacter } = useCharacter();
   const { selectedRace, loading: raceLoading } = useRace();
   const { selectedClass, loading: classLoading } = useCharacterClass();
+  const { generateEquipment, isGenerating, error: generationError, status, equipment } = useEquipment(character);
   const [equipmentOption, setEquipmentOption] = useState<'standard' | 'gold'>('standard');
   const [goldAmount, setGoldAmount] = useState<number>(0);
   
-  // Mock equipment data - in a real app, this would come from your character data
-  const standardEquipment = {
-    weapons: [
-      { name: "Longsword", quantity: 1 },
-      { name: "Shortbow", quantity: 1 },
-      { name: "Arrows", quantity: 20 }
-    ],
-    armor: [
-      { name: "Chain Mail", quantity: 1 }
-    ],
-    adventuringGear: [
-      { name: "Backpack", quantity: 1 },
-      { name: "Bedroll", quantity: 1 },
-      { name: "Mess Kit", quantity: 1 },
-      { name: "Tinderbox", quantity: 1 },
-      { name: "Torches", quantity: 10 },
-      { name: "Rations", quantity: 10 },
-      { name: "Waterskin", quantity: 1 },
-      { name: "Rope, Hempen (50 feet)", quantity: 1 }
-    ],
-    tools: [
-      { name: "Herbalism Kit", quantity: 1 }
-    ],
-    currency: [
-      { name: "Gold Pieces", quantity: 15 }
-    ]
-  };
-
   // Generate random gold based on class
   const generateRandomGold = () => {
-    // These would be based on the actual D&D rules for starting gold by class
     const goldByClass: Record<string, number> = {
-      'Fighter': Math.floor(Math.random() * 4 + 2) * 10 + 100, // 5d4 × 10 gp
-      'Wizard': Math.floor(Math.random() * 4 + 1) * 10 + 100,  // 4d4 × 10 gp
-      'Cleric': Math.floor(Math.random() * 4 + 1) * 10 + 100,  // 5d4 × 10 gp
-      'Rogue': Math.floor(Math.random() * 4 + 1) * 10 + 100,   // 4d4 × 10 gp
-      // Add other classes as needed
+      'Fighter': Math.floor(Math.random() * 4 + 2) * 10 + 100,
+      'Wizard': Math.floor(Math.random() * 4 + 1) * 10 + 100,
+      'Cleric': Math.floor(Math.random() * 4 + 1) * 10 + 100,
+      'Rogue': Math.floor(Math.random() * 4 + 1) * 10 + 100,
     };
     
-    // Default to a reasonable amount if class not found
     return goldByClass[selectedClass?.name || ''] || 150;
   };
 
@@ -194,36 +165,25 @@ const EquipmentPage: React.FC = () => {
     }
   }, [equipmentOption]);
 
-  // Redirect if no race or class is selected
+  // Redirect if no race or class is selected and generate equipment
   useEffect(() => {
     if (!raceLoading && !classLoading) {
       if (!selectedRace) {
         router.push("/character/race");
       } else if (!selectedClass) {
         router.push("/character/class");
+      } else if (equipmentOption === 'standard' && !equipment && !isGenerating) {
+        // Generate equipment if we have a character but no equipment yet
+        generateEquipment();
       }
     }
-  }, [selectedRace, selectedClass, raceLoading, classLoading, router]);
+  }, [selectedRace, selectedClass, raceLoading, classLoading, router, equipmentOption, equipment, isGenerating, generateEquipment]);
 
   const handleBack = () => {
     navigateTo(router, "/character/image");
   };
 
   const handleNext = async () => {
-    // Save equipment choice to character
-    if (equipmentOption === 'standard') {
-      await updateCharacter({
-        equipment: standardEquipment
-      });
-    } else {
-      await updateCharacter({
-        equipment: {
-          currency: [{ name: "Gold Pieces", quantity: goldAmount }]
-        }
-      });
-    }
-    
-    await saveCharacter();
     navigateTo(router, "/character/sheet");
   };
 
@@ -247,6 +207,10 @@ const EquipmentPage: React.FC = () => {
           Choose how you want to equip your {selectedRace?.name} {selectedClass?.name}
         </Subtitle>
 
+        {generationError && (
+          <ErrorMessage>{generationError}</ErrorMessage>
+        )}
+
         <OptionTabs>
           <OptionTab 
             active={equipmentOption === 'standard'} 
@@ -265,69 +229,78 @@ const EquipmentPage: React.FC = () => {
         {equipmentOption === 'standard' ? (
           <Section>
             <SectionTitle><FaShoppingBag /> Standard Equipment</SectionTitle>
-            <p>Your class and background provide you with the following starting equipment:</p>
-            
-            <EquipmentGrid>
-              <EquipmentCard>
-                <EquipmentCategory>Weapons</EquipmentCategory>
-                <EquipmentList>
-                  {standardEquipment.weapons.map((item, index) => (
-                    <EquipmentItem key={index}>
-                      <EquipmentName>{item.name}</EquipmentName>
-                      <EquipmentQuantity>×{item.quantity}</EquipmentQuantity>
-                    </EquipmentItem>
-                  ))}
-                </EquipmentList>
-              </EquipmentCard>
-              
-              <EquipmentCard>
-                <EquipmentCategory>Armor</EquipmentCategory>
-                <EquipmentList>
-                  {standardEquipment.armor.map((item, index) => (
-                    <EquipmentItem key={index}>
-                      <EquipmentName>{item.name}</EquipmentName>
-                      <EquipmentQuantity>×{item.quantity}</EquipmentQuantity>
-                    </EquipmentItem>
-                  ))}
-                </EquipmentList>
-              </EquipmentCard>
-              
-              <EquipmentCard>
-                <EquipmentCategory>Adventuring Gear</EquipmentCategory>
-                <EquipmentList>
-                  {standardEquipment.adventuringGear.map((item, index) => (
-                    <EquipmentItem key={index}>
-                      <EquipmentName>{item.name}</EquipmentName>
-                      <EquipmentQuantity>×{item.quantity}</EquipmentQuantity>
-                    </EquipmentItem>
-                  ))}
-                </EquipmentList>
-              </EquipmentCard>
-              
-              <EquipmentCard>
-                <EquipmentCategory>Tools</EquipmentCategory>
-                <EquipmentList>
-                  {standardEquipment.tools.map((item, index) => (
-                    <EquipmentItem key={index}>
-                      <EquipmentName>{item.name}</EquipmentName>
-                      <EquipmentQuantity>×{item.quantity}</EquipmentQuantity>
-                    </EquipmentItem>
-                  ))}
-                </EquipmentList>
-              </EquipmentCard>
-              
-              <EquipmentCard>
-                <EquipmentCategory>Currency</EquipmentCategory>
-                <EquipmentList>
-                  {standardEquipment.currency.map((item, index) => (
-                    <EquipmentItem key={index}>
-                      <EquipmentName>{item.name}</EquipmentName>
-                      <EquipmentQuantity>×{item.quantity}</EquipmentQuantity>
-                    </EquipmentItem>
-                  ))}
-                </EquipmentList>
-              </EquipmentCard>
-            </EquipmentGrid>
+            {isGenerating ? (
+              <LoadingMessage>
+                {status?.message || "Generating equipment..."}
+              </LoadingMessage>
+            ) : equipment ? (
+              <>
+                <p>Your class and background provide you with the following starting equipment:</p>
+                <EquipmentGrid>
+                  <EquipmentCard>
+                    <EquipmentCategory>Weapons</EquipmentCategory>
+                    <EquipmentList>
+                      {equipment.weapons.map((item, index) => (
+                        <EquipmentItem key={index}>
+                          <EquipmentName>{item.name}</EquipmentName>
+                          <EquipmentQuantity>×{item.quantity}</EquipmentQuantity>
+                        </EquipmentItem>
+                      ))}
+                    </EquipmentList>
+                  </EquipmentCard>
+                  
+                  <EquipmentCard>
+                    <EquipmentCategory>Armor</EquipmentCategory>
+                    <EquipmentList>
+                      {equipment.armor.map((item, index) => (
+                        <EquipmentItem key={index}>
+                          <EquipmentName>{item.name}</EquipmentName>
+                          <EquipmentQuantity>×{item.quantity}</EquipmentQuantity>
+                        </EquipmentItem>
+                      ))}
+                    </EquipmentList>
+                  </EquipmentCard>
+                  
+                  <EquipmentCard>
+                    <EquipmentCategory>Adventuring Gear</EquipmentCategory>
+                    <EquipmentList>
+                      {equipment.adventuringGear.map((item, index) => (
+                        <EquipmentItem key={index}>
+                          <EquipmentName>{item.name}</EquipmentName>
+                          <EquipmentQuantity>×{item.quantity}</EquipmentQuantity>
+                        </EquipmentItem>
+                      ))}
+                    </EquipmentList>
+                  </EquipmentCard>
+                  
+                  <EquipmentCard>
+                    <EquipmentCategory>Tools</EquipmentCategory>
+                    <EquipmentList>
+                      {equipment.tools.map((item, index) => (
+                        <EquipmentItem key={index}>
+                          <EquipmentName>{item.name}</EquipmentName>
+                          <EquipmentQuantity>×{item.quantity}</EquipmentQuantity>
+                        </EquipmentItem>
+                      ))}
+                    </EquipmentList>
+                  </EquipmentCard>
+                  
+                  <EquipmentCard>
+                    <EquipmentCategory>Currency</EquipmentCategory>
+                    <EquipmentList>
+                      {equipment.currency.map((item, index) => (
+                        <EquipmentItem key={index}>
+                          <EquipmentName>{item.name}</EquipmentName>
+                          <EquipmentQuantity>×{item.quantity}</EquipmentQuantity>
+                        </EquipmentItem>
+                      ))}
+                    </EquipmentList>
+                  </EquipmentCard>
+                </EquipmentGrid>
+              </>
+            ) : (
+              <p>Click Next to generate your starting equipment based on your class and background.</p>
+            )}
           </Section>
         ) : (
           <Section>
@@ -358,5 +331,22 @@ const EquipmentPage: React.FC = () => {
     </PageTransition>
   );
 };
+
+const LoadingMessage = styled.div`
+  color: #c7bfd4;
+  text-align: center;
+  padding: 1rem;
+  font-style: italic;
+  font-size: 1.1rem;
+`;
+
+const ErrorMessage = styled.div`
+  color: #ff6b6b;
+  background: rgba(255, 107, 107, 0.1);
+  padding: 1rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  border: 1px solid #ff6b6b;
+`;
 
 export default EquipmentPage;

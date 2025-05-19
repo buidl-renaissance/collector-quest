@@ -42,6 +42,19 @@ export interface Traits {
   archetype?: string;
 }
 
+export interface EquipmentItem {
+  name: string;
+  quantity: number;
+}
+
+export interface Equipment {
+  weapons: EquipmentItem[];
+  armor: EquipmentItem[];
+  adventuringGear: EquipmentItem[];
+  tools: EquipmentItem[];
+  currency: EquipmentItem[];
+}
+
 export interface Character {
   id?: string;
   name: string;
@@ -53,13 +66,7 @@ export interface Character {
   motivation?: string;
   bio?: string;
   backstory?: string;
-  equipment?: {
-    currency?: {
-      name: string;
-      quantity: number;
-    }[];
-    items?: string[];
-  };
+  equipment?: Equipment;
   sex?: string;
   creature?: string;
   image_url?: string;

@@ -5,9 +5,7 @@
 exports.up = function(knex) {
   return knex.schema.alterTable('characters', (table) => {
     // Add equipment column if it doesn't exist
-    if (!knex.schema.hasColumn('characters', 'equipment')) {
-      table.jsonb('equipment').nullable();
-    }
+    table.jsonb('equipment').nullable();
   });
 };
 
