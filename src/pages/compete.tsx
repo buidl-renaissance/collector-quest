@@ -2,7 +2,7 @@ import React from 'react';
 import styled from '@emotion/styled';
 import { keyframes } from '@emotion/react';
 import { FaCrown, FaUsers, FaTrophy, FaMapMarkerAlt, FaCalendarAlt } from 'react-icons/fa';
-
+import Footer from '../components/Footer';
 const CompetePage = () => {
   return (
     <PageWrapper>
@@ -22,9 +22,7 @@ const CompetePage = () => {
       <Section>
         <ContainerDiv>
           <SectionTitle>
-            <SectionTitleGlow>
-              <FaCrown /> <span>How It Works</span>
-            </SectionTitleGlow>
+              <span>How It Works</span>
           </SectionTitle>
           <StepsRow>
             {[
@@ -65,9 +63,7 @@ const CompetePage = () => {
       <Section>
         <ContainerDiv>
           <SectionTitle>
-            <SectionTitleGlow>
-              <FaTrophy /> <span>Competition Details</span>
-            </SectionTitleGlow>
+              <span>Competition Details</span>
           </SectionTitle>
           <CompetitionCard>
             <CardTitle>The Ultimate Quest Challenge</CardTitle>
@@ -108,9 +104,7 @@ const CompetePage = () => {
       <Section>
         <ContainerDiv>
           <SectionTitle>
-            <SectionTitleGlow>
-              <FaMapMarkerAlt /> <span>Artifact Collection Challenge</span>
-            </SectionTitleGlow>
+              <span>Artifact Collection Challenge</span>
           </SectionTitle>
           <InfoText>
             <CardTitle>Art Meets Adventure</CardTitle>
@@ -124,9 +118,7 @@ const CompetePage = () => {
       <Section>
         <ContainerDiv>
           <SectionTitle>
-            <SectionTitleGlow>
-              <FaUsers /> <span>Eligibility & Requirements</span>
-            </SectionTitleGlow>
+            <span>Eligibility & Requirements</span>
           </SectionTitle>
           <RequirementsList>
             <RequirementItem>Open to all adventurers</RequirementItem>
@@ -140,9 +132,7 @@ const CompetePage = () => {
       <Section>
         <ContainerDiv>
           <SectionTitle>
-            <SectionTitleGlow>
-              <FaCrown /> <span>Frequently Asked Questions</span>
-            </SectionTitleGlow>
+            <span>Frequently Asked Questions</span>
           </SectionTitle>
           <FAQContainer>
             {[
@@ -184,6 +174,8 @@ const CompetePage = () => {
           <ActionButton>Start My Quest</ActionButton>
         </ContainerDiv>
       </CTASection>
+
+      <Footer />
     </PageWrapper>
   );
 };
@@ -326,7 +318,7 @@ const SectionTitle = styled.h2`
   color: #a77d3e;
   
   @media (max-width: 768px) {
-    font-size: 2rem;
+    font-size: 1.5rem;
   }
 `;
 
@@ -342,7 +334,7 @@ const SectionTitleGlow = styled.div`
   
   svg {
     margin-right: 0.5rem;
-    font-size: 1.5rem;
+    font-size: 1.25rem;
     color: #a77d3e;
   }
 `;
