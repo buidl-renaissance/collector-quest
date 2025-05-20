@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from '@emotion/styled';
-
+import { FeaturesTraits } from '@/data/character';
 const FeatureList = styled.div`
   display: flex;
   flex-direction: column;
@@ -22,16 +22,31 @@ const FeatureItem = styled.div`
 `;
 
 interface FeaturesProps {
-  features: string[];
+  featuresAndTraits: FeaturesTraits;
 }
 
-const Features: React.FC<FeaturesProps> = ({ features }) => {
-  if (!features || features.length === 0) return null;
+const Features: React.FC<FeaturesProps> = ({ featuresAndTraits }) => {
+  if (!featuresAndTraits) return null;
   return (
     <FeatureList>
-      {features.map((feature, index) => (
+      {featuresAndTraits.backgroundFeature && (
+        <FeatureItem>{featuresAndTraits.backgroundFeature}</FeatureItem>
+      )}
+      {featuresAndTraits.classFeatures.map((feature, index) => (
         <FeatureItem key={`feature-${index}`}>{feature}</FeatureItem>
       ))}
+      {featuresAndTraits.raceTraits.map((feature, index) => (
+        <FeatureItem key={`feature-${index}`}>{feature}</FeatureItem>
+      ))}
+      {featuresAndTraits.subclassFeatures.map((feature, index) => (
+        <FeatureItem key={`feature-${index}`}>{feature}</FeatureItem>
+      ))}
+      {featuresAndTraits.customFeatures.map((feature, index) => (
+        <FeatureItem key={`feature-${index}`}>{feature}</FeatureItem>
+      ))}
+      {featuresAndTraits.description && (
+        <FeatureItem>{featuresAndTraits.description}</FeatureItem>
+      )}
     </FeatureList>
   );
 };

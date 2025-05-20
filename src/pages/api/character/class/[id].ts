@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { CharacterClass } from '@/data/classes';
+import { CharacterClass } from '@/data/character';
 import { getClassById } from '@/db/classes';
 
 export default async function handler(

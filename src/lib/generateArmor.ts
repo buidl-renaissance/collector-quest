@@ -1,20 +1,9 @@
 import OpenAI from "openai";
-import { Character } from "@/hooks/useCharacter";
+import { Armor, Character } from "@/data/character";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
-
-export interface Armor {
-  name: string;
-  type: string;
-  baseAC: number;
-  modifier: string;
-  weight: string;
-  material: string;
-  specialTrait: string;
-  description: string;
-}
 
 export async function generateArmor(character: Character): Promise<Armor> {
   if (!character.race || !character.class) {
@@ -25,7 +14,7 @@ export async function generateArmor(character: Character): Promise<Armor> {
     throw new Error("Character traits are required");
   }
 
-  const prompt = `Generate a piece of armor for a ${character.traits?.alignment} ${character.race.name} ${character.class.name} with the ${character.traits?.background} background. 
+  const prompt = `Generate a unique armor piece for a ${character.traits?.alignment} ${character.race.name} ${character.class.name} with the ${character.traits?.background} background that integrates real-world artistic inspiration.
   
   Character Details:
   - Name: ${character.name}
@@ -39,18 +28,36 @@ export async function generateArmor(character: Character): Promise<Armor> {
   - Ideals: ${character.traits.ideals?.join(", ")}
   - Flaws: ${character.traits.flaws?.join(", ")}
   
-  The armor should reflect their personality, be appropriate for a level 1-3 character, and include mechanical stats (AC, weight, type), materials used, and one special trait or property. Add a brief description of its appearance and a name for the item.
+  The armor should reflect their personality and be appropriate for their class and level (1-3). Include:
+  
+  1. Name of the armor piece
+  2. Type (e.g., Headgear, Chestplate, Cloak, Boots, etc.)
+  3. Visual Description (artistic style, materials, colors — include if it's inspired by a real-world artwork or cultural element)
+  4. Game Stats:
+     - Armor Class (AC) Bonus
+     - Speed/Mobility Modifier
+     - Durability (scale of 1–100)
+     - Resistance(s) (e.g., fire, ice, magic, charm, etc.)
+  5. Special Trait or Passive Ability (unique feature based on its origin or materials)
+  6. Lore/Origin Story (short paragraph linking it to a quest, relic, or event)
+  7. Rarity Tier (Common, Uncommon, Rare, Epic, Legendary)
+  8. How It Is Obtained (crafted, found in a specific quest, or bought from a specific vendor)
   
   Return the result as a JSON object with the following structure:
   {
     "name": "Name of the armor",
-    "type": "Light/Medium/Heavy Armor",
-    "baseAC": number,
-    "modifier": "modifier description (e.g., + Dex mod (max 2))",
-    "weight": "weight in lb",
-    "material": "materials used",
-    "specialTrait": "one unique trait or property",
-    "description": "description of appearance"
+    "type": "Type of armor piece",
+    "visualDescription": "Detailed visual description including artistic inspiration",
+    "stats": {
+      "acBonus": number,
+      "mobilityModifier": number,
+      "durability": number,
+      "resistances": ["resistance1", "resistance2"]
+    },
+    "specialTrait": "unique trait or passive ability",
+    "lore": "short origin story paragraph",
+    "rarity": "rarity tier",
+    "obtainedBy": "how it is obtained"
   }`;
 
   try {
@@ -58,7 +65,7 @@ export async function generateArmor(character: Character): Promise<Armor> {
       messages: [
         {
           role: "system",
-          content: "You are a creative fantasy equipment designer specializing in creating unique armor for roleplaying game characters. You always return valid JSON objects."
+          content: "You are a creative fantasy equipment designer specializing in creating unique armor for roleplaying game characters that integrates real-world artistic inspiration. You always return valid JSON objects."
         },
         {
           role: "user",
@@ -68,7 +75,7 @@ export async function generateArmor(character: Character): Promise<Armor> {
       model: "gpt-4o-mini",
       response_format: { type: "json_object" },
       temperature: 0.7,
-      max_tokens: 500
+      max_tokens: 800
     });
 
     const content = completion.choices[0]?.message?.content;

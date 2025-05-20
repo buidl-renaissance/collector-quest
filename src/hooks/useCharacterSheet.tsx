@@ -1,68 +1,45 @@
-import { useState, useEffect } from 'react';
-import { Character } from './useCharacter';
-import { Attack } from '@/data/attacks';
+import { useState, useEffect, useCallback } from 'react';
+import { Character, CharacterSheet, useCharacter } from './useCharacter';;
 import { getCurrentCharacterId, getCharacterKey, setCharacterKey } from '@/utils/storage';
 
-export interface CharacterSheet {
-  abilities: {
-    strength: number;
-    dexterity: number;
-    constitution: number;
-    intelligence: number;
-    wisdom: number;
-    charisma: number;
-  };
-  combatStats: {
-    armorClass: number;
-    initiative: number;
-    currentHitPoints: number;
-    hitDice: string;
-  };
-  skills: {
-    name: string;
-    proficient: boolean;
-  }[];
-  deathSaves: {
-    successes: number;
-    failures: number;
-  };
-  combat: {
-    attacks: Attack[];
-    hitDice: {
-      type: string;
-      bonus: number;
-      count: number;
-      current: number;
-    };
-  };
-  effects: {
-    ideals: string[];
-    bonds: string[];
-    flaws: string[];
-    personality_traits: string[];
-  };
-  equipment: string[];
-  features: string[];
-  proficiencies: string[];
-  languages: string[];
+interface PollResult {
+  status: 'pending' | 'completed' | 'failed' | 'error';
+  result?: string;
+  error?: string;
 }
 
+const MAX_POLL_ATTEMPTS = 30;
+const POLL_INTERVAL = 3000;
+
 export function useCharacterSheet() {
+  const { character } = useCharacter();
   const [characterSheet, setCharacterSheet] = useState<CharacterSheet | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [pollStatus, setPollStatus] = useState<'idle' | 'polling' | 'completed' | 'failed' | 'error'>('idle');
+  const [pollAttempts, setPollAttempts] = useState(0);
+  const [resultId, setResultId] = useState<string | null>(null);
+  const [resultData, setResultData] = useState<any>(null);
+  const [generatedImage, setGeneratedImage] = useState<string | null>(null);
 
-  const generateCharacterSheet = async (characterData: Character) => {
+  useEffect(() => {
+    if (!character?.sheet && !loading && !resultId) {
+      // generateCharacterSheet();
+    }
+  }, [character, loading, resultId]);
+
+  const generateCharacterSheet = async () => {
     setLoading(true);
     setError(null);
+    return;
 
     try {
-      const response = await fetch('/api/character/generate-sheet', {
+      const response = await fetch('/api/character/sheet/generate', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(characterData),
+        body: JSON.stringify({ characterId: getCurrentCharacterId() }),
       });
 
       if (!response.ok) {
@@ -70,12 +47,9 @@ export function useCharacterSheet() {
       }
 
       const data = await response.json();
-      setCharacterSheet(data);
 
-      const characterId = getCurrentCharacterId();
-      if (characterId) {
-        setCharacterKey(characterId, 'character_sheet', data);
-      }
+      const resultId = data.resultId;
+      setResultId(resultId);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
@@ -83,53 +57,75 @@ export function useCharacterSheet() {
     }
   };
 
-  const updateDeathSaves = (type: 'successes' | 'failures', value: number) => {
-    if (!characterSheet) return;
-
-    const characterId = getCurrentCharacterId();
-    if (!characterId) return;
-
-    setCharacterSheet(prev => {
-      if (!prev) return prev;
-      const newSheet = { ...prev };
-      newSheet.deathSaves[type] = Math.max(0, Math.min(3, value));
-      setCharacterKey(characterId, 'character_sheet', newSheet);
-      return newSheet;
-    });
-  };
-
-  const updateSkillProficiency = (skillName: string, proficient: boolean) => {
-    if (!characterSheet) return;
-
-    const characterId = getCurrentCharacterId();
-    if (!characterId) return;
-
-    setCharacterSheet(prev => {
-      if (!prev) return prev;
-      const newSheet = { ...prev };
-      const skillIndex = newSheet.skills.findIndex(s => s.name === skillName);
-      if (skillIndex !== -1) {
-        newSheet.skills[skillIndex].proficient = proficient;
-        setCharacterKey(characterId, 'character_sheet', newSheet);
+  const pollResult = useCallback(async (id: string) => {
+    try {
+      const response = await fetch(`/api/image/status?id=${id}`);
+      if (!response.ok) {
+        throw new Error('Failed to check result status');
       }
-      return newSheet;
-    });
-  };
 
-  const updateCurrentHitPoints = (value: number) => {
-    if (!characterSheet) return;
+      const data: PollResult = await response.json();
+      return data;
+    } catch (err) {
+      console.error('Error polling result:', err);
+      throw err;
+    }
+  }, []);
 
-    const characterId = getCurrentCharacterId();
-    if (!characterId) return;
+  useEffect(() => {
+    let pollTimeout: NodeJS.Timeout;
 
-    setCharacterSheet(prev => {
-      if (!prev) return prev;
-      const newSheet = { ...prev };
-      newSheet.combatStats.currentHitPoints = Math.max(0, value);
-      setCharacterKey(characterId, 'character_sheet', newSheet);
-      return newSheet;
-    });
-  };
+    const startPolling = async () => {
+      if (!resultId || pollStatus === 'completed' || pollStatus === 'failed' || pollStatus === 'error') {
+        return;
+      }
+
+      try {
+        setPollStatus('polling');
+        const result = await pollResult(resultId);
+        const resultData = result.result ? JSON.parse(result.result) : {};
+        console.log('result', resultData);
+        setResultData(resultData);
+        if (result.status === 'completed' && resultData.imageUrl) {
+          setGeneratedImage(resultData.imageUrl);
+          setPollStatus('completed');
+          setError(null);
+        } else if (result.status === 'failed' || result.status === 'error') {
+          setError(result.error || 'Failed to generate image');
+          setPollStatus(result.status);
+          // Stop polling when failed or error
+          return;
+        } else {
+          // Still pending, continue polling
+          setPollAttempts(prev => {
+            if (prev >= MAX_POLL_ATTEMPTS) {
+              setError('Image generation timed out');
+              setPollStatus('failed');
+              return prev;
+            }
+            return prev + 1;
+          });
+
+          pollTimeout = setTimeout(startPolling, POLL_INTERVAL);
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to check result status');
+        setPollStatus('error');
+        // Stop polling on error
+        return;
+      }
+    };
+
+    if (resultId && pollStatus === 'idle') {
+      startPolling();
+    }
+
+    return () => {
+      if (pollTimeout) {
+        clearTimeout(pollTimeout);
+      }
+    };
+  }, [resultId, pollStatus, pollResult]);
 
   // Load character sheet from namespaced storage on mount
   useEffect(() => {
@@ -138,7 +134,7 @@ export function useCharacterSheet() {
         const characterId = getCurrentCharacterId();
         if (!characterId) return;
 
-        const savedSheet = getCharacterKey(characterId, 'character_sheet');
+        const savedSheet = getCharacterKey(characterId, 'sheet');
         if (savedSheet) {
           setCharacterSheet(savedSheet);
         }
@@ -155,8 +151,5 @@ export function useCharacterSheet() {
     loading,
     error,
     generateCharacterSheet,
-    updateDeathSaves,
-    updateSkillProficiency,
-    updateCurrentHitPoints,
   };
 } 

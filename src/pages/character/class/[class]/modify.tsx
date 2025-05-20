@@ -115,22 +115,6 @@ export default function CharacterClassModify({
     }
   };
 
-  const handleAddAbility = () => {
-    if (newAbility.name && newAbility.description) {
-      setCharacterClass({
-        ...characterClass,
-        abilities: Array.isArray(characterClass.abilities) 
-          ? [...characterClass.abilities, { ...newAbility }]
-          : [{ ...newAbility }],
-      });
-      setNewAbility({
-        name: '',
-        description: '',
-        level: 1,
-      });
-    }
-  };
-
   const handleRemoveAbility = (index: number) => {
     setCharacterClass({
       ...characterClass,
@@ -201,7 +185,7 @@ export default function CharacterClassModify({
                 </AbilityCard>
               ))}
             </AbilitiesStack>
-            <AbilityForm>
+            {/* <AbilityForm>
               <FormField>
                 <Label>Ability Name</Label>
                 <Input
@@ -235,7 +219,7 @@ export default function CharacterClassModify({
               >
                 <FaPlus /> Add Ability
               </AddButton>
-            </AbilityForm>
+            </AbilityForm> */}
           </FormSection>
         </FormStack>
       </FormPaper>

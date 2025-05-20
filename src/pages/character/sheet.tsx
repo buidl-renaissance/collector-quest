@@ -363,7 +363,7 @@ const CharacterSheetPage: React.FC = () => {
   useEffect(() => {
     if (!characterLoading && character && !characterSheet && !sheetLoading) {
       console.log("Generating character sheet with data:", character);
-      generateCharacterSheet(character);
+      generateCharacterSheet();
     }
   }, [
     character,
@@ -382,7 +382,7 @@ const CharacterSheetPage: React.FC = () => {
 
   const handleRegenerate = () => {
     if (character) {
-      generateCharacterSheet(character);
+      generateCharacterSheet();
     }
   };
 
@@ -448,7 +448,7 @@ const CharacterSheetPage: React.FC = () => {
           gap="0.75rem"
           style={{ marginBottom: "1rem", alignItems: "flex-start" }}
         >
-          <Emblems abilities={characterSheet.abilities} />
+          <Emblems abilitiesScores={characterSheet.abilitiesScores} />
 
           <div>
             <SectionLabel>Bio</SectionLabel>
@@ -499,16 +499,16 @@ const CharacterSheetPage: React.FC = () => {
           <div>
             <StatBox>
               <SectionLabel>Armor Class</SectionLabel>
-              <StatValue>{characterSheet.combatStats.armorClass}</StatValue>
+              <StatValue>{characterSheet.combat.armor.stats.acBonus}</StatValue>
             </StatBox>
             <StatBox>
               <SectionLabel>Initiative</SectionLabel>
-              <StatValue>{characterSheet.combatStats.initiative}</StatValue>
+              <StatValue>{characterSheet.combat.initiative.dexMod}</StatValue>
             </StatBox>
             <StatBox>
               <SectionLabel>Current Hit Points</SectionLabel>
               <StatValue>
-                {characterSheet.combatStats.currentHitPoints}
+                {characterSheet.combat.currentHitPoints}
               </StatValue>
             </StatBox>
           </div>
@@ -544,7 +544,7 @@ const CharacterSheetPage: React.FC = () => {
                 <div>
                   <SectionLabel>Features & Traits</SectionLabel>
                   <ContentBox>
-                    <Features features={characterSheet.features} />
+                    <Features featuresAndTraits={characterSheet.featuresAndTraits} />
                   </ContentBox>
                 </div>
 

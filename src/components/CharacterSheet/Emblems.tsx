@@ -1,9 +1,10 @@
 import React from "react";
 import styled from "@emotion/styled";
 import Emblem from "./Emblem";
+import { DetailedAbilityScores } from "@/lib/generateAbilities";
 
 interface EmblemsProps {
-  abilities: Record<string, number>;
+  abilitiesScores: DetailedAbilityScores;
 }
 
 const Grid = styled.div<{ columns?: number; gap?: string }>`
@@ -17,20 +18,15 @@ const Grid = styled.div<{ columns?: number; gap?: string }>`
   }
 `;
 
-const Emblems: React.FC<EmblemsProps> = ({ abilities }) => {
-  const getAbilityModifier = (score: number) => {
-    const modifier = Math.floor((score - 10) / 2);
-    return modifier >= 0 ? `+${modifier}` : `${modifier}`;
-  };
-
+const Emblems: React.FC<EmblemsProps> = ({ abilitiesScores }) => {
   return (
     <Grid columns={2} gap="0.75rem" style={{ alignItems: "flex-start" }}>
-      {Object.entries(abilities).map(([ability, score]) => (
+      {Object.entries(abilitiesScores).map(([ability, scores]) => (
         <Emblem
           key={ability}
           statName={ability}
-          modifier={getAbilityModifier(score)}
-          value={score}
+          modifier={scores.modifier}
+          value={scores.total}
         />
       ))}
     </Grid>

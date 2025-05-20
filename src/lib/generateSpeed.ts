@@ -1,24 +1,10 @@
 import OpenAI from "openai";
+import { Character } from "@/hooks/useCharacter";
+import { Ability } from "@/data/character";
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
-interface SpeedInput {
-  race: string;
-  subrace: string | null;
-  class: string;
-  level: number;
-  background: string;
-  armorEquipped: "none" | "light" | "medium" | "heavy";
-  strengthScore: number;
-  classFeatures: string[];
-  racialAbilities: string[];
-  magicItems: string[];
-  terrainModifier?: string;
-  narrativeFlavor?: boolean;
-  outputFormat?: string;
-}
+// const openai = new OpenAI({
+//   apiKey: process.env.OPENAI_API_KEY,
+// });
 
 interface SpeedOutput {
   baseSpeed: number;
@@ -33,21 +19,49 @@ interface SpeedOutput {
   description?: string;
 }
 
-export async function generateSpeed(input: SpeedInput): Promise<SpeedOutput> {
+export function generateSpeed(character: Character): SpeedOutput {
+  if (!character.race || !character.class) {
+    throw new Error("Character race and class are required");
+  }
+
+  const race = character.race.name;
+  const subrace = character.race.subraces?.[0]?.name || null;
+  const characterClass = character.class.name;
+  const level = character.level || 1;
+  const background = character.traits?.background || "";
+  
+  // Extract abilities from character
+  const strengthScore = character.sheet?.abilitiesScores.strength.total || 10;
+  
+  // Extract equipment details
+  let armorEquipped: "none" | "light" | "medium" | "heavy" = "none";
+  if (character.equipment?.armor && character.equipment.armor.length > 0) {
+    // Simplified logic - would need to be expanded based on actual armor data structure
+    const armorName = character.equipment.armor[0].name.toLowerCase();
+    if (armorName.includes("heavy")) armorEquipped = "heavy";
+    else if (armorName.includes("medium")) armorEquipped = "medium";
+    else if (armorName.includes("light")) armorEquipped = "light";
+  }
+  
+  // Extract class features, racial abilities, and magic items
+  const classFeatures = character.class.abilities?.map((ability: Ability) => ability.name) || [];
+  const racialAbilities = character.race.abilities?.map((ability: Ability) => ability.name) || [];
+  const magicItems = character.equipment?.magicItems?.map(item => item.name) || [];
+  
   // Calculate base racial speed
-  const racialBase = getRacialBaseSpeed(input.race, input.subrace);
+  const racialBase = getRacialBaseSpeed(race, subrace);
 
   // Calculate class bonus
-  const classBonus = getClassSpeedBonus(input.class, input.level, input.classFeatures);
+  const classBonus = getClassSpeedBonus(characterClass, level, classFeatures);
   
   // Calculate racial ability bonus
-  const racialAbilityBonus = getRacialAbilityBonus(input.racialAbilities, racialBase);
+  const racialAbilityBonus = getRacialAbilityBonus(racialAbilities, racialBase);
   
   // Calculate magic item bonus
-  const magicItemBonus = getMagicItemBonus(input.magicItems);
+  const magicItemBonus = getMagicItemBonus(magicItems);
   
   // Calculate armor penalty
-  const armorPenalty = getArmorPenalty(input.armorEquipped, input.strengthScore);
+  const armorPenalty = getArmorPenalty(armorEquipped, strengthScore);
   
   // Calculate total speed
   const baseSpeed = racialBase;
@@ -66,9 +80,9 @@ export async function generateSpeed(input: SpeedInput): Promise<SpeedOutput> {
     }
   };
   
-  // Generate narrative description if requested
-  if (input.narrativeFlavor) {
-    const description = await generateSpeedDescription(input, result);
+  // Generate narrative description if character has enough details
+  if (character.name && character.race && character.class) {
+    const description = generateSpeedDescription(character, result);
     result.description = description;
   }
   
@@ -183,46 +197,22 @@ function getArmorPenalty(armorType: string, strengthScore: number): number {
   return 0;
 }
 
-async function generateSpeedDescription(
-  input: SpeedInput,
+function generateSpeedDescription(
+  character: Character,
   result: SpeedOutput
-): Promise<string> {
-  const prompt = `
-    Create a short, vivid description (1-2 sentences) of how a ${input.race} ${input.class} 
-    with a ${input.background} background moves at a speed of ${result.modifiedSpeed} feet.
-    
-    Character details:
-    - Level: ${input.level}
-    - Base speed: ${result.baseSpeed} feet
-    - Class features: ${input.classFeatures.join(", ")}
-    - Racial abilities: ${input.racialAbilities.join(", ")}
-    - Magic items: ${input.magicItems.join(", ")}
-    ${input.terrainModifier ? `- Moving through: ${input.terrainModifier} terrain` : ""}
-    
-    The description should be vivid and reflect the character's movement style based on their race and class.
-  `;
-
-  try {
-    const completion = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
-      messages: [
-        {
-          role: "system",
-          content: "You are a creative writing assistant specializing in fantasy character descriptions. Create vivid, concise descriptions that capture a character's unique movement style."
-        },
-        {
-          role: "user",
-          content: prompt
-        }
-      ],
-      temperature: 0.7,
-      max_tokens: 150
-    });
-
-    return completion.choices[0]?.message?.content?.trim() || 
-      `The ${input.race} ${input.class} moves with remarkable speed and agility.`;
-  } catch (error) {
-    console.error("Error generating speed description:", error);
-    return `The ${input.race} ${input.class} moves with remarkable speed and agility.`;
+): string {
+  const race = character.race?.name || "";
+  const characterClass = character.class?.name || "";
+  const background = character.traits?.background || "";
+  
+  // Generate a basic description based on character details
+  if (result.modifiedSpeed >= 40) {
+    return `${character.name} moves with exceptional speed, darting across the battlefield with the grace befitting a ${race} ${characterClass}.`;
+  } else if (result.modifiedSpeed >= 35) {
+    return `${character.name} moves swiftly and purposefully, their ${background} background evident in their confident stride.`;
+  } else if (result.modifiedSpeed <= 25) {
+    return `${character.name} moves steadily but deliberately, their ${race} heritage giving them a distinctive gait despite their slower pace.`;
+  } else {
+    return `${character.name} moves with the typical agility of a ${race} ${characterClass}, neither too fast nor too slow.`;
   }
 }

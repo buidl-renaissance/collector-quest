@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { CharacterClass } from '@/data/classes';
+import { CharacterClass } from '@/data/character';
 import { getCurrentCharacterId, getCharacterKey, setCharacterKey } from '@/utils/storage';
 import { useCharacter } from './useCharacter';
 

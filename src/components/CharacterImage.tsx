@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styled from "@emotion/styled";
 import { FaSpinner } from "react-icons/fa";
-import { CharacterClass } from "@/data/classes";
+import { CharacterClass } from "@/data/character";
 import { Race } from "@/data/races";
 import { generateImage } from "@/lib/image";
 

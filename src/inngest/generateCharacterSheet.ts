@@ -1,5 +1,12 @@
 import { inngest } from "./client";
-import { Character } from "@/hooks/useCharacter";
+import { Character } from "@/data/character";
+import { CharacterDB } from "@/db/character";
+import { generateArmor } from "@/lib/generateArmor";
+import { generateInitiative } from "@/lib/generateInitiative";
+import { generateSpeed } from "@/lib/generateSpeed";
+import { generateSkills } from "@/lib/generateSkills";
+import { generateFeaturesTraits } from "@/lib/generateFeaturesTraits";
+import { calculateAbilityScores, generateAbilities } from "@/lib/generateAbilities";
 
 interface GenerateSheetEvent {
   data: {
@@ -9,27 +16,7 @@ interface GenerateSheetEvent {
   };
 }
 
-interface CharacterSheet {
-  armorClass: number;
-  initiative: number;
-  speed: number;
-  skills: {
-    name: string;
-    ability: string;
-    proficient: boolean;
-    bonus: number;
-  }[];
-  features: {
-    name: string;
-    description: string;
-    source: string;
-  }[];
-  traits: {
-    name: string;
-    description: string;
-    source: string;
-  }[];
-}
+const characterDB = new CharacterDB();
 
 export const generateCharacterSheet = inngest.createFunction(
   { name: "Generate Character Sheet", id: "generate-character-sheet" },
@@ -37,16 +24,32 @@ export const generateCharacterSheet = inngest.createFunction(
   async ({ event, step }) => {
     const { character } = event.data as GenerateSheetEvent["data"];
 
+    if (!character || !character.id) {
+      throw new Error("Character not found");
+    }
+
+    // Step 0: Calculate abilities
+    const abilitiesResult = await step.run("calculate-abilities", async () => {
+      const abilities = await generateAbilities(character);
+      const abilitiesScores = await calculateAbilityScores(abilities);
+      return {
+        step: "calculate-abilities",
+        message: "Calculated character abilities",
+        abilities,
+        abilitiesScores
+      };
+    });
+
     // Step 1: Calculate base stats
-    const baseStats = await step.run("calculate-base-stats", async () => {
+    const baseStatsResult = await step.run("calculate-base-stats", async () => {
       // Calculate armor class based on class, race, and equipment
-      const armorClass = calculateArmorClass(character);
+      const armorClass = await generateArmor(character);
       
       // Calculate initiative based on dexterity
-      const initiative = calculateInitiative(character);
+      const initiative = await generateInitiative(character);
       
       // Calculate speed based on race and class
-      const speed = calculateSpeed(character);
+      const speed = await generateSpeed(character);
 
       return {
         step: "calculate-base-stats",
@@ -56,8 +59,8 @@ export const generateCharacterSheet = inngest.createFunction(
     });
 
     // Step 2: Generate skills
-    const skills = await step.run("generate-skills", async () => {
-      const characterSkills = generateSkills(character);
+    const skillsResult = await step.run("generate-skills", async () => {
+      const characterSkills = await generateSkills(character);
       return {
         step: "generate-skills",
         message: "Generated character skills",
@@ -66,21 +69,51 @@ export const generateCharacterSheet = inngest.createFunction(
     });
 
     // Step 3: Generate features and traits
-    const featuresAndTraits = await step.run("generate-features-traits", async () => {
-      const features = generateFeatures(character);
-      const traits = generateTraits(character);
+    const featuresAndTraitsResult = await step.run("generate-features-traits", async () => {
+      const featuresAndTraits = await generateFeaturesTraits(character);
       
       return {
         step: "generate-features-traits",
         message: "Generated character features and traits",
-        features,
-        traits
+        featuresAndTraits
       };
     });
 
     // Step 4: Save character sheet
     await step.run("save-character-sheet", async () => {
+      if (!character.id) {
+        throw new Error("Character ID is required");
+      }
+
       // Here you would save the character sheet to your database
+      await characterDB.updateCharacter(character.id, {
+        sheet: {
+          abilities: abilitiesResult.abilities,
+          abilitiesScores: abilitiesResult.abilitiesScores,
+          combat: {
+            attacks: [],
+            armor: baseStatsResult.stats.armorClass,
+            initiative: baseStatsResult.stats.initiative,
+            speed: baseStatsResult.stats.speed,
+            currentHitPoints: 0,
+            hitDice: {
+              type: "d8",
+              bonus: 0,
+              count: 1,
+              current: 0,
+            },
+          },
+          deathSaves: {
+            successes: 0,
+            failures: 0,
+          },
+          skills: skillsResult.skills,
+          featuresAndTraits: featuresAndTraitsResult.featuresAndTraits,
+          proficiencies: [],
+          languages: [],
+        }
+      });
+
       return {
         step: "save-character-sheet",
         message: "Saved character sheet",
@@ -91,152 +124,12 @@ export const generateCharacterSheet = inngest.createFunction(
     return {
       success: true,
       sheet: {
-        armorClass: baseStats.stats.armorClass,
-        initiative: baseStats.stats.initiative,
-        speed: baseStats.stats.speed,
-        skills: skills.skills,
-        features: featuresAndTraits.features,
-        traits: featuresAndTraits.traits
+        armorClass: baseStatsResult.stats.armorClass,
+        initiative: baseStatsResult.stats.initiative,
+        speed: baseStatsResult.stats.speed,
+        skills: skillsResult.skills,
+        featuresAndTraits: featuresAndTraitsResult.featuresAndTraits,
       }
     };
   }
 );
-
-// Helper functions for calculations
-function calculateArmorClass(character: Character): number {
-  // Base AC calculation based on class, race, and equipment
-  let baseAC = 10;
-  
-  // Add dexterity modifier
-  const dexMod = Math.floor((character.abilities.dexterity - 10) / 2);
-  baseAC += dexMod;
-
-  // Add armor bonus if wearing armor
-  if (character.equipment?.armor) {
-    const armor = character.equipment.armor[0];
-    switch (armor.name.toLowerCase()) {
-      case 'chain mail':
-        baseAC = 16;
-        break;
-      case 'leather armor':
-        baseAC = 11 + dexMod;
-        break;
-      // Add more armor types as needed
-    }
-  }
-
-  return baseAC;
-}
-
-function calculateInitiative(character: Character): number {
-  const dexMod = Math.floor((character.abilities.dexterity - 10) / 2);
-  return dexMod;
-}
-
-function calculateSpeed(character: Character): number {
-  // Base speed from race
-  let speed = 30; // Default human speed
-  
-  // Adjust based on race
-  if (character.race?.name) {
-    switch (character.race.name.toLowerCase()) {
-      case 'dwarf':
-        speed = 25;
-        break;
-      case 'elf':
-        speed = 35;
-        break;
-      // Add more races as needed
-    }
-  }
-
-  return speed;
-}
-
-function generateSkills(character: Character) {
-  const skills = [
-    { name: "Acrobatics", ability: "Dexterity" },
-    { name: "Animal Handling", ability: "Wisdom" },
-    { name: "Arcana", ability: "Intelligence" },
-    { name: "Athletics", ability: "Strength" },
-    { name: "Deception", ability: "Charisma" },
-    { name: "History", ability: "Intelligence" },
-    { name: "Insight", ability: "Wisdom" },
-    { name: "Intimidation", ability: "Charisma" },
-    { name: "Investigation", ability: "Intelligence" },
-    { name: "Medicine", ability: "Wisdom" },
-    { name: "Nature", ability: "Intelligence" },
-    { name: "Perception", ability: "Wisdom" },
-    { name: "Performance", ability: "Charisma" },
-    { name: "Persuasion", ability: "Charisma" },
-    { name: "Religion", ability: "Intelligence" },
-    { name: "Sleight of Hand", ability: "Dexterity" },
-    { name: "Stealth", ability: "Dexterity" },
-    { name: "Survival", ability: "Wisdom" }
-  ];
-
-  // Calculate proficiency bonus based on level
-  const proficiencyBonus = Math.floor((character.level - 1) / 4) + 2;
-
-  // Add proficiency and calculate bonuses
-  return skills.map(skill => {
-    const abilityScore = character.abilities[skill.ability.toLowerCase() as keyof typeof character.abilities];
-    const abilityMod = Math.floor((abilityScore - 10) / 2);
-    const proficient = character.class?.proficiencies?.skills?.includes(skill.name) || false;
-    const bonus = abilityMod + (proficient ? proficiencyBonus : 0);
-
-    return {
-      ...skill,
-      proficient,
-      bonus
-    };
-  });
-}
-
-function generateFeatures(character: Character) {
-  const features = [];
-
-  // Add class features
-  if (character.class?.features) {
-    features.push(...character.class.features.map(feature => ({
-      name: feature.name,
-      description: feature.description,
-      source: character.class?.name || "Class"
-    })));
-  }
-
-  // Add race features
-  if (character.race?.features) {
-    features.push(...character.race.features.map(feature => ({
-      name: feature.name,
-      description: feature.description,
-      source: character.race?.name || "Race"
-    })));
-  }
-
-  return features;
-}
-
-function generateTraits(character: Character) {
-  const traits = [];
-
-  // Add background traits
-  if (character.background?.traits) {
-    traits.push(...character.background.traits.map(trait => ({
-      name: trait.name,
-      description: trait.description,
-      source: character.background?.name || "Background"
-    })));
-  }
-
-  // Add race traits
-  if (character.race?.traits) {
-    traits.push(...character.race.traits.map(trait => ({
-      name: trait.name,
-      description: trait.description,
-      source: character.race?.name || "Race"
-    })));
-  }
-
-  return traits;
-} 

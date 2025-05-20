@@ -1,85 +1,34 @@
 import OpenAI from "openai";
-import { Character } from "@/hooks/useCharacter";
+import { Character, Skill } from "@/data/character";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-interface SkillInput {
-  race: string;
-  characterClass: string;
-  background: string;
-  level: number;
-  abilityScores: {
-    strength: number;
-    dexterity: number;
-    constitution: number;
-    intelligence: number;
-    wisdom: number;
-    charisma: number;
-  };
-  traits?: string[];
-  narrativeFlavor?: boolean;
-}
 
-export interface Skill {
-  name: string;
-  ability: string;
-  modifier: number;
-  proficient: boolean;
-  expertise?: boolean;
-}
-
-interface SkillsOutput {
-  skills: Skill[];
-  description?: string;
-}
-
-export async function generateSkills(character: Character): Promise<SkillsOutput> {
+export async function generateSkills(character: Character): Promise<Skill[]> {
   if (!character.race || !character.class) {
     throw new Error("Character race and class are required");
   }
-
-  // Default ability scores if not provided
-  const abilityScores = {
-    strength: 10,
-    dexterity: 10,
-    constitution: 10,
-    intelligence: 10,
-    wisdom: 10,
-    charisma: 10,
-    // Override with character's actual scores if available
-    // ...(character.abilityScores || {})
-  };
-
-  const input: SkillInput = {
-    race: character.race.name,
-    characterClass: character.class.name,
-    background: character.traits?.background || "Commoner",
-    level: character.level || 1,
-    abilityScores,
-    traits: character.traits?.personality,
-    narrativeFlavor: true
-  };
 
   const prompt = `
     Generate skills for a D&D 5e character with the following details:
     
     Character Details:
-    - Race: ${input.race}
-    - Class: ${input.characterClass}
-    - Level: ${input.level}
-    - Background: ${input.background}
+    - Race: ${character.race.name}
+    - Class: ${character.class.name}
+    - Level: ${character.level}
+    - Background: ${character.traits?.background}
     
     Ability Scores:
-    - Strength: ${input.abilityScores.strength}
-    - Dexterity: ${input.abilityScores.dexterity}
-    - Constitution: ${input.abilityScores.constitution}
-    - Intelligence: ${input.abilityScores.intelligence}
-    - Wisdom: ${input.abilityScores.wisdom}
-    - Charisma: ${input.abilityScores.charisma}
+    - Strength: ${character.sheet?.abilitiesScores.strength.total}
+    - Dexterity: ${character.sheet?.abilitiesScores.dexterity.total}
+    - Constitution: ${character.sheet?.abilitiesScores.constitution.total}
+    - Intelligence: ${character.sheet?.abilitiesScores.intelligence.total}
+    - Wisdom: ${character.sheet?.abilitiesScores.wisdom.total}
+    - Charisma: ${character.sheet?.abilitiesScores.charisma.total}
     
-    ${input.traits?.length ? `Personality Traits: ${input.traits.join(", ")}` : ''}
+    ${character.traits?.personality?.length ? `Personality Traits: ${character.traits.personality.join(", ")}` : ''}
     
     Please generate a comprehensive list of all 18 D&D 5e skills for this character, including:
     1. Each skill's associated ability
@@ -131,12 +80,10 @@ export async function generateSkills(character: Character): Promise<SkillsOutput
       throw new Error("Failed to generate skills");
     }
 
-    const result = JSON.parse(content) as SkillsOutput;
+    const result = JSON.parse(content) as Skill[];
     
     // Generate narrative description if requested
-    if (input.narrativeFlavor) {
-      result.description = await generateSkillsDescription(input, result);
-    }
+    // result.description = await generateSkillsDescription(character, result);
     
     return result;
   } catch (error) {
@@ -145,46 +92,46 @@ export async function generateSkills(character: Character): Promise<SkillsOutput
   }
 }
 
-async function generateSkillsDescription(
-  input: SkillInput,
-  result: SkillsOutput
-): Promise<string> {
-  // Find the top 3 skills by modifier
-  const topSkills = [...result.skills]
-    .sort((a, b) => b.modifier - a.modifier)
-    .slice(0, 3);
+// async function generateSkillsDescription(
+//   character: Character,
+//   result: SkillsOutput
+// ): Promise<string> {
+//   // Find the top 3 skills by modifier
+//   const topSkills = [...result.skills]
+//     .sort((a, b) => b.modifier - a.modifier)
+//     .slice(0, 3);
   
-  const prompt = `
-    Create a brief, evocative description (2-3 sentences) of how a ${input.race} ${input.characterClass} 
-    with a ${input.background} background demonstrates their skills and abilities.
+//   const prompt = `
+//     Create a brief, evocative description (2-3 sentences) of how a ${character.race?.name} ${character.class?.name} 
+//     with a ${character.traits?.background} background demonstrates their skills and abilities.
     
-    Their top skills are:
-    ${topSkills.map(skill => `- ${skill.name} (+${skill.modifier})`).join('\n')}
+//     Their top skills are:
+//     ${topSkills.map(skill => `- ${skill.name} (+${skill.modifier})`).join('\n')}
     
-    The description should highlight these skills in action and reflect the character's personality.
-  `;
+//     The description should highlight these skills in action and reflect the character's personality.
+//   `;
 
-  try {
-    const completion = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
-      messages: [
-        {
-          role: "system",
-          content: "You are a creative writing assistant specializing in fantasy character descriptions. Create vivid, concise descriptions that capture a character's unique abilities and skills."
-        },
-        {
-          role: "user",
-          content: prompt
-        }
-      ],
-      temperature: 0.7,
-      max_tokens: 150
-    });
+//   try {
+//     const completion = await openai.chat.completions.create({
+//       model: "gpt-4o-mini",
+//       messages: [
+//         {
+//           role: "system",
+//           content: "You are a creative writing assistant specializing in fantasy character descriptions. Create vivid, concise descriptions that capture a character's unique abilities and skills."
+//         },
+//         {
+//           role: "user",
+//           content: prompt
+//         }
+//       ],
+//       temperature: 0.7,
+//       max_tokens: 150
+//     });
 
-    return completion.choices[0]?.message?.content?.trim() || 
-      "This character demonstrates remarkable proficiency in their top skills, showcasing their unique talents and abilities.";
-  } catch (error) {
-    console.error("Error generating skills description:", error);
-    return "This character demonstrates remarkable proficiency in their top skills, showcasing their unique talents and abilities.";
-  }
-}
+//     return completion.choices[0]?.message?.content?.trim() || 
+//       "This character demonstrates remarkable proficiency in their top skills, showcasing their unique talents and abilities.";
+//   } catch (error) {
+//     console.error("Error generating skills description:", error);
+//     return "This character demonstrates remarkable proficiency in their top skills, showcasing their unique talents and abilities.";
+//   }
+// }

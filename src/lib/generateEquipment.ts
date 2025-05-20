@@ -1,4 +1,4 @@
-import { Character, Equipment } from "@/hooks/useCharacter";
+import { Character, Equipment } from "@/data/character";
 import { OpenAI } from "openai";
 
 // Initialize OpenAI client

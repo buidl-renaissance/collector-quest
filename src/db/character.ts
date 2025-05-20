@@ -1,6 +1,6 @@
 import client from "./client";
 import { v4 as uuidv4 } from "uuid";
-import { Character, CharacterStatus } from "@/hooks/useCharacter";
+import { Character, CharacterStatus } from "@/data/character";
 import { getClassById } from "./classes";
 import { getRaceById } from "./races";
 
@@ -44,6 +44,11 @@ export class CharacterDB {
       equipment = JSON.parse(equipment);
     }
 
+    let sheet = result.sheet;
+    if (typeof sheet === 'string') {
+      sheet = JSON.parse(sheet);
+    }
+
     return {
       name: result.name,
       race: race ?? undefined,
@@ -57,6 +62,7 @@ export class CharacterDB {
       creature: result.creature,
       image_url: result.image_url,
       equipment: equipment ?? undefined,
+      sheet: sheet ?? undefined,
     };
   }
 
@@ -79,6 +85,7 @@ export class CharacterDB {
     if (character.sex) updateData.sex = character.sex;
     if (character.creature) updateData.creature = character.creature;
     if (character.equipment) updateData.equipment = JSON.stringify(character.equipment);
+    if (character.sheet) updateData.sheet = JSON.stringify(character.sheet);
 
     const count = await client("characters").where({ id }).update(updateData);
     return count > 0;

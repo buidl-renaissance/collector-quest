@@ -1,62 +1,28 @@
 import OpenAI from "openai";
-import { Character } from "@/hooks/useCharacter";
+import { Character } from "@/data/character";
+import { FeaturesTraits } from "@/data/character";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-interface FeaturesTraitsInput {
-  race: string;
-  subrace?: string;
-  characterClass: string;
-  level: number;
-  background: string;
-  subclass?: string;
-  customItems?: string[];
-  questRewards?: string[];
-  narrativeFlavor?: boolean;
-}
-
-interface FeaturesTraitsOutput {
-  featuresAndTraits: {
-    raceTraits: string[];
-    classFeatures: string[];
-    backgroundFeature: string;
-    subclassFeatures: string[];
-    customFeatures: string[];
-  };
-  description?: string;
-}
-
 export async function generateFeaturesTraits(
   character: Character
-): Promise<FeaturesTraitsOutput> {
+): Promise<FeaturesTraits> {
   if (!character.race || !character.class) {
     throw new Error("Character race and class are required");
   }
-
-  const input: FeaturesTraitsInput = {
-    race: character.race.name,
-    // subrace: character.race.subrace || undefined,
-    characterClass: character.class.name,
-    level: character.level || 1,
-    background: character.traits?.background || "Commoner",
-    // subclass: character.class.subclass,
-    customItems: character.equipment?.magicItems?.map(item => item.name) || [],
-    narrativeFlavor: true
-  };
 
   const prompt = `
     Generate features and traits for a D&D 5e character with the following details:
     
     Character Details:
-    - Race: ${input.race}${input.subrace ? ` (${input.subrace})` : ''}
-    - Class: ${input.characterClass}${input.subclass ? ` (${input.subclass})` : ''}
-    - Level: ${input.level}
-    - Background: ${input.background}
+    - Race: ${character.race.name}${character.subrace ? ` (${character.subrace.name})` : ''}
+    - Class: ${character.class.name}${character.subclass ? ` (${character.subclass.name})` : ''}
+    - Level: ${character.level}
+    - Background: ${character.traits?.background || "Commoner"}
     
-    ${input.customItems?.length ? `- Magic Items: ${input.customItems.join(", ")}` : ''}
-    ${input.questRewards?.length ? `- Quest Rewards: ${input.questRewards.join(", ")}` : ''}
+    ${character.equipment?.magicItems?.length ? `- Magic Items: ${character.equipment.magicItems.join(", ")}` : ''}
     
     Please generate a comprehensive list of features and traits for this character, including:
     1. Race Traits: Innate abilities from the character's race
@@ -103,12 +69,10 @@ export async function generateFeaturesTraits(
       throw new Error("Failed to generate features and traits");
     }
 
-    const result = JSON.parse(content) as FeaturesTraitsOutput;
+    const result = JSON.parse(content) as FeaturesTraits;
     
     // Generate narrative description if requested
-    if (input.narrativeFlavor) {
-      result.description = await generateFeaturesTraitsDescription(input, result);
-    }
+    result.description = await generateFeaturesTraitsDescription(character, result);
     
     return result;
   } catch (error) {
@@ -118,19 +82,19 @@ export async function generateFeaturesTraits(
 }
 
 async function generateFeaturesTraitsDescription(
-  input: FeaturesTraitsInput,
-  result: FeaturesTraitsOutput
+  character: Character,
+  result: FeaturesTraits
 ): Promise<string> {
   const prompt = `
-    Create a brief, evocative description (2-3 sentences) of how a ${input.race} ${input.characterClass} 
-    with a ${input.background} background manifests their unique abilities and traits.
+    Create a brief, evocative description (2-3 sentences) of how a ${character.race?.name} ${character.class?.name} 
+    with a ${character.traits?.background} background manifests their unique abilities and traits.
     
     Features and traits to reference:
-    - Race traits: ${result.featuresAndTraits.raceTraits.join(", ")}
-    - Class features: ${result.featuresAndTraits.classFeatures.join(", ")}
-    - Background feature: ${result.featuresAndTraits.backgroundFeature}
-    ${result.featuresAndTraits.subclassFeatures.length ? `- Subclass features: ${result.featuresAndTraits.subclassFeatures.join(", ")}` : ""}
-    ${result.featuresAndTraits.customFeatures.length ? `- Custom features: ${result.featuresAndTraits.customFeatures.join(", ")}` : ""}
+    - Race traits: ${result.raceTraits.join(", ")}
+    - Class features: ${result.classFeatures.join(", ")}
+    - Background feature: ${result.backgroundFeature}
+    ${result.subclassFeatures.length ? `- Subclass features: ${result.subclassFeatures.join(", ")}` : ""}
+    ${result.customFeatures.length ? `- Custom features: ${result.customFeatures.join(", ")}` : ""}
     
     The description should be vivid and reflect how these abilities manifest in the character's appearance and actions.
   `;

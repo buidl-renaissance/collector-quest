@@ -1,112 +1,129 @@
 import OpenAI from "openai";
+import { Character, Initiative } from "@/data/character";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-interface InitiativeInput {
-  characterClass: string;
-  race: string;
-  background: string;
-  alignment: string;
-  dexterityScore: number;
-  level: number;
-  traits: string[];
-  bonuses?: {
-    feats?: string[];
-    magicItems?: string[];
-    classFeatures?: boolean;
-  };
-  narrativeFlavor?: boolean;
-  outputFormat?: string;
-}
+export function generateInitiative(character: Character): Initiative {
+  if (!character.race || !character.class || !character.sheet?.abilities) {
+    throw new Error("Character race, class, and abilities are required");
+  }
 
-interface InitiativeOutput {
-  initiativeModifier: number;
-  breakdown: {
-    dexterityModifier: number;
-    featBonus: number;
-    magicItemBonus: number;
-    classFeatureBonus: number;
-  };
-  description?: string;
-}
-
-export async function generateInitiative(input: InitiativeInput): Promise<InitiativeOutput> {
   // Calculate dexterity modifier
-  const dexterityModifier = Math.floor((input.dexterityScore - 10) / 2);
+  const dexScore = (character.sheet?.abilitiesScores?.dexterity?.modifier ?? 0) + (character.sheet?.abilitiesScores?.dexterity?.base ?? 0) || 10;
+  const dexMod = Math.floor((dexScore - 10) / 2);
   
-  // Initialize other bonuses
-  let featBonus = 0;
-  let magicItemBonus = 0;
-  let classFeatureBonus = 0;
+  // Get character class
+  const characterClass = character.class.name;
   
-  // Check for Alert feat
-  if (input.bonuses?.feats?.includes("Alert")) {
-    featBonus += 5;
-  }
+  // Initialize bonuses
+  const classBonus = 0; // TODO: Add class bonus
+  const relics: { name: string; initiativeBonus: number }[] = [];
+  const traits: { name: string; initiativeBonus: number }[] = [];
+  const statusEffects: { name: string; initiativeBonus: number }[] = [];
   
-  // Process magic items (simplified implementation)
-  if (input.bonuses?.magicItems?.length) {
-    // This would be expanded with actual item effects
-    if (input.bonuses.magicItems.includes("Boots of Speed")) {
-      magicItemBonus += 1;
+  // Check for class-specific initiative bonuses
+  // if (characterClass === "Rogue" && character.class?.subclasses?.some((subclass: CharacterSubclass) => subclass.id === "swashbuckler")) {
+  //   classBonus += 2;
+  // }
+  
+  // Check for equipment/relics that might affect initiative
+  if (character.equipment) {
+    // Example: Check for items that boost initiative
+    if (character.equipment.magicItems?.some(item => item.name === "Boots of Speed")) {
+      relics.push({ name: "Boots of Speed", initiativeBonus: 1 });
     }
   }
   
-  // Process class features
-  if (input.bonuses?.classFeatures) {
-    // Example: Swashbuckler Rogue adds Charisma modifier
-    // In a real implementation, you would check the character's class and subclass
-    if (input.characterClass === "Rogue" && input.level >= 3) {
-      // Assuming Charisma modifier would be provided in a real implementation
-      // For now, just adding a placeholder bonus
-      classFeatureBonus += 1;
+  // Check for traits that affect initiative
+  if (character.traits?.personality) {
+    // Example: If the character has an "Alert" trait
+    if (character.traits.personality.some(trait => trait.toLowerCase().includes("alert") || trait.toLowerCase().includes("quick"))) {
+      traits.push({ name: "Alert", initiativeBonus: 1 });
     }
   }
   
-  // Calculate total initiative modifier
-  const initiativeModifier = dexterityModifier + featBonus + magicItemBonus + classFeatureBonus;
+  // Calculate total bonuses
+  const relicBonus = relics.reduce((sum, relic) => sum + relic.initiativeBonus, 0);
+  const traitBonus = traits.reduce((sum, trait) => sum + trait.initiativeBonus, 0);
+  const statusBonus = statusEffects.reduce((sum, status) => sum + status.initiativeBonus, 0);
   
-  // Create the result object
-  const result: InitiativeOutput = {
-    initiativeModifier,
-    breakdown: {
-      dexterityModifier,
-      featBonus,
-      magicItemBonus,
-      classFeatureBonus
-    }
+  // Calculate total initiative
+  const totalInitiative = dexMod + classBonus + relicBonus + traitBonus + statusBonus;
+  
+  // Determine initiative tier
+  const tier = getInitiativeTier(totalInitiative);
+  
+  // Generate flavor text
+  const flavorText = generateFlavorText(character, totalInitiative, tier);
+  
+  return {
+    dexMod,
+    class: characterClass,
+    relics,
+    traits,
+    statusEffects,
+    initiativeBreakdown: {
+      dexMod,
+      classBonus,
+      relicBonus,
+      traitBonus,
+      statusBonus,
+      totalInitiative,
+      tier
+    },
+    flavorText
   };
-  
-  // Generate narrative description if requested
-  if (input.narrativeFlavor) {
-    const description = await generateInitiativeDescription(input, result);
-    result.description = description;
-  }
-  
-  return result;
 }
 
-async function generateInitiativeDescription(
-  input: InitiativeInput,
-  result: InitiativeOutput
-): Promise<string> {
-  const prompt = `
-    Create a short, cinematic description (1-2 sentences) of how a ${input.race} ${input.characterClass} 
-    with a ${input.background} background and ${input.alignment} alignment, 
-    possessing a Dexterity score of ${input.dexterityScore} and an initiative modifier of +${result.initiativeModifier}, 
-    reacts at the start of combat.
-    
-    Character traits: ${input.traits.join(", ")}
-    
-    ${input.bonuses?.feats?.length ? `Special feats: ${input.bonuses.feats.join(", ")}` : ""}
-    ${input.bonuses?.magicItems?.length ? `Magic items: ${input.bonuses.magicItems.join(", ")}` : ""}
-    
-    The description should be vivid and reflect the character's personality and combat style.
-  `;
+function getInitiativeTier(score: number): string {
+  if (score >= 6) return "Lightning";
+  if (score >= 4) return "Quick";
+  if (score >= 2) return "Steady";
+  if (score >= 0) return "Cautious";
+  return "Sluggish";
+}
 
+function generateFlavorText(character: Character, initiative: number, tier: string): string {
+  const race = character.race?.name || "adventurer";
+  const characterClass = character.class?.name || "fighter";
+  
+  // Basic flavor text based on initiative tier
+  switch (tier) {
+    case "Lightning":
+      return `With supernatural reflexes, the ${race} ${characterClass} moves before others can even register danger.`;
+    case "Quick":
+      return `Alert and ready, the ${race} ${characterClass} springs into action with impressive speed.`;
+    case "Steady":
+      return `The ${race} ${characterClass} reacts with practiced efficiency, neither rushing nor hesitating.`;
+    case "Cautious":
+      return `The ${race} ${characterClass} takes a moment to assess the situation before committing to action.`;
+    case "Sluggish":
+      return `The ${race} ${characterClass} moves deliberately, preferring caution over haste.`;
+    default:
+      return `The ${race} ${characterClass} prepares to face whatever challenges lie ahead.`;
+  }
+}
+
+// Async version that uses OpenAI for more creative flavor text
+export async function generateInitiativeWithAI(character: Character): Promise<Initiative> {
+  const baseResult = generateInitiative(character);
+  
   try {
+    const prompt = `
+      Generate a short, cinematic description (1 sentence) of how a ${character.race?.name} ${character.class?.name} 
+      with a ${character.traits?.background || "mysterious"} background and ${character.traits?.alignment || "neutral"} alignment, 
+      having an initiative modifier of +${baseResult.initiativeBreakdown.totalInitiative}, 
+      reacts at the start of combat.
+      
+      Initiative tier: ${baseResult.initiativeBreakdown.tier}
+      
+      Character traits: ${character.traits?.personality?.join(", ") || "unknown"}
+      
+      The description should be vivid and reflect the character's personality and combat style.
+    `;
+
     const completion = await openai.chat.completions.create({
       model: "gpt-4o-mini",
       messages: [
@@ -120,13 +137,17 @@ async function generateInitiativeDescription(
         }
       ],
       temperature: 0.7,
-      max_tokens: 150
+      max_tokens: 100
     });
 
-    return completion.choices[0]?.message?.content?.trim() || 
-      "With lightning reflexes, they spring into action at the first sign of danger.";
+    const aiFlavorText = completion.choices[0]?.message?.content?.trim();
+    if (aiFlavorText) {
+      baseResult.flavorText = aiFlavorText;
+    }
   } catch (error) {
-    console.error("Error generating initiative description:", error);
-    return "With lightning reflexes, they spring into action at the first sign of danger.";
+    console.error("Error generating initiative description with AI:", error);
+    // Keep the default flavor text if AI generation fails
   }
+  
+  return baseResult;
 }

@@ -28,12 +28,30 @@ interface ResultData {
   success?: boolean;
 }
 
+// Local storage key for generated traits
+const GENERATED_TRAITS_STORAGE_KEY = "generatedTraits";
+
 export function useGeneratedTraits() {
   const { character } = useCharacter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [resultId, setResultId] = useState<string | null>(null);
   const [traits, setTraits] = useState<Traits | null>(null);
+
+  // Load traits from local storage on initial render
+  useEffect(() => {
+    const characterId = getCurrentCharacterId();
+    if (characterId) {
+      const storedTraits = localStorage.getItem(`${GENERATED_TRAITS_STORAGE_KEY}_${characterId}`);
+      if (storedTraits) {
+        try {
+          setTraits(JSON.parse(storedTraits));
+        } catch (err) {
+          console.error("Failed to parse stored traits:", err);
+        }
+      }
+    }
+  }, []);
 
   // Function to start the trait generation process
   const generateTraits = async () => {
@@ -93,6 +111,15 @@ export function useGeneratedTraits() {
       if (resultData?.traits) {
         // Update character with the generated traits
         setTraits(resultData.traits);
+        
+        // Save to local storage
+        const characterId = getCurrentCharacterId();
+        if (characterId) {
+          localStorage.setItem(
+            `${GENERATED_TRAITS_STORAGE_KEY}_${characterId}`, 
+            JSON.stringify(resultData.traits)
+          );
+        }
       }
 
       if (result.status === "pending") {
@@ -124,6 +151,12 @@ export function useGeneratedTraits() {
     setError(null);
     setResultId(null);
     setTraits(null);
+    
+    // Clear from local storage
+    const characterId = getCurrentCharacterId();
+    if (characterId) {
+      localStorage.removeItem(`${GENERATED_TRAITS_STORAGE_KEY}_${characterId}`);
+    }
   };
 
   return {

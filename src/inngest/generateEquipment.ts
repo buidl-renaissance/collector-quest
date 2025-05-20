@@ -3,6 +3,7 @@ import { inngest } from "./client";
 import { Character } from "@/hooks/useCharacter";
 import { generateEquipment as generateEquipmentFunction } from "@/lib/generateEquipment";
 import { CharacterDB } from "@/db/character";
+import { Equipment } from "@/data/character";
 
 interface GenerateEquipmentEvent {
   data: {
@@ -12,11 +13,18 @@ interface GenerateEquipmentEvent {
   };
 }
 
+interface EquipmentResult {
+  step: string;
+  message: string;
+  equipment: Equipment;
+}
+
 export const generateEquipment = inngest.createFunction(
   { name: "Generate Equipment", id: "generate-equipment" },
   { event: "equipment/generate" },
   async ({ event, step }) => {
-    const { characterId, character } = event.data as GenerateEquipmentEvent["data"];
+    const { characterId, character } =
+      event.data as GenerateEquipmentEvent["data"];
 
     if (!character) {
       throw new Error("Character not found");
@@ -51,29 +59,6 @@ export const generateEquipment = inngest.createFunction(
 
     // Step 2: Generate equipment based on class and background
     const equipmentResult = await step.run("generate-equipment", async () => {
-      // This would be where you'd call your AI service to generate appropriate equipment
-      // For now, we'll return mock data
-      //   const mockEquipment: EquipmentResult = {
-      //     weapons: [
-      //       { name: "Longsword", quantity: 1 },
-      //       { name: "Shortbow", quantity: 1 },
-      //       { name: "Arrows", quantity: 20 },
-      //     ],
-      //     armor: [{ name: "Chain Mail", quantity: 1 }],
-      //     adventuringGear: [
-      //       { name: "Backpack", quantity: 1 },
-      //       { name: "Bedroll", quantity: 1 },
-      //       { name: "Mess Kit", quantity: 1 },
-      //       { name: "Tinderbox", quantity: 1 },
-      //       { name: "Torches", quantity: 10 },
-      //       { name: "Rations", quantity: 10 },
-      //       { name: "Waterskin", quantity: 1 },
-      //       { name: "Rope, Hempen (50 feet)", quantity: 1 },
-      //     ],
-      //     tools: [{ name: "Herbalism Kit", quantity: 1 }],
-      //     currency: [{ name: "Gold Pieces", quantity: 15 }],
-      //   };
-
       const equipment = await generateEquipmentFunction(character);
 
       return {
@@ -87,7 +72,7 @@ export const generateEquipment = inngest.createFunction(
     await step.run("save-equipment", async () => {
       // Here you would save the equipment to your database
       await characterDB.updateCharacter(characterId, {
-        equipment: equipmentResult.equipment,
+        equipment: equipmentResult.equipment as Equipment,
       });
       return {
         step: "save-equipment",

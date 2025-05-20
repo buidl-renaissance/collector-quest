@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { Race } from "@/data/races";
-import { CharacterClass } from "@/data/classes";
+import { Character, CharacterStatus, Traits, Speed, CharacterSheet } from "@/data/character";
+export type { Character, CharacterStatus, Traits, Speed, CharacterSheet };
 import {
   getCurrentCharacterId,
   getCharacterKey,
@@ -14,65 +14,6 @@ const STORAGE_KEYS = {
   CURRENT_CHARACTER_ID: "currentCharacterId",
   CHARACTER_IDS: "characterIds",
 };
-
-export enum CharacterStatus {
-  NEW = "new",
-  ALIVE = "alive",
-  DEAD = "dead",
-  CREATING = "creating",
-  COMPLETED = "completed",
-  DELETED = "deleted",
-}
-
-export interface Traits {
-  alignment?: string;
-  deity?: string;
-  personality?: string[];
-  background?: string;
-  ideals?: string[];
-  bonds?: string[];
-  flaws?: string[];
-  memory?: string;
-  possession?: string;
-  fear?: string[];
-  hauntingMemory?: string;
-  treasuredPossession?: string;
-  actions?: string[];
-  forces?: string[];
-  archetype?: string;
-}
-
-export interface EquipmentItem {
-  name: string;
-  quantity: number;
-}
-
-export interface Equipment {
-  weapons: EquipmentItem[];
-  armor: EquipmentItem[];
-  adventuringGear: EquipmentItem[];
-  tools: EquipmentItem[];
-  currency: EquipmentItem[];
-  magicItems: EquipmentItem[];
-}
-
-export interface Character {
-  id?: string;
-  name: string;
-  status?: string;
-  race?: Race;
-  class?: CharacterClass;
-  level?: number;
-  traits?: Traits;
-  motivation?: string;
-  bio?: string;
-  backstory?: string;
-  equipment?: Equipment;
-  sex?: string;
-  creature?: string;
-  image_url?: string;
-  sheet?: string;
-}
 
 export const useCharacter = () => {
   const [character, setCharacter] = useState<Character | null>(null);

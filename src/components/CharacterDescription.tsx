@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from '@emotion/styled';
 import { Race } from '@/data/races';
-import { CharacterClass } from '@/data/classes';
+import { CharacterClass } from '@/data/character';
 
 interface CharacterDescriptionProps {
   race: Race;
