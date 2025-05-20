@@ -38,7 +38,8 @@ Format the response as a JSON object with the following structure:
   "armor": [{"name": "Item name", "quantity": number}, ...],
   "adventuringGear": [{"name": "Item name", "quantity": number}, ...],
   "tools": [{"name": "Item name", "quantity": number}, ...],
-  "currency": [{"name": "Gold Pieces", "quantity": number}, ...]
+  "currency": [{"name": "Gold Pieces", "quantity": number}, ...],
+  "magicItems": [{"name": "Item name", "quantity": number}, ...]
 }
 
 Ensure the equipment is realistic, balanced, and appropriate for a level 1 character.`;
@@ -67,7 +68,7 @@ Ensure the equipment is realistic, balanced, and appropriate for a level 1 chara
       throw new Error("Failed to generate equipment");
     }
 
-    const equipmentData = JSON.parse(content) as EquipmentResult;
+    const equipmentData = JSON.parse(content) as Equipment;
     return equipmentData;
   } catch (error) {
     console.error("Error generating equipment:", error);

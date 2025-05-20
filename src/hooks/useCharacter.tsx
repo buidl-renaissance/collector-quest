@@ -53,6 +53,7 @@ export interface Equipment {
   adventuringGear: EquipmentItem[];
   tools: EquipmentItem[];
   currency: EquipmentItem[];
+  magicItems: EquipmentItem[];
 }
 
 export interface Character {

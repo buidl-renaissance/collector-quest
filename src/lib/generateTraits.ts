@@ -37,7 +37,7 @@ Please generate:
 
 2. Ideals (6 distinct ideals):
    - Pulled from the character's background and alignment
-   - These should shape questlines, decision trees, and narrative arcs
+   - These should shape quest-lines, decision trees, and narrative arcs
 
 3. Bonds (6 distinct bonds):
    - Generated using background, region, and potential relationships
