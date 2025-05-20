@@ -247,7 +247,7 @@ const IndexPage: React.FC = () => {
               value="https://collectorquest.ai"
               bgColor="#bb8930"
               fgColor="#b6551c99"
-              size={300}
+              size={288}
             />
             {/* <ShareButton onClick={() => setShowShareModal(true)}>
             <FaShareAlt /> Share
@@ -705,6 +705,7 @@ const QRCodeSection = styled.div`
   flex-direction: column;
   align-items: center;
   gap: 1rem;
+  margin: 0 auto;
   margin-bottom: 3rem;
   padding: 1.5rem;
   background: rgba(58, 38, 6, 0.7);
