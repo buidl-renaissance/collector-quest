@@ -15,7 +15,8 @@ import {
   FaLink,
 } from "react-icons/fa";
 import Footer from "@/components/Footer";
-import QRCode from 'react-qr-code';
+import QRCode from "react-qr-code";
+import useIsAdmin from "@/hooks/useIsAdmin";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   return {
@@ -38,6 +39,7 @@ const IndexPage: React.FC = () => {
   const [error, setError] = useState("");
   const [parallaxOffset, setParallaxOffset] = useState(0);
   const [showShareModal, setShowShareModal] = useState(false);
+  const { isAdmin } = useIsAdmin();
   const preRegisterRef = useRef<HTMLDivElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
 
@@ -46,22 +48,25 @@ const IndexPage: React.FC = () => {
       setParallaxOffset(window.scrollY * 0.3);
     };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
+      if (
+        modalRef.current &&
+        !modalRef.current.contains(event.target as Node)
+      ) {
         setShowShareModal(false);
       }
     };
 
     if (showShareModal) {
-      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener("mousedown", handleClickOutside);
     }
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [showShareModal]);
 
@@ -69,8 +74,9 @@ const IndexPage: React.FC = () => {
     const yOffset = -20;
     const element = preRegisterRef.current;
     if (element) {
-      const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
-      window.scrollTo({ top: y, behavior: 'smooth' });
+      const y =
+        element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+      window.scrollTo({ top: y, behavior: "smooth" });
     }
   };
 
@@ -86,23 +92,27 @@ const IndexPage: React.FC = () => {
     }
 
     try {
-      const response = await fetch('/api/pre-register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/pre-register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to pre-register');
+        throw new Error(data.error || "Failed to pre-register");
       }
 
       // Save email to localStorage
-      localStorage.setItem('preRegisteredEmail', email);
+      localStorage.setItem("preRegisteredEmail", email);
       setIsSubmitted(true);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to register. Please try again later.");
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Failed to register. Please try again later."
+      );
       console.error("Registration error:", err);
     } finally {
       setIsSubmitting(false);
@@ -116,15 +126,19 @@ const IndexPage: React.FC = () => {
 
   return (
     <PageWrapper>
-      <ParallaxBackground style={{ transform: `translateY(${parallaxOffset}px)` }} />
-      
+      <ParallaxBackground
+        style={{ transform: `translateY(${parallaxOffset}px)` }}
+      />
+
       <Container>
         <HeroSection>
           <Title>
             <MagicSpan>Collector Quest</MagicSpan>
           </Title>
           <Subtitle>Forge your legacy. Collect the extraordinary.</Subtitle>
-          <ComingSoonBadge onClick={scrollToPreRegister}>Coming Soon</ComingSoonBadge>
+          <ComingSoonBadge onClick={scrollToPreRegister}>
+            Coming Soon
+          </ComingSoonBadge>
         </HeroSection>
 
         <ImageSection>
@@ -157,14 +171,15 @@ const IndexPage: React.FC = () => {
           </SectionIcon>
           <SectionTitle>Be The First To Know</SectionTitle>
           <Description>
-            Join our wait-list to receive early access and exclusive updates about Collector Quest.
+            Join our wait-list to receive early access and exclusive updates
+            about Collector Quest.
           </Description>
-          
+
           {!isSubmitted ? (
             <PreRegisterForm onSubmit={handleSubmit}>
-              <PreRegisterInput 
-                type="email" 
-                placeholder="Enter your email address" 
+              <PreRegisterInput
+                type="email"
+                placeholder="Enter your email address"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 disabled={isSubmitting}
@@ -179,7 +194,8 @@ const IndexPage: React.FC = () => {
               <SectionIcon>
                 <FaDice />
               </SectionIcon>
-              Thank you for registering! We&apos;ll notify you when Collector Quest launches.
+              Thank you for registering! We&apos;ll notify you when Collector
+              Quest launches.
             </SuccessMessage>
           )}
         </PreRegisterSection>
@@ -187,34 +203,57 @@ const IndexPage: React.FC = () => {
         <FeatureSection>
           <FeatureGrid>
             <FeatureItem>
-              <FeatureIcon><FaDungeon /></FeatureIcon>
+              <FeatureIcon>
+                <FaDungeon />
+              </FeatureIcon>
               <FeatureTitle>Infinite Adventures</FeatureTitle>
-              <FeatureDescription>Every quest is uniquely crafted for your character</FeatureDescription>
+              <FeatureDescription>
+                Every quest is uniquely crafted for your character
+              </FeatureDescription>
             </FeatureItem>
             <FeatureItem>
-              <FeatureIcon><FaDice /></FeatureIcon>
+              <FeatureIcon>
+                <FaDice />
+              </FeatureIcon>
               <FeatureTitle>Dynamic Storytelling</FeatureTitle>
-              <FeatureDescription>Your choices shape the narrative and consequences</FeatureDescription>
+              <FeatureDescription>
+                Your choices shape the narrative and consequences
+              </FeatureDescription>
             </FeatureItem>
             <FeatureItem>
-              <FeatureIcon><FaScroll /></FeatureIcon>
+              <FeatureIcon>
+                <FaScroll />
+              </FeatureIcon>
               <FeatureTitle>Collectible Quests</FeatureTitle>
-              <FeatureDescription>Build your library of completed adventures</FeatureDescription>
+              <FeatureDescription>
+                Build your library of completed adventures
+              </FeatureDescription>
             </FeatureItem>
             <FeatureItem>
-              <FeatureIcon><FaBook /></FeatureIcon>
+              <FeatureIcon>
+                <FaBook />
+              </FeatureIcon>
               <FeatureTitle>Growing World</FeatureTitle>
-              <FeatureDescription>Discover new realms, items, and characters</FeatureDescription>
+              <FeatureDescription>
+                Discover new realms, items, and characters
+              </FeatureDescription>
             </FeatureItem>
           </FeatureGrid>
         </FeatureSection>
 
-        <QRCodeSection>
-          <QRCode value="https://collectorquest.ai" bgColor="#bb8930" fgColor="#b6551c99" size={300} />
-          {/* <ShareButton onClick={() => setShowShareModal(true)}>
+        {isAdmin && (
+          <QRCodeSection>
+            <QRCode
+              value="https://collectorquest.ai"
+              bgColor="#bb8930"
+              fgColor="#b6551c99"
+              size={300}
+            />
+            {/* <ShareButton onClick={() => setShowShareModal(true)}>
             <FaShareAlt /> Share
           </ShareButton> */}
-        </QRCodeSection>
+          </QRCodeSection>
+        )}
 
         {/* <FounderBadge>
           <BadgeIcon><FaScroll /></BadgeIcon>
@@ -237,13 +276,27 @@ const IndexPage: React.FC = () => {
               </QRCodeContainer>
               <ShareText>Scan this QR code or share via:</ShareText>
               <ShareOptions>
-                <ShareOption href="https://twitter.com/intent/tweet?text=Check%20out%20Collector%20Quest%20-%20a%20turn-based%20AI%20storytelling%20game!&url=https://collectorquest.ai" target="_blank" rel="noopener noreferrer" color="#1DA1F2">
+                <ShareOption
+                  href="https://twitter.com/intent/tweet?text=Check%20out%20Collector%20Quest%20-%20a%20turn-based%20AI%20storytelling%20game!&url=https://collectorquest.ai"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  color="#1DA1F2"
+                >
                   <FaTwitter /> Twitter
                 </ShareOption>
-                <ShareOption href="https://www.facebook.com/sharer/sharer.php?u=https://collectorquest.ai" target="_blank" rel="noopener noreferrer" color="#4267B2">
+                <ShareOption
+                  href="https://www.facebook.com/sharer/sharer.php?u=https://collectorquest.ai"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  color="#4267B2"
+                >
                   <FaFacebook /> Facebook
                 </ShareOption>
-                <ShareOption as="button" onClick={copyToClipboard} color="#bb8930">
+                <ShareOption
+                  as="button"
+                  onClick={copyToClipboard}
+                  color="#bb8930"
+                >
                   <FaLink /> Copy Link
                 </ShareOption>
               </ShareOptions>
@@ -290,20 +343,25 @@ const pulse = keyframes`
 // Styled Components
 const PageWrapper = styled.div`
   min-height: 100vh;
-  background: linear-gradient(135deg, rgba(58, 38, 6, 0.9) 0%, rgba(108, 58, 20, 0.9) 50%, rgba(58, 38, 6, 0.9) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(58, 38, 6, 0.9) 0%,
+    rgba(108, 58, 20, 0.9) 50%,
+    rgba(58, 38, 6, 0.9) 100%
+  );
   color: #e6e6e6;
   position: relative;
   overflow: hidden;
   font-family: "EB Garamond", "Merriweather", serif;
 
   &::before {
-    content: '';
+    content: "";
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-image: url('/images/collector-quest-background.png');
+    background-image: url("/images/collector-quest-background.png");
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -318,7 +376,7 @@ const ParallaxBackground = styled.div`
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: url('/images/parchment-texture.jpg');
+  background-image: url("/images/parchment-texture.jpg");
   background-size: cover;
   opacity: 0.05;
   z-index: 1;
@@ -434,7 +492,7 @@ const PreRegisterForm = styled.form`
   flex-direction: column;
   gap: 1rem;
   margin-top: 1.5rem;
-  
+
   @media (min-width: 768px) {
     flex-direction: row;
   }
@@ -448,11 +506,11 @@ const PreRegisterInput = styled.input`
   color: #e6e6e6;
   font-family: inherit;
   flex: 1;
-  
+
   &::placeholder {
     color: rgba(230, 230, 230, 0.6);
   }
-  
+
   &:focus {
     outline: none;
     border-color: #b6551c;
@@ -474,12 +532,12 @@ const PreRegisterButton = styled.button`
   align-items: center;
   justify-content: center;
   min-width: 150px;
-  
+
   &:hover:not(:disabled) {
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   }
-  
+
   &:disabled {
     opacity: 0.7;
     cursor: not-allowed;
@@ -519,7 +577,7 @@ const FeatureItem = styled.div`
   padding: 1.5rem;
   text-align: center;
   transition: all 0.3s ease;
-  
+
   &:hover {
     transform: translateY(-5px);
     background: rgba(187, 137, 48, 0.2);
@@ -622,7 +680,7 @@ const LoadingSpinner = styled.div`
   height: 1.5rem;
 
   &::after {
-    content: '';
+    content: "";
     width: 1.2rem;
     height: 1.2rem;
     border: 2px solid #fff;
@@ -662,7 +720,7 @@ const ShareButton = styled.button`
   font-family: "Cinzel", serif;
   cursor: pointer;
   transition: all 0.3s ease;
-  
+
   &:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -684,7 +742,11 @@ const ModalOverlay = styled.div`
 `;
 
 const ModalContent = styled.div`
-  background: linear-gradient(135deg, rgba(58, 38, 6, 0.95) 0%, rgba(108, 58, 20, 0.95) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(58, 38, 6, 0.95) 0%,
+    rgba(108, 58, 20, 0.95) 100%
+  );
   border: 2px solid #bb8930;
   border-radius: 8px;
   width: 90%;
@@ -715,7 +777,7 @@ const CloseButton = styled.button`
   font-size: 1.2rem;
   cursor: pointer;
   transition: color 0.3s ease;
-  
+
   &:hover {
     color: #bb8930;
   }
@@ -754,7 +816,7 @@ const ShareOption = styled.a<{ color: string }>`
   align-items: center;
   gap: 0.5rem;
   padding: 0.75rem 1rem;
-  background-color: ${props => props.color};
+  background-color: ${(props) => props.color};
   color: white;
   border: none;
   border-radius: 4px;
@@ -762,7 +824,7 @@ const ShareOption = styled.a<{ color: string }>`
   font-family: "Cinzel", serif;
   cursor: pointer;
   transition: all 0.3s ease;
-  
+
   &:hover {
     transform: translateY(-2px);
     filter: brightness(1.1);
