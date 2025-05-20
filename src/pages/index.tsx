@@ -352,6 +352,7 @@ const PageWrapper = styled.div`
   color: #e6e6e6;
   position: relative;
   overflow: hidden;
+  overflow-x: hidden;
   font-family: "EB Garamond", "Merriweather", serif;
 
   &::before {
@@ -388,6 +389,8 @@ const Container = styled.div`
   padding: 2rem 1rem;
   position: relative;
   z-index: 2;
+  width: 100%;
+  box-sizing: border-box;
 
   @media (min-width: 768px) {
     padding: 3rem 2rem;
@@ -412,6 +415,7 @@ const Image = styled.img`
   height: auto;
   max-height: 64vh;
   object-fit: contain;
+  max-width: 100%;
 `;
 
 const HeroSection = styled.div`
