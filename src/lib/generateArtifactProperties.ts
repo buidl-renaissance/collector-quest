@@ -1,4 +1,4 @@
-import { ArtifactProperties } from './interfaces';
+import { ArtifactProperties, ArtifactClass, Element, Effect, Rarity } from '@/data/artifacts';
 import { OpenAI } from 'openai';
 
 const openai = new OpenAI({
@@ -30,10 +30,10 @@ function fallbackGenerateProperties(
   );
 
   return {
-    class: ARTIFACT_CLASSES[classIndex],
-    element: ELEMENTS[elementIndex],
-    effect: EFFECTS[effectIndex],
-    rarity: RARITIES[rarityIndex]
+    class: ARTIFACT_CLASSES[classIndex] as ArtifactClass,
+    element: ELEMENTS[elementIndex] as Element,
+    effect: EFFECTS[effectIndex] as Effect,
+    rarity: RARITIES[rarityIndex] as Rarity
   };
 }
 

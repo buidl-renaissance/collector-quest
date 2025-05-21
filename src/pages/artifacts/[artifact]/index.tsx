@@ -252,7 +252,7 @@ const ArtifactPage = ({ artifact }: { artifact: Artifact }) => {
       }
       
       const data = await response.json();
-      setGeneratedRelic(data);
+      setGeneratedRelic(data.relicImageUrl);
     } catch (error) {
       console.error('Error generating relic:', error);
     } finally {
@@ -293,7 +293,7 @@ const ArtifactPage = ({ artifact }: { artifact: Artifact }) => {
                 Claim Artifact
               </NextButton>
             )}
-            {!artifact.relicImageUrl && (
+            {(!artifact.relicImageUrl || true) && (
               <NextButton onClick={handleGenerateRelic}>
                 Generate Relic
               </NextButton>
