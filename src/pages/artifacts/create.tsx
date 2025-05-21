@@ -1,18 +1,14 @@
-import React, { useState } from 'react';
-import styled from '@emotion/styled';
-import { useRouter } from 'next/router';
-import Image from 'next/image';
-import { 
-  FormGroup, 
-  Label, 
-  Input, 
-  TextArea, 
-} from '@/components/styled/forms';
+import React, { useState } from "react";
+import styled from "@emotion/styled";
+import { useRouter } from "next/router";
+import Image from "next/image";
+import { FormGroup, Label, Input, TextArea } from "@/components/styled/forms";
 
-import {
-  ErrorMessage, 
-} from '@/components/styled/typography';
-import { UploadMedia } from '@/components/UploadMedia';
+import { ErrorMessage } from "@/components/styled/typography";
+import { UploadMedia } from "@/components/UploadMedia";
+import { NextButton } from "@/components/styled/buttons";
+import BottomNavigation from "@/components/BottomNavigation";
+import { Artifact } from "@/data/artifacts";
 
 // Additional styled components specific to this page
 const PageContainer = styled.div`
@@ -28,6 +24,7 @@ const Section = styled.section`
   background-color: #2d2d44;
   border-radius: 0.5rem;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 100px;
 `;
 
 const Title = styled.h1`
@@ -58,7 +55,7 @@ const Select = styled.select`
 
 const Button = styled.button<{ primary?: boolean }>`
   padding: 0.75rem 1.5rem;
-  background-color: ${props => props.primary ? '#6c5ce7' : '#a29bfe'};
+  background-color: ${(props) => (props.primary ? "#6c5ce7" : "#a29bfe")};
   color: #c7bfd4;
   border: none;
   border-radius: 0.25rem;
@@ -70,7 +67,7 @@ const Button = styled.button<{ primary?: boolean }>`
   font-family: "Cinzel", serif;
 
   &:hover {
-    background-color: ${props => props.primary ? '#bb8930' : '#3a3347'};
+    background-color: ${(props) => (props.primary ? "#bb8930" : "#3a3347")};
     transform: translateY(-2px);
   }
 
@@ -100,47 +97,6 @@ const Checkbox = styled.input`
   margin-right: 0.5rem;
 `;
 
-const ImagePreviewContainer = styled.div`
-  margin-top: 1rem;
-  width: 100%;
-  max-width: 300px;
-  position: relative;
-`;
-
-const ImagePreview = styled.div`
-  width: 100%;
-  height: 200px;
-  border: 2px dashed #3a3347;
-  border-radius: 0.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  position: relative;
-  background-color: #2d2d44;
-  font-family: "Cormorant Garamond", serif;
-`;
-
-const UploadLabel = styled.label`
-  display: inline-block;
-  background-color: #6c5ce7;
-  color: #c7bfd4;
-  padding: 0.5rem 1rem;
-  border-radius: 0.25rem;
-  cursor: pointer;
-  margin-top: 0.5rem;
-  transition: background-color 0.3s;
-  font-family: "Cinzel", serif;
-
-  &:hover {
-    background-color: #bb8930;
-  }
-`;
-
-const HiddenInput = styled.input`
-  display: none;
-`;
-
 const StepIndicator = styled.div`
   display: flex;
   justify-content: center;
@@ -152,9 +108,8 @@ const StepDot = styled.div<{ active: boolean; completed: boolean }>`
   height: 12px;
   border-radius: 50%;
   margin: 0 8px;
-  background-color: ${props => 
-    props.completed ? '#bb8930' : 
-    props.active ? '#6c5ce7' : '#3a3347'};
+  background-color: ${(props) =>
+    props.completed ? "#bb8930" : props.active ? "#6c5ce7" : "#3a3347"};
   transition: background-color 0.3s;
 `;
 
@@ -186,114 +141,278 @@ const PropertyBadge = styled.div`
   border: 1px solid #bb8930;
   font-family: "Cormorant Garamond", serif;
 `;
+
+const ArtifactPreview = styled.div`
+  width: 100%;
+  height: 400px;
+  position: relative;
+  margin-bottom: 2rem;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  background-color: #1a1a2e;
+`;
+
+const InfoGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+  margin-bottom: 2rem;
+`;
+
+const InfoSection = styled.div`
+  background-color: #1a1a2e;
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  border: 1px solid #3a3347;
+`;
+
+const InfoTitle = styled.h3`
+  color: #bb8930;
+  font-family: "Cinzel", serif;
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+`;
+
+const InfoText = styled.p`
+  color: #c7bfd4;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin: 0;
+`;
+
+const PropertyGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-bottom: 2rem;
+`;
+
+const PropertyCard = styled.div`
+  background-color: #1a1a2e;
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  border: 1px solid #3a3347;
+  text-align: center;
+`;
+
+const PropertyValue = styled.div`
+  color: #bb8930;
+  font-family: "Cinzel", serif;
+  font-size: 1.2rem;
+  margin-top: 0.5rem;
+`;
+
+const PropertyLabel = styled.div`
+  color: #c7bfd4;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+`;
+
+const StorySection = styled.div`
+  background-color: #1a1a2e;
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  border: 1px solid #3a3347;
+  margin-bottom: 2rem;
+`;
+
+const AbilityGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+`;
+
+const AbilityCard = styled.div`
+  background-color: #1a1a2e;
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  border: 1px solid #3a3347;
+`;
+
+const AbilityTitle = styled.h4`
+  color: #bb8930;
+  font-family: "Cinzel", serif;
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+`;
+
 const CreateArtifactPage = () => {
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
-    artistName: '',
-    contactInfo: '',
-    artworkTitle: '',
-    medium: '',
-    yearCreated: '',
-    description: '',
-    termsAgreed: false
+    artistName: "",
+    contactInfo: "",
+    artworkTitle: "",
+    medium: "",
+    yearCreated: "",
+    description: "",
+    termsAgreed: false,
   });
-  
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [errors, setErrors] = useState<{[key: string]: string}>({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [generatedProperties, setGeneratedProperties] = useState<{
-    class: string;
-    effect: string;
-    element: string;
-    rarity: string;
-  } | null>(null);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [generatedArtifact, setGeneratedArtifact] = useState<Artifact | null>(null);
+
+  const currentYear = new Date().getFullYear();
+  const yearOptions = Array.from(
+    { length: currentYear - 1900 + 1 },
+    (_, i) => currentYear - i
+  );
+
+  const handleInputChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
+  ) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, checked } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: checked
+      [name]: checked,
     }));
   };
 
   const handleImageUpload = (url: string) => {
     setImagePreview(url);
-    setErrors({...errors, image: ''});
+    setErrors({ ...errors, image: "" });
   };
 
   const validateImageUpload = () => {
     if (!imagePreview) {
-      setErrors({...errors, image: 'Artwork image is required'});
+      setErrors({ ...errors, image: "Artwork image is required" });
+      return false;
+    }
+    if (!formData.medium) {
+      setErrors({ ...errors, medium: "Medium is required" });
+      return false;
+    }
+    if (!formData.yearCreated.trim()) {
+      setErrors({ ...errors, yearCreated: "Year created is required" });
       return false;
     }
     return true;
   };
 
   const validateFormData = () => {
-    const newErrors: {[key: string]: string} = {};
-    
-    if (!formData.artistName.trim()) newErrors.artistName = 'Artist name is required';
-    if (!formData.artworkTitle.trim()) newErrors.artworkTitle = 'Artwork title is required';
-    if (!formData.medium) newErrors.medium = 'Medium is required';
-    if (!formData.yearCreated.trim()) newErrors.yearCreated = 'Year created is required';
-    if (!formData.description.trim()) newErrors.description = 'Description is required';
-    if (!formData.termsAgreed) newErrors.termsAgreed = 'You must agree to the terms';
-    
+    const newErrors: { [key: string]: string } = {};
+
+    if (!formData.artistName.trim())
+      newErrors.artistName = "Artist name is required";
+    if (!formData.artworkTitle.trim())
+      newErrors.artworkTitle = "Artwork title is required";
+    if (!formData.description.trim())
+      newErrors.description = "Description is required";
+    if (!formData.termsAgreed)
+      newErrors.termsAgreed = "You must agree to the terms";
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
+  const analyzeArtwork = async () => {
+    setIsAnalyzing(true);
+
+    try {
+      // Call API to analyze artwork and get suggested details
+      const response = await fetch("/api/artifacts/analyze", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          imageUrl: imagePreview,
+          medium: formData.medium,
+          yearCreated: formData.yearCreated,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to analyze artwork");
+      }
+
+      const data = await response.json();
+      setGeneratedArtifact(data);
+
+      // Pre-fill the form with analyzed data
+      setFormData((prev) => ({
+        ...prev,
+        artistName: data.artistName || prev.artistName,
+        artworkTitle: data.artworkTitle || prev.artworkTitle,
+        medium: data.medium || prev.medium,
+        yearCreated: data.yearCreated || prev.yearCreated,
+        description: data.description || prev.description,
+      }));
+    } catch (error) {
+      console.error("Error analyzing artwork:", error);
+      setErrors({
+        ...errors,
+        analyze: "Failed to analyze artwork. Please enter details manually.",
+      });
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
+
   const generateArtifactProperties = async () => {
-    setIsGenerating(true);
-    
+    setIsSubmitting(true);
+
     try {
       // Call API to generate artifact properties
-      const response = await fetch('/api/artifacts/generate-properties', {
-        method: 'POST',
+      const response = await fetch("/api/artifacts/generate-properties", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           title: formData.artworkTitle,
           medium: formData.medium,
           description: formData.description,
-          image: imagePreview
+          image: imagePreview,
         }),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to generate artifact properties');
+        throw new Error("Failed to generate artifact properties");
       }
 
       const data = await response.json();
-      setGeneratedProperties(data);
+      setGeneratedArtifact(data);
     } catch (error) {
-      console.error('Error generating properties:', error);
-      setErrors({...errors, generate: 'Failed to generate artifact properties. Please try again.'});
+      console.error("Error generating properties:", error);
+      setErrors({
+        ...errors,
+        generate: "Failed to generate artifact properties. Please try again.",
+      });
     } finally {
-      setIsGenerating(false);
+      setIsSubmitting(false);
     }
   };
 
   const handleNextStep = () => {
     if (currentStep === 1) {
       if (validateImageUpload()) {
+        analyzeArtwork();
         setCurrentStep(2);
       }
     } else if (currentStep === 2) {
+      setCurrentStep(3);
+    } else if (currentStep === 3) {
       if (validateFormData()) {
         generateArtifactProperties();
-        setCurrentStep(3);
+        setCurrentStep(4);
       }
     }
   };
@@ -306,44 +425,41 @@ const CreateArtifactPage = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!generatedProperties) {
-      setErrors({...errors, submit: 'Artifact properties must be generated first'});
+
+    if (!generatedArtifact) {
+      setErrors({
+        ...errors,
+        submit: "Artifact properties must be generated first",
+      });
       return;
     }
-    
+
     setIsSubmitting(true);
-    
+
     try {
-      const response = await fetch('/api/artifacts', {
-        method: 'POST',
+      const response = await fetch("/api/artifacts", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           artistName: formData.artistName,
           contactInfo: formData.contactInfo,
-          artworkTitle: formData.artworkTitle,
-          medium: formData.medium,
-          yearCreated: formData.yearCreated,
-          description: formData.description,
-          artifactClass: generatedProperties.class,
-          effect: generatedProperties.effect,
-          element: generatedProperties.element,
-          rarity: generatedProperties.rarity,
-          imageUrl: imagePreview
         }),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to submit artifact');
+        throw new Error("Failed to submit artifact");
       }
 
       const data = await response.json();
       router.push(`/artifacts/${data.id}`);
     } catch (error) {
-      console.error('Error submitting artifact:', error);
-      setErrors({...errors, submit: 'Failed to submit artifact. Please try again.'});
+      console.error("Error submitting artifact:", error);
+      setErrors({
+        ...errors,
+        submit: "Failed to submit artifact. Please try again.",
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -355,65 +471,7 @@ const CreateArtifactPage = () => {
         return (
           <Section>
             <SectionTitle>Upload Your Artwork</SectionTitle>
-            <p>First, upload an image of your artwork to transform it into a magical artifact.</p>
-            
-            <FormGroup>
-              <Label>Artwork Image Upload</Label>
-              <p>Required format: .jpg, .png, .gif (Max 10MB)</p>
-              
-              <UploadMedia
-                onUploadComplete={handleImageUpload}
-                accept=".jpg,.jpeg,.png,.gif"
-                maxSize={10 * 1024 * 1024}
-                label={imagePreview ? 'Change Image' : 'Select Image'}
-              />
-              {errors.image && <ErrorMessage>{errors.image}</ErrorMessage>}
-            </FormGroup>
-            
-            <Button type="button" onClick={handleNextStep} primary>
-              Continue to Artifact Details
-            </Button>
-          </Section>
-        );
-      case 2:
-        return (
-          <Section>
-            <SectionTitle>Artifact Details</SectionTitle>
-            
-            <FormGroup>
-              <Label htmlFor="artistName">Artist Name</Label>
-              <Input 
-                type="text" 
-                id="artistName" 
-                name="artistName" 
-                value={formData.artistName}
-                onChange={handleInputChange}
-              />
-              {errors.artistName && <ErrorMessage>{errors.artistName}</ErrorMessage>}
-            </FormGroup>
-            
-            <FormGroup>
-              <Label htmlFor="contactInfo">Email or Contact <OptionalText>(optional)</OptionalText></Label>
-              <Input 
-                type="text" 
-                id="contactInfo" 
-                name="contactInfo" 
-                value={formData.contactInfo}
-                onChange={handleInputChange}
-              />
-            </FormGroup>
-            
-            <FormGroup>
-              <Label htmlFor="artworkTitle">Artwork Title</Label>
-              <Input 
-                type="text" 
-                id="artworkTitle" 
-                name="artworkTitle" 
-                value={formData.artworkTitle}
-                onChange={handleInputChange}
-              />
-              {errors.artworkTitle && <ErrorMessage>{errors.artworkTitle}</ErrorMessage>}
-            </FormGroup>
+            <p>First, upload an image of your artwork and provide basic details to transform it into a magical artifact.</p>
             
             <FormGroup>
               <Label htmlFor="medium">Medium</Label>
@@ -438,107 +496,215 @@ const CreateArtifactPage = () => {
             
             <FormGroup>
               <Label htmlFor="yearCreated">Year Created</Label>
-              <Input 
-                type="text" 
+              <Select 
                 id="yearCreated" 
                 name="yearCreated" 
                 value={formData.yearCreated}
                 onChange={handleInputChange}
-              />
+              >
+                <option value="">Select Year</option>
+                {yearOptions.map(year => (
+                  <option key={year} value={year.toString()}>
+                    {year}
+                  </option>
+                ))}
+              </Select>
               {errors.yearCreated && <ErrorMessage>{errors.yearCreated}</ErrorMessage>}
             </FormGroup>
-            
+
             <FormGroup>
-              <Label htmlFor="description">Description</Label>
-              <TextArea 
-                id="description" 
-                name="description" 
-                value={formData.description}
-                onChange={handleInputChange}
-                rows={4}
+              <Label>Artwork Image Upload</Label>
+              <p>Required format: .jpg, .png, .gif (Max 10MB)</p>
+              
+              <UploadMedia
+                onUploadComplete={handleImageUpload}
+                accept=".jpg,.jpeg,.png,.gif"
+                maxSize={10 * 1024 * 1024}
+                label={imagePreview ? 'Change Image' : 'Select Image'}
               />
-              {errors.description && <ErrorMessage>{errors.description}</ErrorMessage>}
+              {errors.image && <ErrorMessage>{errors.image}</ErrorMessage>}
             </FormGroup>
             
-            <CheckboxContainer>
-              <Checkbox 
-                type="checkbox" 
-                id="termsAgreed" 
-                name="termsAgreed" 
-                checked={formData.termsAgreed}
-                onChange={handleCheckboxChange}
-              />
-              <Label htmlFor="termsAgreed" style={{ display: 'inline', marginBottom: 0 }}>
-                I confirm this is my original creation and approve its use in Collector Quest.
-              </Label>
-            </CheckboxContainer>
-            {errors.termsAgreed && <ErrorMessage>{errors.termsAgreed}</ErrorMessage>}
-            
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '1rem' }}>
-              <Button type="button" onClick={handlePrevStep}>
-                Back to Upload
-              </Button>
-              <Button type="button" onClick={handleNextStep} primary>
-                Generate Artifact Properties
-              </Button>
-            </div>
+            <Button type="button" onClick={handleNextStep} primary>
+              Continue to Artifact Properties
+            </Button>
           </Section>
         );
-      
-      case 3:
+      case 2:
         return (
           <Section>
-            <SectionTitle>Magical Artifact Properties</SectionTitle>
+            <SectionTitle>Artifact Properties</SectionTitle>
             
-            {isGenerating ? (
+            {isAnalyzing ? (
               <div style={{ textAlign: 'center', padding: '2rem' }}>
                 <p>Analyzing your artwork and generating magical properties...</p>
                 {/* Could add a loading spinner here */}
               </div>
-            ) : generatedProperties ? (
+            ) : generatedArtifact ? (
               <>
-                <p>Your artwork has been transformed into a magical artifact with the following properties:</p>
-                
-                <ArtifactPropertiesContainer>
-                  <PropertyBadge>Class: {generatedProperties.class}</PropertyBadge>
-                  <PropertyBadge>Effect: {generatedProperties.effect}</PropertyBadge>
-                  <PropertyBadge>Element: {generatedProperties.element}</PropertyBadge>
-                  <PropertyBadge>Rarity: {generatedProperties.rarity}</PropertyBadge>
-                </ArtifactPropertiesContainer>
-                
-                <div style={{ marginTop: '2rem' }}>
-                  <p>Are you satisfied with these properties for your artifact?</p>
+                <ArtifactPreview>
+                  <Image
+                    src={imagePreview || ''}
+                    alt={generatedArtifact.title}
+                    fill
+                    style={{ objectFit: 'contain' }}
+                  />
+                </ArtifactPreview>
+
+                <InfoGrid>
+                  <InfoSection>
+                    <InfoTitle>Artwork Details</InfoTitle>
+                    <InfoText>{generatedArtifact.title}</InfoText>
+                    <InfoText style={{ marginTop: '0.5rem', color: '#a29bfe' }}>
+                      {generatedArtifact.medium} • {generatedArtifact.year}
+                    </InfoText>
+                  </InfoSection>
                   
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '1rem' }}>
-                    <Button type="button" onClick={handlePrevStep}>
-                      Back to Details
-                    </Button>
-                    <Button type="button" onClick={generateArtifactProperties}>
-                      Regenerate Properties
-                    </Button>
-                    <Button type="submit" disabled={isSubmitting} primary onClick={handleSubmit}>
-                      {isSubmitting ? 'Submitting...' : 'Submit Artifact'}
-                    </Button>
-                  </div>
+                  <InfoSection>
+                    <InfoTitle>Description</InfoTitle>
+                    <InfoText style={{ fontStyle: 'italic' }}>
+                      {generatedArtifact.description}
+                    </InfoText>
+                  </InfoSection>
+                </InfoGrid>
+
+                <InfoTitle style={{ marginBottom: '1rem' }}>Magical Properties</InfoTitle>
+                <PropertyGrid>
+                  <PropertyCard>
+                    <PropertyLabel>Class</PropertyLabel>
+                    <PropertyValue>{generatedArtifact.properties.class}</PropertyValue>
+                  </PropertyCard>
+                  <PropertyCard>
+                    <PropertyLabel>Effect</PropertyLabel>
+                    <PropertyValue>{generatedArtifact.properties.effect}</PropertyValue>
+                  </PropertyCard>
+                  <PropertyCard>
+                    <PropertyLabel>Element</PropertyLabel>
+                    <PropertyValue>{generatedArtifact.properties.element}</PropertyValue>
+                  </PropertyCard>
+                  <PropertyCard>
+                    <PropertyLabel>Rarity</PropertyLabel>
+                    <PropertyValue>{generatedArtifact.properties.rarity}</PropertyValue>
+                  </PropertyCard>
+                </PropertyGrid>
+
+                <StorySection>
+                  <InfoTitle>Artifact Story</InfoTitle>
+                  <InfoText style={{ fontStyle: 'italic' }}>
+                    {generatedArtifact.story}
+                  </InfoText>
+                </StorySection>
+
+                <AbilityGrid>
+                  <AbilityCard>
+                    <AbilityTitle>Passive Bonus</AbilityTitle>
+                    <InfoText>{generatedArtifact.properties.passiveBonus}</InfoText>
+                  </AbilityCard>
+                  <AbilityCard>
+                    <AbilityTitle>Active Use</AbilityTitle>
+                    <InfoText>{generatedArtifact.properties.activeUse}</InfoText>
+                  </AbilityCard>
+                  <AbilityCard>
+                    <AbilityTitle>Unlock Condition</AbilityTitle>
+                    <InfoText>{generatedArtifact.properties.unlockCondition}</InfoText>
+                  </AbilityCard>
+                  <AbilityCard>
+                    <AbilityTitle>Reflection Trigger</AbilityTitle>
+                    <InfoText>{generatedArtifact.properties.reflectionTrigger}</InfoText>
+                  </AbilityCard>
+                </AbilityGrid>
+
+                <div style={{ display: 'flex', justifyContent: 'center', marginTop: '2rem' }}>
+                  <NextButton type="button" onClick={handleNextStep}>
+                    Claim Your Artifact
+                  </NextButton>
                 </div>
               </>
             ) : (
               <>
-                <p>Failed to generate artifact properties.</p>
-                {errors.generate && <ErrorMessage>{errors.generate}</ErrorMessage>}
-                <Button type="button" onClick={generateArtifactProperties} primary>
-                  Try Again
-                </Button>
-                <Button type="button" onClick={handlePrevStep}>
-                  Back to Details
-                </Button>
+                <p>Failed to analyze artwork.</p>
+                {errors.analyze && <ErrorMessage>{errors.analyze}</ErrorMessage>}
               </>
             )}
-            
+          </Section>
+        );
+
+      case 3:
+        return (
+          <Section>
+            {/* <SectionTitle>Claim Your Artifact</SectionTitle> */}
+
+            <FormGroup>
+              <Label htmlFor="artistName">Name</Label>
+              <Input
+                type="text"
+                id="artistName"
+                name="artistName"
+                value={formData.artistName}
+                onChange={handleInputChange}
+              />
+              {errors.artistName && (
+                <ErrorMessage>{errors.artistName}</ErrorMessage>
+              )}
+            </FormGroup>
+
+            <FormGroup>
+              <Label htmlFor="contactInfo">
+                Email or Contact <OptionalText>(optional)</OptionalText>
+              </Label>
+              <Input
+                type="text"
+                id="contactInfo"
+                name="contactInfo"
+                value={formData.contactInfo}
+                onChange={handleInputChange}
+              />
+            </FormGroup>
+
+            <CheckboxContainer>
+              <Checkbox
+                type="checkbox"
+                id="termsAgreed"
+                name="termsAgreed"
+                checked={formData.termsAgreed}
+                onChange={handleCheckboxChange}
+              />
+              <Label
+                htmlFor="termsAgreed"
+                style={{ display: "inline", marginBottom: 0 }}
+              >
+                I confirm this is my original creation and approve its use in
+                Collector Quest.
+              </Label>
+            </CheckboxContainer>
+            {errors.termsAgreed && (
+              <ErrorMessage>{errors.termsAgreed}</ErrorMessage>
+            )}
+
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                marginTop: "1rem",
+              }}
+            >
+              <Button type="button" onClick={handlePrevStep}>
+                Back to Properties
+              </Button>
+              <Button
+                type="submit"
+                disabled={isSubmitting}
+                primary
+                onClick={handleSubmit}
+              >
+                {isSubmitting ? "Submitting..." : "Submit Artifact"}
+              </Button>
+            </div>
+
             {errors.submit && <ErrorMessage>{errors.submit}</ErrorMessage>}
           </Section>
         );
-      
+
       default:
         return null;
     }
@@ -547,22 +713,22 @@ const CreateArtifactPage = () => {
   return (
     <PageContainer>
       <Title>Create an Artifact</Title>
-      
+
       <StepIndicator>
         <StepDot active={currentStep === 1} completed={currentStep > 1} />
         <StepDot active={currentStep === 2} completed={currentStep > 2} />
         <StepDot active={currentStep === 3} completed={currentStep > 3} />
       </StepIndicator>
-      
+
       <StepLabel>
-        {currentStep === 1 ? 'Step 1: Upload Artwork' : 
-         currentStep === 2 ? 'Step 2: Enter Details' : 
-         'Step 3: Generate Magical Properties'}
+        {currentStep === 1
+          ? "Step 1: Upload & Basic Details"
+          : currentStep === 2
+          ? "Step 2: Artifact Properties"
+          : "Step 3: Claim Artifact"}
       </StepLabel>
-      
-      <form onSubmit={handleSubmit}>
-        {renderStepContent()}
-      </form>
+
+      <form onSubmit={handleSubmit}>{renderStepContent()}</form>
     </PageContainer>
   );
 };

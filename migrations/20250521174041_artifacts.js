@@ -10,11 +10,9 @@ exports.up = function(knex) {
     table.string('year').notNullable();
     table.string('medium').notNullable();
     table.text('description').notNullable();
-    table.string('class').notNullable().checkIn(['Tool', 'Weapon', 'Symbol', 'Wearable', 'Key']);
-    table.string('effect').notNullable().checkIn(['Reveal', 'Heal', 'Unlock', 'Boost', 'Summon']);
-    table.string('element').notNullable().checkIn(['Fire', 'Water', 'Nature', 'Shadow', 'Light', 'Electric']);
-    table.string('rarity').notNullable().checkIn(['Common', 'Uncommon', 'Rare', 'Epic']);
     table.string('imageUrl').notNullable();
+    table.jsonb('properties').nullable();
+    table.text('story').nullable();
     table.datetime('created_at').notNullable().defaultTo(knex.fn.now());
     table.datetime('updated_at').notNullable().defaultTo(knex.fn.now());
   });

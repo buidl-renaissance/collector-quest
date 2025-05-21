@@ -2,6 +2,20 @@ import client from './client';
 import { v4 as uuidv4 } from 'uuid';
 import { Artifact } from '@/data/artifacts';
 
+interface DbArtifact {
+  id: string;
+  title: string;
+  artist: string;
+  year: string;
+  medium: string;
+  description: string;
+  properties: string;
+  imageUrl: string;
+  story: string;
+  created_at: string;
+  updated_at: string;
+}
+
 export async function getArtifact(id: string): Promise<Artifact | null> {
   try {
     const artifact = await client('artifacts').where({ id }).first();
@@ -26,20 +40,21 @@ export async function listArtifacts(limit = 20, offset = 0): Promise<Artifact[]>
   }
 }
 
-export async function createArtifact(artifactData: Omit<Artifact, 'id'>): Promise<Artifact> {
+export async function createArtifact(artifactData: Omit<Artifact, 'id' | 'created_at' | 'updated_at'>): Promise<Artifact | null> {
   const id = uuidv4();
   const now = new Date();
   
   const newArtifact = {
     id,
     ...artifactData,
+    properties: JSON.stringify(artifactData.properties),
     created_at: now,
     updated_at: now
   };
   
   try {
     await client('artifacts').insert(newArtifact);
-    return mapDbArtifactToArtifact(newArtifact);
+    return await getArtifact(id);
   } catch (error) {
     console.error('Error creating artifact:', error);
     throw new Error('Failed to create artifact');
@@ -71,7 +86,7 @@ export async function deleteArtifact(id: string): Promise<boolean> {
   }
 }
 
-function mapDbArtifactToArtifact(dbArtifact: any): Artifact {
+function mapDbArtifactToArtifact(dbArtifact: DbArtifact): Artifact {
   return {
     id: dbArtifact.id,
     title: dbArtifact.title,
@@ -79,11 +94,9 @@ function mapDbArtifactToArtifact(dbArtifact: any): Artifact {
     year: dbArtifact.year,
     medium: dbArtifact.medium,
     description: dbArtifact.description,
-    class: dbArtifact.class,
-    effect: dbArtifact.effect,
-    element: dbArtifact.element,
-    rarity: dbArtifact.rarity,
+    properties: JSON.parse(dbArtifact.properties),
     imageUrl: dbArtifact.imageUrl,
+    story: dbArtifact.story,
     created_at: dbArtifact.created_at,
     updated_at: dbArtifact.updated_at
   };

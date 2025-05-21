@@ -33,7 +33,7 @@ export default async function handler(
         effect,
         element,
         rarity,
-        imageUrl
+        imageUrl,
       });
 
       return res.status(201).json(artifact);
