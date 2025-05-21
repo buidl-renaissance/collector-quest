@@ -7,6 +7,7 @@ exports.up = function(knex) {
     table.string('id').primary();
     table.string('title').notNullable();
     table.string('artist').notNullable();
+    table.string('owner').nullable();
     table.string('year').notNullable();
     table.string('medium').notNullable();
     table.text('description').notNullable();

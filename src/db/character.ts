@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 import { Character, CharacterStatus, CharacterSheet } from "@/data/character";
 import { getClassById } from "./classes";
 import { getRaceById } from "./races";
+import crypto from "crypto";
 
 export class CharacterDB {
   async createCharacter(character: Character): Promise<string> {
@@ -27,6 +28,37 @@ export class CharacterDB {
     return id;
   }
 
+  async registerCharacter(
+    name: string,
+    email: string,
+    phone: string
+  ): Promise<Character | null> {
+    const id = uuidv4();
+
+    // Generate verification code
+    const verificationCode = crypto.randomBytes(32).toString("hex");
+    const verificationCodeExpiration = new Date(
+      Date.now() + 24 * 60 * 60 * 1000
+    ); // 24 hours from now
+
+    // Insert new pre-registration
+    await client("characters").insert({
+      id,
+      name: "",
+      real_name: name ?? "",
+      email,
+      status: "pre_registered",
+      phone: phone || null,
+      verified: false,
+      verification_code: verificationCode,
+      verification_code_expiration: verificationCodeExpiration,
+    });
+
+    const character = await this.getCharacter(id);
+
+    return character;
+  }
+
   async getCharacter(id: string): Promise<Character | null> {
     const result = await client("characters").where({ id }).first();
 
@@ -35,17 +67,17 @@ export class CharacterDB {
     const race = await getRaceById(result.race);
     const characterClass = await getClassById(result.class);
     let traits = result.traits;
-    if (typeof traits === 'string') {
+    if (typeof traits === "string") {
       traits = JSON.parse(traits);
     }
 
     let equipment = result.equipment;
-    if (typeof equipment === 'string') {
+    if (typeof equipment === "string") {
       equipment = JSON.parse(equipment);
     }
 
     let sheet = result.sheet;
-    if (typeof sheet === 'string') {
+    if (typeof sheet === "string") {
       sheet = JSON.parse(sheet);
     }
 
@@ -85,7 +117,8 @@ export class CharacterDB {
     if (character.backstory) updateData.backstory = character.backstory;
     if (character.sex) updateData.sex = character.sex;
     if (character.creature) updateData.creature = character.creature;
-    if (character.equipment) updateData.equipment = JSON.stringify(character.equipment);
+    if (character.equipment)
+      updateData.equipment = JSON.stringify(character.equipment);
     if (character.sheet) updateData.sheet = JSON.stringify(character.sheet);
 
     const count = await client("characters").where({ id }).update(updateData);
@@ -93,29 +126,39 @@ export class CharacterDB {
   }
 
   async getCharacterSheet(id: string): Promise<CharacterSheet | null> {
-    const result = await client("characters").where({ id }).select("sheet").first();
+    const result = await client("characters")
+      .where({ id })
+      .select("sheet")
+      .first();
     if (!result) return null;
     return JSON.parse(result.sheet);
   }
 
-  async updateCharacterSheet(id: string, sheet: CharacterSheet): Promise<boolean> {
+  async updateCharacterSheet(
+    id: string,
+    sheet: CharacterSheet
+  ): Promise<boolean> {
     let updateData: CharacterSheet | null = await this.getCharacterSheet(id);
     if (!updateData) {
       updateData = {};
     }
 
     if (sheet.abilities) updateData.abilities = sheet.abilities;
-    if (sheet.abilitiesScores) updateData.abilitiesScores = sheet.abilitiesScores;
+    if (sheet.abilitiesScores)
+      updateData.abilitiesScores = sheet.abilitiesScores;
     if (sheet.skills) updateData.skills = sheet.skills;
     if (sheet.deathSaves) updateData.deathSaves = sheet.deathSaves;
     if (sheet.combat) updateData.combat = sheet.combat;
-    if (sheet.featuresAndTraits) updateData.featuresAndTraits = sheet.featuresAndTraits;
+    if (sheet.featuresAndTraits)
+      updateData.featuresAndTraits = sheet.featuresAndTraits;
     if (sheet.proficiencies) updateData.proficiencies = sheet.proficiencies;
     if (sheet.languages) updateData.languages = sheet.languages;
 
-    const count = await client("characters").where({ id }).update({
-      sheet: JSON.stringify(updateData),
-    });
+    const count = await client("characters")
+      .where({ id })
+      .update({
+        sheet: JSON.stringify(updateData),
+      });
     return count > 0;
   }
 

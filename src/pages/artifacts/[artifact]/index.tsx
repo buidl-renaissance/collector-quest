@@ -80,7 +80,98 @@ const Badge = styled.span`
   font-family: "Cormorant Garamond", serif;
 `;
 
+const PropertyGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+`;
+
+const PropertyCard = styled.div`
+  background: rgba(30, 20, 50, 0.5);
+  border-radius: 6px;
+  padding: 1rem;
+  border: 1px solid #4a3b6b;
+`;
+
+const PropertyLabel = styled.div`
+  font-size: 0.9rem;
+  color: #a29bfe;
+  margin-bottom: 0.5rem;
+`;
+
+const PropertyValue = styled.div`
+  font-size: 1.1rem;
+  color: #f0e6ff;
+  font-weight: 500;
+`;
+
+const StorySection = styled.div`
+  background: rgba(30, 20, 50, 0.5);
+  border-radius: 6px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid #4a3b6b;
+`;
+
+const AbilityGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+`;
+
+const AbilityCard = styled.div`
+  background: rgba(30, 20, 50, 0.5);
+  border-radius: 6px;
+  padding: 1rem;
+  border: 1px solid #4a3b6b;
+`;
+
+const AbilityTitle = styled.div`
+  font-size: 1rem;
+  color: #bb8930;
+  margin-bottom: 0.5rem;
+`;
+
+const InfoTitle = styled.h3`
+  font-size: 1.2rem;
+  color: #bb8930;
+  margin-bottom: 0.5rem;
+`;
+
+const InfoText = styled.p`
+  color: #f0e6ff;
+  line-height: 1.6;
+`;
+
+const NextButton = styled.button`
+  background: linear-gradient(135deg, #bb8930 0%, #a67b29 100%);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  
+  &:hover {
+    background: linear-gradient(135deg, #d4a040 0%, #bb8930 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+  }
+  
+  &:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+`;
+
 const ArtifactPage = ({ artifact }: { artifact: Artifact }) => {
+  const router = useRouter();
+  
   return (
     <Container darkMode>
       <Header>
@@ -94,8 +185,8 @@ const ArtifactPage = ({ artifact }: { artifact: Artifact }) => {
           <Image 
             src={artifact.imageUrl} 
             alt={artifact.title}
-            layout="fill"
-            objectFit="cover"
+            fill
+            style={{ objectFit: 'contain' }}
           />
         </ImageContainer>
         
@@ -103,6 +194,14 @@ const ArtifactPage = ({ artifact }: { artifact: Artifact }) => {
           <ArtifactTitle>{artifact.title}</ArtifactTitle>
           <ArtistName>By {artifact.artist}, {artifact.year}</ArtistName>
           
+          <ActionButtons>
+            {!artifact.owner && (
+              <NextButton onClick={() => router.push(`/artifacts/${artifact.id}/claim`)}>
+                Claim Artifact
+              </NextButton>
+            )}
+          </ActionButtons>
+
           <DetailSection>
             <DetailTitle>Description</DetailTitle>
             <DetailContent>{artifact.description}</DetailContent>
@@ -113,49 +212,52 @@ const ArtifactPage = ({ artifact }: { artifact: Artifact }) => {
             <DetailContent>{artifact.medium}</DetailContent>
           </DetailSection>
           
-          <DetailSection>
-            <DetailTitle>Artifact Properties</DetailTitle>
-            <div>
-              <Badge>Class: {artifact.properties.class}</Badge>
-              <Badge>Effect: {artifact.properties.effect}</Badge>
-              <Badge>Element: {artifact.properties.element}</Badge>
-              <Badge>Rarity: {artifact.properties.rarity}</Badge>
-            </div>
-          </DetailSection>
+          <InfoTitle style={{ marginBottom: '1rem' }}>Magical Properties</InfoTitle>
+          <PropertyGrid>
+            <PropertyCard>
+              <PropertyLabel>Class</PropertyLabel>
+              <PropertyValue>{artifact.properties.class}</PropertyValue>
+            </PropertyCard>
+            <PropertyCard>
+              <PropertyLabel>Effect</PropertyLabel>
+              <PropertyValue>{artifact.properties.effect}</PropertyValue>
+            </PropertyCard>
+            <PropertyCard>
+              <PropertyLabel>Element</PropertyLabel>
+              <PropertyValue>{artifact.properties.element}</PropertyValue>
+            </PropertyCard>
+            <PropertyCard>
+              <PropertyLabel>Rarity</PropertyLabel>
+              <PropertyValue>{artifact.properties.rarity}</PropertyValue>
+            </PropertyCard>
+          </PropertyGrid>
 
-          <DetailSection>
-            <DetailTitle>Story</DetailTitle>
-            <DetailContent>{artifact.story}</DetailContent>
-          </DetailSection>
+          <StorySection>
+            <InfoTitle>Artifact Story</InfoTitle>
+            <InfoText style={{ fontStyle: 'italic' }}>
+              {artifact.story}
+            </InfoText>
+          </StorySection>
 
-          <DetailSection>
-            <DetailTitle>Visual Asset</DetailTitle>
-            <DetailContent>{artifact.properties.visualAsset}</DetailContent>
-          </DetailSection>
+          <AbilityGrid>
+            <AbilityCard>
+              <AbilityTitle>Passive Bonus</AbilityTitle>
+              <InfoText>{artifact.properties.passiveBonus}</InfoText>
+            </AbilityCard>
+            <AbilityCard>
+              <AbilityTitle>Active Use</AbilityTitle>
+              <InfoText>{artifact.properties.activeUse}</InfoText>
+            </AbilityCard>
+            <AbilityCard>
+              <AbilityTitle>Unlock Condition</AbilityTitle>
+              <InfoText>{artifact.properties.unlockCondition}</InfoText>
+            </AbilityCard>
+            <AbilityCard>
+              <AbilityTitle>Reflection Trigger</AbilityTitle>
+              <InfoText>{artifact.properties.reflectionTrigger}</InfoText>
+            </AbilityCard>
+          </AbilityGrid>
 
-          <DetailSection>
-            <DetailTitle>Passive Bonus</DetailTitle>
-            <DetailContent>{artifact.properties.passiveBonus}</DetailContent>
-          </DetailSection>
-
-          <DetailSection>
-            <DetailTitle>Unlock Condition</DetailTitle>
-            <DetailContent>{artifact.properties.unlockCondition}</DetailContent>
-          </DetailSection>
-          
-          <DetailSection>
-            <DetailTitle>Reflection Trigger</DetailTitle>
-            <DetailContent>{artifact.properties.reflectionTrigger}</DetailContent>
-          </DetailSection>
-
-          <DetailSection>
-            <DetailTitle>Active Use</DetailTitle>
-            <DetailContent>{artifact.properties.activeUse}</DetailContent>
-          </DetailSection>
-
-          <ActionButtons>
-            <BackButton>Collect Artifact</BackButton>
-          </ActionButtons>
         </ArtifactDetails>
       </ArtifactContainer>
     </Container>
@@ -165,7 +267,7 @@ const ArtifactPage = ({ artifact }: { artifact: Artifact }) => {
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const { artifact } = context.query;
   
-  const artifactData = getArtifact(artifact as string);
+  const artifactData = await getArtifact(artifact as string);
 
   return {
     props: {

@@ -25,6 +25,7 @@ export interface Artifact {
   id: string;
   title: string;
   artist: string;
+  owner?: string;
   year: string;
   medium: string;
   description: string;

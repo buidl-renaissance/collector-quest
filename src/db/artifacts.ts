@@ -6,6 +6,7 @@ interface DbArtifact {
   id: string;
   title: string;
   artist: string;
+  owner: string;
   year: string;
   medium: string;
   description: string;
@@ -91,6 +92,7 @@ function mapDbArtifactToArtifact(dbArtifact: DbArtifact): Artifact {
     id: dbArtifact.id,
     title: dbArtifact.title,
     artist: dbArtifact.artist,
+    owner: dbArtifact.owner,
     year: dbArtifact.year,
     medium: dbArtifact.medium,
     description: dbArtifact.description,
