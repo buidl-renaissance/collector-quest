@@ -32,6 +32,7 @@ export interface Artifact {
   properties: ArtifactProperties;
   story: string;
   imageUrl: string;
+  relicImageUrl?: string;
   created_at: string;
   updated_at: string;
 }

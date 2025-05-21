@@ -12,6 +12,7 @@ interface DbArtifact {
   description: string;
   properties: string;
   imageUrl: string;
+  relicImageUrl: string;
   story: string;
   created_at: string;
   updated_at: string;
@@ -98,6 +99,7 @@ function mapDbArtifactToArtifact(dbArtifact: DbArtifact): Artifact {
     description: dbArtifact.description,
     properties: JSON.parse(dbArtifact.properties),
     imageUrl: dbArtifact.imageUrl,
+    relicImageUrl: dbArtifact.relicImageUrl,
     story: dbArtifact.story,
     created_at: dbArtifact.created_at,
     updated_at: dbArtifact.updated_at

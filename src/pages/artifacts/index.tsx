@@ -1,13 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import styled from '@emotion/styled';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useRouter } from 'next/router';
+import { GetServerSideProps } from 'next';
 import { 
   Title,
   SectionTitle,
 } from '@/components/styled/typography';
-import { mockArtifacts, Artifact } from '@/data/artifacts';
+import { Artifact } from '@/data/artifacts';
+import { listArtifacts } from '@/db/artifacts';
 
 // Styled components
 const PageContainer = styled.div`
@@ -110,35 +111,11 @@ const EmptyState = styled.div`
   margin-top: 2rem;
 `;
 
-const LoadingSpinner = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 200px;
-`;
+interface ArtifactsPageProps {
+  artifacts: Artifact[];
+}
 
-const ArtifactsPage = () => {
-  const router = useRouter();
-  const [artifacts, setArtifacts] = useState<Artifact[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    // Simulate API fetch
-    const fetchArtifacts = async () => {
-      try {
-        // In a real app, you would fetch from an API
-        await new Promise(resolve => setTimeout(resolve, 100));
-        setArtifacts(mockArtifacts);
-      } catch (error) {
-        console.error('Error fetching artifacts:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchArtifacts();
-  }, []);
-
+const ArtifactsPage = ({ artifacts }: ArtifactsPageProps) => {
   return (
     <PageContainer>
       <Header>
@@ -150,9 +127,7 @@ const ArtifactsPage = () => {
 
       <SectionTitle>Browse Artifacts</SectionTitle>
 
-      {loading ? (
-        <LoadingSpinner>Loading artifacts...</LoadingSpinner>
-      ) : artifacts.length > 0 ? (
+      {artifacts.length > 0 ? (
         <ArtifactsGrid>
           {artifacts.map((artifact) => (
             <Link href={`/artifacts/${artifact.id}`} key={artifact.id} passHref>
@@ -161,16 +136,16 @@ const ArtifactsPage = () => {
                   <Image
                     src={artifact.imageUrl}
                     alt={artifact.title}
-                    layout="fill"
-                    objectFit="cover"
+                    fill
+                    style={{ objectFit: "cover" }}
                   />
                 </ArtifactImageContainer>
                 <ArtifactInfo>
                   <ArtifactTitle>{artifact.title}</ArtifactTitle>
                   <ArtifactArtist>By {artifact.artist}, {artifact.year}</ArtifactArtist>
                   <div>
-                    <Badge>{artifact.rarity}</Badge>
-                    <Badge>{artifact.element}</Badge>
+                    <Badge>{artifact.properties.rarity}</Badge>
+                    <Badge>{artifact.properties.element}</Badge>
                   </div>
                 </ArtifactInfo>
               </ArtifactCard>
@@ -180,13 +155,32 @@ const ArtifactsPage = () => {
       ) : (
         <EmptyState>
           <p>No artifacts found. Create your first artifact!</p>
-          <Link href="/artifacts/create" passHref>
-            <CreateButton>Create Artifact</CreateButton>
-          </Link>
+          <CreateButton href="/artifacts/create">
+            Create Artifact
+          </CreateButton>
         </EmptyState>
       )}
     </PageContainer>
   );
+};
+
+export const getServerSideProps: GetServerSideProps = async () => {
+  try {
+    const artifacts = await listArtifacts();
+    
+    return {
+      props: {
+        artifacts,
+      },
+    };
+  } catch (error) {
+    console.error('Error fetching artifacts:', error);
+    return {
+      props: {
+        artifacts: [],
+      },
+    };
+  }
 };
 
 export default ArtifactsPage;

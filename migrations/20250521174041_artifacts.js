@@ -12,6 +12,7 @@ exports.up = function(knex) {
     table.string('medium').notNullable();
     table.text('description').notNullable();
     table.string('imageUrl').notNullable();
+    table.string('relicImageUrl').nullable();
     table.jsonb('properties').nullable();
     table.text('story').nullable();
     table.datetime('created_at').notNullable().defaultTo(knex.fn.now());
