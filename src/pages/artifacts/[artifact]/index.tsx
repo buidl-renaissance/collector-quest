@@ -215,6 +215,33 @@ const CloseButton = styled.button`
   }
 `;
 
+const spinAndGlow = `
+  @keyframes spin {
+    0% {
+      transform: rotateY(0deg) scale(0.3);
+    }
+    100% {
+      transform: rotateY(360deg) scale(1);
+    }
+  }
+
+  @keyframes glow {
+    0% {
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3),
+                  0 0 20px rgba(187, 137, 48, 0.2);
+    }
+    50% {
+      box-shadow: 0 4px 30px rgba(187, 137, 48, 0.5),
+                  0 0 40px rgba(187, 137, 48, 0.4),
+                  0 0 60px rgba(187, 137, 48, 0.2);
+    }
+    100% {
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3),
+                  0 0 20px rgba(187, 137, 48, 0.2);
+    }
+  }
+`;
+
 const RelicImage = styled.div`
   position: relative;
   width: 320px;
@@ -228,6 +255,10 @@ const RelicImage = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  animation: spin 1.5s cubic-bezier(0.34, 1.56, 0.64, 1), glow 3s ease-in-out 1.5s infinite;
+  transform-style: preserve-3d;
+  perspective: 1000px;
+  ${spinAndGlow}
 `;
 
 const ArtifactPage = ({ artifact }: { artifact: Artifact }) => {
