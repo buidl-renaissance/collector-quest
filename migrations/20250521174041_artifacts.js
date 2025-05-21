@@ -27,3 +27,24 @@ exports.up = function(knex) {
 exports.down = function(knex) {
   return knex.schema.dropTable('artifacts');
 };
+
+// MySQL equivalent create table query stored as a string
+const mysqlCreateTableQuery = `
+CREATE TABLE artifacts (
+  id VARCHAR(255) PRIMARY KEY,
+  title VARCHAR(255) NOT NULL,
+  artist VARCHAR(255) NOT NULL,
+  owner VARCHAR(255),
+  year VARCHAR(255) NOT NULL,
+  medium VARCHAR(255) NOT NULL,
+  description TEXT NOT NULL,
+  imageUrl VARCHAR(255) NOT NULL,
+  relicImageUrl VARCHAR(255),
+  properties JSON,
+  story TEXT,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+`;
+
+
