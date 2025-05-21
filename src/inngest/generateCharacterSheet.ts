@@ -50,12 +50,14 @@ export const generateCharacterSheet = inngest.createFunction(
     updateResult(event.data.resultId!, JSON.stringify({
       message: "Calculated character abilities",
       step: "calculate-abilities",
-      abilities: abilitiesResult.abilities,
-      abilitiesScores: abilitiesResult.abilitiesScores,
+      sheet: {
+        abilities: abilitiesResult.abilities,
+        abilitiesScores: abilitiesResult.abilitiesScores,
+      }
     }));
 
     // Step 1: Calculate base stats
-    const baseStatsResult = await step.run("calculate-base-stats", async () => {
+    const combatResult = await step.run("calculate-combat", async () => {
       // Calculate armor class based on class, race, and equipment
       const armorClass = await generateArmor(character);
       
@@ -65,38 +67,42 @@ export const generateCharacterSheet = inngest.createFunction(
       // Calculate speed based on race and class
       const speed = await generateSpeed(character);
 
+      const combat = {
+        attacks: [],
+        armor: armorClass,
+        initiative: initiative,
+        speed: speed,
+        currentHitPoints: 0,
+        hitDice: {
+          type: "d8",
+          bonus: 0,
+          count: 1,
+          current: 0,
+        },
+      };
+
       if (character.id) {
         characterDB.updateCharacterSheet(character.id, {
-          combat: {
-            attacks: [],
-            armor: armorClass,
-            initiative: initiative,
-            speed: speed,
-            currentHitPoints: 0,
-            hitDice: {
-              type: "d8",
-              bonus: 0,
-              count: 1,
-              current: 0,
-            },
-          },
+          combat: combat,
         });
       }
 
+      updateResult(event.data.resultId!, JSON.stringify({
+        message: "Calculated base character statistics",
+        step: "calculate-base-stats",
+        sheet: {
+          abilities: abilitiesResult.abilities,
+          abilitiesScores: abilitiesResult.abilitiesScores,
+          combat: combat,
+        }
+      }));
+  
       return {
         step: "calculate-base-stats",
         message: "Calculated base character statistics",
-        stats: { armorClass, initiative, speed }
+        combat: combat,
       };
     });
-
-    updateResult(event.data.resultId!, JSON.stringify({
-      message: "Calculated base character statistics",
-      step: "calculate-base-stats",
-      armorClass: baseStatsResult.stats.armorClass,
-      initiative: baseStatsResult.stats.initiative,
-      speed: baseStatsResult.stats.speed,
-    }));
 
     // Step 2: Generate skills
     const skillsResult = await step.run("generate-skills", async () => {
@@ -106,6 +112,17 @@ export const generateCharacterSheet = inngest.createFunction(
           skills: characterSkills,
         });
       }
+      updateResult(event.data.resultId!, JSON.stringify({
+        message: "Generated character skills",
+        step: "generate-skills",
+        sheet: {
+          abilities: abilitiesResult.abilities,
+          abilitiesScores: abilitiesResult.abilitiesScores,
+          combat: combatResult.combat,
+          skills: characterSkills,
+        }
+      }));
+  
       return {
         step: "generate-skills",
         message: "Generated character skills",
@@ -113,12 +130,6 @@ export const generateCharacterSheet = inngest.createFunction(
       };
     });
     
-    updateResult(event.data.resultId!, JSON.stringify({
-      message: "Generated character skills",
-      step: "generate-skills",
-      skills: skillsResult.skills,
-    }));
-
     // Step 3: Generate features and traits
     const featuresAndTraitsResult = await step.run("generate-features-traits", async () => {
       const featuresAndTraits = await generateFeaturesTraits(character);
@@ -127,6 +138,17 @@ export const generateCharacterSheet = inngest.createFunction(
           featuresAndTraits: featuresAndTraits,
         });
       }
+      completeResult(event.data.resultId!, JSON.stringify({
+        message: "Generated character features and traits",
+        step: "generate-features-traits",
+        sheet: {
+          abilities: abilitiesResult.abilities,
+          abilitiesScores: abilitiesResult.abilitiesScores,
+          combat: combatResult.combat,
+          skills: skillsResult.skills,
+          featuresAndTraits: featuresAndTraits,
+        }
+      }));
       return {
         step: "generate-features-traits",
         message: "Generated character features and traits",
@@ -134,18 +156,12 @@ export const generateCharacterSheet = inngest.createFunction(
       };
     });
 
-    completeResult(event.data.resultId!, JSON.stringify({
-      message: "Generated character features and traits",
-      step: "generate-features-traits",
-      featuresAndTraits: featuresAndTraitsResult.featuresAndTraits,
-    }));
-
     return {
       success: true,
       sheet: {
-        armorClass: baseStatsResult.stats.armorClass,
-        initiative: baseStatsResult.stats.initiative,
-        speed: baseStatsResult.stats.speed,
+        abilities: abilitiesResult.abilities,
+        abilitiesScores: abilitiesResult.abilitiesScores,
+        combat: combatResult.combat,
         skills: skillsResult.skills,
         featuresAndTraits: featuresAndTraitsResult.featuresAndTraits,
       }

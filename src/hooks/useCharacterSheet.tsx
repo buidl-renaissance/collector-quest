@@ -20,7 +20,6 @@ export function useCharacterSheet() {
   const [pollAttempts, setPollAttempts] = useState(0);
   const [resultId, setResultId] = useState<string | null>(null);
   const [resultData, setResultData] = useState<any>(null);
-  const [generatedImage, setGeneratedImage] = useState<string | null>(null);
 
   useEffect(() => {
     if (!character?.sheet && !loading && !resultId) {
@@ -87,8 +86,12 @@ export function useCharacterSheet() {
         const resultData = result.result ? JSON.parse(result.result) : {};
         console.log('result', resultData);
         setResultData(resultData);
-        if (result.status === 'completed' && resultData.imageUrl) {
-          setGeneratedImage(resultData.imageUrl);
+        if (result.status === 'completed' && resultData.sheet) {
+          setCharacterSheet(resultData.sheet);
+          setPollStatus('completed');
+          setError(null);
+        } else if (result.status === 'pending' && resultData.sheet) {
+          setCharacterSheet(resultData.sheet);
           setPollStatus('completed');
           setError(null);
         } else if (result.status === 'failed' || result.status === 'error') {
