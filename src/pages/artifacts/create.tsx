@@ -33,6 +33,7 @@ const Section = styled.section`
   
   @media (min-width: 640px) {
     padding: 1.5rem;
+    margin-bottom: 120px;
   }
 `;
 
@@ -42,7 +43,7 @@ const Title = styled.h1`
   margin-top: 1rem;
   margin-bottom: 1.5rem;
   text-align: center;
-  font-size: 1.5rem;
+  font-size: 2.5rem;
   
   @media (min-width: 640px) {
     margin-bottom: 2rem;
@@ -53,8 +54,8 @@ const Title = styled.h1`
 const SectionTitle = styled.h2`
   font-family: "Cinzel", serif;
   color: #bb8930;
-  margin-bottom: 1rem;
-  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  font-size: 1.2rem;
   
   @media (min-width: 640px) {
     margin-bottom: 1.5rem;
@@ -64,7 +65,7 @@ const SectionTitle = styled.h2`
 
 const SectionDescription = styled.p`
   font-family: "Cormorant Garamond", serif;
-  font-size: 1.2rem;
+  font-size: 1rem;
   margin-bottom: 1rem;
 `;
 
@@ -118,6 +119,35 @@ const Button = styled.button<{ primary?: boolean }>`
     cursor: not-allowed;
     transform: none;
   }
+`;
+
+// Add new styled component for bottom nav
+const BottomNav = styled.div`
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(30, 20, 50, 0.95);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid #4a3b6b;
+  padding: 1rem;
+  display: flex;
+  justify-content: center;
+  z-index: 100;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+
+  @media (min-width: 768px) {
+    padding: 1.5rem;
+  }
+`;
+
+const ActionButton = styled(Button)`
+  width: 100%;
+  max-width: 300px;
+  margin: 0;
+  font-size: 1.1rem;
+  padding: 1rem 2rem;
+  background-color: #bb8930;
 `;
 
 const CreateArtifactPage = () => {
@@ -284,6 +314,15 @@ const CreateArtifactPage = () => {
     }
   };
 
+  const isFormValid = () => {
+    return (
+      imagePreview !== null &&
+      formData.medium !== "" &&
+      formData.yearCreated !== "" &&
+      !isSubmitting
+    );
+  };
+
   return (
     <PageContainer>
       <Title>Create an Artifact</Title>
@@ -296,12 +335,13 @@ const CreateArtifactPage = () => {
 
         <form onSubmit={handleSubmit}>
           <FormGroup>
-            <Label htmlFor="medium">Medium</Label>
+            <Label htmlFor="medium">Medium <span style={{ color: '#bb8930' }}>*</span></Label>
             <Select
               id="medium"
               name="medium"
               value={formData.medium}
               onChange={handleInputChange}
+              required
             >
               <option value="">Select Medium</option>
               <option value="Acrylic">Acrylic</option>
@@ -317,14 +357,16 @@ const CreateArtifactPage = () => {
           </FormGroup>
 
           <FormGroup>
-            <Label htmlFor="yearCreated">Year Created</Label>
+            <Label htmlFor="yearCreated">Year Created <span style={{ color: '#bb8930' }}>*</span></Label>
             <Select
               id="yearCreated"
               name="yearCreated"
               value={formData.yearCreated}
               onChange={handleInputChange}
+              required
             >
               <option value="">Select Year</option>
+              <option value="Unknown">Unknown</option>
               {yearOptions.map((year) => (
                 <option key={year} value={year.toString()}>
                   {year}
@@ -337,7 +379,7 @@ const CreateArtifactPage = () => {
           </FormGroup>
 
           <FormGroup>
-            <Label>Artwork Image Upload</Label>
+            <Label>Artwork Image Upload <span style={{ color: '#bb8930' }}>*</span></Label>
             <p>Required format: .jpg, .png, .gif (Max 10MB)</p>
 
             <UploadMedia
@@ -349,21 +391,24 @@ const CreateArtifactPage = () => {
             {errors.image && <ErrorMessage>{errors.image}</ErrorMessage>}
           </FormGroup>
 
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              marginTop: "2rem",
-            }}
-          >
-            <Button type="submit" disabled={isSubmitting} primary>
-              {isSubmitting ? "Creating..." : "Create Artifact"}
-            </Button>
-          </div>
-
           {errors.submit && <ErrorMessage>{errors.submit}</ErrorMessage>}
         </form>
       </Section>
+
+      <BottomNav>
+        <ActionButton 
+          type="submit" 
+          disabled={!isFormValid()} 
+          primary
+          style={{ 
+            opacity: isFormValid() ? 1 : 0.6,
+            cursor: isFormValid() ? 'pointer' : 'not-allowed'
+          }}
+          onClick={handleSubmit}
+        >
+          {isSubmitting ? "Creating..." : "Create Artifact"}
+        </ActionButton>
+      </BottomNav>
     </PageContainer>
   );
 };

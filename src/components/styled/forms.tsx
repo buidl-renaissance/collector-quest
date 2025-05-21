@@ -21,7 +21,7 @@ export const FormSection = styled.div`
 
 export const Label = styled.label`
   display: block;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.05rem;
   font-weight: bold;
   color: #bb8930;
 `;
