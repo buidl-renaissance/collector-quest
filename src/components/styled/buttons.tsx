@@ -13,7 +13,7 @@ export const BackButton = styled.button`
   font-size: 1rem;
   cursor: pointer;
   transition: all 0.3s;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
   
   &:hover {
     background-color: rgba(187, 137, 48, 0.1);
