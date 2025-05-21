@@ -178,3 +178,111 @@ function handleUploadError(fileName: string): UploadResult | UploadError {
     error: 'Failed to upload to Digital Ocean Spaces'
   };
 }
+
+/**
+ * Downloads an image from a URL and uploads it to Digital Ocean Spaces
+ * @param imageUrl The URL of the image to download
+ * @param folderPath Optional folder path within the bucket
+ * @returns Upload result or error
+ */
+export async function downloadAndUploadImage(imageUrl: string, folderPath: string = ''): Promise<UploadResult | UploadError> {
+  try {
+    // Fetch the image
+    const response = await fetch(imageUrl);
+    
+    if (!response.ok) {
+      return {
+        error: 'Failed to download image',
+        details: `HTTP status ${response.status}`
+      };
+    }
+    
+    // Get the image data as buffer
+    const imageBuffer = await response.arrayBuffer();
+    
+    // Create a temporary file
+    const tempDir = os.tmpdir();
+    const fileExtension = getFileExtension(imageUrl);
+    const fileName = `${folderPath ? folderPath + '/' : ''}${uuidv4()}${fileExtension}`;
+    const filepath = path.join(tempDir, fileName);
+    
+    // Write the buffer to the temp file
+    fs.writeFileSync(filepath, Buffer.from(imageBuffer));
+    
+    // Upload the file to Digital Ocean Spaces
+    if (!s3Client || !spaceName) {
+      return handleMissingConfig();
+    }
+    
+    const fileStream = fs.createReadStream(filepath);
+    
+    const uploadParams = {
+      Bucket: spaceName,
+      Key: fileName,
+      Body: fileStream,
+      ACL: ObjectCannedACL.public_read,
+      ContentType: getContentType(fileExtension)
+    };
+    
+    try {
+      await s3Client.send(new PutObjectCommand(uploadParams));
+    } catch (uploadError) {
+      console.error('Error uploading to Digital Ocean Spaces:', uploadError);
+      fs.unlinkSync(filepath);
+      return handleUploadError(fileName);
+    }
+    
+    // Clean up the temp file
+    fs.unlinkSync(filepath);
+    
+    const fileUrl = `${endpoint}/${spaceName}/${fileName}`;
+    
+    return {
+      success: true,
+      url: fileUrl,
+      key: fileName
+    };
+  } catch (error) {
+    console.error('Error in downloadAndUploadImage:', error);
+    return {
+      error: 'Failed to process image',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    };
+  }
+}
+
+/**
+ * Gets the file extension from a URL
+ * @param url The URL to extract extension from
+ * @returns The file extension including the dot
+ */
+function getFileExtension(url: string): string {
+  // Try to get extension from URL path
+  const pathname = new URL(url).pathname;
+  const extension = path.extname(pathname).toLowerCase();
+  
+  // If we got a valid extension, return it
+  if (extension && ['.jpg', '.jpeg', '.png', '.gif', '.webp'].includes(extension)) {
+    return extension;
+  }
+  
+  // Default to .jpg if no valid extension found
+  return '.jpg';
+}
+
+/**
+ * Gets the content type based on file extension
+ * @param extension The file extension
+ * @returns The appropriate content type
+ */
+function getContentType(extension: string): string {
+  const contentTypes: Record<string, string> = {
+    '.jpg': 'image/jpeg',
+    '.jpeg': 'image/jpeg',
+    '.png': 'image/png',
+    '.gif': 'image/gif',
+    '.webp': 'image/webp'
+  };
+  
+  return contentTypes[extension] || 'image/jpeg';
+}

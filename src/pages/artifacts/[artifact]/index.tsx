@@ -169,8 +169,101 @@ const NextButton = styled.button`
   }
 `;
 
+// Add Modal styled components
+const ModalOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.75);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+`;
+
+const ModalContent = styled.div`
+  background: rgba(30, 20, 50, 0.95);
+  border-radius: 12px;
+  padding: 2rem;
+  max-width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  border: 1px solid #bb8930;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+`;
+
+const CloseButton = styled.button`
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  color: #bb8930;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  line-height: 1;
+  
+  &:hover {
+    color: #d4a040;
+  }
+`;
+
+const RelicImage = styled.div`
+  position: relative;
+  width: 100%;
+  height: 400px;
+  margin-bottom: 1.5rem;
+  border-radius: 8px;
+  overflow: hidden;
+`;
+
+const RelicTitle = styled.h2`
+  font-family: "Cinzel", serif;
+  color: #bb8930;
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+  text-align: center;
+`;
+
 const ArtifactPage = ({ artifact }: { artifact: Artifact }) => {
   const router = useRouter();
+  const [showRelicModal, setShowRelicModal] = useState(false);
+  const [generatedRelic, setGeneratedRelic] = useState<{ relicImageUrl: string } | null>(null);
+  const [isGenerating, setIsGenerating] = useState(false);
+
+  const handleGenerateRelic = async () => {
+    setShowRelicModal(true);
+    setIsGenerating(true);
+    try {
+      const response = await fetch('/api/artifacts/relic', {
+        method: 'POST',
+        body: JSON.stringify({ artifactId: artifact.id }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to generate relic');
+      }
+      
+      const data = await response.json();
+      setGeneratedRelic(data);
+    } catch (error) {
+      console.error('Error generating relic:', error);
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const closeModal = () => {
+    setShowRelicModal(false);
+    setGeneratedRelic(null);
+  };
   
   return (
     <Container darkMode>
@@ -198,6 +291,11 @@ const ArtifactPage = ({ artifact }: { artifact: Artifact }) => {
             {!artifact.owner && (
               <NextButton onClick={() => router.push(`/artifacts/${artifact.id}/claim`)}>
                 Claim Artifact
+              </NextButton>
+            )}
+            {!artifact.relicImageUrl && (
+              <NextButton onClick={handleGenerateRelic}>
+                Generate Relic
               </NextButton>
             )}
           </ActionButtons>
@@ -260,6 +358,28 @@ const ArtifactPage = ({ artifact }: { artifact: Artifact }) => {
 
         </ArtifactDetails>
       </ArtifactContainer>
+
+      {showRelicModal && (
+        <ModalOverlay onClick={closeModal}>
+          <ModalContent onClick={e => e.stopPropagation()}>
+            <CloseButton onClick={closeModal}>×</CloseButton>
+            {isGenerating ? (
+              <LoadingContainer>
+                <LoadingMessage>Generating your relic...</LoadingMessage>
+              </LoadingContainer>
+            ) : generatedRelic ? (
+              <RelicImage>
+                <Image
+                  src={generatedRelic.relicImageUrl}
+                  alt="Generated Relic"
+                  fill
+                  style={{ objectFit: 'contain' }}
+                />
+              </RelicImage>
+            ) : null}
+          </ModalContent>
+        </ModalOverlay>
+      )}
     </Container>
   );
 };

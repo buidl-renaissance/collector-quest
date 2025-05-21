@@ -6,6 +6,20 @@ const nextConfig: NextConfig = {
   transpilePackages: ['inngest'],
   images: {
     domains: ['dpop.nyc3.digitaloceanspaces.com'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'nyc3.digitaloceanspaces.com',
+        port: '',
+        pathname: '/dpop/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'dpop.nyc3.digitaloceanspaces.com',
+        port: '',
+        pathname: '/**',
+      },
+    ],
   },
   webpack: (config, { isServer }) => {
     if (!isServer) {
