@@ -29,10 +29,12 @@ export default async function handler(
         year: yearCreated,
         medium,
         description,
-        class: artifactClass,
-        effect,
-        element,
-        rarity,
+        properties: {
+          class: artifactClass,
+          effect,
+          element,
+          rarity,
+        },
         imageUrl,
       });
 

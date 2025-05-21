@@ -30,7 +30,7 @@ export interface Artifact {
   medium: string;
   description: string;
   properties: ArtifactProperties;
-  story: string;
+  story?: string;
   imageUrl: string;
   relicImageUrl?: string;
   created_at: string;

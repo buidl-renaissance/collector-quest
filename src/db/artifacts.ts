@@ -13,7 +13,7 @@ interface DbArtifact {
   properties: string;
   imageUrl: string;
   relicImageUrl: string;
-  story: string;
+  story?: string;
   created_at: string;
   updated_at: string;
 }

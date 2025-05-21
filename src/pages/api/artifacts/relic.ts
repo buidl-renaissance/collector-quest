@@ -25,7 +25,7 @@ export default async function handler(
     }
 
     // Generate the relic
-    const result = await generateRelic(artifact);
+    const result = await generateRelic(artifact, '');
 
     if (!result.success) {
       return res.status(500).json({ error: result.error });
