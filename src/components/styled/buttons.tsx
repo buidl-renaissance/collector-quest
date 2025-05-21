@@ -5,7 +5,7 @@ export const BackButton = styled.button`
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.8rem 1.5rem;
+  padding: 0.6rem 1.2rem;
   background-color: transparent;
   color: #bb8930;
   border: 1px solid #bb8930;
@@ -14,6 +14,7 @@ export const BackButton = styled.button`
   cursor: pointer;
   transition: all 0.3s;
   margin-bottom: 1rem;
+  font-family: "Cormorant Garamond", serif;
   
   &:hover {
     background-color: rgba(187, 137, 48, 0.1);
