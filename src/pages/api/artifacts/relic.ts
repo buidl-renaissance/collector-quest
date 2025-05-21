@@ -25,7 +25,9 @@ export default async function handler(
     }
 
     // Generate the relic
-    const result = await generateRelic(artifact, '');
+    const result = await generateRelic(artifact, 'https://www.collectorquest.ai/images/relic-example.png');
+
+    console.log('Generated relic:', result);
 
     if (!result.success) {
       return res.status(500).json({ error: result.error });

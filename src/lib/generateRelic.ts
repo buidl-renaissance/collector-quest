@@ -1,6 +1,6 @@
 import { Artifact } from '@/data/artifacts';
 import OpenAI from 'openai';
-import { downloadAndUploadImage, UploadResult, UploadError } from './imageUpload';
+import { downloadAndUploadImage, UploadResult, UploadError, uploadBase64Image } from './imageUpload';
 
 /**
  * Generates a game relic/artifact based on the provided artifact
@@ -20,7 +20,9 @@ export const generateRelic = async (artifact: Artifact, inspirationImageUrl?: st
 
 The relic should sit on a stone-tiled pedestal, radiating magical sparks and ambient particles in blues, golds, and purples that reflect its essence. ${artifact.description}
 
-Style the relic with warm lighting, soft glows, and intricate metallic textures. It should appear ancient and powerful, with a dark and atmospheric background that makes the magical elements stand out. The design should be suitable for display in a game inventory or artifact compendium.`;
+Style the relic with warm lighting, soft glows, and intricate metallic textures. It should appear ancient and powerful, with a dark and atmospheric background that makes the magical elements stand out. The design should be suitable for display in a game inventory or artifact compendium.
+
+The relic embodies this story: ${artifact.story}`;
 
     // Add inspiration image context if provided
     if (inspirationImageUrl) {
@@ -48,7 +50,7 @@ The image should be a high resolution image, 1024x1024px, and contain only the g
         size: "1024x1024",
       };
 
-      // If we have an inspiration image, use it with the image variation API
+      // If we have an inspiration image, use it with the image edit API
       if (inspirationImageUrl) {
         try {
           // First download the inspiration image
@@ -57,26 +59,41 @@ The image should be a high resolution image, 1024x1024px, and contain only the g
             throw new Error(`Failed to fetch inspiration image: ${response.status}`);
           }
           
-          // Convert to base64 or use directly depending on OpenAI's API requirements
+          // Convert to File object for the API
           const imageBlob = await response.blob();
           const imageFile = new File([imageBlob], "inspiration.png", { type: "image/png" });
           
-          // Use the image variation API instead of text-to-image
-          const variationResponse = await openai.images.createVariation({
+          // Get mask image
+          const maskResponse = await fetch("https://collectorquest.ai/images/mask.png");
+          if (!maskResponse.ok) {
+            throw new Error(`Failed to fetch mask image: ${maskResponse.status}`);
+          }
+          const maskBlob = await maskResponse.blob();
+          const maskFile = new File([maskBlob], "mask.png", { type: "image/png" });
+          
+          console.log('Generating relic image with prompt:', prompt);
+
+          // Use the image edit API instead of variation
+          const editResponse = await openai.images.edit({
+            model: "gpt-image-1",
             image: imageFile,
+            mask: maskFile,
+            prompt: `with this image as a reference, keep the style of the image, and generate a ${prompt}`,
             n: 1,
             size: "1024x1024",
           });
+
+          // console.log('Edit response:', editResponse);
           
-          if (variationResponse.data[0]?.url) {
-            const result: UploadResult = await downloadAndUploadImage(variationResponse.data[0].url) as UploadResult;
+          if (editResponse.data[0]?.b64_json) {
+            const result: UploadResult = await uploadBase64Image(editResponse.data[0].b64_json) as UploadResult;
             console.log('Generated new image for relic with inspiration:', artifact.title);
             console.log('Generated new image URL:', result.url);
             artifact.relicImageUrl = result.url;
           }
-        } catch (variationError) {
-          console.error('Error generating image variation:', variationError);
-          // Fall back to standard generation if variation fails
+        } catch (editError) {
+          console.error('Error generating image edit:', editError);
+          // Fall back to standard generation if edit fails
           const standardResponse = await openai.images.generate(imageGenerationOptions);
           if (standardResponse.data[0]?.url) {
             const result: UploadResult = await downloadAndUploadImage(standardResponse.data[0].url) as UploadResult;

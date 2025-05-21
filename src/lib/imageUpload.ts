@@ -62,29 +62,21 @@ export async function uploadBase64Image(image: string): Promise<UploadResult | U
     const base64Data = image.replace(/^data:image\/\w+;base64,/, '');
     const buffer = Buffer.from(base64Data, 'base64');
     
-    // Determine file type from the data URL
-    const fileType = image.split(';')[0].split('/')[1] || 'png';
-    const fileName = `${uuidv4()}.${fileType}`;
-    
-    // Create a temporary file
-    const tempFilePath = path.join(os.tmpdir(), fileName);
-    fs.writeFileSync(tempFilePath, buffer);
+    // Generate a simple UUID for the filename
+    const fileName = `${uuidv4()}.png`;
     
     try {
       await s3Client.send(new PutObjectCommand({
         Bucket: spaceName,
         Key: fileName,
         Body: buffer,
-        ContentType: `image/${fileType}`,
+        ContentType: 'image/png',
         ACL: 'public-read' as ObjectCannedACL
       }));
     } catch (uploadError) {
       console.error('Digital Ocean Spaces upload error:', uploadError);
       return handleUploadError(fileName);
     }
-    
-    // Clean up the temp file
-    fs.unlinkSync(tempFilePath);
     
     const fileUrl = `${endpoint}/${spaceName}/${fileName}`;
     
