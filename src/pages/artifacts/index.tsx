@@ -14,14 +14,25 @@ import { listArtifacts } from '@/db/artifacts';
 const PageContainer = styled.div`
   max-width: 1200px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 1rem;
+  
+  @media (min-width: 640px) {
+    padding: 2rem;
+  }
 `;
 
 const Header = styled.div`
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 2rem;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  
+  @media (min-width: 640px) {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+  }
 `;
 
 const CreateButton = styled.a`
@@ -35,6 +46,13 @@ const CreateButton = styled.a`
   transition: background-color 0.3s, transform 0.2s;
   text-decoration: none;
   font-family: "Cinzel", serif;
+  text-align: center;
+  width: 100%;
+  
+  @media (min-width: 640px) {
+    width: auto;
+  }
+  
   &:hover {
     background-color: #bb8930;
     transform: translateY(-2px);
@@ -44,10 +62,15 @@ const CreateButton = styled.a`
 const ArtifactsGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(1, 1fr);
-  gap: 2rem;
+  gap: 1rem;
+  
+  @media (min-width: 480px) {
+    gap: 1.5rem;
+  }
   
   @media (min-width: 640px) {
     grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
   }
   
   @media (min-width: 1024px) {
@@ -71,24 +94,51 @@ const ArtifactCard = styled.div`
 const ArtifactImageContainer = styled.div`
   position: relative;
   width: 100%;
-  height: 250px;
+  height: 200px;
+  
+  @media (min-width: 640px) {
+    height: 220px;
+  }
+  
+  @media (min-width: 1024px) {
+    height: 250px;
+  }
 `;
 
 const ArtifactInfo = styled.div`
-  padding: 1.5rem;
+  padding: 1rem;
+  
+  @media (min-width: 640px) {
+    padding: 1.5rem;
+  }
 `;
 
 const ArtifactTitle = styled.h3`
   font-family: "Cinzel", serif;
-  font-size: 1.25rem;
+  font-size: 1.1rem;
   color: #bb8930;
   margin-bottom: 0.5rem;
+  
+  @media (min-width: 640px) {
+    font-size: 1.25rem;
+  }
 `;
 
 const ArtifactArtist = styled.p`
   color: #c7bfd4;
-  font-size: 0.9rem;
-  margin-bottom: 1rem;
+  font-size: 0.85rem;
+  margin-bottom: 0.75rem;
+  
+  @media (min-width: 640px) {
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+  }
+`;
+
+const BadgeContainer = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 `;
 
 const Badge = styled.span`
@@ -97,18 +147,25 @@ const Badge = styled.span`
   color: #bb8930;
   padding: 0.2rem 0.5rem;
   border-radius: 4px;
-  margin-right: 0.5rem;
-  margin-bottom: 0.5rem;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   border: 1px solid #bb8930;
+  
+  @media (min-width: 640px) {
+    font-size: 0.8rem;
+  }
 `;
 
 const EmptyState = styled.div`
   text-align: center;
-  padding: 3rem;
+  padding: 2rem;
   background-color: #2d2d44;
   border-radius: 0.5rem;
-  margin-top: 2rem;
+  margin-top: 1.5rem;
+  
+  @media (min-width: 640px) {
+    padding: 3rem;
+    margin-top: 2rem;
+  }
 `;
 
 interface ArtifactsPageProps {
@@ -143,10 +200,10 @@ const ArtifactsPage = ({ artifacts }: ArtifactsPageProps) => {
                 <ArtifactInfo>
                   <ArtifactTitle>{artifact.title}</ArtifactTitle>
                   <ArtifactArtist>By {artifact.artist}, {artifact.year}</ArtifactArtist>
-                  <div>
+                  <BadgeContainer>
                     <Badge>{artifact.properties.rarity}</Badge>
                     <Badge>{artifact.properties.element}</Badge>
-                  </div>
+                  </BadgeContainer>
                 </ArtifactInfo>
               </ArtifactCard>
             </Link>
