@@ -78,7 +78,7 @@ The image should be a high resolution image, 1024x1024px, and contain only the g
             model: "gpt-image-1",
             image: imageFile,
             mask: maskFile,
-            prompt: `with this image as a reference, keep the style of the image, and generate a ${prompt}`,
+            prompt: `with this image as a reference, keep the style of the image, maintain the transparent background, and generate a ${prompt}`,
             n: 1,
             size: "1024x1024",
           });
