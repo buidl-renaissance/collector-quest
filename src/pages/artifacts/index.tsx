@@ -161,6 +161,11 @@ const EmptyState = styled.div`
   background-color: #2d2d44;
   border-radius: 0.5rem;
   margin-top: 1.5rem;
+  font-family: "Cormorant Garamond", serif;
+  p {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+  }
   
   @media (min-width: 640px) {
     padding: 3rem;
