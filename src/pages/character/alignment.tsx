@@ -58,40 +58,40 @@ const AlignmentPage: React.FC = () => {
   };
 
   return (
-    <Page darkMode={true}>
-      <BackButton onClick={handleBack}>
-        <FaArrowLeft /> Back to Background
-      </BackButton>
+      <Page darkMode={true}>
+        <BackButton onClick={handleBack}>
+          <FaArrowLeft /> Back to Background
+        </BackButton>
 
-      <HeroSection>
-        <Title>Choose Your Moral Compass</Title>
-        <Subtitle>
+        <HeroSection>
+          <Title>Choose Your Moral Compass</Title>
+          <Subtitle>
           Your alignment reflects your character&apos;s ethical and moral stance in the world.{" "}
           <LearnMore href="#" onClick={handleLearnMoreClick}>
             Learn more.
           </LearnMore>
-        </Subtitle>
-      </HeroSection>
+          </Subtitle>
+        </HeroSection>
 
-      <AlignmentSection>
-        <AlignmentHeader>
-          <AlignmentTitle>Alignment</AlignmentTitle>
-        </AlignmentHeader>
+        <AlignmentSection>
+          <AlignmentHeader>
+            <AlignmentTitle>Alignment</AlignmentTitle>
+          </AlignmentHeader>
 
-        <AlignmentGrid>
-          {alignments.map((alignment) => (
-            <AlignmentCard 
-              key={alignment.name}
-              isSelected={selectedAlignment === alignment.name}
-              onClick={() => handleAlignmentSelect(alignment.name)}
-            >
-              <AlignmentName>{alignment.name}</AlignmentName>
-              <AlignmentDescription>{alignment.description}</AlignmentDescription>
-              <AlignmentExample>Example: {alignment.example}</AlignmentExample>
-            </AlignmentCard>
-          ))}
-        </AlignmentGrid>
-      </AlignmentSection>
+          <AlignmentGrid>
+            {alignments.map((alignment) => (
+              <AlignmentCard 
+                key={alignment.name}
+                isSelected={selectedAlignment === alignment.name}
+                onClick={() => handleAlignmentSelect(alignment.name)}
+              >
+                <AlignmentName>{alignment.name}</AlignmentName>
+                <AlignmentDescription>{alignment.description}</AlignmentDescription>
+                <AlignmentExample>Example: {alignment.example}</AlignmentExample>
+              </AlignmentCard>
+            ))}
+          </AlignmentGrid>
+        </AlignmentSection>
 
       {isModalOpen && (
         <ModalOverlay onClick={() => setIsModalOpen(false)}>
@@ -103,38 +103,38 @@ const AlignmentPage: React.FC = () => {
               </CloseButton>
             </ModalHeader>
             <ModalBody>
-              <InfoTitle>🧭 What Is Alignment?</InfoTitle>
-              <InfoText>
-                Alignment is represented as a combination of an ethical axis (Lawful, Neutral, or Chaotic) 
-                and a moral axis (Good, Neutral, or Evil), creating nine possible combinations that guide 
-                how your character views the world and makes decisions.
-              </InfoText>
-              
-              <InfoTitle>💡 How to Use Alignment in Play</InfoTitle>
-              <InfoList>
-                <InfoListItem>
-                  <strong>Guides Roleplaying:</strong> Helps you decide how your character might react to moral dilemmas or authority.
-                </InfoListItem>
-                <InfoListItem>
-                  <strong>Interacts with Ideals/Bonds/Flaws:</strong> Aligns (or clashes) with those traits for added depth.
-                </InfoListItem>
-                <InfoListItem>
-                  <strong>Informs Reputation:</strong> Influences how NPCs and factions perceive your character.
-                </InfoListItem>
-              </InfoList>
+          <InfoTitle>🧭 What Is Alignment?</InfoTitle>
+          <InfoText>
+            Alignment is represented as a combination of an ethical axis (Lawful, Neutral, or Chaotic) 
+            and a moral axis (Good, Neutral, or Evil), creating nine possible combinations that guide 
+            how your character views the world and makes decisions.
+          </InfoText>
+          
+          <InfoTitle>💡 How to Use Alignment in Play</InfoTitle>
+          <InfoList>
+            <InfoListItem>
+              <strong>Guides Roleplaying:</strong> Helps you decide how your character might react to moral dilemmas or authority.
+            </InfoListItem>
+            <InfoListItem>
+              <strong>Interacts with Ideals/Bonds/Flaws:</strong> Aligns (or clashes) with those traits for added depth.
+            </InfoListItem>
+            <InfoListItem>
+              <strong>Informs Reputation:</strong> Influences how NPCs and factions perceive your character.
+            </InfoListItem>
+          </InfoList>
             </ModalBody>
           </ModalContent>
         </ModalOverlay>
       )}
 
-      {selectedAlignment && (
-        <BottomNavigation
-          onNext={handleNext}
-          selectedItem={selectedAlignment}
-          selectedItemLabel="Alignment"
-        />
-      )}
-    </Page>
+        {selectedAlignment && (
+          <BottomNavigation
+            onNext={handleNext}
+            selectedItem={selectedAlignment}
+            selectedItemLabel="Alignment"
+          />
+        )}
+      </Page>
   );
 };
 

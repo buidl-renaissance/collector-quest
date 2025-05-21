@@ -34,6 +34,10 @@ export const NavigationFooter = styled.div`
   margin-top: 2rem;
 `;
 
+export const Section = styled.section`
+  margin-bottom: 2rem;
+`;
+
 export const SelectionFooter = styled.div`
   position: fixed;
   bottom: 0;

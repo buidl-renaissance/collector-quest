@@ -5,6 +5,7 @@ export const Title = styled.h1`
   color: #bb8930;
   margin-bottom: 0.5rem;
   text-align: center;
+  font-family: "Cinzel", serif;
 `;
 
 export const Subtitle = styled.p`
@@ -12,6 +13,7 @@ export const Subtitle = styled.p`
   color: #C7BFD4;
   margin-bottom: 2rem;
   text-align: center;
+  font-family: "Cormorant Garamond", serif;
 `;
 
 export const SectionTitle = styled.h2`
@@ -20,6 +22,7 @@ export const SectionTitle = styled.h2`
   margin-bottom: 1.5rem;
   border-bottom: 1px solid #bb8930;
   padding-bottom: 0.5rem;
+  font-family: "Cinzel", serif;
 `;
 
 export const Quote = styled.blockquote`
