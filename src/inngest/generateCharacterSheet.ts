@@ -29,6 +29,12 @@ export const generateCharacterSheet = inngest.createFunction(
       throw new Error("Character not found");
     }
 
+
+    updateResult(event.data.resultId!, JSON.stringify({
+      message: "Calculated character abilities",
+      step: "calculate-abilities",
+    }));
+
     // Step 0: Calculate abilities
     const abilitiesResult = await step.run("calculate-abilities", async () => {
       const abilities = await generateAbilities(character);
@@ -48,8 +54,8 @@ export const generateCharacterSheet = inngest.createFunction(
     });
 
     updateResult(event.data.resultId!, JSON.stringify({
-      message: "Calculated character abilities",
-      step: "calculate-abilities",
+      message: "Calculating combat stats",
+      step: "calculate-combat",
       sheet: {
         abilities: abilitiesResult.abilities,
         abilitiesScores: abilitiesResult.abilitiesScores,
@@ -86,23 +92,23 @@ export const generateCharacterSheet = inngest.createFunction(
           combat: combat,
         });
       }
-
-      updateResult(event.data.resultId!, JSON.stringify({
-        message: "Calculated base character statistics",
-        step: "calculate-base-stats",
-        sheet: {
-          abilities: abilitiesResult.abilities,
-          abilitiesScores: abilitiesResult.abilitiesScores,
-          combat: combat,
-        }
-      }));
   
       return {
         step: "calculate-base-stats",
-        message: "Calculated base character statistics",
+        message: "Calculated base character stats",
         combat: combat,
       };
     });
+
+    updateResult(event.data.resultId!, JSON.stringify({
+      message: "Generating character skills",
+      step: "generate-skills",
+      sheet: {
+        abilities: abilitiesResult.abilities,
+        abilitiesScores: abilitiesResult.abilitiesScores,
+        combat: combatResult.combat,
+      }
+    }));
 
     // Step 2: Generate skills
     const skillsResult = await step.run("generate-skills", async () => {
@@ -112,16 +118,6 @@ export const generateCharacterSheet = inngest.createFunction(
           skills: characterSkills,
         });
       }
-      updateResult(event.data.resultId!, JSON.stringify({
-        message: "Generated character skills",
-        step: "generate-skills",
-        sheet: {
-          abilities: abilitiesResult.abilities,
-          abilitiesScores: abilitiesResult.abilitiesScores,
-          combat: combatResult.combat,
-          skills: characterSkills,
-        }
-      }));
   
       return {
         step: "generate-skills",
@@ -129,7 +125,18 @@ export const generateCharacterSheet = inngest.createFunction(
         skills: characterSkills
       };
     });
-    
+
+    updateResult(event.data.resultId!, JSON.stringify({
+      message: "Generating character features and traits",
+      step: "generate-features-traits",
+      sheet: {
+        abilities: abilitiesResult.abilities,
+        abilitiesScores: abilitiesResult.abilitiesScores,
+        combat: combatResult.combat,
+        skills: skillsResult.skills,
+      }
+    }));
+
     // Step 3: Generate features and traits
     const featuresAndTraitsResult = await step.run("generate-features-traits", async () => {
       const featuresAndTraits = await generateFeaturesTraits(character);
@@ -138,23 +145,24 @@ export const generateCharacterSheet = inngest.createFunction(
           featuresAndTraits: featuresAndTraits,
         });
       }
-      completeResult(event.data.resultId!, JSON.stringify({
-        message: "Generated character features and traits",
-        step: "generate-features-traits",
-        sheet: {
-          abilities: abilitiesResult.abilities,
-          abilitiesScores: abilitiesResult.abilitiesScores,
-          combat: combatResult.combat,
-          skills: skillsResult.skills,
-          featuresAndTraits: featuresAndTraits,
-        }
-      }));
       return {
         step: "generate-features-traits",
         message: "Generated character features and traits",
         featuresAndTraits
       };
     });
+
+    completeResult(event.data.resultId!, JSON.stringify({
+      message: "Generated character sheet",
+      step: "generated-sheet",
+      sheet: {
+        abilities: abilitiesResult.abilities,
+        abilitiesScores: abilitiesResult.abilitiesScores,
+        combat: combatResult.combat,
+        skills: skillsResult.skills,
+        featuresAndTraits: featuresAndTraitsResult.featuresAndTraits,
+      }
+    }));
 
     return {
       success: true,

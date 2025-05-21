@@ -1,5 +1,5 @@
 import OpenAI from "openai";
-import { Character } from "@/hooks/useCharacter";
+import { Character, Ability } from "@/data/character";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -27,14 +27,6 @@ export interface DetailedAbilityScores {
   intelligence: AbilityScoreDetails;
   wisdom: AbilityScoreDetails;
   charisma: AbilityScoreDetails;
-}
-
-interface Ability {
-  name: string;
-  description: string;
-  level: number;
-  abilityScore: keyof AbilityScores;
-  abilityBonus: number;
 }
 
 /**
@@ -104,6 +96,10 @@ export async function generateAbilities(
 ): Promise<Ability[]> {
   if (!character.race || !character.class) {
     return [];
+  }
+
+  if (character.sheet?.abilities) {
+    return character.sheet.abilities;
   }
 
   const raceName = character.race.name;

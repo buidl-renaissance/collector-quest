@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { FaArrowLeft, FaTimes } from "react-icons/fa";
+import { FaArrowLeft, FaTimes, FaSpinner } from "react-icons/fa";
 import styled from "@emotion/styled";
+import { keyframes } from "@emotion/react";
 import { useCharacter } from "@/hooks/useCharacter";
 import { useCharacterSheet } from "@/hooks/useCharacterSheet";
 import Page from "@/components/Page";
-import { Container, LoadingMessage } from "@/components/styled/layout";
+import { Container } from "@/components/styled/layout";
 import { BackButton } from "@/components/styled/character";
 import Emblems from "@/components/CharacterSheet/Emblems";
 import Attacks from "@/components/CharacterSheet/Attacks";
@@ -18,7 +19,47 @@ import Bio from "@/components/CharacterSheet/Bio";
 import ProficienciesAndLanguages from "@/components/CharacterSheet/ProficienciesAndLanguages";
 import CharacterCard from "@/components/CharacterCard";
 
+// Animations
+const spin = keyframes`
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+`;
+
 // Styled Components
+const LoadingContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  text-align: center;
+  padding: 2rem;
+`;
+
+const SpinnerIcon = styled.div`
+  font-size: 3rem;
+  color: #bb8930;
+  margin-bottom: 1.5rem;
+  animation: ${spin} 1.5s linear infinite;
+`;
+
+const LoadingMessage = styled.div`
+  font-family: "Cormorant Garamond", serif;
+  font-size: 1.8rem;
+  color: #bb8930;
+  margin-bottom: 1rem;
+`;
+
+const LoadingSubtext = styled.div`
+  font-size: 1rem;
+  color: #aaa;
+  max-width: 400px;
+`;
+
 const CharacterSheetContainer = styled.div`
   background-color: #2e1e0f;
   color: #d6b87b;
@@ -336,6 +377,7 @@ const CharacterSheetPage: React.FC = () => {
     loading: sheetLoading,
     error: sheetError,
     generateCharacterSheet,
+    currentStep,
   } = useCharacterSheet();
 
   const [modalContent, setModalContent] = useState<{
@@ -380,6 +422,21 @@ const CharacterSheetPage: React.FC = () => {
     }
   }, [characterSheet]);
 
+  const getLoadingSubtext = () => {
+    switch (currentStep) {
+      case "calculate-abilities":
+        return "Rolling ability scores and calculating modifiers...";
+      case "calculate-base-stats":
+        return "Determining armor class, initiative, and hit points...";
+      case "generate-skills":
+        return "Selecting and calculating skill proficiencies...";
+      case "generate-features-traits":
+        return "Finalizing character features and racial traits...";
+      default:
+        return "Preparing your character sheet...";
+    }
+  };
+
   const handleRegenerate = () => {
     if (character) {
       generateCharacterSheet();
@@ -389,7 +446,13 @@ const CharacterSheetPage: React.FC = () => {
   if (characterLoading || sheetLoading) {
     return (
       <Container darkMode>
-        <LoadingMessage>Loading character sheet...</LoadingMessage>
+        <LoadingContainer>
+          <SpinnerIcon>
+            <FaSpinner />
+          </SpinnerIcon>
+          <LoadingMessage>Generating your character sheet...</LoadingMessage>
+          <LoadingSubtext>{getLoadingSubtext()}</LoadingSubtext>
+        </LoadingContainer>
       </Container>
     );
   }

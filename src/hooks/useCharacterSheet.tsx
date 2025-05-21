@@ -20,6 +20,7 @@ export function useCharacterSheet() {
   const [pollAttempts, setPollAttempts] = useState(0);
   const [resultId, setResultId] = useState<string | null>(null);
   const [resultData, setResultData] = useState<any>(null);
+  const [currentStep, setCurrentStep] = useState<string>("calculate-abilities");
 
   useEffect(() => {
     if (!character?.sheet && !loading && !resultId) {
@@ -30,6 +31,7 @@ export function useCharacterSheet() {
   const generateCharacterSheet = async () => {
     setLoading(true);
     setError(null);
+    setCurrentStep("calculate-abilities");
     if (resultId) {
       return;
     }
@@ -59,15 +61,15 @@ export function useCharacterSheet() {
 
   const pollResult = useCallback(async (id: string) => {
     try {
-      const response = await fetch(`/api/image/status?id=${id}`);
+      const response = await fetch(`/api/character/sheet/status?id=${id}`);
       if (!response.ok) {
-        throw new Error('Failed to check result status');
+        throw new Error('Failed to check character sheet status');
       }
 
       const data: PollResult = await response.json();
       return data;
     } catch (err) {
-      console.error('Error polling result:', err);
+      console.error('Error polling character sheet status:', err);
       throw err;
     }
   }, []);
@@ -84,18 +86,26 @@ export function useCharacterSheet() {
         setPollStatus('polling');
         const result = await pollResult(resultId);
         const resultData = result.result ? JSON.parse(result.result) : {};
-        console.log('result', resultData);
+        console.log('Character sheet generation result:', resultData);
         setResultData(resultData);
+        
+        // Update current step if available in result data
+        if (resultData.step) {
+          setCurrentStep(resultData.step);
+        }
+
+        if (result.status === 'pending' && resultData.sheet) {
+          setCharacterSheet(resultData.sheet);
+          setError(null);
+        }
+        
         if (result.status === 'completed' && resultData.sheet) {
           setCharacterSheet(resultData.sheet);
           setPollStatus('completed');
-          setError(null);
-        } else if (result.status === 'pending' && resultData.sheet) {
-          setCharacterSheet(resultData.sheet);
-          setPollStatus('completed');
+          setLoading(false);
           setError(null);
         } else if (result.status === 'failed' || result.status === 'error') {
-          setError(result.error || 'Failed to generate image');
+          setError(result.error || 'Failed to generate character sheet');
           setPollStatus(result.status);
           // Stop polling when failed or error
           return;
@@ -103,7 +113,7 @@ export function useCharacterSheet() {
           // Still pending, continue polling
           setPollAttempts(prev => {
             if (prev >= MAX_POLL_ATTEMPTS) {
-              setError('Image generation timed out');
+              setError('Character sheet generation timed out');
               setPollStatus('failed');
               return prev;
             }
@@ -113,7 +123,7 @@ export function useCharacterSheet() {
           pollTimeout = setTimeout(startPolling, POLL_INTERVAL);
         }
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to check result status');
+        setError(err instanceof Error ? err.message : 'Failed to check character sheet status');
         setPollStatus('error');
         // Stop polling on error
         return;
@@ -155,5 +165,6 @@ export function useCharacterSheet() {
     loading,
     error,
     generateCharacterSheet,
+    currentStep,
   };
 } 

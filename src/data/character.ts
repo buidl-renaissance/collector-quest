@@ -170,6 +170,8 @@ export interface Ability {
   name: string;
   description: string;
   level: number;
+  abilityScore: keyof AbilityScores;
+  abilityBonus: number;
 }
 
 export interface AbilityScores {

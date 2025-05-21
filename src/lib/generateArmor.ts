@@ -6,12 +6,17 @@ const openai = new OpenAI({
 });
 
 export async function generateArmor(character: Character): Promise<Armor> {
+
   if (!character.race || !character.class) {
     throw new Error("Character race and class are required");
   }
 
   if (!character.traits) {
     throw new Error("Character traits are required");
+  }
+
+  if (character.sheet?.combat?.armor) {
+    return character.sheet.combat.armor;
   }
 
   const prompt = `Generate a unique armor piece for a ${character.traits?.alignment} ${character.race.name} ${character.class.name} with the ${character.traits?.background} background that integrates real-world artistic inspiration.
