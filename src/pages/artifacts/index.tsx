@@ -47,6 +47,7 @@ const CreateButton = styled.a`
   font-family: "Cinzel", serif;
   text-align: center;
   width: 100%;
+  margin-bottom: 2rem;
   
   @media (min-width: 640px) {
     width: auto;
