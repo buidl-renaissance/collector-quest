@@ -1,6 +1,5 @@
 import OpenAI from "openai";
-import { Character } from "@/hooks/useCharacter";
-import { Ability } from "@/data/character";
+import { Character, AbilityModifier } from "@/data/character";
 
 // const openai = new OpenAI({
 //   apiKey: process.env.OPENAI_API_KEY,
@@ -24,6 +23,10 @@ export function generateSpeed(character: Character): SpeedOutput {
     throw new Error("Character race and class are required");
   }
 
+  if (character.sheet?.combat?.speed) {
+    return character.sheet.combat.speed;
+  }
+
   const race = character.race.name;
   const subrace = character.race.subraces?.[0]?.name || null;
   const characterClass = character.class.name;
@@ -31,7 +34,7 @@ export function generateSpeed(character: Character): SpeedOutput {
   const background = character.traits?.background || "";
   
   // Extract abilities from character
-  const strengthScore = character.sheet?.abilitiesScores.strength.total || 10;
+  const strengthScore = character.sheet?.abilitiesScores?.strength?.total || 10;
   
   // Extract equipment details
   let armorEquipped: "none" | "light" | "medium" | "heavy" = "none";
@@ -44,8 +47,8 @@ export function generateSpeed(character: Character): SpeedOutput {
   }
   
   // Extract class features, racial abilities, and magic items
-  const classFeatures = character.class.abilities?.map((ability: Ability) => ability.name) || [];
-  const racialAbilities = character.race.abilities?.map((ability: Ability) => ability.name) || [];
+  const classFeatures = character.class.abilities?.map((ability: AbilityModifier) => ability.name) || [];
+  const racialAbilities = character.race.abilities?.map((ability: AbilityModifier) => ability.name) || [];
   const magicItems = character.equipment?.magicItems?.map(item => item.name) || [];
   
   // Calculate base racial speed

@@ -13,6 +13,10 @@ export async function generateFeaturesTraits(
     throw new Error("Character race and class are required");
   }
 
+  if (character.sheet?.featuresAndTraits) {
+    return character.sheet.featuresAndTraits;
+  }
+
   const prompt = `
     Generate features and traits for a D&D 5e character with the following details:
     

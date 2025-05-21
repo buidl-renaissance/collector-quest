@@ -11,6 +11,10 @@ export function generateInitiative(character: Character, abilitiesScores: Detail
     throw new Error("Character race, class, and abilities are required");
   }
 
+  if (character.sheet?.combat?.initiative) {
+    return character.sheet.combat.initiative;
+  }
+
   // Calculate dexterity modifier
   const dexScore = (character.sheet?.abilitiesScores?.dexterity?.modifier ?? 0) + (character.sheet?.abilitiesScores?.dexterity?.base ?? 0) || 10;
   const dexMod = Math.floor((dexScore - 10) / 2);

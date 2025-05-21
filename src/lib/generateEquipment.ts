@@ -13,6 +13,10 @@ export async function generateEquipment(
     throw new Error("Character class is required");
   }
 
+  if (character?.equipment) {
+    return character.equipment;
+  }
+
   // Create a detailed prompt for the AI
   const prompt = `Generate appropriate D&D 5e starting equipment for a character with the following details:
 

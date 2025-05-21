@@ -7,6 +7,7 @@ import { generateSpeed } from "@/lib/generateSpeed";
 import { generateSkills } from "@/lib/generateSkills";
 import { generateFeaturesTraits } from "@/lib/generateFeaturesTraits";
 import { calculateAbilityScores, generateAbilities } from "@/lib/generateAbilities";
+import { generateAttacks } from "@/lib/generateAttacks";
 import { updateResult, completeResult } from "@/lib/storage";
 
 interface GenerateSheetEvent {
@@ -73,8 +74,11 @@ export const generateCharacterSheet = inngest.createFunction(
       // Calculate speed based on race and class
       const speed = await generateSpeed(character);
 
+      // Generate attacks for the character
+      const characterAttacks = await generateAttacks(character);
+
       const combat = {
-        attacks: [],
+        attacks: characterAttacks,
         armor: armorClass,
         initiative: initiative,
         speed: speed,

@@ -1,7 +1,7 @@
 import { Attack } from "./attacks";
 import { DetailedAbilityScores } from "@/lib/generateAbilities";
 
-interface AbilityModifier {
+export interface AbilityModifier {
   name: string;
   level: number;
   type: "strength" | "dexterity" | "constitution" | "intelligence" | "wisdom" | "charisma";

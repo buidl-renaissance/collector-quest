@@ -11,6 +11,10 @@ export async function generateSkills(character: Character): Promise<Skill[]> {
     throw new Error("Character race and class are required");
   }
 
+  if (character.sheet?.skills) {
+    return character.sheet.skills;
+  }
+
   const prompt = `
     Generate skills for a D&D 5e character with the following details:
     
