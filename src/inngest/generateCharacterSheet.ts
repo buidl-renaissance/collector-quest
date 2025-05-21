@@ -8,6 +8,8 @@ import { generateSkills } from "@/lib/generateSkills";
 import { generateFeaturesTraits } from "@/lib/generateFeaturesTraits";
 import { calculateAbilityScores, generateAbilities } from "@/lib/generateAbilities";
 import { generateAttacks } from "@/lib/generateAttacks";
+import { generateLanguages } from "@/lib/generateLanguages";
+import { generateProficiencies } from "@/lib/generateProficiencies";
 import { updateResult, completeResult } from "@/lib/storage";
 
 interface GenerateSheetEvent {
@@ -156,27 +158,35 @@ export const generateCharacterSheet = inngest.createFunction(
       };
     });
 
+    // Step 4: Generate languages and proficiencies
+    const languages = await step.run("generate-languages", async () => {
+      return generateLanguages(character);
+    });
+
+    const proficiencies = await step.run("generate-proficiencies", async () => {
+      return generateProficiencies(character);
+    });
+
+    // Combine all data into final character sheet
+    const characterSheet = {
+      abilities: abilitiesResult.abilities,
+      abilitiesScores: abilitiesResult.abilitiesScores,
+      combat: combatResult.combat,
+      skills: skillsResult.skills,
+      featuresAndTraits: featuresAndTraitsResult.featuresAndTraits,
+      languages,
+      proficiencies,
+    };
+
     completeResult(event.data.resultId!, JSON.stringify({
       message: "Generated character sheet",
       step: "generated-sheet",
-      sheet: {
-        abilities: abilitiesResult.abilities,
-        abilitiesScores: abilitiesResult.abilitiesScores,
-        combat: combatResult.combat,
-        skills: skillsResult.skills,
-        featuresAndTraits: featuresAndTraitsResult.featuresAndTraits,
-      }
+      sheet: characterSheet,
     }));
 
     return {
       success: true,
-      sheet: {
-        abilities: abilitiesResult.abilities,
-        abilitiesScores: abilitiesResult.abilitiesScores,
-        combat: combatResult.combat,
-        skills: skillsResult.skills,
-        featuresAndTraits: featuresAndTraitsResult.featuresAndTraits,
-      }
+      sheet: characterSheet,
     };
   }
 );

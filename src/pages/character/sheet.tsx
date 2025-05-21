@@ -425,15 +425,21 @@ const CharacterSheetPage: React.FC = () => {
   const getLoadingSubtext = () => {
     switch (currentStep) {
       case "calculate-abilities":
-        return "Rolling ability scores and calculating modifiers...";
+        return "Calculating character abilities...";
       case "calculate-base-stats":
-        return "Determining armor class, initiative, and hit points...";
+        return "Calculating combat stats and base attributes...";
       case "generate-skills":
-        return "Selecting and calculating skill proficiencies...";
-      case "generate-features-traits":
-        return "Finalizing character features and racial traits...";
+        return "Generating character skills...";
+      case "generate-features":
+        return "Generating features and traits...";
+      case "generate-languages":
+        return "Determining languages...";
+      case "generate-proficiencies":
+        return "Determining proficiencies...";
+      case "generate-attacks":
+        return "Generating attacks...";
       default:
-        return "Preparing your character sheet...";
+        return "Generating character sheet...";
     }
   };
 
