@@ -416,8 +416,8 @@ const ActionButton = styled(NextButton)`
 
 // Update Container styled component
 const PageContainer = styled.div`
-  padding-bottom: 80px; // Add space for bottom nav
   padding: 2rem;
+  
   @media (min-width: 768px) {
     padding-bottom: 100px;
   }
@@ -426,9 +426,7 @@ const PageContainer = styled.div`
 const ArtifactPage = ({ artifact }: { artifact: Artifact }) => {
   const router = useRouter();
   const [showRelicModal, setShowRelicModal] = useState(false);
-  const [generatedRelicUrl, setGeneratedRelicUrl] = useState<string | null>(
-    null
-  );
+  const [generatedRelicUrl, setGeneratedRelicUrl] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [imageHeight, setImageHeight] = useState<number | undefined>();
 
@@ -488,24 +486,24 @@ const ArtifactPage = ({ artifact }: { artifact: Artifact }) => {
           <BackButton>← Back to Artifacts</BackButton>
         </Link>
       </Header>
-
+      
       <ArtifactContainer>
         <ImageContainer imageHeight={imageHeight}>
-          <Image
-            src={artifact.imageUrl}
+          <Image 
+            src={artifact.imageUrl} 
             alt={artifact.title}
             fill
             style={{ objectFit: "cover", width: "100%", height: "100%" }}
             onLoad={handleImageLoad}
           />
         </ImageContainer>
-
+        
         <ArtifactDetails>
           <ArtifactTitle>{artifact.title}</ArtifactTitle>
           <ArtistName>
             By {artifact.artist}, {artifact.year}
           </ArtistName>
-
+          
           <DetailSection>
             <DetailTitle>Description</DetailTitle>
             <DetailContent>{artifact.description}</DetailContent>

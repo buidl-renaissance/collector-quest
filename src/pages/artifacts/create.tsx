@@ -14,31 +14,58 @@ import { Artifact } from "@/data/artifacts";
 const PageContainer = styled.div`
   max-width: 800px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 1rem;
   font-family: "Cormorant Garamond", serif;
+  
+  @media (min-width: 640px) {
+    padding: 2rem;
+  }
 `;
 
 const Section = styled.section`
   margin-bottom: 2rem;
-  padding: 1.5rem;
+  padding: 2rem;
+  margin: 1rem;
   background-color: #2d2d44;
   border-radius: 0.5rem;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   margin-bottom: 100px;
+  
+  @media (min-width: 640px) {
+    padding: 1.5rem;
+  }
 `;
 
 const Title = styled.h1`
   font-family: "Cinzel Decorative", "Playfair Display SC", serif;
-  color: #c7bfd4;
-  margin-bottom: 2rem;
+  color: #bb8930;
+  margin-top: 1rem;
+  margin-bottom: 1.5rem;
   text-align: center;
-  font-size: 2rem;
+  font-size: 1.5rem;
+  
+  @media (min-width: 640px) {
+    margin-bottom: 2rem;
+    font-size: 2rem;
+  }
 `;
 
 const SectionTitle = styled.h2`
   font-family: "Cinzel", serif;
-  color: #c7bfd4;
-  margin-bottom: 1.5rem;
+  color: #bb8930;
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+  
+  @media (min-width: 640px) {
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+  }
+`;
+
+const SectionDescription = styled.p`
+  font-family: "Cormorant Garamond", serif;
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
 `;
 
 const Select = styled.select`
@@ -51,9 +78,20 @@ const Select = styled.select`
   font-size: 1rem;
   margin-top: 0.5rem;
   font-family: "Cormorant Garamond", serif;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23c7bfd4%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.7rem top 50%;
+  background-size: 0.65rem auto;
+  
+  &:focus {
+    outline: none;
+    border-color: #6c5ce7;
+  }
 `;
 
 const Button = styled.button<{ primary?: boolean }>`
+  width: 100%;
   padding: 0.75rem 1.5rem;
   background-color: ${(props) => (props.primary ? "#6c5ce7" : "#a29bfe")};
   color: #c7bfd4;
@@ -65,6 +103,10 @@ const Button = styled.button<{ primary?: boolean }>`
   margin-top: 1rem;
   transition: background-color 0.3s, transform 0.2s;
   font-family: "Cinzel", serif;
+
+  @media (min-width: 480px) {
+    width: auto;
+  }
 
   &:hover {
     background-color: ${(props) => (props.primary ? "#bb8930" : "#3a3347")};
@@ -78,171 +120,8 @@ const Button = styled.button<{ primary?: boolean }>`
   }
 `;
 
-const OptionalText = styled.span`
-  font-size: 0.8rem;
-  color: #a29bfe;
-  font-weight: normal;
-  margin-left: 0.5rem;
-  font-family: "Cormorant Garamond", serif;
-`;
-
-const CheckboxContainer = styled.div`
-  display: flex;
-  align-items: center;
-  margin-top: 1rem;
-  font-family: "Cormorant Garamond", serif;
-`;
-
-const Checkbox = styled.input`
-  margin-right: 0.5rem;
-`;
-
-const StepIndicator = styled.div`
-  display: flex;
-  justify-content: center;
-  margin-bottom: 2rem;
-`;
-
-const StepDot = styled.div<{ active: boolean; completed: boolean }>`
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  margin: 0 8px;
-  background-color: ${(props) =>
-    props.completed ? "#bb8930" : props.active ? "#6c5ce7" : "#3a3347"};
-  transition: background-color 0.3s;
-`;
-
-const StepLabel = styled.div`
-  display: flex;
-  justify-content: center;
-  margin-bottom: 2rem;
-  color: #c7bfd4;
-  font-family: "Cinzel", serif;
-`;
-
-const ArtifactPropertiesContainer = styled.div`
-  margin-top: 1.5rem;
-  padding: 1rem;
-  background-color: #1a1a2e;
-  border-radius: 0.5rem;
-  border: 1px solid #3a3347;
-`;
-
-const PropertyBadge = styled.div`
-  display: inline-block;
-  background-color: #2d2d44;
-  color: #bb8930;
-  padding: 0.3rem 0.8rem;
-  border-radius: 4px;
-  margin-right: 0.5rem;
-  margin-bottom: 0.5rem;
-  font-size: 0.9rem;
-  border: 1px solid #bb8930;
-  font-family: "Cormorant Garamond", serif;
-`;
-
-const ArtifactPreview = styled.div`
-  width: 100%;
-  height: 400px;
-  position: relative;
-  margin-bottom: 2rem;
-  border-radius: 0.5rem;
-  overflow: hidden;
-  background-color: #1a1a2e;
-`;
-
-const InfoGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 2rem;
-  margin-bottom: 2rem;
-`;
-
-const InfoSection = styled.div`
-  background-color: #1a1a2e;
-  padding: 1.5rem;
-  border-radius: 0.5rem;
-  border: 1px solid #3a3347;
-`;
-
-const InfoTitle = styled.h3`
-  color: #bb8930;
-  font-family: "Cinzel", serif;
-  margin-bottom: 1rem;
-  font-size: 1.2rem;
-`;
-
-const InfoText = styled.p`
-  color: #c7bfd4;
-  font-family: "Cormorant Garamond", serif;
-  font-size: 1.1rem;
-  line-height: 1.6;
-  margin: 0;
-`;
-
-const PropertyGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1rem;
-  margin-bottom: 2rem;
-`;
-
-const PropertyCard = styled.div`
-  background-color: #1a1a2e;
-  padding: 1.5rem;
-  border-radius: 0.5rem;
-  border: 1px solid #3a3347;
-  text-align: center;
-`;
-
-const PropertyValue = styled.div`
-  color: #bb8930;
-  font-family: "Cinzel", serif;
-  font-size: 1.2rem;
-  margin-top: 0.5rem;
-`;
-
-const PropertyLabel = styled.div`
-  color: #c7bfd4;
-  font-family: "Cormorant Garamond", serif;
-  font-size: 0.9rem;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-`;
-
-const StorySection = styled.div`
-  background-color: #1a1a2e;
-  padding: 1.5rem;
-  border-radius: 0.5rem;
-  border: 1px solid #3a3347;
-  margin-bottom: 2rem;
-`;
-
-const AbilityGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1.5rem;
-  margin-bottom: 2rem;
-`;
-
-const AbilityCard = styled.div`
-  background-color: #1a1a2e;
-  padding: 1.5rem;
-  border-radius: 0.5rem;
-  border: 1px solid #3a3347;
-`;
-
-const AbilityTitle = styled.h4`
-  color: #bb8930;
-  font-family: "Cinzel", serif;
-  margin-bottom: 0.5rem;
-  font-size: 1.1rem;
-`;
-
 const CreateArtifactPage = () => {
   const router = useRouter();
-  const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
     artistName: "",
     contactInfo: "",
@@ -257,9 +136,7 @@ const CreateArtifactPage = () => {
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [generatedArtifact, setGeneratedArtifact] = useState<Artifact | null>(
-    null
-  );
+  const [generatedArtifact, setGeneratedArtifact] = useState<Artifact | null>(null);
 
   const currentYear = new Date().getFullYear();
   const yearOptions = Array.from(
@@ -410,16 +287,12 @@ const CreateArtifactPage = () => {
   return (
     <PageContainer>
       <Title>Create an Artifact</Title>
-      <StepIndicator>
-        <StepDot active={true} completed={false} />
-      </StepIndicator>
-      <StepLabel>Upload & Basic Details</StepLabel>
       <Section>
         <SectionTitle>Upload Your Artwork</SectionTitle>
-        <p>
+        <SectionDescription>
           Upload an image of your artwork and provide basic details to transform
           it into a magical artifact.
-        </p>
+        </SectionDescription>
 
         <form onSubmit={handleSubmit}>
           <FormGroup>
@@ -490,7 +363,7 @@ const CreateArtifactPage = () => {
 
           {errors.submit && <ErrorMessage>{errors.submit}</ErrorMessage>}
         </form>
-      </Section>{" "}
+      </Section>
     </PageContainer>
   );
 };

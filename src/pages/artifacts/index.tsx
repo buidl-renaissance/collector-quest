@@ -14,8 +14,9 @@ import { listArtifacts } from '@/db/artifacts';
 const PageContainer = styled.div`
   max-width: 1200px;
   margin: 0 auto;
-  padding: 1rem;
-  
+  padding: 2rem;
+  font-family: "Cormorant Garamond", serif;
+
   @media (min-width: 640px) {
     padding: 2rem;
   }

@@ -18,7 +18,8 @@ const StyledButton = styled.button`
   align-items: center;
   justify-content: center;
   padding: 0.5rem 1rem;
-  background-color: #4caf50;
+  margin-top: 1rem;
+  background-color: #bb8930;
   color: white;
   border: none;
   border-radius: 4px;
