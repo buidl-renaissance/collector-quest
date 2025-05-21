@@ -5,6 +5,8 @@ import { generateCharacterImageFunction } from "@/inngest/generateCharacterImage
 import { generateStoryFunction } from "@/inngest/generateStoryFunction";
 import { generateTraits } from "@/inngest/generateTraits";
 import { generateEquipment } from "@/inngest/generateEquipment";
+import { generateCharacterSheet } from "@/inngest/generateCharacterSheet";
+
 export const config = {
   api: {
     bodyParser: {
@@ -23,6 +25,7 @@ export default serve({
     generateImageFunction,
     generateRaceImageFunction,
     generateCharacterImageFunction,
+    generateCharacterSheet,
     generateStoryFunction,
     generateTraits,
     generateEquipment,

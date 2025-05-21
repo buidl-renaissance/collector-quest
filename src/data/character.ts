@@ -182,29 +182,29 @@ export interface AbilityScores {
 }
 
 export interface CharacterSheet {
-  abilities: Ability[];
-  abilitiesScores: DetailedAbilityScores;
-  skills: Skill[];
-  deathSaves: {
+  abilities?: Ability[];
+  abilitiesScores?: DetailedAbilityScores;
+  skills?: Skill[];
+  deathSaves?: {
     successes: number;
     failures: number;
   };
-  combat: {
-    attacks: Attack[];
-    armor: Armor;
-    initiative: Initiative;
-    speed: Speed;
-    currentHitPoints: number;
-    hitDice: {
+  combat?: {
+    attacks?: Attack[];
+    armor?: Armor;
+    initiative?: Initiative;
+    speed?: Speed;
+    currentHitPoints?: number;
+    hitDice?: {
       type: string;
       bonus: number;
       count: number;
       current: number;
     };
   };
-  featuresAndTraits: FeaturesTraits;
-  proficiencies: string[];
-  languages: string[];
+  featuresAndTraits?: FeaturesTraits;
+  proficiencies?: string[];
+  languages?: string[];
 }
 
 export interface Character {

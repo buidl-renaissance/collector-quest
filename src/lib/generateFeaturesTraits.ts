@@ -22,7 +22,7 @@ export async function generateFeaturesTraits(
     - Level: ${character.level}
     - Background: ${character.traits?.background || "Commoner"}
     
-    ${character.equipment?.magicItems?.length ? `- Magic Items: ${character.equipment.magicItems.join(", ")}` : ''}
+    ${character.equipment?.magicItems?.length ? `- Magic Items: ${character.equipment?.magicItems?.map(item => item.name).join(", ")}` : ''}
     
     Please generate a comprehensive list of features and traits for this character, including:
     1. Race Traits: Innate abilities from the character's race
@@ -33,13 +33,11 @@ export async function generateFeaturesTraits(
     
     Return the result as a JSON object with the following structure:
     {
-      "featuresAndTraits": {
-        "raceTraits": ["trait1", "trait2", ...],
-        "classFeatures": ["feature1", "feature2", ...],
-        "backgroundFeature": "feature description",
-        "subclassFeatures": ["feature1", "feature2", ...],
-        "customFeatures": ["feature1", "feature2", ...]
-      }
+      "raceTraits": ["trait1", "trait2", ...],
+      "classFeatures": ["feature1", "feature2", ...],
+      "backgroundFeature": "feature description",
+      "subclassFeatures": ["feature1", "feature2", ...],
+      "customFeatures": ["feature1", "feature2", ...]
     }
     
     Each trait or feature should include a brief description of its mechanical effect.
@@ -72,7 +70,7 @@ export async function generateFeaturesTraits(
     const result = JSON.parse(content) as FeaturesTraits;
     
     // Generate narrative description if requested
-    result.description = await generateFeaturesTraitsDescription(character, result);
+    // result.description = await generateFeaturesTraitsDescription(character, result);
     
     return result;
   } catch (error) {

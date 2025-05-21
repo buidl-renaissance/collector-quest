@@ -21,12 +21,12 @@ export async function generateSkills(character: Character): Promise<Skill[]> {
     - Background: ${character.traits?.background}
     
     Ability Scores:
-    - Strength: ${character.sheet?.abilitiesScores.strength.total}
-    - Dexterity: ${character.sheet?.abilitiesScores.dexterity.total}
-    - Constitution: ${character.sheet?.abilitiesScores.constitution.total}
-    - Intelligence: ${character.sheet?.abilitiesScores.intelligence.total}
-    - Wisdom: ${character.sheet?.abilitiesScores.wisdom.total}
-    - Charisma: ${character.sheet?.abilitiesScores.charisma.total}
+    - Strength: ${character.sheet?.abilitiesScores?.strength?.total}
+    - Dexterity: ${character.sheet?.abilitiesScores?.dexterity?.total}
+    - Constitution: ${character.sheet?.abilitiesScores?.constitution?.total}
+    - Intelligence: ${character.sheet?.abilitiesScores?.intelligence?.total}
+    - Wisdom: ${character.sheet?.abilitiesScores?.wisdom?.total}
+    - Charisma: ${character.sheet?.abilitiesScores?.charisma?.total}
     
     ${character.traits?.personality?.length ? `Personality Traits: ${character.traits.personality.join(", ")}` : ''}
     
@@ -80,12 +80,12 @@ export async function generateSkills(character: Character): Promise<Skill[]> {
       throw new Error("Failed to generate skills");
     }
 
-    const result = JSON.parse(content) as Skill[];
+    const result = JSON.parse(content) as { skills: Skill[] };
     
     // Generate narrative description if requested
     // result.description = await generateSkillsDescription(character, result);
     
-    return result;
+    return result.skills;
   } catch (error) {
     console.error("Error generating skills:", error);
     throw new Error("Failed to generate skills");

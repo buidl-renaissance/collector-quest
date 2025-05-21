@@ -1,12 +1,13 @@
 import OpenAI from "openai";
 import { Character, Initiative } from "@/data/character";
+import { DetailedAbilityScores } from "./generateAbilities";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-export function generateInitiative(character: Character): Initiative {
-  if (!character.race || !character.class || !character.sheet?.abilities) {
+export function generateInitiative(character: Character, abilitiesScores: DetailedAbilityScores): Initiative {
+  if (!character.race || !character.class || !abilitiesScores) {
     throw new Error("Character race, class, and abilities are required");
   }
 
@@ -107,8 +108,8 @@ function generateFlavorText(character: Character, initiative: number, tier: stri
 }
 
 // Async version that uses OpenAI for more creative flavor text
-export async function generateInitiativeWithAI(character: Character): Promise<Initiative> {
-  const baseResult = generateInitiative(character);
+export async function generateInitiativeWithAI(character: Character, abilitiesScores: DetailedAbilityScores): Promise<Initiative> {
+  const baseResult = generateInitiative(character, abilitiesScores);
   
   try {
     const prompt = `

@@ -31,30 +31,31 @@ export function useCharacterSheet() {
   const generateCharacterSheet = async () => {
     setLoading(true);
     setError(null);
-    return;
+    if (resultId) {
+      return;
+    }
+    try {
+      const response = await fetch('/api/character/sheet/generate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ characterId: getCurrentCharacterId() }),
+      });
 
-    // try {
-    //   const response = await fetch('/api/character/sheet/generate', {
-    //     method: 'POST',
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //     },
-    //     body: JSON.stringify({ characterId: getCurrentCharacterId() }),
-    //   });
+      if (!response.ok) {
+        throw new Error('Failed to generate character sheet');
+      }
 
-    //   if (!response.ok) {
-    //     throw new Error('Failed to generate character sheet');
-    //   }
+      const data = await response.json();
 
-    //   const data = await response.json();
-
-    //   const resultId = data.resultId;
-    //   setResultId(resultId);
-    // } catch (err) {
-    //   setError(err instanceof Error ? err.message : 'An error occurred');
-    // } finally {
-    //   setLoading(false);
-    // }
+      const resultId = data.resultId;
+      setResultId(resultId);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const pollResult = useCallback(async (id: string) => {
