@@ -448,7 +448,9 @@ const CharacterSheetPage: React.FC = () => {
           gap="0.75rem"
           style={{ marginBottom: "1rem", alignItems: "flex-start" }}
         >
-          <Emblems abilitiesScores={characterSheet.abilitiesScores} />
+          {characterSheet.abilitiesScores && (
+            <Emblems abilitiesScores={characterSheet.abilitiesScores} />
+          )}
 
           <div>
             <SectionLabel>Bio</SectionLabel>
@@ -496,30 +498,38 @@ const CharacterSheetPage: React.FC = () => {
         </Grid>
 
         <Grid columns={3} gap="0.75rem">
-          <div>
+          {characterSheet.combat && (
+            <div>
+              <StatBox>
+                <SectionLabel>Armor Class</SectionLabel>
+                <StatValue>
+                  {characterSheet.combat.armor?.stats.acBonus}
+                </StatValue>
+              </StatBox>
+              <StatBox>
+                <SectionLabel>Initiative</SectionLabel>
+                <StatValue>
+                  {characterSheet.combat.initiative?.dexMod}
+                </StatValue>
+              </StatBox>
+              <StatBox>
+                <SectionLabel>Current Hit Points</SectionLabel>
+                <StatValue>{characterSheet.combat.currentHitPoints}</StatValue>
+              </StatBox>
+            </div>
+          )}
+          {characterSheet.skills && (
             <StatBox>
-              <SectionLabel>Armor Class</SectionLabel>
-              <StatValue>{characterSheet.combat.armor.stats.acBonus}</StatValue>
+              <SectionLabel>Skills</SectionLabel>
+              <Skills skills={characterSheet.skills} />
             </StatBox>
+          )}
+          {characterSheet.deathSaves && (
             <StatBox>
-              <SectionLabel>Initiative</SectionLabel>
-              <StatValue>{characterSheet.combat.initiative.dexMod}</StatValue>
+              <SectionLabel>Death Saves</SectionLabel>
+              <DeathSaves deathSaves={characterSheet.deathSaves} />
             </StatBox>
-            <StatBox>
-              <SectionLabel>Current Hit Points</SectionLabel>
-              <StatValue>
-                {characterSheet.combat.currentHitPoints}
-              </StatValue>
-            </StatBox>
-          </div>
-          <StatBox>
-            <SectionLabel>Skills</SectionLabel>
-            <Skills skills={characterSheet.skills} />
-          </StatBox>
-          <StatBox>
-            <SectionLabel>Death Saves</SectionLabel>
-            <DeathSaves deathSaves={characterSheet.deathSaves} />
-          </StatBox>
+          )}
         </Grid>
 
         {/* Combat Section */}
@@ -529,7 +539,9 @@ const CharacterSheetPage: React.FC = () => {
               <div>
                 <SectionLabel>Attacks & Spellcasting</SectionLabel>
                 <ContentBox>
-                  <Attacks attacks={characterSheet.combat.attacks} />
+                  {characterSheet.combat.attacks && (
+                    <Attacks attacks={characterSheet.combat.attacks} />
+                  )}
                 </ContentBox>
               </div>
 
@@ -537,61 +549,74 @@ const CharacterSheetPage: React.FC = () => {
                 <div>
                   <SectionLabel>Hit Dice</SectionLabel>
                   <ContentBox>
-                    <HitDice hitDice={characterSheet.combat?.hitDice} />
+                    {characterSheet.combat.hitDice && (
+                      <HitDice hitDice={characterSheet.combat.hitDice} />
+                    )}
                   </ContentBox>
                 </div>
 
                 <div>
                   <SectionLabel>Features & Traits</SectionLabel>
                   <ContentBox>
-                    <Features featuresAndTraits={characterSheet.featuresAndTraits} />
+                    {characterSheet.featuresAndTraits && (
+                      <Features
+                        featuresAndTraits={characterSheet.featuresAndTraits}
+                      />
+                    )}
                   </ContentBox>
                 </div>
 
                 <div>
-                  <ProficienciesAndLanguages
-                    proficiencies={characterSheet.proficiencies}
-                    languages={characterSheet.languages}
-                    onOpenModal={() =>
-                      openModal(
-                        "Proficiencies & Languages",
-                        <>
-                          <div style={{ padding: "1rem" }}>
-                            <h3
-                              style={{
-                                color: "#d6b87b",
-                                fontFamily: "Cinzel, serif",
-                                marginBottom: "0.5rem",
-                              }}
-                            >
-                              Proficiencies
-                            </h3>
-                            <ul
-                              style={{ color: "#f5e6d3", marginBottom: "1rem" }}
-                            >
-                              {characterSheet.proficiencies.map((prof, idx) => (
-                                <li key={idx}>{prof}</li>
-                              ))}
-                            </ul>
-                            <h3
-                              style={{
-                                color: "#d6b87b",
-                                fontFamily: "Cinzel, serif",
-                                marginBottom: "0.5rem",
-                              }}
-                            >
-                              Languages
-                            </h3>
-                            <ul style={{ color: "#f5e6d3" }}>
-                              {characterSheet.languages.map((lang, idx) => (
-                                <li key={idx}>{lang}</li>
-                              ))}
-                            </ul>
-                          </div>
-                        </>
-                      )
-                    }
-                  />
+                  {characterSheet.proficiencies && characterSheet.languages && (
+                    <ProficienciesAndLanguages
+                      proficiencies={characterSheet.proficiencies}
+                      languages={characterSheet.languages}
+                      onOpenModal={() =>
+                        openModal(
+                          "Proficiencies & Languages",
+                          <>
+                            <div style={{ padding: "1rem" }}>
+                              <h3
+                                style={{
+                                  color: "#d6b87b",
+                                  fontFamily: "Cinzel, serif",
+                                  marginBottom: "0.5rem",
+                                }}
+                              >
+                                Proficiencies
+                              </h3>
+                              <ul
+                                style={{
+                                  color: "#f5e6d3",
+                                  marginBottom: "1rem",
+                                }}
+                              >
+                                {characterSheet.proficiencies?.map(
+                                  (prof, idx) => (
+                                    <li key={idx}>{prof}</li>
+                                  )
+                                )}
+                              </ul>
+                              <h3
+                                style={{
+                                  color: "#d6b87b",
+                                  fontFamily: "Cinzel, serif",
+                                  marginBottom: "0.5rem",
+                                }}
+                              >
+                                Languages
+                              </h3>
+                              <ul style={{ color: "#f5e6d3" }}>
+                                {characterSheet.languages?.map((lang, idx) => (
+                                  <li key={idx}>{lang}</li>
+                                ))}
+                              </ul>
+                            </div>
+                          </>
+                        )
+                      }
+                    />
+                  )}
                 </div>
               </Grid>
             </Grid>
