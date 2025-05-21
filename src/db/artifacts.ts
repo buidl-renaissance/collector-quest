@@ -97,7 +97,7 @@ function mapDbArtifactToArtifact(dbArtifact: DbArtifact): Artifact {
     year: dbArtifact.year,
     medium: dbArtifact.medium,
     description: dbArtifact.description,
-    properties: JSON.parse(dbArtifact.properties),
+    properties: typeof dbArtifact.properties === 'string' ? JSON.parse(dbArtifact.properties) : dbArtifact.properties,
     imageUrl: dbArtifact.imageUrl,
     relicImageUrl: dbArtifact.relicImageUrl,
     story: dbArtifact.story,
