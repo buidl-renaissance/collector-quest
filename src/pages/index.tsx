@@ -17,6 +17,8 @@ import {
 import Footer from "@/components/Footer";
 import QRCode from "react-qr-code";
 import useIsAdmin from "@/hooks/useIsAdmin";
+import { NextButton } from "@/components/styled/buttons";
+import router from "next/router";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   return {
@@ -240,6 +242,22 @@ const IndexPage: React.FC = () => {
             </FeatureItem>
           </FeatureGrid>
         </FeatureSection>
+
+        {/* A Section for Artists to Register their Artifacts */}
+        {isAdmin && (
+          <Section>
+            <SectionTitle>Register An Artifact</SectionTitle>
+            <Description>
+              Are you an artist? Register an artifact to receive a one-of-a-kind
+              relic based on your artwork.
+            </Description>
+            <div style={{ display: "flex", justifyContent: "center" }}>
+              <NextButton onClick={() => router.push("/artifacts/create")}>
+                REGISTER ARTIFACT
+              </NextButton>
+            </div>
+          </Section>
+        )}
 
         {isAdmin && (
           <QRCodeSection>
@@ -711,25 +729,6 @@ const QRCodeSection = styled.div`
   background: rgba(58, 38, 6, 0.7);
   border-radius: 8px;
   border: 1px solid rgba(187, 137, 48, 0.3);
-`;
-
-const ShareButton = styled.button`
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  background: linear-gradient(90deg, #bb8930, #b6551c);
-  color: white;
-  border: none;
-  border-radius: 4px;
-  font-family: "Cinzel", serif;
-  cursor: pointer;
-  transition: all 0.3s ease;
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  }
 `;
 
 const ModalOverlay = styled.div`
