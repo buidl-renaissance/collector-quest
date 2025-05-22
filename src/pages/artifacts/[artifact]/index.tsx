@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/router";
 import styled from "@emotion/styled";
 import Image from "next/image";
@@ -15,6 +15,7 @@ import Link from "next/link";
 import { Artifact } from "@/data/artifacts";
 import { getArtifact } from "@/db/artifacts";
 import LoadingCandles from "@/components/LoadingCandles";
+import { useArtifact } from "@/hooks/useArtifact";
 
 // Styled components for this page
 const ArtifactContainer = styled.div`
@@ -425,12 +426,18 @@ const PageContainer = styled.div`
   }
 `;
 
-const ArtifactPage = ({ artifact }: { artifact: Artifact }) => {
+const ArtifactPage = ({ artifact: initialArtifact }: { artifact: Artifact }) => {
   const router = useRouter();
-  const [showRelicModal, setShowRelicModal] = useState(false);
-  const [generatedRelicUrl, setGeneratedRelicUrl] = useState<string | null>(null);
-  const [isGenerating, setIsGenerating] = useState(false);
   const [imageHeight, setImageHeight] = useState<number | undefined>();
+  const {
+    artifact,
+    isGenerating,
+    generatedRelicUrl,
+    showRelicModal,
+    setShowRelicModal,
+    handleRelicAction,
+    closeModal,
+  } = useArtifact(initialArtifact);
 
   const handleImageLoad = (event: any) => {
     const img = event.target;
@@ -438,47 +445,6 @@ const ArtifactPage = ({ artifact }: { artifact: Artifact }) => {
     const containerWidth = img.parentElement.offsetWidth;
     const newHeight = containerWidth / aspectRatio;
     setImageHeight(newHeight);
-  };
-
-  const handleRelicAction = async () => {
-    if (artifact.relicImageUrl) {
-      // If relic exists, just show it in the modal
-      setGeneratedRelicUrl(artifact.relicImageUrl);
-      setShowRelicModal(true);
-    } else {
-      // Generate new relic
-      setShowRelicModal(true);
-      setIsGenerating(true);
-      try {
-        const response = await fetch("/api/artifacts/relic", {
-          method: "POST",
-          body: JSON.stringify({ artifactId: artifact.id }),
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to generate relic");
-        }
-
-        const data = await response.json();
-        console.log("Generated relic:", data);
-        artifact.relicImageUrl = data.relicImageUrl;
-        setGeneratedRelicUrl(data.relicImageUrl);
-      } catch (error) {
-        console.error("Error generating relic:", error);
-      } finally {
-        setIsGenerating(false);
-      }
-    }
-  };
-
-  const closeModal = () => {
-    setShowRelicModal(false);
-    if (!artifact.relicImageUrl) {
-      setGeneratedRelicUrl(null);
-    }
   };
 
   return (
@@ -586,7 +552,10 @@ const ArtifactPage = ({ artifact }: { artifact: Artifact }) => {
               <FaTimes />
             </CloseButton>
             {isGenerating ? (
-              <LoadingCandles />
+              <LoadingContainer>
+                <LoadingCandles />
+                <LoadingMessage>Generating your relic...</LoadingMessage>
+              </LoadingContainer>
             ) : generatedRelicUrl ? (
               <RelicImage>
                 <Image

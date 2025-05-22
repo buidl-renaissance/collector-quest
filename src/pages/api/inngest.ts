@@ -1,11 +1,12 @@
 import { serve } from "inngest/next";
 import { inngest } from "@/inngest/client";
-import { helloWorld, generateImageFunction, generateRaceImageFunction } from "@/inngest/functions";
+import { generateImageFunction, generateRaceImageFunction } from "@/inngest/functions";
 import { generateCharacterImageFunction } from "@/inngest/generateCharacterImage";
 import { generateStoryFunction } from "@/inngest/generateStoryFunction";
 import { generateTraits } from "@/inngest/generateTraits";
 import { generateEquipment } from "@/inngest/generateEquipment";
 import { generateCharacterSheet } from "@/inngest/generateCharacterSheet";
+import { generateRelicFunction } from "@/inngest/generateArtifactRelic";
 
 export const config = {
   api: {
@@ -21,11 +22,11 @@ export const config = {
 export default serve({
   client: inngest,
   functions: [
-    helloWorld,
     generateImageFunction,
     generateRaceImageFunction,
     generateCharacterImageFunction,
     generateCharacterSheet,
+    generateRelicFunction,
     generateStoryFunction,
     generateTraits,
     generateEquipment,

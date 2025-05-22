@@ -5,15 +5,6 @@ import { uploadBase64Image, UploadResult, UploadError } from "@/lib/imageUpload"
 import { completeResult, failResult } from "@/lib/storage";
 import { coreRaces, expandedRaces, Race } from "@/data/races";
 
-export const helloWorld = inngest.createFunction(
-  { id: "hello-world" },
-  { event: "test/hello.world" },
-  async ({ event, step }) => {
-    await step.sleep("wait-a-moment", "1s");
-    return { message: `Hello ${event.data.email}!` };
-  },
-);
-
 export const generateImageFunction = inngest.createFunction(
   { id: "generate-image" },
   { event: "test/generate.image" },
