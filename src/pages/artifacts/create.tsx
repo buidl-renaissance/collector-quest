@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import styled from "@emotion/styled";
 import { useRouter } from "next/router";
-import { FormGroup, Label, Input, TextArea } from "@/components/styled/forms";
-
+import { FormGroup, Label, CheckboxContainer, Checkbox, CheckboxLabel } from "@/components/styled/forms";
 import { ErrorMessage } from "@/components/styled/typography";
 import { UploadMedia } from "@/components/UploadMedia";
 import LoadingCandles from "@/components/LoadingCandles";
@@ -179,66 +178,6 @@ const TermsList = styled.ul`
       margin-bottom: 0;
     }
   }
-`;
-
-const CheckboxContainer = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-`;
-
-const Checkbox = styled.input`
-  appearance: none;
-  -webkit-appearance: none;
-  width: 1.5rem;
-  height: 1.5rem;
-  border: 2px solid #bb8930;
-  border-radius: 4px;
-  background: rgba(30, 20, 50, 0.5);
-  cursor: pointer;
-  position: relative;
-  margin: 0;
-  transition: all 0.2s ease;
-  flex-shrink: 0;
-
-  &:checked {
-    background: #bb8930;
-    border-color: #bb8930;
-  }
-
-  &:checked::after {
-    content: "✓";
-    position: absolute;
-    color: #1a1a2e;
-    font-size: 1.2rem;
-    font-weight: bold;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-  }
-
-  &:hover {
-    border-color: #d4a040;
-    box-shadow: 0 0 10px rgba(187, 137, 48, 0.3);
-  }
-
-  &:focus {
-    outline: none;
-    box-shadow: 0 0 0 2px rgba(187, 137, 48, 0.3);
-  }
-`;
-
-const CheckboxLabel = styled.label`
-  color: #c7bfd4;
-  font-size: 0.9rem;
-  line-height: 1.4;
-  font-family: "Cormorant Garamond", serif;
-  cursor: pointer;
-  user-select: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  align-items: center;
 `;
 
 const CreateArtifactPage = () => {

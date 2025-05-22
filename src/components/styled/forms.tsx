@@ -21,17 +21,17 @@ export const FormSection = styled.div`
 
 export const Label = styled.label`
   display: block;
-  margin-bottom: 0.05rem;
+  margin-bottom: 0.25rem;
   font-weight: bold;
   color: #bb8930;
 `;
 
-export const Input = styled.input`
+export const Input = styled.input<{ error?: boolean }>`
   width: 100%;
   padding: 0.8rem;
-  border: 1px solid #3a3a5e;
+  border: 1px solid ${(props) => (props.error ? "#e74c3c" : "#3a3a5e")};
   border-radius: 4px;
-  background-color: rgba(26, 26, 46, 0.7);
+  background-color: rgba(58, 51, 71, 0.3);
   color: #e0e0e0;
   font-family: inherit;
   font-size: 1rem;
@@ -40,6 +40,11 @@ export const Input = styled.input`
   &:focus {
     outline: none;
     border-color: #bb8930;
+  }
+
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
   }
 
   &::placeholder {
@@ -113,7 +118,8 @@ export const ChipsContainer = styled.div`
 export const Chip = styled.div<{ selected?: boolean }>`
   padding: 0.5rem 1rem;
   border-radius: 20px;
-  background-color: ${(props) => (props.selected ? "#bb8930" : "rgba(26, 26, 46, 0.7)")};
+  background-color: ${(props) =>
+    props.selected ? "#bb8930" : "rgba(26, 26, 46, 0.7)"};
   color: ${(props) => (props.selected ? "#1a1a2e" : "#e0e0e0")};
   border: 1px solid ${(props) => (props.selected ? "#bb8930" : "#3a3a5e")};
   cursor: pointer;
@@ -123,7 +129,8 @@ export const Chip = styled.div<{ selected?: boolean }>`
   align-items: center;
 
   &:hover {
-    background-color: ${(props) => (props.selected ? "#d4a959" : "rgba(58, 58, 94, 0.7)")};
+    background-color: ${(props) =>
+      props.selected ? "#d4a959" : "rgba(58, 58, 94, 0.7)"};
   }
 `;
 
@@ -194,4 +201,65 @@ export const AddChipButton = styled.button`
   &:active {
     transform: scale(0.95);
   }
+`;
+
+
+export const CheckboxContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+`;
+
+export const Checkbox = styled.input`
+  appearance: none;
+  -webkit-appearance: none;
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 2px solid #bb8930;
+  border-radius: 4px;
+  background: rgba(30, 20, 50, 0.5);
+  cursor: pointer;
+  position: relative;
+  margin: 0;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+
+  &:checked {
+    background: #bb8930;
+    border-color: #bb8930;
+  }
+
+  &:checked::after {
+    content: "✓";
+    position: absolute;
+    color: #1a1a2e;
+    font-size: 1.2rem;
+    font-weight: bold;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  &:hover {
+    border-color: #d4a040;
+    box-shadow: 0 0 10px rgba(187, 137, 48, 0.3);
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(187, 137, 48, 0.3);
+  }
+`;
+
+export const CheckboxLabel = styled.label`
+  color: #c7bfd4;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  font-family: "Cormorant Garamond", serif;
+  cursor: pointer;
+  user-select: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
 `;

@@ -4,6 +4,8 @@ import { keyframes } from "@emotion/react";
 import { FaUser, FaEnvelope, FaPhone, FaArrowRight } from "react-icons/fa";
 import { BackButton, NextButton } from "./styled/character";
 import { useRouter } from "next/router";
+import PhoneInput from "./PhoneInput";
+
 const Title = styled.h1`
   font-size: 2.5rem;
   font-family: "Cinzel Decorative", "Uncial Antiqua", serif;
@@ -217,37 +219,20 @@ const PreRegister: React.FC<PreRegisterProps> = ({ onSuccess }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
-  const formatPhoneNumber = (value: string) => {
-    // Remove all non-numeric characters
-    const numbers = value.replace(/\D/g, "");
-
-    // Format as (XXX) XXX-XXXX
-    if (numbers.length <= 3) {
-      return numbers;
-    } else if (numbers.length <= 6) {
-      return `(${numbers.slice(0, 3)}) ${numbers.slice(3)}`;
-    } else {
-      return `(${numbers.slice(0, 3)}) ${numbers.slice(3, 6)}-${numbers.slice(
-        6,
-        10
-      )}`;
-    }
-  };
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-
-    if (name === "phone") {
-      // Format phone number as user types
-      const formattedPhone = formatPhoneNumber(value);
-      setFormData((prev) => ({ ...prev, [name]: formattedPhone }));
-    } else {
-      setFormData((prev) => ({ ...prev, [name]: value }));
-    }
+    setFormData((prev) => ({ ...prev, [name]: value }));
 
     // Clear error when user types
     if (errors[name as keyof typeof errors]) {
       setErrors((prev) => ({ ...prev, [name]: "" }));
+    }
+  };
+
+  const handlePhoneChange = (value: string) => {
+    setFormData((prev) => ({ ...prev, phone: value }));
+    if (errors.phone) {
+      setErrors((prev) => ({ ...prev, phone: "" }));
     }
   };
 
@@ -379,15 +364,12 @@ const PreRegister: React.FC<PreRegisterProps> = ({ onSuccess }) => {
               <Label>
                 <FaPhone /> Phone Number (Optional)
               </Label>
-              <Input
-                type="tel"
-                name="phone"
+              <PhoneInput
                 value={formData.phone}
-                onChange={handleChange}
+                onChange={handlePhoneChange}
+                error={errors.phone}
                 placeholder="(XXX) XXX-XXXX"
-                maxLength={14}
               />
-              {errors.phone && <ErrorMessage>{errors.phone}</ErrorMessage>}
             </FormGroup>
 
             <SubmitButton type="submit" disabled={isSubmitting}>

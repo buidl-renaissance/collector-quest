@@ -13,7 +13,7 @@ export default async function handler(
   }
 
   try {
-    const { artifactId, artistName, email, phone, characterId, termsAgreed } = req.body;
+    const { artifactId, artistName, email, phone, termsAgreed } = req.body;
 
     // Validate required fields
     const errors = [];
