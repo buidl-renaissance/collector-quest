@@ -255,7 +255,7 @@ const CreateArtifactPage = () => {
 
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
-  const [isSubmitting, setIsSubmitting] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
   const currentYear = new Date().getFullYear();
   const yearOptions = Array.from(
