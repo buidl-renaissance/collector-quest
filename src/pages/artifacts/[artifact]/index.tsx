@@ -39,6 +39,7 @@ const ImageContainer = styled.div<{ imageHeight?: number }>`
   overflow: hidden;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
   margin: 0 auto;
+  max-width: 256px;
 
   @media (min-width: 768px) {
     width: 100%;
