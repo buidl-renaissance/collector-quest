@@ -150,6 +150,39 @@ const ActionButton = styled(Button)`
   background-color: #bb8930;
 `;
 
+const TermsContainer = styled.div`
+  margin-top: 2rem;
+  padding: 1rem;
+  background: rgba(30, 20, 50, 0.5);
+  border: 1px solid #4a3b6b;
+  border-radius: 6px;
+`;
+
+const TermsText = styled.p`
+  color: #c7bfd4;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin-bottom: 1rem;
+  font-family: "Cormorant Garamond", serif;
+`;
+
+const CheckboxContainer = styled.div`
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+`;
+
+const Checkbox = styled.input`
+  margin-top: 0.2rem;
+`;
+
+const CheckboxLabel = styled.label`
+  color: #c7bfd4;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  font-family: "Cormorant Garamond", serif;
+`;
+
 const CreateArtifactPage = () => {
   const router = useRouter();
   const [formData, setFormData] = useState({
@@ -390,6 +423,32 @@ const CreateArtifactPage = () => {
             />
             {errors.image && <ErrorMessage>{errors.image}</ErrorMessage>}
           </FormGroup>
+
+          <TermsContainer>
+            <TermsText>
+              By submitting your artwork, you acknowledge that:
+            </TermsText>
+            <ul style={{ color: '#c7bfd4', fontSize: '0.9rem', marginBottom: '1rem', paddingLeft: '1.5rem', fontFamily: '"Cormorant Garamond", serif' }}>
+              <li>You are the original creator of the artwork</li>
+              <li>You grant COLLECTOR QUEST the rights to use your artwork and any generated content in the game</li>
+              <li>The artwork and generated content may be used for gameplay, marketing, and promotional purposes</li>
+              <li>You retain ownership of your original artwork</li>
+            </ul>
+            <CheckboxContainer>
+              <Checkbox
+                type="checkbox"
+                id="termsAgreed"
+                name="termsAgreed"
+                checked={formData.termsAgreed}
+                onChange={handleCheckboxChange}
+                required
+              />
+              <CheckboxLabel htmlFor="termsAgreed">
+                I acknowledge and agree to these terms
+              </CheckboxLabel>
+            </CheckboxContainer>
+            {errors.termsAgreed && <ErrorMessage>{errors.termsAgreed}</ErrorMessage>}
+          </TermsContainer>
 
           {errors.submit && <ErrorMessage>{errors.submit}</ErrorMessage>}
         </form>

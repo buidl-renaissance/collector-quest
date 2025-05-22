@@ -612,6 +612,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   return {
     props: {
+      metadata: {
+        title: `${artifactData?.title} | COLLECTOR QUEST Artifact`,
+        description: `${artifactData?.description}`,
+        image: artifactData?.imageUrl,
+      },
       artifact: artifactData || null,
     },
   };
