@@ -186,13 +186,49 @@ const TermsList = styled.ul`
 
 const CheckboxContainer = styled.div`
   display: flex;
-  align-items: flex-start;
-  gap: 0.5rem;
+  align-items: center;
+  gap: 0.75rem;
 `;
 
-
 const Checkbox = styled.input`
-  margin-top: 0.2rem;
+  appearance: none;
+  -webkit-appearance: none;
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 2px solid #bb8930;
+  border-radius: 4px;
+  background: rgba(30, 20, 50, 0.5);
+  cursor: pointer;
+  position: relative;
+  margin: 0;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+
+  &:checked {
+    background: #bb8930;
+    border-color: #bb8930;
+  }
+
+  &:checked::after {
+    content: "✓";
+    position: absolute;
+    color: #1a1a2e;
+    font-size: 1.2rem;
+    font-weight: bold;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  &:hover {
+    border-color: #d4a040;
+    box-shadow: 0 0 10px rgba(187, 137, 48, 0.3);
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(187, 137, 48, 0.3);
+  }
 `;
 
 const CheckboxLabel = styled.label`
@@ -200,6 +236,12 @@ const CheckboxLabel = styled.label`
   font-size: 0.9rem;
   line-height: 1.4;
   font-family: "Cormorant Garamond", serif;
+  cursor: pointer;
+  user-select: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
 `;
 
 const CreateArtifactPage = () => {
