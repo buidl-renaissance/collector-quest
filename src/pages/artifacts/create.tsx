@@ -24,7 +24,7 @@ const PageContainer = styled.div`
 
 const Section = styled.section`
   margin-bottom: 2rem;
-  padding: 2rem;
+  padding: 1rem;
   margin: 1rem;
   background-color: #2d2d44;
   border-radius: 0.5rem;
@@ -166,11 +166,30 @@ const TermsText = styled.p`
   font-family: "Cormorant Garamond", serif;
 `;
 
+const TermsList = styled.ul`
+  color: #c7bfd4;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+  padding-left: 1.5rem;
+  font-family: "Cormorant Garamond", serif;
+  list-style-type: disc;
+
+  li {
+    margin-bottom: 0.5rem;
+    line-height: 1.4;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+`;
+
 const CheckboxContainer = styled.div`
   display: flex;
   align-items: flex-start;
   gap: 0.5rem;
 `;
+
 
 const Checkbox = styled.input`
   margin-top: 0.2rem;
@@ -428,12 +447,12 @@ const CreateArtifactPage = () => {
             <TermsText>
               By submitting your artwork, you acknowledge that:
             </TermsText>
-            <ul style={{ color: '#c7bfd4', fontSize: '0.9rem', marginBottom: '1rem', paddingLeft: '1.5rem', fontFamily: '"Cormorant Garamond", serif' }}>
+            <TermsList>
               <li>You are the original creator of the artwork</li>
               <li>You grant COLLECTOR QUEST the rights to use your artwork and any generated content in the game</li>
               <li>The artwork and generated content may be used for gameplay, marketing, and promotional purposes</li>
               <li>You retain ownership of your original artwork</li>
-            </ul>
+            </TermsList>
             <CheckboxContainer>
               <Checkbox
                 type="checkbox"
