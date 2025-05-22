@@ -26,17 +26,19 @@ const CharacterCard: React.FC<CharacterCardProps> = ({
         )}
       </CardHeader>
       <CardContent>
-        <CharacterImage
-          race={character.race}
-          characterClass={character.class}
-          size={size}
-        />
         {character.race && character.class && (
+          <>
+            <CharacterImage
+              race={character.race}
+              characterClass={character.class}
+              size={size}
+          />
           <CharacterDescription
             race={character.race}
             characterClass={character.class}
-            size={size}
-          />
+              size={size}
+            />
+          </>
         )}
       </CardContent>
     </Card>
