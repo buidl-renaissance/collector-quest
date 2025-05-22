@@ -46,7 +46,9 @@ const Modal: React.FC<ModalProps> = ({ children, onClose, title }) => {
             <FaTimes />
           </CloseButton>
         </ModalHeader>
-        <ModalContent>{children}</ModalContent>
+        <ModalContentWrapper>
+          <ModalContent>{children}</ModalContent>
+        </ModalContentWrapper>
       </ModalContainer>
     </ModalOverlay>
   );
@@ -62,24 +64,25 @@ const ModalOverlay = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
+  z-index: 100000;
   backdrop-filter: blur(3px);
 `;
 
 const ModalContainer = styled.div`
   background: rgba(20, 20, 35, 0.95);
   border-radius: 12px;
-  padding: 1.5rem;
   width: 90%;
   max-width: 500px;
   max-height: 90vh;
-  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
   border: 1px solid rgba(255, 215, 0, 0.3);
+  position: relative;
+  z-index: 100001;
   
   @media (min-width: 768px) {
     width: 80%;
-    padding: 2rem;
   }
 `;
 
@@ -87,7 +90,17 @@ const ModalHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
+  padding: 1.5rem;
+  border-bottom: 1px solid rgba(255, 215, 0, 0.1);
+  position: sticky;
+  top: 0;
+  background: rgba(20, 20, 35, 0.98);
+  border-radius: 12px 12px 0 0;
+  z-index: 10;
+  
+  @media (min-width: 768px) {
+    padding: 1.5rem 2rem;
+  }
 `;
 
 const ModalTitle = styled.h3`
@@ -107,6 +120,16 @@ const CloseButton = styled.button`
   
   &:hover {
     color: #ffd700;
+  }
+`;
+
+const ModalContentWrapper = styled.div`
+  overflow-y: auto;
+  flex: 1;
+  padding: 1.5rem;
+  
+  @media (min-width: 768px) {
+    padding: 2rem;
   }
 `;
 

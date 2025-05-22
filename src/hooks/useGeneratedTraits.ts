@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { getCurrentCharacterId } from "@/utils/storage";
 import { useCharacter } from "./useCharacter";
 import { Traits } from "./useCharacter";
@@ -38,23 +38,33 @@ export function useGeneratedTraits() {
   const [resultId, setResultId] = useState<string | null>(null);
   const [traits, setTraits] = useState<Traits | null>(null);
 
-  // Load traits from local storage on initial render
-  useEffect(() => {
+  const loadTraits = useCallback(() => {
     const characterId = getCurrentCharacterId();
     if (characterId) {
-      const storedTraits = localStorage.getItem(`${GENERATED_TRAITS_STORAGE_KEY}_${characterId}`);
+      const storedTraits = localStorage.getItem(
+        `${GENERATED_TRAITS_STORAGE_KEY}_${characterId}`
+      );
       if (storedTraits) {
-        try {
-          setTraits(JSON.parse(storedTraits));
-        } catch (err) {
-          console.error("Failed to parse stored traits:", err);
-        }
+        const storedTraitsObject = JSON.parse(storedTraits);
+        setTraits(storedTraitsObject);
+        return storedTraitsObject;
       }
+      return null;
     }
   }, []);
 
+  useEffect(() => {
+    loadTraits();
+  }, [loadTraits]);
+
   // Function to start the trait generation process
   const generateTraits = async () => {
+    const existingTraits = loadTraits();
+
+    if (resultId || existingTraits || loading) {
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
@@ -93,7 +103,7 @@ export function useGeneratedTraits() {
   // Function to poll for results
   const pollForResults = async (id: string) => {
     let pollTimeout: NodeJS.Timeout;
-    
+
     try {
       const response = await fetch(`/api/image/status?id=${id}`);
 
@@ -111,12 +121,12 @@ export function useGeneratedTraits() {
       if (resultData?.traits) {
         // Update character with the generated traits
         setTraits(resultData.traits);
-        
+
         // Save to local storage
         const characterId = getCurrentCharacterId();
         if (characterId) {
           localStorage.setItem(
-            `${GENERATED_TRAITS_STORAGE_KEY}_${characterId}`, 
+            `${GENERATED_TRAITS_STORAGE_KEY}_${characterId}`,
             JSON.stringify(resultData.traits)
           );
         }
@@ -134,9 +144,9 @@ export function useGeneratedTraits() {
       setError(
         err instanceof Error ? err.message : "An unknown error occurred"
       );
-      setLoading(false);      
+      setLoading(false);
     }
-    
+
     // Clear timeout when function exits
     return () => {
       if (pollTimeout) {
@@ -151,7 +161,7 @@ export function useGeneratedTraits() {
     setError(null);
     setResultId(null);
     setTraits(null);
-    
+
     // Clear from local storage
     const characterId = getCurrentCharacterId();
     if (characterId) {

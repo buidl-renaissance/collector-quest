@@ -64,39 +64,7 @@ export class CharacterDB {
 
     if (!result) return null;
 
-    const race = await getRaceById(result.race);
-    const characterClass = await getClassById(result.class);
-    let traits = result.traits;
-    if (typeof traits === "string") {
-      traits = JSON.parse(traits);
-    }
-
-    let equipment = result.equipment;
-    if (typeof equipment === "string") {
-      equipment = JSON.parse(equipment);
-    }
-
-    let sheet = result.sheet;
-    if (typeof sheet === "string") {
-      sheet = JSON.parse(sheet);
-    }
-
-    return {
-      id: result.id,
-      name: result.name,
-      race: race ?? undefined,
-      class: characterClass ?? undefined,
-      level: result.level,
-      traits: traits ?? undefined,
-      motivation: result.motivation,
-      bio: result.bio,
-      backstory: result.backstory,
-      sex: result.sex,
-      creature: result.creature,
-      image_url: result.image_url,
-      equipment: equipment ?? undefined,
-      sheet: sheet ?? undefined,
-    };
+    return mapCharacter(result);
   }
 
   async updateCharacter(
@@ -171,23 +139,43 @@ export class CharacterDB {
     const results = await client("characters").select("*");
     return Promise.all(
       results.map(async (result) => {
-        const race = result.race ? await getRaceById(result.race) : undefined;
-        const characterClass = result.class
-          ? await getClassById(result.class)
-          : undefined;
-        return {
-          name: result.name ?? "",
-          race: race ?? undefined,
-          class: characterClass ?? undefined,
-          level: result.level,
-          traits: result.traits ? JSON.parse(result.traits) : undefined,
-          motivation: result.motivation,
-          bio: result.bio,
-          backstory: result.backstory,
-          sex: result.sex,
-          creature: result.creature,
-        };
+        return mapCharacter(result);
       })
     );
   }
 }
+
+const mapCharacter = async (result: any): Promise<Character> => {
+  const race = await getRaceById(result.race);
+  const characterClass = await getClassById(result.class);
+  let traits = result.traits;
+  if (typeof traits === "string") {
+    traits = JSON.parse(traits);
+  }
+
+  let equipment = result.equipment;
+  if (typeof equipment === "string") {
+    equipment = JSON.parse(equipment);
+  }
+
+  let sheet = result.sheet;
+  if (typeof sheet === "string") {
+    sheet = JSON.parse(sheet);
+  }
+  return {
+    id: result.id,
+    name: result.name,
+    race: race ?? null,
+    class: characterClass ?? null,
+    level: result.level,
+    traits: traits ?? null,
+    motivation: result.motivation,
+    bio: result.bio,
+    backstory: result.backstory,
+    sex: result.sex,
+    creature: result.creature,
+    image_url: result.image_url,
+    equipment: equipment ?? null,
+    sheet: sheet ?? null,
+  };
+};

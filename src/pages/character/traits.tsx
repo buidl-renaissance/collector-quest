@@ -13,28 +13,15 @@ import PageTransition from "@/components/PageTransition";
 import { useCharacterClass } from "@/hooks/useCharacterClass";
 import { useRace } from "@/hooks/useRace";
 import Page from "@/components/Page";
-import { BackButton } from "@/components/styled/character";
 import { useCharacter, Traits } from "@/hooks/useCharacter";
 import BottomNavigation from "@/components/BottomNavigation";
 import { Title, Subtitle } from "@/components/styled/typography";
-import {
-  AddChipButton,
-  Chip,
-  ChipsContainer,
-  CustomChipInput,
-  CustomInput,
-  Input,
-  InputContainer,
-  Label,
-} from "@/components/styled/forms";
-import { FormGroup, TextArea } from "@/components/styled/forms";
 import { FormSection } from "@/components/styled/forms";
 import { navigateTo } from "@/utils/navigation";
 import useGeneratedTraits from "@/hooks/useGeneratedTraits";
 
 const CharacterTraitsPage: React.FC = () => {
   const router = useRouter();
-  const [darkMode, setDarkMode] = useState(true);
   const { character, updateCharacter, saveCharacter, updateCharacterTrait } = useCharacter();
   const { selectedClass, loading: classLoading } = useCharacterClass();
   const { selectedRace, loading: raceLoading } = useRace();
@@ -49,7 +36,7 @@ const CharacterTraitsPage: React.FC = () => {
     if (!generatedTraits && !traitsLoading) {
       generateTraits();
     }
-  }, [generatedTraits, traitsLoading]);
+  }, [generatedTraits, traitsLoading, generateTraits]);
 
   // Update traits when generated traits are available
   useEffect(() => {
@@ -68,7 +55,7 @@ const CharacterTraitsPage: React.FC = () => {
         setSelectedBonds(character.traits?.bonds || []);
       }
     }
-  }, [generatedTraits, character]);
+  }, [generatedTraits, character, selectedPersonality.length, selectedIdeals.length, selectedFlaws.length, selectedBonds.length]);
 
   // Update character with selected traits only when selections change
   useEffect(() => {
@@ -94,7 +81,7 @@ const CharacterTraitsPage: React.FC = () => {
         });
       }
     }
-  }, [selectedPersonality, selectedIdeals, selectedFlaws, selectedBonds]);
+  }, [selectedPersonality, selectedIdeals, selectedFlaws, selectedBonds, character, updateCharacter]);
 
   const handleInputChange = (
     e: React.ChangeEvent<

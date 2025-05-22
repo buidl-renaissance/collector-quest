@@ -213,18 +213,18 @@ export interface Character {
   id?: string;
   name: string;
   status?: string;
-  race?: Race;
-  subrace?: Subrace;
-  class?: CharacterClass;
-  subclass?: CharacterSubclass;
+  race?: Race | null;
+  subrace?: Subrace | null;
+  class?: CharacterClass | null;
+  subclass?: CharacterSubclass | null;
   level?: number;
-  traits?: Traits;
+  traits?: Traits | null;
   motivation?: string;
   bio?: string;
   backstory?: string;
-  equipment?: Equipment;
+  equipment?: Equipment | null;
   sex?: string;
   creature?: string;
   image_url?: string;
-  sheet?: CharacterSheet;
+  sheet?: CharacterSheet | null;
 }
