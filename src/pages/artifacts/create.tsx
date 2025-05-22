@@ -1,14 +1,11 @@
 import React, { useState } from "react";
 import styled from "@emotion/styled";
 import { useRouter } from "next/router";
-import Image from "next/image";
 import { FormGroup, Label, Input, TextArea } from "@/components/styled/forms";
 
 import { ErrorMessage } from "@/components/styled/typography";
 import { UploadMedia } from "@/components/UploadMedia";
-import { NextButton } from "@/components/styled/buttons";
-import BottomNavigation from "@/components/BottomNavigation";
-import { Artifact } from "@/data/artifacts";
+import LoadingCandles from "@/components/LoadingCandles";
 
 // Additional styled components specific to this page
 const PageContainer = styled.div`
@@ -258,10 +255,8 @@ const CreateArtifactPage = () => {
 
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [generatedArtifact, setGeneratedArtifact] = useState<Artifact | null>(null);
-
+  const [isSubmitting, setIsSubmitting] = useState(true);
+  
   const currentYear = new Date().getFullYear();
   const yearOptions = Array.from(
     { length: currentYear - 1900 + 1 },
@@ -307,66 +302,6 @@ const CreateArtifactPage = () => {
       return false;
     }
     return true;
-  };
-
-  const validateFormData = () => {
-    const newErrors: { [key: string]: string } = {};
-
-    if (!formData.artistName.trim())
-      newErrors.artistName = "Artist name is required";
-    if (!formData.artworkTitle.trim())
-      newErrors.artworkTitle = "Artwork title is required";
-    if (!formData.description.trim())
-      newErrors.description = "Description is required";
-    if (!formData.termsAgreed)
-      newErrors.termsAgreed = "You must agree to the terms";
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const analyzeArtwork = async () => {
-    setIsAnalyzing(true);
-
-    try {
-      // Call API to analyze artwork and get suggested details
-      const response = await fetch("/api/artifacts/analyze", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          imageUrl: imagePreview,
-          medium: formData.medium,
-          yearCreated: formData.yearCreated,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to analyze artwork");
-      }
-
-      const data = await response.json();
-      setGeneratedArtifact(data);
-
-      // Pre-fill the form with analyzed data
-      setFormData((prev) => ({
-        ...prev,
-        artistName: data.artistName || prev.artistName,
-        artworkTitle: data.artworkTitle || prev.artworkTitle,
-        medium: data.medium || prev.medium,
-        yearCreated: data.yearCreated || prev.yearCreated,
-        description: data.description || prev.description,
-      }));
-    } catch (error) {
-      console.error("Error analyzing artwork:", error);
-      setErrors({
-        ...errors,
-        analyze: "Failed to analyze artwork. Please enter details manually.",
-      });
-    } finally {
-      setIsAnalyzing(false);
-    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -529,6 +464,8 @@ const CreateArtifactPage = () => {
           {isSubmitting ? "Creating..." : "Create Artifact"}
         </ActionButton>
       </BottomNav>
+
+      {isSubmitting && (<LoadingCandles />)}
     </PageContainer>
   );
 };
