@@ -113,7 +113,7 @@ const Description = styled.p`
   text-align: center;
   margin-bottom: 2rem;
   line-height: 1.6;
-  font-size: 1.1rem;
+  font-size: 1rem;
 `;
 
 const Section = styled.div`

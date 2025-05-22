@@ -12,6 +12,7 @@ import {
 import Footer from '@/components/Footer';
 import { useCharacter } from '@/hooks/useCharacter';
 import { useRouter } from 'next/router';
+import PressStart from '@/components/PressStart';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   return {
@@ -47,17 +48,6 @@ const MasterPage: React.FC = () => {
   const toggleAudio = () => {
     setAudioEnabled(!audioEnabled);
     // Audio implementation would go here
-  };
-
-  const handlePressStart = async () => {
-    try {
-      setIsCreating(true);
-      await createCharacter();
-      router.push('/character/name');
-    } catch (err) {
-      console.error('Error creating character:', err);
-      setIsCreating(false);
-    }
   };
 
   return (
@@ -269,32 +259,7 @@ const MasterPage: React.FC = () => {
           </ScrollParchment>
         </ChronicleSection>
 
-        <VideoSection>
-          <VideoContainer>
-            <video
-              autoPlay
-              muted
-              loop
-              playsInline
-              poster="/images/COLLECTOR-quest-intro-placeholder.png"
-            >
-              <source
-                src="/videos/COLLECTOR-quest-intro-compressed.mp4"
-                type="video/mp4"
-              />
-              Your browser does not support the video tag.
-            </video>
-            <VideoOverlay>
-              <PlayButton onClick={handlePressStart} disabled={isCreating}>
-                {isCreating ? (
-                  <LoadingSpinner />
-                ) : (
-                  <span>PRESS START</span>
-                )}
-              </PlayButton>
-            </VideoOverlay>
-          </VideoContainer>
-        </VideoSection>
+        <PressStart />
 
         {/* <StartAdventureButton href="/story/quest">
           Begin Your Quest <FaArrowRight />

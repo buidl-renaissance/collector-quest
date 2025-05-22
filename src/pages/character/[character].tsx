@@ -22,6 +22,7 @@ import { Character } from "@/data/character";
 import { Artifact } from "@/data/artifacts";
 import CharacterBio from "@/components/CharacterBio";
 import useModal from "@/hooks/useModal";
+import PressStart from '@/components/PressStart';
 
 interface CharacterPageProps {
   character: Character | null;
@@ -47,6 +48,7 @@ const CharacterPage: React.FC<CharacterPageProps> = ({ character }) => {
   const [loadingArtifacts, setLoadingArtifacts] = useState(true);
   const [realms, setRealms] = useState<Realm[]>([]);
   const [loadingRealms, setLoadingRealms] = useState(true);
+  const [isCreating, setIsCreating] = useState(false);
 
   useEffect(() => {
     if (character) {
@@ -91,8 +93,13 @@ const CharacterPage: React.FC<CharacterPageProps> = ({ character }) => {
     router.push("/artifacts/create");
   };
 
-  const handleRegisterCharacter = () => {
-    router.push(`/characters/${character?.id}/register`);
+  const handleRegisterCharacter = async () => {
+    setIsCreating(true);
+    try {
+      await router.push(`/characters/${character?.id}/register`);
+    } finally {
+      setIsCreating(false);
+    }
   };
 
   if (!character) {

@@ -19,6 +19,7 @@ import QRCode from "react-qr-code";
 import useIsAdmin from "@/hooks/useIsAdmin";
 import { NextButton } from "@/components/styled/buttons";
 import router from "next/router";
+import PressStart from "@/components/PressStart";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   return {
@@ -138,9 +139,9 @@ const IndexPage: React.FC = () => {
             <MagicSpan>Collector Quest</MagicSpan>
           </Title>
           <Subtitle>Forge your legacy. Collect the extraordinary.</Subtitle>
-          <ComingSoonBadge onClick={scrollToPreRegister}>
+          {/* <ComingSoonBadge onClick={scrollToPreRegister}>
             Coming Soon
-          </ComingSoonBadge>
+          </ComingSoonBadge> */}
         </HeroSection>
 
         <ImageSection>
@@ -153,9 +154,9 @@ const IndexPage: React.FC = () => {
         </ImageSection>
 
         <Section>
-          <SectionIcon>
-            <FaScroll />
-          </SectionIcon>
+            {/* <SectionIcon>
+              <FaScroll />
+            </SectionIcon> */}
           <SectionTitle>What Is Collector Quest?</SectionTitle>
           <Description>
             Collector Quest is a turn-based storytelling game powered by AI. You
@@ -167,7 +168,7 @@ const IndexPage: React.FC = () => {
           </Tagline>
         </Section>
 
-        <PreRegisterSection ref={preRegisterRef}>
+        {/* <PreRegisterSection ref={preRegisterRef}>
           <SectionIcon>
             <FaBook />
           </SectionIcon>
@@ -200,7 +201,7 @@ const IndexPage: React.FC = () => {
               Quest launches.
             </SuccessMessage>
           )}
-        </PreRegisterSection>
+        </PreRegisterSection> */}
 
         <FeatureSection>
           <FeatureGrid>
@@ -243,23 +244,64 @@ const IndexPage: React.FC = () => {
           </FeatureGrid>
         </FeatureSection>
 
+        <Section>
+          {/* <SectionIcon>
+            <FaShareAlt />
+          </SectionIcon> */}
+          <SectionTitle>Real-World Artifacts</SectionTitle>
+          <Description>
+            Turn your artwork into legendary digital relics. Each piece becomes a unique artifact with mystical powers.
+          </Description>
+          <ArtifactGrid>
+            <ArtifactItem>
+              <ArtifactTitle>Register Art</ArtifactTitle>
+              <ArtifactDescription>
+                Transform your artwork into a digital relic
+              </ArtifactDescription>
+            </ArtifactItem>
+            <ArtifactItem>
+              <ArtifactTitle>Magical Powers</ArtifactTitle>
+              <ArtifactDescription>
+                Each artifact gains unique mystical abilities
+              </ArtifactDescription>
+            </ArtifactItem>
+            <ArtifactItem>
+              <ArtifactTitle>Verified Collection</ArtifactTitle>
+              <ArtifactDescription>
+                Build a collection of authentic digital relics
+              </ArtifactDescription>
+            </ArtifactItem>
+            <ArtifactItem>
+              <ArtifactTitle>Live Forever</ArtifactTitle>
+              <ArtifactDescription>
+                Your art becomes a legendary game artifact
+              </ArtifactDescription>
+            </ArtifactItem>
+          </ArtifactGrid>
+          <Tagline>Where art becomes legend.</Tagline>
+        </Section>
+
         {/* A Section for Artists to Register their Artifacts */}
         {isAdmin && (
-          <Section>
-            <SectionTitle>Register An Artifact</SectionTitle>
-            <Description>
-              Are you an artist? Register an artifact to receive a one-of-a-kind
-              relic based on your artwork.
-            </Description>
-            <div style={{ display: "flex", justifyContent: "center" }}>
-              <NextButton onClick={() => router.push("/artifacts/create")}>
-                REGISTER ARTIFACT
-              </NextButton>
-            </div>
-          </Section>
+          <>
+            <PressStart />
+
+            {/* <Section>
+              <SectionTitle>Register An Artifact</SectionTitle>
+              <Description>
+                Are you an artist? Register an artifact to receive a
+                one-of-a-kind relic based on your artwork.
+              </Description>
+              <div style={{ display: "flex", justifyContent: "center" }}>
+                <NextButton onClick={() => router.push("/artifacts/create")}>
+                  REGISTER ARTIFACT
+                </NextButton>
+              </div>
+            </Section> */}
+          </>
         )}
 
-        {isAdmin && (
+        {/* {isAdmin && (
           <QRCodeSection>
             <QRCode
               value="https://collectorquest.ai"
@@ -267,11 +309,8 @@ const IndexPage: React.FC = () => {
               fgColor="#b6551c99"
               size={288}
             />
-            {/* <ShareButton onClick={() => setShowShareModal(true)}>
-            <FaShareAlt /> Share
-          </ShareButton> */}
           </QRCodeSection>
-        )}
+        )} */}
 
         {/* <FounderBadge>
           <BadgeIcon><FaScroll /></BadgeIcon>
@@ -497,6 +536,7 @@ const Section = styled.section`
   background: rgba(58, 38, 6, 0.7);
   border-radius: 8px;
   border: 1px solid rgba(187, 137, 48, 0.3);
+  font-family: "Cinzel", serif;
 
   @media (min-width: 768px) {
     padding: 2rem;
@@ -833,6 +873,41 @@ const ShareOption = styled.a<{ color: string }>`
     transform: translateY(-2px);
     filter: brightness(1.1);
   }
+`;
+
+const ArtifactGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin: 2rem 0;
+`;
+
+const ArtifactItem = styled.div`
+  background: rgba(187, 137, 48, 0.1);
+  border: 1px solid rgba(187, 137, 48, 0.3);
+  border-radius: 8px;
+  padding: 1.5rem;
+  text-align: center;
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-5px);
+    background: rgba(187, 137, 48, 0.2);
+    border-color: rgba(187, 137, 48, 0.5);
+  }
+`;
+
+const ArtifactTitle = styled.h4`
+  color: #bb8930;
+  font-family: "Cinzel", serif;
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+`;
+
+const ArtifactDescription = styled.p`
+  color: #e6e6e6;
+  font-size: 0.9rem;
+  line-height: 1.4;
 `;
 
 export default IndexPage;

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from '@emotion/styled';
 import { FaArrowRight } from 'react-icons/fa';
 import { NextButton } from './styled/buttons';
@@ -16,8 +16,42 @@ const BottomNavigation: React.FC<BottomNavigationProps> = ({
   onNext,
   disabled = false,
 }) => {
+  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
+
+  useEffect(() => {
+    // Detect keyboard visibility by checking window height changes
+    const initialHeight = window.innerHeight;
+    
+    const handleResize = () => {
+      // If window height significantly decreases, keyboard is likely visible
+      const keyboardVisible = window.innerHeight < initialHeight * 0.75;
+      setIsKeyboardVisible(keyboardVisible);
+    };
+
+    window.addEventListener('resize', handleResize);
+    
+    // For iOS devices that don't trigger resize events
+    window.addEventListener('focusin', () => {
+      if (document.activeElement?.tagName === 'INPUT') {
+        setIsKeyboardVisible(true);
+      }
+    });
+    
+    window.addEventListener('focusout', () => {
+      if (document.activeElement?.tagName !== 'INPUT') {
+        setIsKeyboardVisible(false);
+      }
+    });
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('focusin', () => {});
+      window.removeEventListener('focusout', () => {});
+    };
+  }, []);
+
   return (
-    <NavigationContainer>
+    <NavigationContainer isKeyboardVisible={isKeyboardVisible}>
       {selectedItem && selectedItemLabel && (
         <SelectedItem>
           <SelectedItemLabel>{selectedItemLabel}:</SelectedItemLabel>
@@ -31,7 +65,7 @@ const BottomNavigation: React.FC<BottomNavigationProps> = ({
   );
 };
 
-const NavigationContainer = styled.div`
+const NavigationContainer = styled.div<{ isKeyboardVisible: boolean }>`
   position: fixed;
   bottom: 0;
   left: 0;
@@ -46,6 +80,15 @@ const NavigationContainer = styled.div`
   z-index: 1000;
   transform: translateZ(0);
   -webkit-transform: translateZ(0);
+  
+  /* When keyboard is visible, position relative to viewport */
+  position: ${props => props.isKeyboardVisible ? 'fixed' : 'fixed'};
+  bottom: ${props => props.isKeyboardVisible ? 'env(safe-area-inset-bottom, 0)' : '0'};
+  
+  /* Add iOS-specific positioning */
+  @supports (-webkit-touch-callout: none) {
+    padding-bottom: ${props => props.isKeyboardVisible ? 'env(safe-area-inset-bottom, 1rem)' : '1rem'};
+  }
 `;
 
 const SelectedItem = styled.div`
@@ -65,4 +108,4 @@ const SelectedItemValue = styled.span`
   font-weight: 500;
 `;
 
-export default BottomNavigation; 
+export default BottomNavigation;
