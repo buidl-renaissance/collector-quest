@@ -8,6 +8,7 @@ import Link from 'next/link';
 import { NextButton, Title as CharacterTitle } from '@/components/styled/character';
 import { FormGroup, Label, Input, CheckboxContainer, Checkbox } from '@/components/styled/forms';
 import PhoneInput from '@/components/PhoneInput';
+import RelicModal from '@/components/RelicModal';
 
 interface ArtifactClaimProps {
   artifact: any;
@@ -23,6 +24,9 @@ const ArtifactClaimPage = ({ artifact }: ArtifactClaimProps) => {
   });
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showRelicModal, setShowRelicModal] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [generatedRelicUrl, setGeneratedRelicUrl] = useState<string | null>(null);
 
   useEffect(() => {
     if (!artifact) {
@@ -65,6 +69,11 @@ const ArtifactClaimPage = ({ artifact }: ArtifactClaimProps) => {
     return Object.keys(newErrors).length === 0;
   };
 
+  const closeModal = () => {
+    setShowRelicModal(false);
+    router.push(`/artifacts/${artifact.id}`);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -94,7 +103,17 @@ const ArtifactClaimPage = ({ artifact }: ArtifactClaimProps) => {
       }
 
       const data = await response.json();
-      router.push(`/artifacts/${data.id}`);
+      
+      // Show relic modal instead of redirecting immediately
+      setIsGenerating(true);
+      setShowRelicModal(true);
+      
+      // Simulate relic generation (replace with actual API call if needed)
+      setTimeout(() => {
+        setIsGenerating(false);
+        setGeneratedRelicUrl(artifact.relicImageUrl); // Use artifact image as placeholder
+      }, 5000);
+      
     } catch (error) {
       console.error("Error claiming artifact:", error);
       setErrors({
@@ -218,6 +237,15 @@ const ArtifactClaimPage = ({ artifact }: ArtifactClaimProps) => {
           {errors.submit && <ErrorMessage>{errors.submit}</ErrorMessage>}
         </form>
       </Section>
+      
+      {showRelicModal && (
+        <RelicModal 
+          isOpen={showRelicModal}
+          onClose={closeModal}
+          isGenerating={isGenerating}
+          relicImageUrl={generatedRelicUrl}
+        />
+      )}
     </Container>
   );
 };

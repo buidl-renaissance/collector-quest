@@ -7,19 +7,16 @@ import { useCharacter } from "@/hooks/useCharacter";
 import { useRace } from "@/hooks/useRace";
 import { useCharacterClass } from "@/hooks/useCharacterClass";
 import {
-  Container,
   Title,
   Subtitle,
   BackButton,
-  NextButton,
   HeroSection,
-  SelectionFooter,
 } from "@/components/styled/character";
 import PageTransition from "@/components/PageTransition";
 import Page from "@/components/Page";
 import BottomNavigation from "@/components/BottomNavigation";
 import { navigateTo } from "@/utils/navigation";
-import Link from "next/link";
+
 const BackgroundPage: React.FC = () => {
   const router = useRouter();
   const { character, updateCharacter, saveCharacter, updateCharacterTrait } =

@@ -82,6 +82,8 @@ const CharacterPage: React.FC = () => {
             <CharacterTitle>{character.name}</CharacterTitle>
             <CharacterSubtitle>
               {character.race?.name} {character.class?.name}
+              {character.traits?.background && ` • ${character.traits.background}`}
+              {character.traits?.alignment && ` • ${character.traits.alignment}`}
             </CharacterSubtitle>
           </CharacterHeader>
 
@@ -112,55 +114,6 @@ const CharacterPage: React.FC = () => {
               </BioCardContainer>
             </CharacterImageSection>
 
-            <CharacterInfoSection>
-              {character.traits && (
-                <>
-                  <InfoCard>
-                    <InfoCardTitle>
-                      <FaDice /> Personality Traits
-                    </InfoCardTitle>
-                    <TraitsList>
-                      {character.traits.personality?.map((trait: string, index: number) => (
-                        <TraitItem key={`personality-${index}`}>{trait}</TraitItem>
-                      ))}
-                    </TraitsList>
-                  </InfoCard>
-
-                  <InfoCard>
-                    <InfoCardTitle>
-                      <FaDice /> Ideals
-                    </InfoCardTitle>
-                    <TraitsList>
-                      {character.traits.ideals?.map((ideal: string, index: number) => (
-                        <TraitItem key={`ideal-${index}`}>{ideal}</TraitItem>
-                      ))}
-                    </TraitsList>
-                  </InfoCard>
-
-                  <InfoCard>
-                    <InfoCardTitle>
-                      <FaDice /> Flaws
-                    </InfoCardTitle>
-                    <TraitsList>
-                      {character.traits.flaws?.map((flaw: string, index: number) => (
-                        <TraitItem key={`flaw-${index}`}>{flaw}</TraitItem>
-                      ))}
-                    </TraitsList>
-                  </InfoCard>
-
-                  <InfoCard>
-                    <InfoCardTitle>
-                      <FaDice /> Bonds
-                    </InfoCardTitle>
-                    <TraitsList>
-                      {character.traits.bonds?.map((bond: string, index: number) => (
-                        <TraitItem key={`bond-${index}`}>{bond}</TraitItem>
-                      ))}
-                    </TraitsList>
-                  </InfoCard>
-                </>
-              )}
-            </CharacterInfoSection>
           </CharacterContent>
         </CharacterContainer>
         

@@ -66,7 +66,7 @@ export const generateCharacterImageFunction = inngest.createFunction(
       // Step 2: Generate the character image
       const generatedImage = await step.run("generate-image", async () => {
         const imagePrompt = prompt || 
-          `character portrait based on facial analysis: ${facialData} and character data: ${JSON.stringify(character)}`;
+          `character portrait based on facial analysis: ${facialData} and character race: ${character.race?.name} and class: ${character.class?.name}, change character from holding the current item to holding something specific to their race/class`;
         return await generateImageRequest(imagePrompt, character.race?.image);
       });
       

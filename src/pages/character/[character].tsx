@@ -1,8 +1,17 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import styled from "@emotion/styled";
 import { keyframes } from "@emotion/react";
-import { FaArrowLeft, FaScroll, FaDice, FaFeather } from "react-icons/fa";
+import {
+  FaArrowLeft,
+  FaScroll,
+  FaDice,
+  FaFeather,
+  FaPlus,
+  FaCrown,
+  FaMapMarkerAlt,
+  FaUserPlus,
+} from "react-icons/fa";
 import Image from "next/image";
 import { GetServerSideProps } from "next";
 import PageTransition from "@/components/PageTransition";
@@ -10,19 +19,80 @@ import Page from "@/components/Page";
 import { Title, Subtitle, SectionTitle } from "@/components/styled/typography";
 import { CharacterDB } from "@/db/character";
 import { Character } from "@/data/character";
+import { Artifact } from "@/data/artifacts";
 import CharacterBio from "@/components/CharacterBio";
-import useModal from '@/hooks/useModal';
+import useModal from "@/hooks/useModal";
 
 interface CharacterPageProps {
   character: Character | null;
 }
 
+interface Realm {
+  id: string;
+  name: string;
+  description: string;
+  imageUrl: string;
+  location: string;
+  kingdomName: string;
+  guardians: string[];
+  invitationOnly: boolean;
+  requiresVerification: boolean;
+  createdAt: string;
+}
+
 const CharacterPage: React.FC<CharacterPageProps> = ({ character }) => {
   const router = useRouter();
   const { openModal, closeModal, modalContent, Modal } = useModal();
+  const [artifacts, setArtifacts] = useState<Artifact[]>([]);
+  const [loadingArtifacts, setLoadingArtifacts] = useState(true);
+  const [realms, setRealms] = useState<Realm[]>([]);
+  const [loadingRealms, setLoadingRealms] = useState(true);
+
+  useEffect(() => {
+    if (character) {
+      fetchArtifacts();
+      // fetchRealms();
+    }
+  }, [character]);
+
+  const fetchArtifacts = async () => {
+    try {
+      const response = await fetch(
+        `/api/characters/${character?.id}/artifacts`
+      );
+      if (!response.ok) throw new Error("Failed to fetch artifacts");
+      const data = await response.json();
+      setArtifacts(data);
+    } catch (error) {
+      console.error("Error fetching artifacts:", error);
+    } finally {
+      setLoadingArtifacts(false);
+    }
+  };
+
+  // const fetchRealms = async () => {
+  //   try {
+  //     const response = await fetch(`/api/characters/${character?.id}/realms`);
+  //     if (!response.ok) throw new Error('Failed to fetch realms');
+  //     const data = await response.json();
+  //     setRealms(data);
+  //   } catch (error) {
+  //     console.error('Error fetching realms:', error);
+  //   } finally {
+  //     setLoadingRealms(false);
+  //   }
+  // };
 
   const handleBack = () => {
     router.push("/characters");
+  };
+
+  const handleCreateArtifact = () => {
+    router.push("/artifacts/create");
+  };
+
+  const handleRegisterCharacter = () => {
+    router.push(`/characters/${character?.id}/register`);
   };
 
   if (!character) {
@@ -32,11 +102,12 @@ const CharacterPage: React.FC<CharacterPageProps> = ({ character }) => {
           <ErrorContainer>
             <ErrorTitle>Character Not Found</ErrorTitle>
             <ErrorMessage>
-              We couldn&apos;t find this character. It may have been deleted or doesn&apos;t exist.
+              We couldn&apos;t find this character. It may have been deleted or
+              doesn&apos;t exist.
             </ErrorMessage>
-            <BackButton onClick={handleBack}>
+            {/* <BackButton onClick={handleBack}>
               <FaArrowLeft /> Return Home
-            </BackButton>
+            </BackButton> */}
           </ErrorContainer>
         </Page>
       </PageTransition>
@@ -46,20 +117,13 @@ const CharacterPage: React.FC<CharacterPageProps> = ({ character }) => {
   return (
     <PageTransition>
       <Page>
-        <BackButton onClick={handleBack}>
+        {/* <BackButton onClick={handleBack}>
           <FaArrowLeft /> Back
-        </BackButton>
+        </BackButton> */}
 
         <CharacterContainer>
           <CharacterHeader>
-            <CharacterTitle>{character.name}</CharacterTitle>
-            <CharacterSubtitle>
-              {character.race?.name} {character.class?.name}
-            </CharacterSubtitle>
-          </CharacterHeader>
-
-          <CharacterContent>
-            <CharacterImageSection>
+            <CharacterImageWrapper>
               {character.image_url ? (
                 <CharacterImageContainer>
                   <Image
@@ -75,72 +139,79 @@ const CharacterPage: React.FC<CharacterPageProps> = ({ character }) => {
                   <span>No image available</span>
                 </CharacterImagePlaceholder>
               )}
-              
+            </CharacterImageWrapper>
+            <CharacterTitle>{character.name}</CharacterTitle>
+            <CharacterSubtitle>
+              {character.race?.name} • {character.class?.name}
+            </CharacterSubtitle>
+          </CharacterHeader>
+
+          <CharacterContent>
+            <CharacterImageSection>
               <BioCardContainer>
                 <CharacterSectionTitle>Backstory</CharacterSectionTitle>
-                <CharacterBio 
-                  character={character}
-                  openModal={openModal}
-                />
+                <CharacterBio character={character} openModal={openModal} />
               </BioCardContainer>
+
+              <RegisterSection>
+                <RegisterTitle>Begin Your Quest</RegisterTitle>
+                <RegisterDescription>
+                  Register your character to begin your journey. Create and
+                  discover artifacts, join realms, and forge your legacy.
+                </RegisterDescription>
+                <RegisterButton onClick={handleRegisterCharacter}>
+                  <FaUserPlus /> Register Character
+                </RegisterButton>
+              </RegisterSection>
+
+              <ArtifactsSection>
+                <CharacterSectionTitle>Artifacts</CharacterSectionTitle>
+                {loadingArtifacts ? (
+                  <LoadingText>Loading artifacts...</LoadingText>
+                ) : artifacts.length > 0 ? (
+                  <ArtifactsGrid>
+                    {artifacts.map((artifact) => (
+                      <ArtifactCard
+                        key={artifact.id}
+                        onClick={() => router.push(`/artifacts/${artifact.id}`)}
+                      >
+                        <ArtifactImageContainer>
+                          <Image
+                            src={artifact.imageUrl}
+                            alt={artifact.title}
+                            layout="fill"
+                            objectFit="cover"
+                          />
+                        </ArtifactImageContainer>
+                        <ArtifactInfo>
+                          <ArtifactTitle>{artifact.title}</ArtifactTitle>
+                          <ArtifactArtist>
+                            By {artifact.artist}, {artifact.year}
+                          </ArtifactArtist>
+                          <BadgeContainer>
+                            <Badge>{artifact.properties.rarity}</Badge>
+                            <Badge>{artifact.properties.element}</Badge>
+                          </BadgeContainer>
+                        </ArtifactInfo>
+                      </ArtifactCard>
+                    ))}
+                  </ArtifactsGrid>
+                ) : (
+                  <EmptyState>
+                    <EmptyStateText>No artifacts found</EmptyStateText>
+                    <CreateArtifactButton onClick={handleCreateArtifact}>
+                      <FaPlus /> Create Artifact
+                    </CreateArtifactButton>
+                  </EmptyState>
+                )}
+              </ArtifactsSection>
             </CharacterImageSection>
-
-            <CharacterInfoSection>
-
-              {character.traits && (
-                <>
-                  <InfoCard>
-                    <InfoCardTitle>
-                      <FaDice /> Personality Traits
-                    </InfoCardTitle>
-                    <TraitsList>
-                      {character.traits.personality?.map((trait: string, index: number) => (
-                        <TraitItem key={`personality-${index}`}>{trait}</TraitItem>
-                      ))}
-                    </TraitsList>
-                  </InfoCard>
-
-                  <InfoCard>
-                    <InfoCardTitle>
-                      <FaDice /> Ideals
-                    </InfoCardTitle>
-                    <TraitsList>
-                      {character.traits.ideals?.map((ideal: string, index: number) => (
-                        <TraitItem key={`ideal-${index}`}>{ideal}</TraitItem>
-                      ))}
-                    </TraitsList>
-                  </InfoCard>
-
-                  <InfoCard>
-                    <InfoCardTitle>
-                      <FaDice /> Flaws
-                    </InfoCardTitle>
-                    <TraitsList>
-                      {character.traits.flaws?.map((flaw: string, index: number) => (
-                        <TraitItem key={`flaw-${index}`}>{flaw}</TraitItem>
-                      ))}
-                    </TraitsList>
-                  </InfoCard>
-
-                  <InfoCard>
-                    <InfoCardTitle>
-                      <FaDice /> Bonds
-                    </InfoCardTitle>
-                    <TraitsList>
-                      {character.traits.bonds?.map((bond: string, index: number) => (
-                        <TraitItem key={`bond-${index}`}>{bond}</TraitItem>
-                      ))}
-                    </TraitsList>
-                  </InfoCard>
-                </>
-              )}
-            </CharacterInfoSection>
           </CharacterContent>
         </CharacterContainer>
 
-        <Modal 
-          isOpen={modalContent.isOpen} 
-          onClose={closeModal} 
+        <Modal
+          isOpen={modalContent.isOpen}
+          onClose={closeModal}
           title={modalContent.title}
         >
           {modalContent.content}
@@ -152,12 +223,12 @@ const CharacterPage: React.FC<CharacterPageProps> = ({ character }) => {
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const { character: characterId } = context.params || {};
-  
-  if (!characterId || typeof characterId !== 'string') {
+
+  if (!characterId || typeof characterId !== "string") {
     return {
       props: {
-        character: null
-      }
+        character: null,
+      },
     };
   }
 
@@ -165,18 +236,18 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     const characterDb = new CharacterDB();
     const character = await characterDb.getCharacter(characterId);
     console.log(character);
-      
+
     return {
       props: {
-        character: character || null
-      }
+        character: character || null,
+      },
     };
   } catch (error) {
-    console.error('Error fetching character:', error);
+    console.error("Error fetching character:", error);
     return {
       props: {
-        character: null
-      }
+        character: null,
+      },
     };
   }
 };
@@ -202,51 +273,29 @@ const CharacterContainer = styled.div`
   animation: ${fadeIn} 0.5s ease-in-out;
   max-width: 1200px;
   margin: 0 auto;
+  margin-top: 2rem;
 `;
 
 const CharacterHeader = styled.div`
   text-align: center;
   margin-bottom: 2rem;
   animation: ${slideUp} 0.5s ease-in-out;
-`;
-
-const CharacterTitle = styled(Title)`
-  margin-bottom: 0.5rem;
-  color: #bb8930;
-`;
-
-const CharacterSubtitle = styled(Subtitle)`
-  color: #a89bb4;
-`;
-
-const CharacterSectionTitle = styled(SectionTitle)`
-  font-size: 1.5rem;
-  margin-bottom: 0.75rem;
-`;
-
-const CharacterContent = styled.div`
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 2rem;
-  
-  @media (min-width: 768px) {
-    grid-template-columns: 1fr 2fr;
-  }
-`;
-
-const CharacterImageSection = styled.div`
-  animation: ${fadeIn} 0.5s ease-in-out;
-  animation-delay: 0.2s;
-  animation-fill-mode: both;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  align-items: center;
+  gap: 0.25rem;
+`;
+
+const CharacterImageWrapper = styled.div`
+  width: 256px;
+  height: 256px;
+  margin-bottom: 0.5rem;
 `;
 
 const CharacterImageContainer = styled.div`
   position: relative;
   width: 100%;
-  height: 400px;
+  height: 100%;
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
@@ -259,17 +308,51 @@ const CharacterImagePlaceholder = styled.div`
   align-items: center;
   justify-content: center;
   width: 100%;
-  height: 400px;
+  height: 100%;
   background-color: #2d2d44;
   border-radius: 8px;
   color: #a89bb4;
   font-size: 1.2rem;
-  
+
   svg {
     font-size: 3rem;
     margin-bottom: 1rem;
     opacity: 0.7;
   }
+`;
+
+const CharacterTitle = styled(Title)`
+  margin-bottom: 0;
+  color: #bb8930;
+`;
+
+const CharacterSubtitle = styled(Subtitle)`
+  color: #a89bb4;
+  margin: 0;
+`;
+
+const CharacterSectionTitle = styled(SectionTitle)`
+  font-size: 1.5rem;
+  margin-bottom: 0.75rem;
+`;
+
+const CharacterContent = styled.div`
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+
+  @media (min-width: 768px) {
+    grid-template-columns: 1fr 2fr;
+  }
+`;
+
+const CharacterImageSection = styled.div`
+  animation: ${fadeIn} 0.5s ease-in-out;
+  animation-delay: 0.2s;
+  animation-fill-mode: both;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 `;
 
 const BioCardContainer = styled.div`
@@ -306,7 +389,7 @@ const InfoCardTitle = styled.h3`
   align-items: center;
   gap: 0.5rem;
   font-size: 1.2rem;
-  
+
   svg {
     color: #bb8930;
   }
@@ -332,7 +415,7 @@ const TraitItem = styled.li`
   border-bottom: 1px solid #3d3d54;
   line-height: 1.5;
   font-size: 1.1rem;
-  
+
   &:last-child {
     border-bottom: none;
   }
@@ -352,11 +435,11 @@ const BackButton = styled.button`
   padding: 0.5rem 1rem;
   border-radius: 4px;
   transition: background-color 0.2s;
-  
+
   &:hover {
     background-color: rgba(187, 137, 48, 0.1);
   }
-  
+
   svg {
     font-size: 0.9rem;
   }
@@ -406,6 +489,242 @@ const ErrorMessage = styled.p`
   margin-bottom: 2rem;
   font-size: 1.2rem;
   line-height: 1.6;
+`;
+
+// New styled components for artifacts section
+const ArtifactsSection = styled.div`
+  margin-top: 2rem;
+  background-color: #2d2d44;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  border: 1px solid #4a3b6b;
+`;
+
+const ArtifactsGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1rem;
+`;
+
+const ArtifactCard = styled.div`
+  background-color: #1e1e2d;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out;
+  border: 1px solid #4a3b6b;
+
+  &:hover {
+    transform: translateY(-4px);
+  }
+`;
+
+const ArtifactImageContainer = styled.div`
+  position: relative;
+  width: 100%;
+  height: 200px;
+`;
+
+const ArtifactInfo = styled.div`
+  padding: 1rem;
+`;
+
+const ArtifactTitle = styled.h3`
+  color: #bb8930;
+  font-family: "Cinzel", serif;
+  margin: 0 0 0.5rem 0;
+  font-size: 1.1rem;
+`;
+
+const ArtifactArtist = styled.p`
+  color: #a89bb4;
+  font-family: "Cormorant Garamond", serif;
+  margin: 0 0 0.5rem 0;
+  font-size: 0.9rem;
+`;
+
+const BadgeContainer = styled.div`
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+`;
+
+const Badge = styled.span`
+  background-color: #4a3b6b;
+  color: #c7bfd4;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-family: "Cormorant Garamond", serif;
+`;
+
+const EmptyState = styled.div`
+  text-align: center;
+  padding: 2rem;
+`;
+
+const EmptyStateText = styled.p`
+  color: #a89bb4;
+  font-family: "Cormorant Garamond", serif;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+`;
+
+const CreateArtifactButton = styled.button`
+  background-color: #bb8930;
+  color: #1e1e2d;
+  border: none;
+  border-radius: 4px;
+  padding: 0.75rem 1.5rem;
+  font-family: "Cinzel", serif;
+  font-size: 1rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: #d4a03c;
+  }
+
+  svg {
+    font-size: 0.9rem;
+  }
+`;
+
+// New styled components for realms section
+const RealmsSection = styled.div`
+  margin-top: 2rem;
+  background-color: #2d2d44;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  border: 1px solid #4a3b6b;
+`;
+
+const RealmsGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1rem;
+`;
+
+const RealmCard = styled.div`
+  background-color: #1e1e2d;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out;
+  border: 1px solid #4a3b6b;
+
+  &:hover {
+    transform: translateY(-4px);
+  }
+`;
+
+const RealmImageContainer = styled.div`
+  position: relative;
+  width: 100%;
+  height: 200px;
+`;
+
+const RealmInfo = styled.div`
+  padding: 1.5rem;
+`;
+
+const RealmTitle = styled.h3`
+  color: #bb8930;
+  font-family: "Cinzel", serif;
+  margin: 0 0 0.5rem 0;
+  font-size: 1.2rem;
+`;
+
+const RealmDescription = styled.p`
+  color: #a89bb4;
+  font-family: "Cormorant Garamond", serif;
+  margin: 0 0 1rem 0;
+  font-size: 1rem;
+  line-height: 1.5;
+`;
+
+const RealmDetails = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+`;
+
+const RealmDetail = styled.div`
+  color: #c7bfd4;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  svg {
+    color: #bb8930;
+    font-size: 0.9rem;
+  }
+`;
+
+const RegisterSection = styled.div`
+  background-color: #2d2d44;
+  border-radius: 8px;
+  padding: 2rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  border: 1px solid #4a3b6b;
+  margin-top: 2rem;
+  text-align: center;
+`;
+
+const RegisterTitle = styled.h3`
+  color: #bb8930;
+  font-family: "Cinzel", serif;
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+`;
+
+const RegisterDescription = styled.p`
+  color: #a89bb4;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+`;
+
+const RegisterButton = styled.button`
+  background-color: #bb8930;
+  color: #1e1e2d;
+  border: none;
+  border-radius: 4px;
+  padding: 0.75rem 1.5rem;
+  font-family: "Cinzel", serif;
+  font-size: 1rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease-in-out;
+
+  &:hover {
+    background-color: #d4a03c;
+    transform: translateY(-2px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  svg {
+    font-size: 1rem;
+  }
 `;
 
 export default CharacterPage;

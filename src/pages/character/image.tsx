@@ -113,7 +113,7 @@ const ImageGeneratorPage = () => {
         const croppedImage = await cropImageToWidth(result, 600);
         setUserImage(croppedImage);
 
-        const { resultId } = await generateImage(croppedImage);
+        await generateImage(croppedImage);
         // Here you would typically start polling for the result
         // For now, we'll just show a success message
         setError(null);
@@ -129,11 +129,11 @@ const ImageGeneratorPage = () => {
   };
 
   const handleNext = () => {
-    navigateTo(router, "/character/equipment");
+    navigateTo(router, "/character/background");
   };
 
   const handleSkip = async () => {
-    navigateTo(router, "/character/equipment");
+    navigateTo(router, "/character/background");
   };
 
   const handleCameraCapture = async () => {

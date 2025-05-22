@@ -18,6 +18,54 @@ const CharacterBio: React.FC<BioProps> = ({ character, openModal }) => {
   const handleOpenModal = () => {
     openModal?.(`About ${character.name}`, (
       <>
+        {character.traits && (
+          <>
+            {character.traits.personality && (
+              <BioModalSection>
+                <BioModalTitle>Personality Traits</BioModalTitle>
+                <BioModalList>
+                  {character.traits.personality.map((trait, index) => (
+                    <BioModalListItem key={`personality-${index}`}>{trait}</BioModalListItem>
+                  ))}
+                </BioModalList>
+              </BioModalSection>
+            )}
+            
+            {character.traits.ideals && (
+              <BioModalSection>
+                <BioModalTitle>Ideals</BioModalTitle>
+                <BioModalList>
+                  {character.traits.ideals.map((ideal, index) => (
+                    <BioModalListItem key={`ideal-${index}`}>{ideal}</BioModalListItem>
+                  ))}
+                </BioModalList>
+              </BioModalSection>
+            )}
+            
+            {character.traits.flaws && (
+              <BioModalSection>
+                <BioModalTitle>Flaws</BioModalTitle>
+                <BioModalList>
+                  {character.traits.flaws.map((flaw, index) => (
+                    <BioModalListItem key={`flaw-${index}`}>{flaw}</BioModalListItem>
+                  ))}
+                </BioModalList>
+              </BioModalSection>
+            )}
+            
+            {character.traits.bonds && (
+              <BioModalSection>
+                <BioModalTitle>Bonds</BioModalTitle>
+                <BioModalList>
+                  {character.traits.bonds.map((bond, index) => (
+                    <BioModalListItem key={`bond-${index}`}>{bond}</BioModalListItem>
+                  ))}
+                </BioModalList>
+              </BioModalSection>
+            )}
+          </>
+        )}
+        
         {character.motivation && (
           <BioModalSection>
             <BioModalTitle>Motivation</BioModalTitle>
@@ -43,7 +91,7 @@ const CharacterBio: React.FC<BioProps> = ({ character, openModal }) => {
             <BioText>{truncateText(character.backstory)}</BioText>
             {openModal && (
               <ViewMoreButton onClick={handleOpenModal}>
-                Read Full Backstory
+                Read Full Bio
               </ViewMoreButton>
             )}
           </>
@@ -104,6 +152,19 @@ export const BioModalText = styled.p`
   line-height: 1.6;
   color: #c7bfd4;
   white-space: pre-wrap;
+`;
+
+export const BioModalList = styled.ul`
+  list-style-type: disc;
+  padding-left: 1.5rem;
+  margin-top: 0.5rem;
+`;
+
+export const BioModalListItem = styled.li`
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #c7bfd4;
+  margin-bottom: 0.25rem;
 `;
 
 export default CharacterBio;

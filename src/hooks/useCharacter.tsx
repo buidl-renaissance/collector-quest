@@ -48,6 +48,7 @@ export const useCharacter = () => {
             traits: {
               background: "",
               personality: [],
+              alignment: "",
               ideals: [],
               bonds: [],
               flaws: [],
@@ -84,7 +85,7 @@ export const useCharacter = () => {
       const updatedData = {
         ...character,
         traits: {
-          ...character.traits,
+          ...character.traits ?? {},
           [trait]: value,
         },
       };
@@ -97,7 +98,7 @@ export const useCharacter = () => {
         updatedData = {
           ...character,
           traits: {
-            ...character.traits,
+            ...character.traits ?? {},
             [trait]: currentValues.filter((item) => item !== value),
           },
         };
@@ -105,7 +106,7 @@ export const useCharacter = () => {
         updatedData = {
           ...character,
           traits: {
-            ...character.traits,
+            ...character.traits ?? {},
             [trait]: [...currentValues, value],
           },
         };

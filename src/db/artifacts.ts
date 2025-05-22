@@ -88,6 +88,19 @@ export async function deleteArtifact(id: string): Promise<boolean> {
   }
 }
 
+export async function getArtifactsByOwner(ownerId: string): Promise<Artifact[]> {
+  try {
+    const artifacts = await client('artifacts')
+      .where({ owner: ownerId })
+      .orderBy('created_at', 'desc');
+    
+    return artifacts.map(mapDbArtifactToArtifact);
+  } catch (error) {
+    console.error('Error fetching artifacts by owner:', error);
+    return [];
+  }
+}
+
 function mapDbArtifactToArtifact(dbArtifact: DbArtifact): Artifact {
   return {
     id: dbArtifact.id,

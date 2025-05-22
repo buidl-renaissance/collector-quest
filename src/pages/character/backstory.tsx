@@ -47,7 +47,7 @@ const BackstoryPage: React.FC = () => {
   };
 
   const handleNext = () => {
-    navigateTo(router, "/character/image");
+    navigateTo(router, "/character");
   };
 
   if (raceLoading || classLoading || backstoryLoading) {

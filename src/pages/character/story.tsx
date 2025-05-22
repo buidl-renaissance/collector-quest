@@ -90,7 +90,7 @@ export default function CharacterStoryPage() {
   }, [character, isLoading, backstory, motivation, generateStory]);
 
   const handleNext = () => {
-    navigateTo(router, "/character/image");
+    navigateTo(router, "/character");
   };
 
   if (!character) {
