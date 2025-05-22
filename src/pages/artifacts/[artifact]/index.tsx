@@ -14,6 +14,7 @@ import { FaCrown, FaTimes } from "react-icons/fa";
 import Link from "next/link";
 import { Artifact } from "@/data/artifacts";
 import { getArtifact } from "@/db/artifacts";
+import LoadingCandles from "@/components/LoadingCandles";
 
 // Styled components for this page
 const ArtifactContainer = styled.div`
@@ -364,14 +365,14 @@ const spinAndGlow = `
 
 const RelicImage = styled.div`
   position: relative;
-  width: 280px;
-  height: 280px;
+  width: 256px;
+  height: 256px;
   border-radius: 50%;
   overflow: hidden;
   border: 2px solid #bb8930;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
   background: rgba(30, 20, 50, 0.95);
-  padding: 1rem;
+  /* padding: 1rem; */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -585,9 +586,7 @@ const ArtifactPage = ({ artifact }: { artifact: Artifact }) => {
               <FaTimes />
             </CloseButton>
             {isGenerating ? (
-              <LoadingContainer>
-                <LoadingMessage>Generating your relic...</LoadingMessage>
-              </LoadingContainer>
+              <LoadingCandles />
             ) : generatedRelicUrl ? (
               <RelicImage>
                 <Image
