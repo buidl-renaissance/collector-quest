@@ -79,6 +79,7 @@ export async function updateRelic(id: string, relicData: Partial<Relic>): Promis
   try {
     const updateData = {
       ...relicData,
+      properties: typeof relicData.properties === 'object' ? JSON.stringify(relicData.properties) : relicData.properties,
       updated_at: new Date()
     };
     
@@ -86,7 +87,7 @@ export async function updateRelic(id: string, relicData: Partial<Relic>): Promis
     return getRelic(id);
   } catch (error) {
     console.error('Error updating relic:', error);
-    return null;
+    throw new Error('Failed to update relic');
   }
 }
 
@@ -137,6 +138,6 @@ function mapDbRelicToRelic(dbRelic: DbRelic): Relic {
     rarity: dbRelic.rarity as any,
     story: dbRelic.story || undefined,
     imageUrl: dbRelic.imageUrl || undefined,
-    properties: dbRelic.properties ? JSON.parse(dbRelic.properties) : undefined,
+    properties: typeof dbRelic.properties === 'string' ? JSON.parse(dbRelic.properties) : null,
   };
 }

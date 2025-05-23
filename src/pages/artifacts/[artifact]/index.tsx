@@ -24,7 +24,7 @@ const ArtifactPage = ({ artifact: initialArtifact }: { artifact: Artifact }) => 
   const {
     artifact,
     isGenerating,
-    generatedRelicUrl,
+    generatedRelic,
     showRelicModal,
     setShowRelicModal,
     handleRelicAction,
@@ -35,11 +35,11 @@ const ArtifactPage = ({ artifact: initialArtifact }: { artifact: Artifact }) => 
     if (!artifact.relic && artifact.owner === getCurrentCharacterId()) {
       const timer = setTimeout(() => {
         setShowRegisterModal(true);
-      }, 5000);
+      }, 7000);
 
       return () => clearTimeout(timer);
     }
-  }, [artifact.relic]);
+  }, [artifact.owner, artifact.relic]);
 
   const handleImageLoad = (event: any) => {
     const img = event.target;
@@ -96,7 +96,7 @@ const ArtifactPage = ({ artifact: initialArtifact }: { artifact: Artifact }) => 
           isOpen={true}
           onClose={closeModal}
           isGenerating={isGenerating}
-          relic={artifact.relic ?? null}
+          relic={generatedRelic ?? null}
         />
       )}
 

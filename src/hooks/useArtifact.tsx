@@ -11,7 +11,7 @@ interface PollResult {
 interface UseArtifactReturn {
   artifact: Artifact;
   isGenerating: boolean;
-  generatedRelicUrl: string | null;
+  generatedRelic: Relic | null;
   showRelicModal: boolean;
   setShowRelicModal: (show: boolean) => void;
   handleRelicAction: () => Promise<void>;
@@ -22,7 +22,6 @@ export const useArtifact = (initialArtifact: Artifact): UseArtifactReturn => {
   const [artifact, setArtifact] = useState<Artifact>(initialArtifact);
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedRelic, setGeneratedRelic] = useState<Relic | null>(initialArtifact?.relic || null);
-  const [generatedRelicUrl, setGeneratedRelicUrl] = useState<string | null>(null);
   const [showRelicModal, setShowRelicModal] = useState(false);
   const { registerRelic } = useRelicRegistration();
   
@@ -33,7 +32,7 @@ export const useArtifact = (initialArtifact: Artifact): UseArtifactReturn => {
   const handleRelicAction = async () => {
     if (artifact.relic?.imageUrl) {
       // If relic exists, just show it in the modal
-      setGeneratedRelicUrl(artifact.relic.imageUrl);
+      setGeneratedRelic(artifact.relic);
       setShowRelicModal(true);
     } else {
       // Generate new relic
@@ -71,7 +70,6 @@ export const useArtifact = (initialArtifact: Artifact): UseArtifactReturn => {
 
             if (result.relic?.imageUrl) {
               setGeneratedRelic(result.relic);
-              setGeneratedRelicUrl(result.relic.imageUrl);
               if (!result.relic.objectId) {
                 await registerRelic(artifact, result.relic);
               }
@@ -106,7 +104,7 @@ export const useArtifact = (initialArtifact: Artifact): UseArtifactReturn => {
   return {
     artifact,
     isGenerating,
-    generatedRelicUrl,
+    generatedRelic,
     showRelicModal,
     setShowRelicModal,
     handleRelicAction,
