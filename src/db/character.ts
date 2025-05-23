@@ -179,5 +179,6 @@ const mapCharacter = async (result: any): Promise<Character> => {
     image_url: result.image_url,
     equipment: equipment ?? null,
     sheet: sheet ?? null,
+    registration_id: result.registration_id,
   };
 };
