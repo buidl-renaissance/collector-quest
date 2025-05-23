@@ -44,13 +44,10 @@ export async function listArtifacts(limit = 20, offset = 0): Promise<Artifact[]>
 
 export async function createArtifact(artifactData: Omit<Artifact, 'id' | 'relic' | 'created_at' | 'updated_at'>): Promise<Artifact | null> {
   const id = uuidv4();
-  const now = new Date().toDateString();
   
   const newArtifact = {
     id,
     ...artifactData,
-    created_at: now,
-    updated_at: now
   };
   
   try {
@@ -66,7 +63,6 @@ export async function updateArtifact(id: string, artifactData: Partial<DbArtifac
   try {
     const updateData = {
       ...artifactData,
-      updated_at: new Date().toDateString()
     };
   
     await client('artifacts').where({ id }).update(updateData);

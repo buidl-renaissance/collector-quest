@@ -80,7 +80,6 @@ export async function updateRelic(id: string, relicData: Partial<Relic>): Promis
     const updateData = {
       ...relicData,
       properties: typeof relicData.properties === 'object' ? JSON.stringify(relicData.properties) : relicData.properties,
-      updated_at: new Date().toDateString()
     };
     
     await client('relics').where({ id }).update(updateData);
