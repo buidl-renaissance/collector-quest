@@ -215,6 +215,28 @@ export const useCharacter = () => {
     }
   };
 
+  const fetchCharacter = async () => {
+    setLoading(true);
+    setError(null);
+
+    const id = getCurrentCharacterId();
+
+    if (!id) {
+      setError("No character ID found");
+      setLoading(false);
+      return;
+    }
+
+    const response = await fetch(`/api/characters/${id}`);
+    if (!response.ok) {
+      throw new Error("Failed to fetch character");
+    }
+
+    const fetchedCharacter = await response.json();
+    setCharacter(fetchedCharacter);
+    return fetchedCharacter;
+  };
+
   const getCharacter = async (id: string) => {
     setLoading(true);
     setError(null);
@@ -299,5 +321,6 @@ export const useCharacter = () => {
     getCharacter,
     updateCharacterTrait,
     getStoredCharacterIds,
+    fetchCharacter,
   };
 };

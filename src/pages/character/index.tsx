@@ -35,7 +35,7 @@ interface Realm {
 const CharacterPage: React.FC<CharacterPageProps> = () => {
   const router = useRouter();
   const { openModal, closeModal, modalContent, Modal } = useModal();
-  const { character } = useCharacter();
+  const { character, fetchCharacter } = useCharacter();
   const [artifacts, setArtifacts] = useState<Artifact[]>([]);
   const [loadingArtifacts, setLoadingArtifacts] = useState(true);
   const [realms, setRealms] = useState<Realm[]>([]);
@@ -48,6 +48,7 @@ const CharacterPage: React.FC<CharacterPageProps> = () => {
     if (character) {
       fetchArtifacts();
       // fetchRealms();
+      fetchCharacter();
     }
   }, [character]);
 
