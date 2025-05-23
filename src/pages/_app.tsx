@@ -76,7 +76,7 @@ export default function App({ Component, pageProps }: AppProps) {
               url: metadata.url,
             }}
           />
-          <WalletProvider>
+          <WalletProvider autoConnect>
             <AuthProvider>
               <Component {...pageProps} />
             </AuthProvider>
