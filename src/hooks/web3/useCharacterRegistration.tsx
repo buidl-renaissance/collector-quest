@@ -3,7 +3,7 @@ import { Character } from "@/data/character";
 import { TransactionBlock } from "@mysten/sui.js/transactions";
 import { SuiClient as SuiAppClient } from "@/lib/client";
 import { useCharacter } from "@/hooks/useCharacter";
-import { getWallet } from "@/lib/wallet";
+import { getOrCreateWallet } from "@/lib/wallet";
 
 // Package and registry constants - update these with your deployed contract addresses
 export const CHARACTER_PACKAGE_ID =
@@ -14,7 +14,7 @@ export const useCharacterRegistration = () => {
   const [isRegistering, setIsRegistering] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [registeredCharacter, setRegisteredCharacter] = useState<any>(null);
-  const wallet = getWallet();
+  const wallet = getOrCreateWallet();
 
   const registerCharacter = async () => {
     setIsRegistering(true);
