@@ -15,6 +15,7 @@ import { useArtifact } from "@/hooks/useArtifact";
 import RelicModal from "@/components/RelicModal";
 import { keyframes } from "@emotion/react";
 import AddressDisplay from "@/components/AddressDisplay";
+import { getCurrentCharacterId } from "@/utils/storage";
 
 const ArtifactPage = ({ artifact: initialArtifact }: { artifact: Artifact }) => {
   const router = useRouter();
@@ -31,7 +32,7 @@ const ArtifactPage = ({ artifact: initialArtifact }: { artifact: Artifact }) => 
   } = useArtifact(initialArtifact);
 
   useEffect(() => {
-    if (!artifact.relic) {
+    if (!artifact.relic && artifact.owner === getCurrentCharacterId()) {
       const timer = setTimeout(() => {
         setShowRegisterModal(true);
       }, 5000);
