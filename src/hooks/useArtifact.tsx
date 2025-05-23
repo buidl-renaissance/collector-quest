@@ -64,6 +64,8 @@ export const useArtifact = (initialArtifact: Artifact): UseArtifactReturn => {
             const data: PollResult = await resultStatusResponse.json();
             const result = JSON.parse(data.result);
 
+            console.log("relic generation result", result);
+
             if (result.artifact) {
               setArtifact(result.artifact);
             }

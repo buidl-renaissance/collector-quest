@@ -47,7 +47,7 @@ The image should be a high resolution image, 1024x1024px, and contain only the g
         model: "dall-e-3",
         prompt: prompt,
         n: 1,
-        size: "512x512",
+        size: "1024x1024",
       };
 
       // If we have an inspiration image, use it with the image edit API
@@ -80,7 +80,7 @@ The image should be a high resolution image, 1024x1024px, and contain only the g
             mask: maskFile,
             prompt: `with this image as a reference, keep the style of the image, maintain the transparent background, and generate a ${prompt}`,
             n: 1,
-            size: "512x512",
+            size: "1024x1024",
           });
 
           // console.log('Edit response:', editResponse);

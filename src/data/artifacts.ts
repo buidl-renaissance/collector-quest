@@ -19,13 +19,13 @@ export interface RelicProperties {
 
 export interface Relic {
   id: string;
-  objectId?: string;
+  objectId?: string | null;
   name: string;
-  imageUrl?: string;
+  imageUrl?: string | null;
   class: ArtifactClass;
   effect: Effect;
   element: Element;
-  story?: string;
+  story?: string | null;
   rarity: Rarity;
   registration_id?: string;
   properties: RelicProperties;

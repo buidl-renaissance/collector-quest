@@ -130,14 +130,14 @@ export async function getRelicsByClass(relicClass: string): Promise<Relic[]> {
 function mapDbRelicToRelic(dbRelic: DbRelic): Relic {
   return {
     id: dbRelic.id,
-    objectId: dbRelic.objectId,
+    objectId: dbRelic.objectId || null,
     name: dbRelic.name,
     class: dbRelic.class as any,
     effect: dbRelic.effect as any,
     element: dbRelic.element as any,
     rarity: dbRelic.rarity as any,
-    story: dbRelic.story || undefined,
-    imageUrl: dbRelic.imageUrl || undefined,
+    story: dbRelic.story || null,
+    imageUrl: dbRelic.imageUrl || null,
     properties: typeof dbRelic.properties === 'string' ? JSON.parse(dbRelic.properties) : null,
   };
 }
