@@ -2,7 +2,15 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import styled from "@emotion/styled";
 import { keyframes } from "@emotion/react";
-import { FaCheckCircle, FaFeather, FaPlus, FaSpinner, FaUserPlus, FaCopy, FaWallet } from "react-icons/fa";
+import {
+  FaCheckCircle,
+  FaFeather,
+  FaPlus,
+  FaSpinner,
+  FaUserPlus,
+  FaCopy,
+  FaWallet,
+} from "react-icons/fa";
 import Image from "next/image";
 import { GetServerSideProps } from "next";
 import PageTransition from "@/components/PageTransition";
@@ -48,12 +56,9 @@ const CharacterPage: React.FC<CharacterPageProps> = () => {
   const wallet = useWallet();
 
   useEffect(() => {
-    if (character) {
-      fetchArtifacts();
-      // fetchRealms();
-      fetchCharacter();
-    }
-  }, [character]);
+    fetchArtifacts();
+    fetchCharacter();
+  }, []);
 
   const fetchArtifacts = async () => {
     try {
@@ -175,7 +180,8 @@ const CharacterPage: React.FC<CharacterPageProps> = () => {
                   <>
                     <RegisterTitle>Connect Your Wallet</RegisterTitle>
                     <RegisterDescription>
-                      Connect your Sui wallet to register your character and begin your journey.
+                      Connect your Sui wallet to register your character and
+                      begin your journey.
                     </RegisterDescription>
                     <StyledConnectButton>
                       <FaWallet /> Connect Wallet
@@ -185,28 +191,40 @@ const CharacterPage: React.FC<CharacterPageProps> = () => {
                   <>
                     <RegisterTitle>Character Registered!</RegisterTitle>
                     <RegisterDescription>
-                      Your character has been successfully registered on the blockchain. 
-                      You can now create artifacts, join realms, and begin your journey.
+                      Your character has been successfully registered on the
+                      blockchain. You can now create artifacts, join realms, and
+                      begin your journey.
                     </RegisterDescription>
                     <RegistredCharacter
                       onClick={() => {
                         if (character.registration_id) {
-                          navigator.clipboard.writeText(character.registration_id);
-                          openModal("Success", "Character ID copied to clipboard!");
+                          navigator.clipboard.writeText(
+                            character.registration_id
+                          );
+                          openModal(
+                            "Success",
+                            "Character ID copied to clipboard!"
+                          );
                         }
                       }}
                       data-full-id={character.registration_id}
                     >
                       <FaCheckCircle />
                       <span>
-                        {character.registration_id.slice(0, 6)}...{character.registration_id.slice(-4)}
+                        {character.registration_id.slice(0, 6)}...
+                        {character.registration_id.slice(-4)}
                       </span>
                       <CopyButton
                         onClick={(e) => {
                           e.stopPropagation();
                           if (character.registration_id) {
-                            navigator.clipboard.writeText(character.registration_id);
-                            openModal("Success", "Character ID copied to clipboard!");
+                            navigator.clipboard.writeText(
+                              character.registration_id
+                            );
+                            openModal(
+                              "Success",
+                              "Character ID copied to clipboard!"
+                            );
                           }
                         }}
                       >
@@ -249,7 +267,9 @@ const CharacterPage: React.FC<CharacterPageProps> = () => {
                       {artifacts.map((artifact) => (
                         <ArtifactCard
                           key={artifact.id}
-                          onClick={() => router.push(`/artifacts/${artifact.id}`)}
+                          onClick={() =>
+                            router.push(`/artifacts/${artifact.id}`)
+                          }
                         >
                           <ArtifactImageContainer>
                             <Image
