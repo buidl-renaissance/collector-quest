@@ -159,7 +159,7 @@ const IndexPage: React.FC = () => {
             </SectionIcon> */}
           <SectionTitle>What Is Collector Quest?</SectionTitle>
           <Description>
-            Collector Quest is a turn-based storytelling game powered by AI. You
+            Collector Quest is a turn-based Alternate Reality Game (ARG) powered by AI. You
             create a hero—I craft the world. Together, we forge one-of-a-kind
             adventures that you can save, share, and collect.
           </Description>
