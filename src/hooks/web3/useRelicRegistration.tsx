@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Relic } from "@/data/artifacts";
+import { Artifact, Relic } from "@/data/artifacts";
 import { SuiClient as SuiAppClient } from "@/lib/client";
 import { getOrCreateWallet } from "@/lib/wallet";
 
@@ -10,14 +10,14 @@ export const useRelicRegistration = () => {
   const [registeredRelic, setRegisteredRelic] = useState<any>(null);
   const wallet = getOrCreateWallet();
 
-  const registerRelic = async (relic: Relic) => {
+  const registerRelic = async (artifact: Artifact, relic: Relic) => {
     setIsRegistering(true);
     setError(null);
     setRegisteredRelic(null);
 
     try {
       // Execute the transaction
-      const result = await executeRelicRegisterTransaction(relic);
+      const result = await executeRelicRegisterTransaction(artifact, relic);
       console.log("result", result);
       if (result && result.events[0].parsedJson) {
         const createdRelic = result.events[0].parsedJson;
@@ -36,7 +36,7 @@ export const useRelicRegistration = () => {
     }
   };
 
-  const executeRelicRegisterTransaction = async (relic: Relic) => {
+  const executeRelicRegisterTransaction = async (artifact: Artifact, relic: Relic) => {
     if (!relic) {
       throw new Error("Relic not found");
     }
@@ -47,7 +47,7 @@ export const useRelicRegistration = () => {
     }
 
     const client = new SuiAppClient(wallet);
-    const result = await client.registerRelic(relic);
+    const result = await client.registerRelic(artifact, relic);
     console.log("result", result);
     return result;
   };
