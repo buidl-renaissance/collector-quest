@@ -68,7 +68,7 @@ interface LoadingBasicProps {
 
 const LoadingBasic: React.FC<LoadingBasicProps> = ({ 
   message = "Loading...",
-  subText = "Please wait"
+  subText = ""
 }) => {
   const [dots, setDots] = useState("...");
   

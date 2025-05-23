@@ -19,6 +19,8 @@ const CreateArtifactPage = () => {
     yearCreated: "",
     description: "",
     termsAgreed: false,
+    isOriginalCreator: true,
+    hasArtistConsent: false,
   });
 
   const { character } = useCharacter();
@@ -124,6 +126,8 @@ const CreateArtifactPage = () => {
       imagePreview !== null &&
       formData.medium !== "" &&
       formData.yearCreated !== "" &&
+      formData.termsAgreed &&
+      (formData.isOriginalCreator || formData.hasArtistConsent) &&
       !isSubmitting
     );
   };
@@ -196,12 +200,58 @@ const CreateArtifactPage = () => {
             {errors.image && <ErrorMessage>{errors.image}</ErrorMessage>}
           </FormGroup>
 
+          <OwnershipContainer>
+            <OwnershipTitle>Artwork Ownership</OwnershipTitle>
+            <CheckboxContainer>
+              <Checkbox
+                type="radio"
+                id="isOriginalCreator"
+                name="ownershipType"
+                checked={formData.isOriginalCreator}
+                onChange={() => setFormData(prev => ({ ...prev, isOriginalCreator: true, hasArtistConsent: false }))}
+              />
+              <CheckboxLabel htmlFor="isOriginalCreator">
+                I am the original creator of this artwork
+              </CheckboxLabel>
+            </CheckboxContainer>
+            <CheckboxContainer>
+              <Checkbox
+                type="radio"
+                id="hasArtistConsent"
+                name="ownershipType"
+                checked={!formData.isOriginalCreator}
+                onChange={() => setFormData(prev => ({ ...prev, isOriginalCreator: false, hasArtistConsent: false }))}
+              />
+              <CheckboxLabel htmlFor="hasArtistConsent">
+                I own this artwork but am not the original creator
+              </CheckboxLabel>
+            </CheckboxContainer>
+            
+            {!formData.isOriginalCreator && (
+              <ConsentContainer>
+                <CheckboxContainer>
+                  <Checkbox
+                    type="checkbox"
+                    id="artistConsent"
+                    name="hasArtistConsent"
+                    checked={formData.hasArtistConsent}
+                    onChange={handleCheckboxChange}
+                    required={!formData.isOriginalCreator}
+                  />
+                  <CheckboxLabel htmlFor="artistConsent">
+                    I have received express written consent from the original artist to include their artwork as an asset in COLLECTOR QUEST
+                  </CheckboxLabel>
+                </CheckboxContainer>
+              </ConsentContainer>
+            )}
+          </OwnershipContainer>
+
           <TermsContainer>
             <TermsText>
               By submitting your artwork, you acknowledge that:
             </TermsText>
             <TermsList>
-              <li>You are the original creator of the artwork</li>
+              <li>You are the original creator of the artwork OR you own the artwork and have express written consent from the artist</li>
               <li>You grant COLLECTOR QUEST the rights to use your artwork and any generated content in the game</li>
               <li>The artwork and generated content may be used for gameplay, marketing, and promotional purposes</li>
               <li>You retain ownership of your original artwork</li>
@@ -386,6 +436,30 @@ const ActionButton = styled(Button)`
   font-size: 1.1rem;
   padding: 1rem 2rem;
   background-color: #bb8930;
+`;
+
+const OwnershipContainer = styled.div`
+  margin-top: 2rem;
+  padding: 1rem;
+  background: rgba(30, 20, 50, 0.5);
+  border: 1px solid #4a3b6b;
+  border-radius: 6px;
+`;
+
+const OwnershipTitle = styled.h3`
+  color: #bb8930;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  font-family: "Cinzel", serif;
+`;
+
+const ConsentContainer = styled.div`
+  margin-left: 1.5rem;
+  margin-top: 0.5rem;
+  padding: 0.75rem;
+  background: rgba(187, 137, 48, 0.1);
+  border: 1px solid #bb8930;
+  border-radius: 4px;
 `;
 
 const TermsContainer = styled.div`
