@@ -44,9 +44,6 @@ Keywords: fantasy relic, mystical energy, ornate structure, ${relic.element}, ${
 The image should be a high resolution image, 1024x1024px, and contain only the generated artifact, no other text or elements.
 `;
 
-
-    let base64Image = null;
-
     try {
       const imageGenerationOptions: any = {
         model: "dall-e-3",
@@ -69,7 +66,7 @@ The image should be a high resolution image, 1024x1024px, and contain only the g
           const imageFile = new File([imageBlob], "inspiration.png", { type: "image/png" });
           
           // Get mask image
-          const maskResponse = await fetch("https://collectorquest.ai/images/mask-512.png");
+          const maskResponse = await fetch("https://collectorquest.ai/images/mask.png");
           if (!maskResponse.ok) {
             throw new Error(`Failed to fetch mask image: ${maskResponse.status}`);
           }
@@ -91,7 +88,6 @@ The image should be a high resolution image, 1024x1024px, and contain only the g
           // console.log('Edit response:', editResponse);
           
           if (editResponse.data[0]?.b64_json) {
-            base64Image = editResponse.data[0].b64_json;
             const result: UploadResult = await uploadBase64Image(editResponse.data[0].b64_json) as UploadResult;
             console.log('Generated new image for relic with inspiration:', relic.name);
             console.log('Generated new image URL:', result.url);
@@ -119,7 +115,6 @@ The image should be a high resolution image, 1024x1024px, and contain only the g
 
     return {
       success: true,
-      base64: base64Image,
       data: relic
     };
   } catch (error) {
