@@ -44,6 +44,9 @@ Keywords: fantasy relic, mystical energy, ornate structure, ${relic.element}, ${
 The image should be a high resolution image, 1024x1024px, and contain only the generated artifact, no other text or elements.
 `;
 
+
+    let base64Image = null;
+
     try {
       const imageGenerationOptions: any = {
         model: "dall-e-3",
@@ -88,6 +91,7 @@ The image should be a high resolution image, 1024x1024px, and contain only the g
           // console.log('Edit response:', editResponse);
           
           if (editResponse.data[0]?.b64_json) {
+            base64Image = editResponse.data[0].b64_json;
             const result: UploadResult = await uploadBase64Image(editResponse.data[0].b64_json) as UploadResult;
             console.log('Generated new image for relic with inspiration:', relic.name);
             console.log('Generated new image URL:', result.url);
@@ -95,12 +99,7 @@ The image should be a high resolution image, 1024x1024px, and contain only the g
           }
         } catch (editError) {
           console.error('Error generating image edit:', editError);
-          // Fall back to standard generation if edit fails
-          const standardResponse = await openai.images.generate(imageGenerationOptions);
-          if (standardResponse.data[0]?.url) {
-            const result: UploadResult = await downloadAndUploadImage(standardResponse.data[0].url) as UploadResult;
-            relic.imageUrl = result.url;
-          }
+          throw editError;
         }
       } else {
         // Standard image generation without inspiration
@@ -120,6 +119,7 @@ The image should be a high resolution image, 1024x1024px, and contain only the g
 
     return {
       success: true,
+      base64: base64Image,
       data: relic
     };
   } catch (error) {
