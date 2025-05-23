@@ -63,7 +63,7 @@ export async function createRelic(relicData: Omit<Relic, 'id' | 'objectId'>): Pr
     rarity: relicData.rarity,
     story: relicData.story || null,
     imageUrl: relicData.imageUrl || null,
-    properties: relicData.properties ? JSON.stringify(relicData.properties) : null,
+    properties: typeof relicData.properties === 'object' ? JSON.stringify(relicData.properties) : relicData.properties,
   };
   
   try {
@@ -138,6 +138,6 @@ function mapDbRelicToRelic(dbRelic: DbRelic): Relic {
     rarity: dbRelic.rarity as any,
     story: dbRelic.story || null,
     imageUrl: dbRelic.imageUrl || null,
-    properties: typeof dbRelic.properties === 'string' ? JSON.parse(dbRelic.properties) : null,
+    properties: typeof dbRelic.properties === 'string' ? JSON.parse(dbRelic.properties) : dbRelic.properties,
   };
 }

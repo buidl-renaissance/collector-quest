@@ -41,6 +41,7 @@ export const generateRelicFunction = inngest.createFunction(
         updateResult(resultId!, JSON.stringify({
           message: "Failed to create relic",
           step: "create-relic-failed",
+          relic: relicData,
         }));
         throw new Error('Failed to create relic');
       }
@@ -64,6 +65,7 @@ export const generateRelicFunction = inngest.createFunction(
       updateResult(resultId!, JSON.stringify({
         message: "Failed to generate relic",
         step: "generate-relic-failed",
+        relic: relic,
       }));
       throw new Error('Failed to generate relic');
     }
@@ -73,6 +75,7 @@ export const generateRelicFunction = inngest.createFunction(
       message: "Updating artifact with relic image",
       step: "update-artifact",
       artifact: artifact,
+      relic: relic,
     }));
     
     const updatedRelic = await step.run("update-relic", async () => {
@@ -91,6 +94,7 @@ export const generateRelicFunction = inngest.createFunction(
       step: "complete",
       artifact: artifact,
       relic: updatedRelic,
+      relicImage: updatedRelic?.imageUrl,
     }));
 
     return updatedRelic;
