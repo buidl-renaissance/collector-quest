@@ -52,7 +52,7 @@ const CharacterPage: React.FC<CharacterPageProps> = () => {
   const [realms, setRealms] = useState<Realm[]>([]);
   const [loadingRealms, setLoadingRealms] = useState(true);
   const [isCreating, setIsCreating] = useState(false);
-  const { registerCharacter, isRegistering, registeredCharacter } =
+  const { registerCharacter, isRegistering, registeredCharacter, error } =
     useCharacterRegistration();
   const wallet = useWallet();
   const [registeredCharacterId, setRegisteredCharacterId] = useState<any>(null);
@@ -248,6 +248,11 @@ const CharacterPage: React.FC<CharacterPageProps> = () => {
                       Register your character to begin your journey. Create and
                       discover artifacts, join realms, and forge your legacy.
                     </RegisterDescription>
+                    {error && (
+                      <ErrorMessage>
+                        {error}
+                      </ErrorMessage>
+                    )}
                     <RegisterButton
                       onClick={handleRegisterCharacter}
                       disabled={isRegistering}
