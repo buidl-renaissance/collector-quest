@@ -22,6 +22,8 @@ The relic should sit on a stone-tiled pedestal, radiating magical sparks and amb
 
 Style the relic with warm lighting, soft glows, and intricate metallic textures. It should appear ancient and powerful, with a dark and atmospheric background that makes the magical elements stand out. The design should be suitable for display in a game inventory or artifact compendium.
 
+Do not include any text, badges, or logos in the image.
+
 The relic embodies this story: ${relic.story}`;
 
     // Add inspiration image context if provided
