@@ -79,10 +79,6 @@ const CharacterPage: React.FC<CharacterPageProps> = () => {
   //   }
   // };
 
-  const handleBack = () => {
-    router.push("/characters");
-  };
-
   const handleCreateArtifact = () => {
     router.push("/artifacts/create");
   };
@@ -702,14 +698,14 @@ const RegisterSection = styled.div`
 const RegisterTitle = styled.h3`
   color: #bb8930;
   font-family: "Cinzel", serif;
-  font-size: 1.5rem;
+  font-size: 1.3rem;
   margin-bottom: 1rem;
 `;
 
 const RegisterDescription = styled.p`
   color: #a89bb4;
   font-family: "Cormorant Garamond", serif;
-  font-size: 1.1rem;
+  font-size: 1rem;
   line-height: 1.6;
   margin-bottom: 1.5rem;
   max-width: 600px;
