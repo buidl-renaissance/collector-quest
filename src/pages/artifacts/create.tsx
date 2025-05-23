@@ -98,6 +98,9 @@ const CreateArtifactPage = () => {
           medium: formData.medium,
           yearCreated: formData.yearCreated,
           imageUrl: imagePreview,
+          isOriginalCreator: formData.isOriginalCreator,
+          hasArtistConsent: formData.hasArtistConsent,
+          termsAgreed: formData.termsAgreed,
         }),
       });
 
@@ -154,12 +157,15 @@ const CreateArtifactPage = () => {
             >
               <option value="">Select Medium</option>
               <option value="Acrylic">Acrylic</option>
+              <option value="Airbrush">Airbrush</option>
               <option value="Digital">Digital</option>
               <option value="Mixed Media">Mixed Media</option>
-              <option value="Sculpture">Sculpture</option>
               <option value="Oil">Oil</option>
-              <option value="Watercolor">Watercolor</option>
+              <option value="Pencil">Pencil</option>
               <option value="Photography">Photography</option>
+              <option value="Sculpture">Sculpture</option>
+              <option value="Spray Paint">Spray Paint</option>
+              <option value="Watercolor">Watercolor</option>
               <option value="Other">Other</option>
             </Select>
             {errors.medium && <ErrorMessage>{errors.medium}</ErrorMessage>}
