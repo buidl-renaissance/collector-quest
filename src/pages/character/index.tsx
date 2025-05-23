@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import styled from "@emotion/styled";
 import { keyframes } from "@emotion/react";
-import { FaCheckCircle, FaFeather, FaPlus, FaSpinner, FaUserPlus, FaCopy } from "react-icons/fa";
+import { FaCheckCircle, FaFeather, FaPlus, FaSpinner, FaUserPlus, FaCopy, FaWallet } from "react-icons/fa";
 import Image from "next/image";
 import { GetServerSideProps } from "next";
 import PageTransition from "@/components/PageTransition";
@@ -15,6 +15,8 @@ import CharacterBio from "@/components/CharacterBio";
 import useModal from "@/hooks/useModal";
 import { useCharacterRegistration } from "@/hooks/web3/useCharacterRegistration";
 import { useCharacter } from "@/hooks/useCharacter";
+import { ConnectButton, useWallet } from "@suiet/wallet-kit";
+
 interface CharacterPageProps {
   character: Character | null;
 }
@@ -43,6 +45,7 @@ const CharacterPage: React.FC<CharacterPageProps> = () => {
   const [isCreating, setIsCreating] = useState(false);
   const { registerCharacter, isRegistering, registeredCharacter } =
     useCharacterRegistration();
+  const wallet = useWallet();
 
   useEffect(() => {
     if (character) {
@@ -168,7 +171,17 @@ const CharacterPage: React.FC<CharacterPageProps> = () => {
               </BioCardContainer>
 
               <RegisterSection>
-                {character.registration_id ? (
+                {!wallet.connected ? (
+                  <>
+                    <RegisterTitle>Connect Your Wallet</RegisterTitle>
+                    <RegisterDescription>
+                      Connect your Sui wallet to register your character and begin your journey.
+                    </RegisterDescription>
+                    <StyledConnectButton>
+                      <FaWallet /> Connect Wallet
+                    </StyledConnectButton>
+                  </>
+                ) : character.registration_id ? (
                   <>
                     <RegisterTitle>Character Registered!</RegisterTitle>
                     <RegisterDescription>
@@ -715,6 +728,34 @@ const RegisterDescription = styled.p`
 `;
 
 const RegisterButton = styled.button`
+  background-color: #bb8930;
+  color: #1e1e2d;
+  border: none;
+  border-radius: 4px;
+  padding: 0.75rem 1.5rem;
+  font-family: "Cinzel", serif;
+  font-size: 1rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease-in-out;
+
+  &:hover {
+    background-color: #d4a03c;
+    transform: translateY(-2px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  svg {
+    font-size: 1rem;
+  }
+`;
+
+const StyledConnectButton = styled(ConnectButton)`
   background-color: #bb8930;
   color: #1e1e2d;
   border: none;
