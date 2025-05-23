@@ -33,7 +33,7 @@ The relic embodies this story: ${relic.story}`;
 
     prompt += `\n\nRender with transparent background (PNG format)
 
-Centered composition
+Make sure the composition is centered, and the artifact is the main focus.
 
 Include vibrant, animated-looking magical elements and ambient particles
 
