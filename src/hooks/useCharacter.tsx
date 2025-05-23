@@ -234,6 +234,7 @@ export const useCharacter = () => {
 
     const fetchedCharacter = await response.json();
     setCharacter(fetchedCharacter);
+    updateCharacter(fetchedCharacter);
     return fetchedCharacter;
   };
 
