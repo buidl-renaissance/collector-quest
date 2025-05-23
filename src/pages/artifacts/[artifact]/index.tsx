@@ -32,7 +32,7 @@ const ArtifactPage = ({ artifact: initialArtifact }: { artifact: Artifact }) => 
   } = useArtifact(initialArtifact);
 
   useEffect(() => {
-    if (!artifact.relic && artifact.owner === getCurrentCharacterId()) {
+    if ((!artifact.relic || (artifact.relic && !artifact.relic.objectId)) && artifact.owner === getCurrentCharacterId()) {
       const timer = setTimeout(() => {
         setShowRegisterModal(true);
       }, 7000);
