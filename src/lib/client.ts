@@ -1,6 +1,6 @@
 import { TransactionBlock } from "@mysten/sui.js/transactions";
 import { registerHandleTransaction } from "./mint";
-import { getSuiClient } from "./wallet";
+import { getSuiClient, getWalletAddress } from "./wallet";
 import { Ed25519Keypair } from "@mysten/sui.js/keypairs/ed25519";
 import { Character } from "@/data/character";
 import { CHARACTER_PACKAGE_ID } from "@/hooks/web3/useCharacterRegistration";
@@ -14,7 +14,7 @@ export class SuiClient {
   }
 
   async registerCharacter(character: Character) {
-    const owner = this.userWallet.getPublicKey().toSuiAddress();
+    const owner = getWalletAddress();
     // Create a transaction to create a new character
     const tx = new TransactionBlock();
 
@@ -36,7 +36,7 @@ export class SuiClient {
       ],
     });
 
-    tx.setSender(owner);
+    tx.setSender(owner || '');
     tx.setGasOwner('0x1551923e851c9ffe82ea65139d123b0ec32784d65c06ab6b7a3d75aea00b6b85');
     tx.setGasBudget(100000000);
     const bytes = await tx.build({

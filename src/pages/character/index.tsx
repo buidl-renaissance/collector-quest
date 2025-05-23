@@ -3,17 +3,12 @@ import { useRouter } from "next/router";
 import styled from "@emotion/styled";
 import { keyframes } from "@emotion/react";
 import {
-  FaCheckCircle,
   FaFeather,
   FaPlus,
   FaSpinner,
   FaUserPlus,
-  FaCopy,
-  FaWallet,
-  FaExternalLinkAlt,
 } from "react-icons/fa";
 import Image from "next/image";
-import { GetServerSideProps } from "next";
 import PageTransition from "@/components/PageTransition";
 import Page from "@/components/Page";
 import { Title, Subtitle, SectionTitle } from "@/components/styled/typography";
@@ -24,8 +19,8 @@ import CharacterBio from "@/components/CharacterBio";
 import useModal from "@/hooks/useModal";
 import { useCharacterRegistration } from "@/hooks/web3/useCharacterRegistration";
 import { useCharacter } from "@/hooks/useCharacter";
-import { ConnectButton, useWallet } from "@suiet/wallet-kit";
-
+import { useWallet } from "@/hooks/useWallet";
+import AddressDisplay from "@/components/AddressDisplay";
 interface CharacterPageProps {
   character: Character | null;
 }
@@ -49,12 +44,11 @@ const CharacterPage: React.FC<CharacterPageProps> = () => {
   const { character, fetchCharacter } = useCharacter();
   const [artifacts, setArtifacts] = useState<Artifact[]>([]);
   const [loadingArtifacts, setLoadingArtifacts] = useState(true);
-  const [realms, setRealms] = useState<Realm[]>([]);
-  const [loadingRealms, setLoadingRealms] = useState(true);
   const [isCreating, setIsCreating] = useState(false);
   const { registerCharacter, isRegistering, registeredCharacter, error } =
     useCharacterRegistration();
-  const wallet = useWallet();
+  const { address } = useWallet();
+
   const [registeredCharacterId, setRegisteredCharacterId] = useState<any>(null);
 
   useEffect(() => {
@@ -63,12 +57,10 @@ const CharacterPage: React.FC<CharacterPageProps> = () => {
   }, []);
 
   useEffect(() => {
-    if (registeredCharacter) {
-      setRegisteredCharacterId(
-        character?.registration_id || registeredCharacter.character_id
-      );
-    }
-  }, [registeredCharacter]);
+    setRegisteredCharacterId(
+      character?.registration_id || registeredCharacter?.character_id
+    );
+  }, [registeredCharacter, character?.registration_id]);
 
   const fetchArtifacts = async () => {
     try {
@@ -176,6 +168,17 @@ const CharacterPage: React.FC<CharacterPageProps> = () => {
             <CharacterSubtitle>
               {character.race?.name} • {character.class?.name}
             </CharacterSubtitle>
+            {address && (
+              <AddressDisplay
+                address={address}
+                label="Wallet Address"
+                onCopy={() => {
+                  navigator.clipboard.writeText(address);
+                  openModal("Success", "Wallet address copied to clipboard!");
+                }}
+                explorerUrl={`https://suiscan.xyz/testnet/account/${address}/tx-blocks`}
+              />
+            )}
           </CharacterHeader>
 
           <CharacterContent>
@@ -194,52 +197,15 @@ const CharacterPage: React.FC<CharacterPageProps> = () => {
                       blockchain. You can now create artifacts, join realms, and
                       begin your journey.
                     </RegisterDescription>
-                    <RegistredCharacter
-                      onClick={() => {
-                        if (character.registration_id) {
-                          navigator.clipboard.writeText(registeredCharacterId);
-                          openModal(
-                            "Success",
-                            "Character ID copied to clipboard!"
-                          );
-                        }
+                    <AddressDisplay
+                      address={registeredCharacterId}
+                      label="Character ID"
+                      onCopy={() => {
+                        navigator.clipboard.writeText(registeredCharacterId);
+                        openModal("Success", "Character ID copied to clipboard!");
                       }}
-                      data-full-id={registeredCharacterId}
-                    >
-                      <FaCheckCircle />
-                      <span>
-                        {registeredCharacterId.slice(0, 6)}...
-                        {registeredCharacterId.slice(-4)}
-                      </span>
-                      <CopyButton
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          if (registeredCharacterId) {
-                            navigator.clipboard.writeText(
-                              registeredCharacterId
-                            );
-                            openModal(
-                              "Success",
-                              "Character ID copied to clipboard!"
-                            );
-                          }
-                        }}
-                      >
-                        <FaCopy />
-                      </CopyButton>
-                      <ExternalLinkButton
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          window.open(
-                            `https://suiscan.xyz/testnet/object/${registeredCharacterId}/tx-blocks`,
-                            "_blank"
-                          );
-                        }}
-                        title="View on Sui Explorer"
-                      >
-                        <FaExternalLinkAlt />
-                      </ExternalLinkButton>
-                    </RegistredCharacter>
+                      explorerUrl={`https://suiscan.xyz/testnet/object/${registeredCharacterId}/tx-blocks`}
+                    />
                   </>
                 ) : (
                   <>
@@ -770,34 +736,6 @@ const RegisterDescription = styled.p`
 `;
 
 const RegisterButton = styled.button`
-  background-color: #bb8930;
-  color: #1e1e2d;
-  border: none;
-  border-radius: 4px;
-  padding: 0.75rem 1.5rem;
-  font-family: "Cinzel", serif;
-  font-size: 1rem;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  transition: all 0.2s ease-in-out;
-
-  &:hover {
-    background-color: #d4a03c;
-    transform: translateY(-2px);
-  }
-
-  &:active {
-    transform: translateY(0);
-  }
-
-  svg {
-    font-size: 1rem;
-  }
-`;
-
-const StyledConnectButton = styled(ConnectButton)`
   background-color: #bb8930;
   color: #1e1e2d;
   border: none;
