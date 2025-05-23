@@ -111,7 +111,7 @@ const ArtifactClaimPage = ({ artifact }: ArtifactClaimProps) => {
       // Simulate relic generation (replace with actual API call if needed)
       setTimeout(() => {
         setIsGenerating(false);
-        setGeneratedRelicUrl(artifact.relicImageUrl); // Use artifact image as placeholder
+        setGeneratedRelicUrl(artifact.relic.imageUrl); // Use artifact image as placeholder
       }, 5000);
       
     } catch (error) {
@@ -243,7 +243,7 @@ const ArtifactClaimPage = ({ artifact }: ArtifactClaimProps) => {
           isOpen={showRelicModal}
           onClose={closeModal}
           isGenerating={isGenerating}
-          relicImageUrl={generatedRelicUrl}
+          relic={artifact.relic}
         />
       )}
     </Container>
