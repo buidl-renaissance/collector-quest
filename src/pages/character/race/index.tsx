@@ -30,7 +30,6 @@ const CharacterCreatePage: React.FC<CharacterCreatePageProps> = ({
   races
 }) => {
   const router = useRouter();
-  const { saveCharacter } = useCharacter();
   const { selectedRace, selectRace, loading: raceLoading } = useRace();
   const { selectedSex, loading: sexLoading } = useSex();
   const [error, setError] = React.useState("");

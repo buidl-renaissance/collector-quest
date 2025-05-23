@@ -1,5 +1,11 @@
 import { useState, useEffect } from "react";
-import { Character, CharacterStatus, Traits, Speed, CharacterSheet } from "@/data/character";
+import {
+  Character,
+  CharacterStatus,
+  Traits,
+  Speed,
+  CharacterSheet,
+} from "@/data/character";
 export type { Character, CharacterStatus, Traits, Speed, CharacterSheet };
 import {
   getCurrentCharacterId,
@@ -81,24 +87,24 @@ export const useCharacter = () => {
 
   const updateCharacterTrait = (trait: keyof Traits, value: string) => {
     if (!character) return;
-    if (typeof character.traits?.[trait] === "string") {
+    if (typeof value === "string") {
       const updatedData = {
         ...character,
         traits: {
-          ...character.traits ?? {},
+          ...(character.traits ?? {}),
           [trait]: value,
         },
       };
       console.log(updatedData);
       updateCharacter(updatedData);
-    } else if (Array.isArray(character.traits?.[trait])) {
+    } else if (Array.isArray(value)) {
       const currentValues = (character.traits?.[trait] as string[]) ?? [];
       let updatedData;
       if (currentValues.includes(value)) {
         updatedData = {
           ...character,
           traits: {
-            ...character.traits ?? {},
+            ...(character.traits ?? {}),
             [trait]: currentValues.filter((item) => item !== value),
           },
         };
@@ -106,7 +112,7 @@ export const useCharacter = () => {
         updatedData = {
           ...character,
           traits: {
-            ...character.traits ?? {},
+            ...(character.traits ?? {}),
             [trait]: [...currentValues, value],
           },
         };

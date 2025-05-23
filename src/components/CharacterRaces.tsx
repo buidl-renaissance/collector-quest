@@ -55,6 +55,30 @@ const CharacterRaces: React.FC<CharacterRacesProps> = ({ races, onSelectRace, se
     });
   }, [racesBySource]);
 
+  // Sort races within each source: Human first, then Elves, then Dwarfs, then alphabetically
+  const getSortedRaces = (sourceRaces: Race[]) => {
+    return [...sourceRaces].sort((a, b) => {
+      // Human first
+      if (a.name.toLowerCase().includes('human') && !b.name.toLowerCase().includes('human')) return -1;
+      if (!a.name.toLowerCase().includes('human') && b.name.toLowerCase().includes('human')) return 1;
+      
+      // Exact Elf match first, then other elves
+      if (a.name.toLowerCase() === 'elf' && b.name.toLowerCase() !== 'elf') return -1;
+      if (a.name.toLowerCase() !== 'elf' && b.name.toLowerCase() === 'elf') return 1;
+      if (a.name.toLowerCase().includes('elf') && !b.name.toLowerCase().includes('elf')) return -1;
+      if (!a.name.toLowerCase().includes('elf') && b.name.toLowerCase().includes('elf')) return 1;
+      
+      // Exact Dwarf match first, then other dwarfs
+      if (a.name.toLowerCase() === 'dwarf' && b.name.toLowerCase() !== 'dwarf') return -1;
+      if (a.name.toLowerCase() !== 'dwarf' && b.name.toLowerCase() === 'dwarf') return 1;
+      if (a.name.toLowerCase().includes('dwarf') && !b.name.toLowerCase().includes('dwarf')) return -1;
+      if (!a.name.toLowerCase().includes('dwarf') && b.name.toLowerCase().includes('dwarf')) return 1;
+      
+      // Alphabetical for the rest
+      return a.name.localeCompare(b.name);
+    });
+  };
+
   return (
     <>
       <RacesContainer>        
@@ -65,7 +89,7 @@ const CharacterRaces: React.FC<CharacterRacesProps> = ({ races, onSelectRace, se
               {source}
             </RacesCategoryTitle>
             <RacesGrid>
-              {sourceRaces.map((race) => (
+              {getSortedRaces(sourceRaces).map((race) => (
                 <RaceCard 
                   key={race.id}
                   isSelected={selectedRace === race.name}

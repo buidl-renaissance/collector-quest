@@ -6,8 +6,8 @@ import { useCharacter } from "@/hooks/useCharacter";
 import { FaArrowLeft } from "react-icons/fa";
 import PageTransition from "@/components/PageTransition";
 import Page from "@/components/Page";
-import { BackButton } from "@/components/styled/character";
-import BottomNavigation from "@/components/BottomNavigation";
+import { BackButton, Input } from "@/components/styled/character";
+import { NextButton } from "@/components/styled/buttons";
 
 // Animations
 const fadeIn = keyframes`
@@ -26,6 +26,12 @@ const NamePage = () => {
   const [name, setName] = useState(character?.name || "");
   const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    if (character?.name) {
+      setName(character.name);
+    }
+  }, [character]);
 
   const handleNext = async () => {
     if (!name.trim()) {
@@ -58,34 +64,30 @@ const NamePage = () => {
   return (
     <PageTransition>
       <Page width="narrow">
-
         <Title>Name Your Character</Title>
-        
-        <Description>
-          Choose a name that reflects your character&apos;s personality and background.
-          This name will be used throughout your adventure and by other players.
-        </Description>
-        
-        {error && <ErrorMessage>{error}</ErrorMessage>}
-        
-        <Section>
-          <SectionTitle>Enter Character Name</SectionTitle>
-          <Input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Enter your character's name"
-            maxLength={50}
-          />
-        </Section>
 
+        <Description>
+          Choose a name that reflects your character&apos;s personality and
+          background. This name will be used throughout your adventure and by
+          other players.
+        </Description>
+
+        {error && <ErrorMessage>{error}</ErrorMessage>}
+
+        <SectionTitle>Enter Character Name</SectionTitle>
+        <Input
+          type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="Enter your character's name"
+          maxLength={50}
+        />
         {isNameValid && (
-          <BottomNavigation
-            selectedItem={name}
-            selectedItemLabel="Character Name"
-            onNext={handleNext}
-            disabled={isSaving}
-          />
+          <ButtonContainer>
+            <NextButton onClick={handleNext} disabled={isSaving}>
+              {isSaving ? "Saving..." : "Next"}
+            </NextButton>
+          </ButtonContainer>
         )}
       </Page>
     </PageTransition>
@@ -102,10 +104,11 @@ const Container = styled.div`
 `;
 
 const Title = styled.h1`
-  font-size: 2.5rem;
+  font-size: 2rem;
   color: #bb8930;
   margin-bottom: 0.5rem;
   text-align: center;
+  margin-top: 1rem;
 `;
 
 const Description = styled.p`
@@ -116,44 +119,11 @@ const Description = styled.p`
   font-size: 1rem;
 `;
 
-const Section = styled.div`
-  background-color: rgba(26, 26, 46, 0.7);
-  border-radius: 8px;
-  padding: 1.5rem;
-  margin-bottom: 2rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  border: 1px solid #bb8930;
-  animation: ${slideUp} 0.5s ease-out;
-`;
-
 const SectionTitle = styled.h2`
   color: #bb8930;
   margin-bottom: 1rem;
   font-size: 1.25rem;
   font-family: "Cormorant Garamond", serif;
-`;
-
-const Input = styled.input`
-  width: 100%;
-  padding: 0.75rem;
-  background: rgba(26, 26, 46, 0.9);
-  border: 2px solid #bb8930;
-  border-radius: 4px;
-  color: #e0dde5;
-  font-size: 1rem;
-  font-family: "Cormorant Garamond", serif;
-  margin-bottom: 1rem;
-
-  &:focus {
-    outline: none;
-    border-color: #d4a959;
-    box-shadow: 0 0 0 2px rgba(187, 137, 48, 0.2);
-  }
-
-  &::placeholder {
-    color: #c7bfd4;
-    opacity: 0.7;
-  }
 `;
 
 const ErrorMessage = styled.div`
@@ -165,4 +135,10 @@ const ErrorMessage = styled.div`
   border: 1px solid #ff6b6b;
 `;
 
-export default NamePage; 
+const ButtonContainer = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
+`;
+
+export default NamePage;

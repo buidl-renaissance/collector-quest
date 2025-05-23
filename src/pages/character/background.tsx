@@ -19,7 +19,7 @@ import { navigateTo } from "@/utils/navigation";
 
 const BackgroundPage: React.FC = () => {
   const router = useRouter();
-  const { character, updateCharacter, saveCharacter, updateCharacterTrait } =
+  const { character, updateCharacterTrait } =
     useCharacter();
   const { selectedRace, loading: raceLoading } = useRace();
   const { selectedClass, loading: classLoading } = useCharacterClass();
