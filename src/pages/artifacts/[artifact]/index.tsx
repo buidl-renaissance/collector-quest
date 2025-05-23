@@ -13,8 +13,8 @@ import { Artifact } from "@/data/artifacts";
 import { getArtifact } from "@/db/artifacts";
 import { useArtifact } from "@/hooks/useArtifact";
 import RelicModal from "@/components/RelicModal";
-import { FaTimes } from "react-icons/fa";
 import { keyframes } from "@emotion/react";
+import AddressDisplay from "@/components/AddressDisplay";
 
 const ArtifactPage = ({ artifact: initialArtifact }: { artifact: Artifact }) => {
   const router = useRouter();
@@ -31,14 +31,14 @@ const ArtifactPage = ({ artifact: initialArtifact }: { artifact: Artifact }) => 
   } = useArtifact(initialArtifact);
 
   useEffect(() => {
-    if (artifact.artist === "Unknown") {
+    if (!artifact.relic) {
       const timer = setTimeout(() => {
         setShowRegisterModal(true);
-      }, 7000);
+      }, 5000);
 
       return () => clearTimeout(timer);
     }
-  }, [artifact.artist]);
+  }, [artifact.relic]);
 
   const handleImageLoad = (event: any) => {
     const img = event.target;
@@ -72,6 +72,10 @@ const ArtifactPage = ({ artifact: initialArtifact }: { artifact: Artifact }) => 
           <ArtistName>
             By {artifact.artist}, {artifact.year}
           </ArtistName>
+
+          {artifact.registration_id && (
+            <AddressDisplay address={artifact.registration_id} explorerUrl={`https://suiscan.xyz/testnet/object/${artifact.registration_id}`}/>
+          )}
           
           <DetailSection>
             <DetailTitle>Description</DetailTitle>
@@ -83,75 +87,15 @@ const ArtifactPage = ({ artifact: initialArtifact }: { artifact: Artifact }) => 
             <DetailContent>{artifact.medium}</DetailContent>
           </DetailSection>
 
-          <InfoTitle style={{ marginBottom: "1rem" }}>
-            Magical Properties
-          </InfoTitle>
-          <PropertyGrid>
-            <PropertyCard>
-              <PropertyLabel>Class</PropertyLabel>
-              <PropertyValue>{artifact.properties.class}</PropertyValue>
-            </PropertyCard>
-            <PropertyCard>
-              <PropertyLabel>Effect</PropertyLabel>
-              <PropertyValue>{artifact.properties.effect}</PropertyValue>
-            </PropertyCard>
-            <PropertyCard>
-              <PropertyLabel>Element</PropertyLabel>
-              <PropertyValue>{artifact.properties.element}</PropertyValue>
-            </PropertyCard>
-            <PropertyCard>
-              <PropertyLabel>Rarity</PropertyLabel>
-              <PropertyValue>{artifact.properties.rarity}</PropertyValue>
-            </PropertyCard>
-          </PropertyGrid>
-
-          <StorySection>
-            <InfoTitle>Artifact Story</InfoTitle>
-            <InfoText style={{ fontStyle: "italic" }}>
-              {artifact.story}
-            </InfoText>
-          </StorySection>
-
-          <AbilityGrid>
-            <AbilityCard>
-              <AbilityTitle>Passive Bonus</AbilityTitle>
-              <InfoText>{artifact.properties.passiveBonus}</InfoText>
-            </AbilityCard>
-            <AbilityCard>
-              <AbilityTitle>Active Use</AbilityTitle>
-              <InfoText>{artifact.properties.activeUse}</InfoText>
-            </AbilityCard>
-            <AbilityCard>
-              <AbilityTitle>Unlock Condition</AbilityTitle>
-              <InfoText>{artifact.properties.unlockCondition}</InfoText>
-            </AbilityCard>
-            <AbilityCard>
-              <AbilityTitle>Reflection Trigger</AbilityTitle>
-              <InfoText>{artifact.properties.reflectionTrigger}</InfoText>
-            </AbilityCard>
-          </AbilityGrid>
         </ArtifactDetails>
       </ArtifactContainer>
 
-      {/* <BottomNav>
-        {!artifact.owner && (
-          <ActionButton
-            onClick={() => router.push(`/artifacts/${artifact.id}/claim`)}
-          >
-            Claim Artifact
-          </ActionButton>
-        )}
-        <ActionButton onClick={handleRelicAction}>
-          {artifact.relicImageUrl ? "View Relic" : "Generate Relic"}
-        </ActionButton>
-      </BottomNav> */}
-
-      {showRelicModal && (
+      {true && (
         <RelicModal 
-          isOpen={showRelicModal}
+          isOpen={true}
           onClose={closeModal}
           isGenerating={isGenerating}
-          relicImageUrl={generatedRelicUrl}
+          relic={artifact.relic ?? null}
         />
       )}
 
@@ -160,9 +104,6 @@ const ArtifactPage = ({ artifact: initialArtifact }: { artifact: Artifact }) => 
           <Modal>
             <ModalHeader>
               <ModalTitle>Congratulations!</ModalTitle>
-              <CloseButton onClick={() => setShowRegisterModal(false)}>
-                <FaTimes />
-              </CloseButton>
             </ModalHeader>
             <ModalContent>
               <p>You&apos;ve created a powerful artifact! Unlock its full potential by creating a digital relic!</p>
@@ -536,7 +477,7 @@ const Modal = styled.div`
 
 const ModalHeader = styled.div`
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
   align-items: center;
   margin-bottom: 1.5rem;
   padding-bottom: 0.75rem;

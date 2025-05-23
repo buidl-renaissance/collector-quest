@@ -1,19 +1,19 @@
 import client from './client';
 import { v4 as uuidv4 } from 'uuid';
 import { Artifact } from '@/data/artifacts';
+import { getRelic } from './relics';
 
 interface DbArtifact {
   id: string;
+  registration_id: string;
   title: string;
   artist: string;
   owner: string;
   year: string;
   medium: string;
   description: string;
-  properties: string;
+  relic_id?: string;
   imageUrl: string;
-  relicImageUrl: string;
-  story?: string;
   created_at: string;
   updated_at: string;
 }
@@ -35,21 +35,20 @@ export async function listArtifacts(limit = 20, offset = 0): Promise<Artifact[]>
       .limit(limit)
       .offset(offset);
     
-    return artifacts.map(mapDbArtifactToArtifact);
+    return await Promise.all(artifacts.map(async (artifact) => await mapDbArtifactToArtifact(artifact)));
   } catch (error) {
     console.error('Error listing artifacts:', error);
     return [];
   }
 }
 
-export async function createArtifact(artifactData: Omit<Artifact, 'id' | 'created_at' | 'updated_at'>): Promise<Artifact | null> {
+export async function createArtifact(artifactData: Omit<Artifact, 'id' | 'relic' | 'created_at' | 'updated_at'>): Promise<Artifact | null> {
   const id = uuidv4();
   const now = new Date();
   
   const newArtifact = {
     id,
     ...artifactData,
-    properties: JSON.stringify(artifactData.properties),
     created_at: now,
     updated_at: now
   };
@@ -63,13 +62,13 @@ export async function createArtifact(artifactData: Omit<Artifact, 'id' | 'create
   }
 }
 
-export async function updateArtifact(id: string, artifactData: Partial<Artifact>): Promise<Artifact | null> {
+export async function updateArtifact(id: string, artifactData: Partial<DbArtifact>): Promise<Artifact | null> {
   try {
     const updateData = {
       ...artifactData,
-      updated_at: new Date()
+      updated_at: new Date().toISOString()
     };
-    
+  
     await client('artifacts').where({ id }).update(updateData);
     return getArtifact(id);
   } catch (error) {
@@ -94,27 +93,35 @@ export async function getArtifactsByOwner(ownerId: string): Promise<Artifact[]> 
       .where({ owner: ownerId })
       .orderBy('created_at', 'desc');
     
-    return artifacts.map(mapDbArtifactToArtifact);
+    return await Promise.all(artifacts.map(async (artifact) => await mapDbArtifactToArtifact(artifact)));
   } catch (error) {
     console.error('Error fetching artifacts by owner:', error);
     return [];
   }
 }
 
-function mapDbArtifactToArtifact(dbArtifact: DbArtifact): Artifact {
-  return {
+async function mapDbArtifactToArtifact(dbArtifact: DbArtifact): Promise<Artifact> {
+  const artifact: Artifact = {
     id: dbArtifact.id,
+    registration_id: dbArtifact.registration_id ?? null,
     title: dbArtifact.title,
     artist: dbArtifact.artist,
     owner: dbArtifact.owner,
     year: dbArtifact.year,
     medium: dbArtifact.medium,
+    relic: null,
     description: dbArtifact.description,
-    properties: typeof dbArtifact.properties === 'string' ? JSON.parse(dbArtifact.properties) : dbArtifact.properties,
     imageUrl: dbArtifact.imageUrl,
-    relicImageUrl: dbArtifact.relicImageUrl,
-    story: dbArtifact.story,
     created_at: dbArtifact.created_at,
     updated_at: dbArtifact.updated_at
   };
+
+  if (dbArtifact.relic_id) {
+    const relic = await getRelic(dbArtifact.relic_id);
+    if (relic) {
+      artifact.relic = relic;
+    }
+  }
+
+  return artifact;
 }

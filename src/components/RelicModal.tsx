@@ -4,38 +4,47 @@ import Image from "next/image";
 import { FaTimes } from "react-icons/fa";
 import LoadingCandles from "@/components/LoadingCandles";
 import { NextButton } from "@/components/styled/character";
-
+import { useRouter } from "next/router";
+import { Relic } from "@/data/artifacts";
 interface RelicModalProps {
   isOpen: boolean;
   onClose: () => void;
   isGenerating: boolean;
-  relicImageUrl: string | null;
+  relic: Relic | null;
 }
 
 const RelicModal: React.FC<RelicModalProps> = ({
   isOpen,
   onClose,
   isGenerating,
-  relicImageUrl,
+  relic,
 }) => {
+  const router = useRouter();
+
+  const handleExamineRelic = () => {
+    router.push(`/relics/${relic?.id}`);
+  };
+
   if (!isOpen) return null;
 
   return (
     <ModalOverlay onClick={onClose}>
       <ModalContent onClick={(e) => e.stopPropagation()}>
-        <CloseButton onClick={onClose}>
-          <FaTimes />
-        </CloseButton>
+        {/* {!isGenerating && (
+          <CloseButton onClick={onClose}>
+            <FaTimes />
+          </CloseButton>
+        )} */}
         {isGenerating ? (
           <LoadingContainer>
             <LoadingCandles />
             <LoadingMessage>Generating your relic...</LoadingMessage>
           </LoadingContainer>
-        ) : relicImageUrl ? (
+        ) : relic ? (
           <RelicContainer>
             <RelicImage>
               <Image
-                src={relicImageUrl}
+                src={relic.imageUrl ?? ""}
                 alt="Generated Relic"
                 style={{ objectFit: "cover" }}
                 width={256}
@@ -45,9 +54,12 @@ const RelicModal: React.FC<RelicModalProps> = ({
             <RelicDescription>
               <RelicTitle>RELIC UNLOCKED</RelicTitle>
               <p>
-                This is a unique Relic<br /> a symbol of your journey through
-                Collector Quest.
+                This is a unique Relic<br /> Examine it to learn about its
+                mystical properties.
               </p>
+              <ClaimButton onClick={handleExamineRelic}>
+                Examine Relic
+              </ClaimButton>
             </RelicDescription>
           </RelicContainer>
         ) : null}
@@ -65,7 +77,7 @@ const ModalOverlay = styled.div`
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.75);
+  background-color: rgba(0, 0, 0, 0.9);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -202,18 +214,18 @@ const RelicDescription = styled.div`
 `;
 
 const ClaimButton = styled(NextButton)`
-  background-color: #bb8930;
+  background-color: #4a3a6e;
   color: #fff;
   border: none;
   padding: 0.5rem 1rem;
   margin: 1rem auto;
   text-transform: uppercase;
-  font-size: 1.2rem;
+  font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
   transition: background-color 0.3s ease;
 
   &:hover {
-    background-color: #d4a040;
+    background-color: #5d4888;
   }
 `;

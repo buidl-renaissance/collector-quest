@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { Artifact } from '@/data/artifacts';
+import { useState } from 'react';
+import { Artifact, Relic } from '@/data/artifacts';
 
 interface PollResult {
   success: boolean;
@@ -20,20 +20,18 @@ interface UseArtifactReturn {
 export const useArtifact = (initialArtifact: Artifact): UseArtifactReturn => {
   const [artifact, setArtifact] = useState<Artifact>(initialArtifact);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [generatedRelic, setGeneratedRelic] = useState<Relic | null>(initialArtifact?.relic || null);
   const [generatedRelicUrl, setGeneratedRelicUrl] = useState<string | null>(null);
   const [showRelicModal, setShowRelicModal] = useState(false);
-
+  
   const closeModal = () => {
     setShowRelicModal(false);
-    if (!artifact.relicImageUrl) {
-      setGeneratedRelicUrl(null);
-    }
   };
 
   const handleRelicAction = async () => {
-    if (artifact.relicImageUrl) {
+    if (artifact.relic?.imageUrl) {
       // If relic exists, just show it in the modal
-      setGeneratedRelicUrl(artifact.relicImageUrl);
+      setGeneratedRelicUrl(artifact.relic.imageUrl);
       setShowRelicModal(true);
     } else {
       // Generate new relic
@@ -69,8 +67,9 @@ export const useArtifact = (initialArtifact: Artifact): UseArtifactReturn => {
               setArtifact(result.artifact);
             }
 
-            if (result.artifact?.relicImageUrl) {
-              setGeneratedRelicUrl(result.artifact.relicImageUrl);
+            if (result.relic?.imageUrl) {
+              setGeneratedRelic(result.relic);
+              setGeneratedRelicUrl(result.relic.imageUrl);
             }
 
             if (data.status === 'completed') {

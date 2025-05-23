@@ -1,130 +1,114 @@
-import { Artifact } from '@/data/artifacts';
-import OpenAI from 'openai';
-import { downloadAndUploadImage, UploadResult, UploadError, uploadBase64Image } from './imageUpload';
+import { OpenAI } from 'openai';
+import { ArtifactClass, Element, Effect, Rarity, Artifact } from '@/data/artifacts';
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
+// Define the artifact classes, elements, effects, and rarities based on our game's taxonomy
+const ARTIFACT_CLASSES = ['Tool', 'Weapon', 'Symbol', 'Wearable', 'Key'];
+const ELEMENTS = ['Fire', 'Water', 'Nature', 'Shadow', 'Light', 'Electric'];
+const EFFECTS = ['Reveal', 'Heal', 'Unlock', 'Boost', 'Summon'];
+const RARITIES = ['Common', 'Uncommon', 'Rare', 'Epic'];
+
+export interface GeneratedRelic {
+  name: string;
+  class: ArtifactClass;
+  element: Element;
+  effect: Effect;
+  rarity: Rarity;
+  story: string;
+  properties: {
+    activeUse?: string;
+    visualAsset?: string;
+    passiveBonus?: string;
+    unlockCondition?: string;
+    reflectionTrigger?: string;
+  }
+}
 
 /**
- * Generates a game relic/artifact based on the provided artifact
- * 
- * @param artifact The artifact to generate a relic from
- * @param inspirationImageUrl Optional URL of an image to use as inspiration
- * @returns An object containing the generated relic data
+ * Analyzes an artifact image using OpenAI's vision capabilities
+ * @param imageUrl URL of the artifact image to analyze
+ * @param medium The medium used to create the artifact
+ * @param yearCreated The year the artifact was created
+ * @returns Object containing artifact title, description, and properties
  */
-export const generateRelic = async (artifact: Artifact, inspirationImageUrl?: string) => {
+export async function generateRelic(artifact: Artifact): Promise<GeneratedRelic> {
   try {
-    // Generate an image using OpenAI API
-    const openai = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY,
-    });
+    const prompt = `
+🎯 You are a world-builder and game designer crafting legendary artifacts based on visual art. Analyze this painting and generate a complete artifact profile that fits seamlessly into a fantasy RPG. Your output should be lore-rich, gameplay-relevant, and emotionally resonant.
 
-    let prompt = `Generate a fantasy relic glowing with mystical energy, featuring an ornate, twisted metal structure that represents [${artifact.title}]. The relic should have enchanted elements that symbolize ${artifact.properties.effect}, ${artifact.properties.element}, and ${artifact.properties.class}. It is of ${artifact.properties.rarity} rarity.
+Additional context:
+- Title: ${artifact.title}
+- Description: ${artifact.description}
+- Medium: ${artifact.medium}
+- Year created: ${artifact.year}
 
-The relic should sit on a stone-tiled pedestal, radiating magical sparks and ambient particles in blues, golds, and purples that reflect its essence. ${artifact.description}
+Provide the following structured output:
 
-Style the relic with warm lighting, soft glows, and intricate metallic textures. It should appear ancient and powerful, with a dark and atmospheric background that makes the magical elements stand out. The design should be suitable for display in a game inventory or artifact compendium.
+{
+  "name": "[Lore-rich, symbolic name inspired by the painting]",
+  "description": "[A concise, poetic description of the relic]",
+  "story": "[One or two sentences of lore or mythological backstory—mysterious, poetic, or emotionally resonant]",
+  "class": "Tool, Weapon, Symbol, Wearable, or Key",
+  "element": "Fire, Water, Nature, Shadow, Light, or Electric",
+  "effect": "Reveal, Heal, Unlock, Boost, or Summon",
+  "rarity": "Common, Uncommon, Rare, or Epic",
+  "properties": {
+    "visualAsset": "[Describe how the artwork appears in-game, including environmental placement and any subtle animations or effects]",
+    "passiveBonus": "[Name of passive skill] – [Describe the gameplay effect this passive ability provides]",
+    "activeUse": "[Name of active skill] – [Describe the one-time effect this artifact can trigger during a quest]",
+    "unlockCondition": "[Describe the narrative or gameplay requirement needed to acquire or activate the artifact]",
+    "reflectionTrigger": "[A thoughtful or cryptic question the AI guide might ask when the artifact is viewed]"
+  }
+}
 
-The relic embodies this story: ${artifact.story}`;
+Focus on:
+- Interpreting the subject, lighting, colors, and symbolism of the painting
+- Designing the artifact's effects to reinforce the theme or emotion conveyed by the artwork
+- Creating gameplay elements that feel meaningful and connected to the visual representation
+- Developing lore that enhances the mystique and value of the artifact
 
-    // Add inspiration image context if provided
-    if (inspirationImageUrl) {
-      prompt += `\n\nDraw inspiration from the provided reference image while maintaining the fantasy relic aesthetic.`;
-    }
-
-    prompt += `\n\nRender with transparent background (PNG format)
-
-Centered composition
-
-Include vibrant, animated-looking magical elements and ambient particles
-
-Emphasize high-detail digital painting style with intricate textures
-
-Keywords: fantasy relic, mystical energy, ornate structure, ${artifact.properties.element}, ${artifact.properties.effect}, ${artifact.properties.class}, enchanted, magical artifact, stone pedestal, magical sparks, ambient particles, warm lighting, intricate textures.
-
-The image should be a high resolution image, 1024x1024px, and contain only the generated artifact, no other text or elements.
+Output only the JSON block.
 `;
 
-    try {
-      const imageGenerationOptions: any = {
-        model: "dall-e-3",
-        prompt: prompt,
-        n: 1,
-        size: "1024x1024",
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      messages: [
+        {
+          role: 'user',
+          content: [
+            { type: 'text', text: prompt },
+            { type: 'image_url', image_url: { url: artifact.imageUrl } }
+          ]
+        }
+      ],
+      max_tokens: 1000
+    });
+
+    const aiResponse = response.choices[0].message.content;
+    const jsonMatch = aiResponse?.match(/\{[\s\S]*\}/);
+    
+    if (jsonMatch) {
+      const jsonData = JSON.parse(jsonMatch[0]);
+      
+      // Validate and ensure the returned properties match our expected values
+      return {
+        name: jsonData.name,
+        story: jsonData.story,
+        class: ARTIFACT_CLASSES.includes(jsonData.class) ? jsonData.class : ARTIFACT_CLASSES[0],
+        element: ELEMENTS.includes(jsonData.element) ? jsonData.element : ELEMENTS[0],
+        effect: EFFECTS.includes(jsonData.effect) ? jsonData.effect : EFFECTS[0],
+        rarity: RARITIES.includes(jsonData.rarity) ? jsonData.rarity : RARITIES[0],
+        properties: jsonData.properties,
       };
-
-      // If we have an inspiration image, use it with the image edit API
-      if (inspirationImageUrl) {
-        try {
-          // First download the inspiration image
-          const response = await fetch(inspirationImageUrl);
-          if (!response.ok) {
-            throw new Error(`Failed to fetch inspiration image: ${response.status}`);
-          }
-          
-          // Convert to File object for the API
-          const imageBlob = await response.blob();
-          const imageFile = new File([imageBlob], "inspiration.png", { type: "image/png" });
-          
-          // Get mask image
-          const maskResponse = await fetch("https://collectorquest.ai/images/mask.png");
-          if (!maskResponse.ok) {
-            throw new Error(`Failed to fetch mask image: ${maskResponse.status}`);
-          }
-          const maskBlob = await maskResponse.blob();
-          const maskFile = new File([maskBlob], "mask.png", { type: "image/png" });
-          
-          console.log('Generating relic image with prompt:', prompt);
-
-          // Use the image edit API instead of variation
-          const editResponse = await openai.images.edit({
-            model: "gpt-image-1",
-            image: imageFile,
-            mask: maskFile,
-            prompt: `with this image as a reference, keep the style of the image, maintain the transparent background, and generate a ${prompt}`,
-            n: 1,
-            size: "1024x1024",
-          });
-
-          // console.log('Edit response:', editResponse);
-          
-          if (editResponse.data[0]?.b64_json) {
-            const result: UploadResult = await uploadBase64Image(editResponse.data[0].b64_json) as UploadResult;
-            console.log('Generated new image for relic with inspiration:', artifact.title);
-            console.log('Generated new image URL:', result.url);
-            artifact.relicImageUrl = result.url;
-          }
-        } catch (editError) {
-          console.error('Error generating image edit:', editError);
-          // Fall back to standard generation if edit fails
-          const standardResponse = await openai.images.generate(imageGenerationOptions);
-          if (standardResponse.data[0]?.url) {
-            const result: UploadResult = await downloadAndUploadImage(standardResponse.data[0].url) as UploadResult;
-            artifact.relicImageUrl = result.url;
-          }
-        }
-      } else {
-        // Standard image generation without inspiration
-        const response = await openai.images.generate(imageGenerationOptions);
-        if (response.data[0]?.url) {
-          const result: UploadResult = await downloadAndUploadImage(response.data[0].url) as UploadResult;
-          console.log('Generated new image for relic:', artifact.title);
-          console.log('Generated new image URL:', result.url);
-          artifact.relicImageUrl = result.url;
-        }
-      }
-    } catch (imageError) {
-      console.error('Error generating image with OpenAI:', imageError);
-      // Continue with the original image if available
-      console.log('Falling back to original image for relic:', artifact.title);
     }
-
-    return {
-      success: true,
-      data: artifact
-    };
+    
+    throw new Error("Failed to generate relic");
+    
   } catch (error) {
-    console.error('Error generating relic:', error);
-    return {
-      success: false,
-      error: 'Failed to generate relic'
-    };
+    console.error('Error analyzing artifact image with AI:', error);
+    throw error;
   }
-};
+}

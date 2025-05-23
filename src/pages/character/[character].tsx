@@ -165,8 +165,8 @@ const CharacterPage: React.FC<CharacterPageProps> = ({ character }) => {
                             By {artifact.artist}, {artifact.year}
                           </ArtifactArtist>
                           <BadgeContainer>
-                            <Badge>{artifact.properties.rarity}</Badge>
-                            <Badge>{artifact.properties.element}</Badge>
+                            <Badge>{artifact.relic?.rarity}</Badge>
+                            <Badge>{artifact.relic?.element}</Badge>
                           </BadgeContainer>
                         </ArtifactInfo>
                       </ArtifactCard>

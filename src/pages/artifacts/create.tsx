@@ -5,7 +5,10 @@ import { FormGroup, Label, CheckboxContainer, Checkbox, CheckboxLabel } from "@/
 import { ErrorMessage } from "@/components/styled/typography";
 import { UploadMedia } from "@/components/UploadMedia";
 import { useCharacter } from "@/hooks/useCharacter";
+import { useArtifactRegistration } from "@/hooks/web3/useArtifactRegistration";
 import LoadingBasic from "@/components/LoadingBasic";
+
+
 const CreateArtifactPage = () => {
   const router = useRouter();
   const [formData, setFormData] = useState({
@@ -19,6 +22,7 @@ const CreateArtifactPage = () => {
   });
 
   const { character } = useCharacter();
+  const { registerArtifact } = useArtifactRegistration();
 
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
@@ -100,6 +104,9 @@ const CreateArtifactPage = () => {
       }
 
       const data = await response.json();
+
+      await registerArtifact(data);
+
       router.push(`/artifacts/${data.id}`);
     } catch (error) {
       console.error("Error creating artifact:", error);

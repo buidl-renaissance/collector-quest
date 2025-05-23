@@ -67,7 +67,7 @@ interface LoadingCandlesProps {
 
 const LoadingCandles: React.FC<LoadingCandlesProps> = ({ 
   message = "Summoning mystical energies...",
-  subText = "Please wait while we prepare your experience"
+  subText = "This may take a minute... magic is a slow process."
 }) => {
   const [litOpacity, setLitOpacity] = useState(1);
   const [dots, setDots] = useState("...");

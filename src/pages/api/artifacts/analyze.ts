@@ -30,15 +30,13 @@ export default async function handler(
     // Store the analyzed artifact in the database
     // The user will claim ownership in a later step
     const createdArtifact = await createArtifact({
-      title: analysisResult.artworkTitle,
+      title: analysisResult.title,
       artist: artistName ?? "Unknown",
       owner: owner ?? null,
       medium: medium,
       year: yearCreated,
       description: analysisResult.description,
       imageUrl: imageUrl,
-      properties: analysisResult.properties,
-      story: analysisResult.story,
     });
     
     return res.status(200).json(createdArtifact);

@@ -22,6 +22,7 @@ export const useArtifactRegistration = () => {
       if (result && result.events[0].parsedJson) {
         const createdArtifact = result.events[0].parsedJson;
         setRegisteredArtifact(createdArtifact);
+        await registerArtifactRequest(artifact, createdArtifact.artifact_id);
       }
       return result;
     } catch (err) {
@@ -64,3 +65,27 @@ export const useArtifactRegistration = () => {
     resetState,
   };
 };
+
+const registerArtifactRequest = async (artifact: Artifact, registrationId: string) => {
+    try {
+      const response = await fetch("/api/artifacts/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          artifactId: artifact.id,
+          registrationId: registrationId,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to register artifact");
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error("Error registering artifact:", error);
+      throw error;
+    }
+  };

@@ -15,6 +15,7 @@ const RegistredCharacter = styled.div`
   transition: all 0.2s ease;
   margin: 0 auto;
   width: fit-content;
+  margin: 1rem auto;
 
   &:hover {
     background: rgba(0, 255, 0, 0.2);

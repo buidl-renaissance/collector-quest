@@ -6,7 +6,7 @@ import { Character } from "@/data/character";
 import { Artifact } from "@/data/artifacts";
 
 export const CHARACTER_PACKAGE_ID =
-  "0x170e2d893979bf14c24ae8c3998ae423bda3593500a6ecab7a295f65f8a19843";
+  "0xbb31d59792af0c6175efc4922c4a44c7aba946694e452f5258092712a1cc2437";
 
 export class SuiClient {
   private client: ReturnType<typeof getSuiClient>;
@@ -68,18 +68,44 @@ export class SuiClient {
         tx.pure(Array.from(new TextEncoder().encode(artifact.year || ""))),
         tx.pure(Array.from(new TextEncoder().encode(artifact.medium || ""))),
         tx.pure(Array.from(new TextEncoder().encode(artifact.description || ""))),
-        tx.pure(Array.from(new TextEncoder().encode(artifact.properties.class || ""))),
-        tx.pure(Array.from(new TextEncoder().encode(artifact.properties.element || ""))),
-        tx.pure(Array.from(new TextEncoder().encode(artifact.properties.effect || ""))),
-        tx.pure(Array.from(new TextEncoder().encode(artifact.properties.rarity || ""))),
-        tx.pure(Array.from(new TextEncoder().encode(artifact.properties.visualAsset || ""))),
-        tx.pure(Array.from(new TextEncoder().encode(artifact.properties.passiveBonus || ""))),
-        tx.pure(Array.from(new TextEncoder().encode(artifact.properties.activeUse || ""))),
-        tx.pure(Array.from(new TextEncoder().encode(artifact.properties.unlockCondition || ""))),
-        tx.pure(Array.from(new TextEncoder().encode(artifact.properties.reflectionTrigger || ""))),
-        tx.pure(Array.from(new TextEncoder().encode(artifact.story || ""))),
         tx.pure(Array.from(new TextEncoder().encode(artifact.imageUrl || ""))),
-        tx.pure(Array.from(new TextEncoder().encode(artifact.relicImageUrl || ""))),
+      ],
+    });
+
+    tx.setSender(owner || '');
+    tx.setGasOwner('0x1551923e851c9ffe82ea65139d123b0ec32784d65c06ab6b7a3d75aea00b6b85');
+    tx.setGasBudget(100000000);
+    const bytes = await tx.build({
+      client: this.client,
+    //   onlyTransactionKind: true,
+    });
+    const signedTx = await this.userWallet.signTransactionBlock(bytes);
+    return await this.sponsorTransaction(signedTx.bytes, signedTx.signature);
+  }
+
+  // Generate a relic tied to an artifact
+  async generateRelic(artifact: Artifact) {
+    const owner = getWalletAddress();
+
+    const tx = new TransactionBlock();
+
+    // Set a gas budget to avoid dry run budget determination issues
+    tx.setGasBudget(10_000_000); // 0.01 SUI
+
+    tx.moveCall({
+      target: `${CHARACTER_PACKAGE_ID}::artifact::generate_relic`,
+      arguments: [
+        tx.object(artifact.id), // Reference to the artifact object
+        tx.pure(Array.from(new TextEncoder().encode(artifact.relic?.imageUrl || ""))),
+        tx.pure(Array.from(new TextEncoder().encode(artifact.relic?.element || ""))),
+        tx.pure(Array.from(new TextEncoder().encode(artifact.relic?.effect || ""))),
+        tx.pure(Array.from(new TextEncoder().encode(artifact.relic?.rarity || ""))),
+        tx.pure(Array.from(new TextEncoder().encode(artifact.relic?.properties.visualAsset || ""))),
+        tx.pure(Array.from(new TextEncoder().encode(artifact.relic?.properties.passiveBonus || ""))),
+        tx.pure(Array.from(new TextEncoder().encode(artifact.relic?.properties.activeUse || ""))),
+        tx.pure(Array.from(new TextEncoder().encode(artifact.relic?.properties.unlockCondition || ""))),
+        tx.pure(Array.from(new TextEncoder().encode(artifact.relic?.properties.reflectionTrigger || ""))),
+        tx.pure(Array.from(new TextEncoder().encode(artifact.relic?.story || ""))),
       ],
     });
 

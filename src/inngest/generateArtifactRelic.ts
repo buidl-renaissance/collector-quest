@@ -1,7 +1,9 @@
 import { inngest } from '@/inngest/client';
 import { getArtifact, updateArtifact } from '@/db/artifacts';
 import { generateRelic } from '@/lib/generateRelic';
+import { generateRelicImage } from '@/lib/generateRelicImage';
 import { updateResult, completeResult } from '@/lib/storage';
+import { updateRelic, createRelic } from '@/db/relics';
 
 export const generateRelicFunction = inngest.createFunction(
   { 
@@ -32,8 +34,30 @@ export const generateRelicFunction = inngest.createFunction(
       step: "generate-relic",
     }));
     
+    const relic = await step.run("generate-relic", async () => {
+      const relicData = await generateRelic(artifact);
+      const relic = await createRelic(relicData);
+      if (!relic) {
+        updateResult(resultId!, JSON.stringify({
+          message: "Failed to create relic",
+          step: "create-relic-failed",
+        }));
+        throw new Error('Failed to create relic');
+      }
+      await updateArtifact(artifactId, {
+        relic_id: relic.id,
+      });
+      return relic;
+    });
+
+    // Generate the relic
+    updateResult(resultId!, JSON.stringify({
+      message: "Generating relic image",
+      step: "generate-relic",
+    }));
+    
     const result = await step.run("generate-relic", async () => {
-      return await generateRelic(artifact, 'https://www.collectorquest.ai/images/relic-example.png');
+      return await generateRelicImage(artifact, relic, 'https://www.collectorquest.ai/images/relic-example.png');
     });
 
     if (!result.success) {
@@ -48,13 +72,14 @@ export const generateRelicFunction = inngest.createFunction(
     updateResult(resultId!, JSON.stringify({
       message: "Updating artifact with relic image",
       step: "update-artifact",
+      artifact: artifact,
     }));
     
-    const updatedArtifact = await step.run("update-artifact", async () => {
+    const updatedRelic = await step.run("update-relic", async () => {
       // Check if result is the success type before accessing data
       if ('data' in result) {
-        return await updateArtifact(artifactId, {
-          relicImageUrl: result.data.relicImageUrl
+        return await updateRelic(relic.id, {
+          imageUrl: result.data.imageUrl
         });
       } else {
         throw new Error('Result does not contain data property');
@@ -64,9 +89,10 @@ export const generateRelicFunction = inngest.createFunction(
     completeResult(resultId!, JSON.stringify({
       message: "Relic generation complete",
       step: "complete",
-      artifact: updatedArtifact,
+      artifact: artifact,
+      relic: updatedRelic,
     }));
 
-    return updatedArtifact;
+    return updatedRelic;
   }
 ); 

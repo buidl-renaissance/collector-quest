@@ -15,10 +15,10 @@ export default async function handler(
 ) {
   if (req.method === 'POST') {
     try {
-      const { artistName, contactInfo, artworkTitle, medium, yearCreated, imageUrl, description, artifactClass, effect, element, rarity } = req.body;
+      const { artistName, artworkTitle, medium, yearCreated, imageUrl, description } = req.body;
 
       // Validate required fields
-      if (!artistName || !artworkTitle || !medium || !yearCreated || !imageUrl || !description || !artifactClass || !effect || !element || !rarity) {
+      if (!artistName || !artworkTitle || !medium || !yearCreated || !imageUrl || !description) {
         return res.status(400).json({ error: 'Missing required fields' });
       }
 
@@ -29,12 +29,6 @@ export default async function handler(
         year: yearCreated,
         medium,
         description,
-        properties: {
-          class: artifactClass,
-          effect,
-          element,
-          rarity,
-        },
         imageUrl,
       });
 
