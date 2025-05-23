@@ -213,6 +213,7 @@ export interface Character {
   id?: string;
   name: string;
   status?: string;
+  registration_id?: string;
   race?: Race | null;
   subrace?: Subrace | null;
   class?: CharacterClass | null;

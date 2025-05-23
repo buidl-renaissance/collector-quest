@@ -16,6 +16,7 @@
     "@aws-sdk/client-s3": "^3.804.0",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
+    "@mysten/dapp-kit": "^0.16.4",
     "@mysten/sui": "^1.28.0",
     "@mysten/sui.js": "^0.54.1",
     "@mysten/wallet-adapter-react": "^11.0.0",

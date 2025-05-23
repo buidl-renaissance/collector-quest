@@ -21,7 +21,7 @@ const PageLayout = ({
   backLinkText,
 }: PageLayoutProps) => (
   <>
-    <NavigationBar />
+    {/* <NavigationBar /> */}
     <PageContainer>
       <PageBackground />
 

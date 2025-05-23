@@ -2,16 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import styled from "@emotion/styled";
 import { keyframes } from "@emotion/react";
-import {
-  FaArrowLeft,
-  FaScroll,
-  FaDice,
-  FaFeather,
-  FaPlus,
-  FaCrown,
-  FaMapMarkerAlt,
-  FaUserPlus,
-} from "react-icons/fa";
+import { FaCheckCircle, FaFeather, FaPlus, FaSpinner, FaUserPlus } from "react-icons/fa";
 import Image from "next/image";
 import { GetServerSideProps } from "next";
 import PageTransition from "@/components/PageTransition";
@@ -22,8 +13,7 @@ import { Character } from "@/data/character";
 import { Artifact } from "@/data/artifacts";
 import CharacterBio from "@/components/CharacterBio";
 import useModal from "@/hooks/useModal";
-import PressStart from '@/components/PressStart';
-
+import { useCharacterRegistration } from "@/hooks/web3/useCharacterRegistration";
 interface CharacterPageProps {
   character: Character | null;
 }
@@ -49,6 +39,8 @@ const CharacterPage: React.FC<CharacterPageProps> = ({ character }) => {
   const [realms, setRealms] = useState<Realm[]>([]);
   const [loadingRealms, setLoadingRealms] = useState(true);
   const [isCreating, setIsCreating] = useState(false);
+  const { registerCharacter, isRegistering, registeredCharacter } =
+    useCharacterRegistration();
 
   useEffect(() => {
     if (character) {
@@ -94,9 +86,25 @@ const CharacterPage: React.FC<CharacterPageProps> = ({ character }) => {
   };
 
   const handleRegisterCharacter = async () => {
+    if (!character) {
+      openModal("Error", "Character data is missing.");
+      return;
+    }
+
     setIsCreating(true);
     try {
-      await router.push(`/characters/${character?.id}/register`);
+      await registerCharacter();
+    } catch (error) {
+      console.error("Error registering character:", error);
+      openModal(
+        "Registration Failed",
+        <div>
+          <p>Failed to register character. Please try again later.</p>
+          <p>
+            Error: {error instanceof Error ? error.message : "Unknown error"}
+          </p>
+        </div>
+      );
     } finally {
       setIsCreating(false);
     }
@@ -166,9 +174,30 @@ const CharacterPage: React.FC<CharacterPageProps> = ({ character }) => {
                   Register your character to begin your journey. Create and
                   discover artifacts, join realms, and forge your legacy.
                 </RegisterDescription>
-                <RegisterButton onClick={handleRegisterCharacter}>
-                  <FaUserPlus /> Register Character
-                </RegisterButton>
+                {character.registration_id ? (
+                  <RegistredCharacter>
+                    <FaCheckCircle /> Character registered:{" "}
+                    {character.registration_id.concat(
+                      "...",
+                      character.registration_id.slice(6)
+                    )}
+                  </RegistredCharacter>
+                ) : (
+                  <RegisterButton
+                    onClick={handleRegisterCharacter}
+                    disabled={isRegistering}
+                  >
+                    {isRegistering ? (
+                      <>
+                        <FaSpinner className="animate-spin" /> Registering...
+                      </>
+                    ) : (
+                      <>
+                        <FaUserPlus /> Register Character
+                      </>
+                    )}
+                  </RegisterButton>
+                )}
               </RegisterSection>
 
               <ArtifactsSection>
@@ -360,6 +389,13 @@ const CharacterImageSection = styled.div`
   display: flex;
   flex-direction: column;
   gap: 1rem;
+`;
+
+const RegistredCharacter = styled.div`
+  color: #a89bb4;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 1.1rem;
+  line-height: 1.6;
 `;
 
 const BioCardContainer = styled.div`
@@ -598,82 +634,6 @@ const CreateArtifactButton = styled.button`
   }
 
   svg {
-    font-size: 0.9rem;
-  }
-`;
-
-// New styled components for realms section
-const RealmsSection = styled.div`
-  margin-top: 2rem;
-  background-color: #2d2d44;
-  border-radius: 8px;
-  padding: 1.5rem;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-  border: 1px solid #4a3b6b;
-`;
-
-const RealmsGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 1.5rem;
-  margin-top: 1rem;
-`;
-
-const RealmCard = styled.div`
-  background-color: #1e1e2d;
-  border-radius: 8px;
-  overflow: hidden;
-  cursor: pointer;
-  transition: transform 0.2s ease-in-out;
-  border: 1px solid #4a3b6b;
-
-  &:hover {
-    transform: translateY(-4px);
-  }
-`;
-
-const RealmImageContainer = styled.div`
-  position: relative;
-  width: 100%;
-  height: 200px;
-`;
-
-const RealmInfo = styled.div`
-  padding: 1.5rem;
-`;
-
-const RealmTitle = styled.h3`
-  color: #bb8930;
-  font-family: "Cinzel", serif;
-  margin: 0 0 0.5rem 0;
-  font-size: 1.2rem;
-`;
-
-const RealmDescription = styled.p`
-  color: #a89bb4;
-  font-family: "Cormorant Garamond", serif;
-  margin: 0 0 1rem 0;
-  font-size: 1rem;
-  line-height: 1.5;
-`;
-
-const RealmDetails = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
-`;
-
-const RealmDetail = styled.div`
-  color: #c7bfd4;
-  font-family: "Cormorant Garamond", serif;
-  font-size: 0.9rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-
-  svg {
-    color: #bb8930;
     font-size: 0.9rem;
   }
 `;
