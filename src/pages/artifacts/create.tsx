@@ -4,7 +4,242 @@ import { useRouter } from "next/router";
 import { FormGroup, Label, CheckboxContainer, Checkbox, CheckboxLabel } from "@/components/styled/forms";
 import { ErrorMessage } from "@/components/styled/typography";
 import { UploadMedia } from "@/components/UploadMedia";
-import LoadingCandles from "@/components/LoadingCandles";
+import { useCharacter } from "@/hooks/useCharacter";
+import LoadingBasic from "@/components/LoadingBasic";
+const CreateArtifactPage = () => {
+  const router = useRouter();
+  const [formData, setFormData] = useState({
+    artistName: "",
+    contactInfo: "",
+    artworkTitle: "",
+    medium: "",
+    yearCreated: "",
+    description: "",
+    termsAgreed: false,
+  });
+
+  const { character } = useCharacter();
+
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  const currentYear = new Date().getFullYear();
+  const yearOptions = Array.from(
+    { length: currentYear - 1900 + 1 },
+    (_, i) => currentYear - i
+  );
+
+  const handleInputChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, checked } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: checked,
+    }));
+  };
+
+  const handleImageUpload = (url: string) => {
+    setImagePreview(url);
+    setErrors({ ...errors, image: "" });
+  };
+
+  const validateImageUpload = () => {
+    if (!imagePreview) {
+      setErrors({ ...errors, image: "Artwork image is required" });
+      return false;
+    }
+    if (!formData.medium) {
+      setErrors({ ...errors, medium: "Medium is required" });
+      return false;
+    }
+    if (!formData.yearCreated.trim()) {
+      setErrors({ ...errors, yearCreated: "Year created is required" });
+      return false;
+    }
+    return true;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!validateImageUpload()) {
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch("/api/artifacts/analyze", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          artistName: character?.name || "Unknown",
+          owner: character?.id || null,
+          medium: formData.medium,
+          yearCreated: formData.yearCreated,
+          imageUrl: imagePreview,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to create artifact");
+      }
+
+      const data = await response.json();
+      router.push(`/artifacts/${data.id}`);
+    } catch (error) {
+      console.error("Error creating artifact:", error);
+      setErrors({
+        ...errors,
+        submit: "Failed to create artifact. Please try again.",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const isFormValid = () => {
+    return (
+      imagePreview !== null &&
+      formData.medium !== "" &&
+      formData.yearCreated !== "" &&
+      !isSubmitting
+    );
+  };
+
+  return (
+    <PageContainer>
+      <Title>Create an Artifact</Title>
+      <Section>
+        <SectionTitle>Upload Your Artwork</SectionTitle>
+        <SectionDescription>
+          Upload an image of your artwork and provide basic details to transform
+          it into a magical artifact.
+        </SectionDescription>
+
+        <form onSubmit={handleSubmit}>
+          <FormGroup>
+            <Label htmlFor="medium">Medium <span style={{ color: '#bb8930' }}>*</span></Label>
+            <Select
+              id="medium"
+              name="medium"
+              value={formData.medium}
+              onChange={handleInputChange}
+              required
+            >
+              <option value="">Select Medium</option>
+              <option value="Acrylic">Acrylic</option>
+              <option value="Digital">Digital</option>
+              <option value="Mixed Media">Mixed Media</option>
+              <option value="Sculpture">Sculpture</option>
+              <option value="Oil">Oil</option>
+              <option value="Watercolor">Watercolor</option>
+              <option value="Photography">Photography</option>
+              <option value="Other">Other</option>
+            </Select>
+            {errors.medium && <ErrorMessage>{errors.medium}</ErrorMessage>}
+          </FormGroup>
+
+          <FormGroup>
+            <Label htmlFor="yearCreated">Year Created <span style={{ color: '#bb8930' }}>*</span></Label>
+            <Select
+              id="yearCreated"
+              name="yearCreated"
+              value={formData.yearCreated}
+              onChange={handleInputChange}
+              required
+            >
+              <option value="">Select Year</option>
+              <option value="Unknown">Unknown</option>
+              {yearOptions.map((year) => (
+                <option key={year} value={year.toString()}>
+                  {year}
+                </option>
+              ))}
+            </Select>
+            {errors.yearCreated && (
+              <ErrorMessage>{errors.yearCreated}</ErrorMessage>
+            )}
+          </FormGroup>
+
+          <FormGroup>
+            <Label>Artwork Image Upload <span style={{ color: '#bb8930' }}>*</span></Label>
+            <p>Required format: .jpg, .png, .gif (Max 10MB)</p>
+
+            <UploadMedia
+              onUploadComplete={handleImageUpload}
+              accept=".jpg,.jpeg,.png,.gif"
+              maxSize={10 * 1024 * 1024}
+              label={imagePreview ? "Change Image" : "Select Image"}
+            />
+            {errors.image && <ErrorMessage>{errors.image}</ErrorMessage>}
+          </FormGroup>
+
+          <TermsContainer>
+            <TermsText>
+              By submitting your artwork, you acknowledge that:
+            </TermsText>
+            <TermsList>
+              <li>You are the original creator of the artwork</li>
+              <li>You grant COLLECTOR QUEST the rights to use your artwork and any generated content in the game</li>
+              <li>The artwork and generated content may be used for gameplay, marketing, and promotional purposes</li>
+              <li>You retain ownership of your original artwork</li>
+            </TermsList>
+            <CheckboxContainer>
+              <Checkbox
+                type="checkbox"
+                id="termsAgreed"
+                name="termsAgreed"
+                checked={formData.termsAgreed}
+                onChange={handleCheckboxChange}
+                required
+              />
+              <CheckboxLabel htmlFor="termsAgreed">
+                I acknowledge and agree to these terms
+              </CheckboxLabel>
+            </CheckboxContainer>
+            {errors.termsAgreed && <ErrorMessage>{errors.termsAgreed}</ErrorMessage>}
+          </TermsContainer>
+
+          {errors.submit && <ErrorMessage>{errors.submit}</ErrorMessage>}
+        </form>
+      </Section>
+
+      <BottomNav>
+        <ActionButton 
+          type="submit" 
+          disabled={!isFormValid()} 
+          primary
+          style={{ 
+            opacity: isFormValid() ? 1 : 0.6,
+            cursor: isFormValid() ? 'pointer' : 'not-allowed'
+          }}
+          onClick={handleSubmit}
+        >
+          {isSubmitting ? "Creating..." : "Create Artifact"}
+        </ActionButton>
+      </BottomNav>
+
+      {isSubmitting && (<LoadingBasic />)}
+    </PageContainer>
+  );
+};
+
+export default CreateArtifactPage;
 
 // Additional styled components specific to this page
 const PageContainer = styled.div`
@@ -179,234 +414,3 @@ const TermsList = styled.ul`
     }
   }
 `;
-
-const CreateArtifactPage = () => {
-  const router = useRouter();
-  const [formData, setFormData] = useState({
-    artistName: "",
-    contactInfo: "",
-    artworkTitle: "",
-    medium: "",
-    yearCreated: "",
-    description: "",
-    termsAgreed: false,
-  });
-
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [errors, setErrors] = useState<{ [key: string]: string }>({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  
-  const currentYear = new Date().getFullYear();
-  const yearOptions = Array.from(
-    { length: currentYear - 1900 + 1 },
-    (_, i) => currentYear - i
-  );
-
-  const handleInputChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, checked } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: checked,
-    }));
-  };
-
-  const handleImageUpload = (url: string) => {
-    setImagePreview(url);
-    setErrors({ ...errors, image: "" });
-  };
-
-  const validateImageUpload = () => {
-    if (!imagePreview) {
-      setErrors({ ...errors, image: "Artwork image is required" });
-      return false;
-    }
-    if (!formData.medium) {
-      setErrors({ ...errors, medium: "Medium is required" });
-      return false;
-    }
-    if (!formData.yearCreated.trim()) {
-      setErrors({ ...errors, yearCreated: "Year created is required" });
-      return false;
-    }
-    return true;
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!validateImageUpload()) {
-      return;
-    }
-
-    setIsSubmitting(true);
-
-    try {
-      const response = await fetch("/api/artifacts/analyze", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          medium: formData.medium,
-          yearCreated: formData.yearCreated,
-          imageUrl: imagePreview,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to create artifact");
-      }
-
-      const data = await response.json();
-      router.push(`/artifacts/${data.id}`);
-    } catch (error) {
-      console.error("Error creating artifact:", error);
-      setErrors({
-        ...errors,
-        submit: "Failed to create artifact. Please try again.",
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const isFormValid = () => {
-    return (
-      imagePreview !== null &&
-      formData.medium !== "" &&
-      formData.yearCreated !== "" &&
-      !isSubmitting
-    );
-  };
-
-  return (
-    <PageContainer>
-      <Title>Create an Artifact</Title>
-      <Section>
-        <SectionTitle>Upload Your Artwork</SectionTitle>
-        <SectionDescription>
-          Upload an image of your artwork and provide basic details to transform
-          it into a magical artifact.
-        </SectionDescription>
-
-        <form onSubmit={handleSubmit}>
-          <FormGroup>
-            <Label htmlFor="medium">Medium <span style={{ color: '#bb8930' }}>*</span></Label>
-            <Select
-              id="medium"
-              name="medium"
-              value={formData.medium}
-              onChange={handleInputChange}
-              required
-            >
-              <option value="">Select Medium</option>
-              <option value="Acrylic">Acrylic</option>
-              <option value="Digital">Digital</option>
-              <option value="Mixed Media">Mixed Media</option>
-              <option value="Sculpture">Sculpture</option>
-              <option value="Oil">Oil</option>
-              <option value="Watercolor">Watercolor</option>
-              <option value="Photography">Photography</option>
-              <option value="Other">Other</option>
-            </Select>
-            {errors.medium && <ErrorMessage>{errors.medium}</ErrorMessage>}
-          </FormGroup>
-
-          <FormGroup>
-            <Label htmlFor="yearCreated">Year Created <span style={{ color: '#bb8930' }}>*</span></Label>
-            <Select
-              id="yearCreated"
-              name="yearCreated"
-              value={formData.yearCreated}
-              onChange={handleInputChange}
-              required
-            >
-              <option value="">Select Year</option>
-              <option value="Unknown">Unknown</option>
-              {yearOptions.map((year) => (
-                <option key={year} value={year.toString()}>
-                  {year}
-                </option>
-              ))}
-            </Select>
-            {errors.yearCreated && (
-              <ErrorMessage>{errors.yearCreated}</ErrorMessage>
-            )}
-          </FormGroup>
-
-          <FormGroup>
-            <Label>Artwork Image Upload <span style={{ color: '#bb8930' }}>*</span></Label>
-            <p>Required format: .jpg, .png, .gif (Max 10MB)</p>
-
-            <UploadMedia
-              onUploadComplete={handleImageUpload}
-              accept=".jpg,.jpeg,.png,.gif"
-              maxSize={10 * 1024 * 1024}
-              label={imagePreview ? "Change Image" : "Select Image"}
-            />
-            {errors.image && <ErrorMessage>{errors.image}</ErrorMessage>}
-          </FormGroup>
-
-          <TermsContainer>
-            <TermsText>
-              By submitting your artwork, you acknowledge that:
-            </TermsText>
-            <TermsList>
-              <li>You are the original creator of the artwork</li>
-              <li>You grant COLLECTOR QUEST the rights to use your artwork and any generated content in the game</li>
-              <li>The artwork and generated content may be used for gameplay, marketing, and promotional purposes</li>
-              <li>You retain ownership of your original artwork</li>
-            </TermsList>
-            <CheckboxContainer>
-              <Checkbox
-                type="checkbox"
-                id="termsAgreed"
-                name="termsAgreed"
-                checked={formData.termsAgreed}
-                onChange={handleCheckboxChange}
-                required
-              />
-              <CheckboxLabel htmlFor="termsAgreed">
-                I acknowledge and agree to these terms
-              </CheckboxLabel>
-            </CheckboxContainer>
-            {errors.termsAgreed && <ErrorMessage>{errors.termsAgreed}</ErrorMessage>}
-          </TermsContainer>
-
-          {errors.submit && <ErrorMessage>{errors.submit}</ErrorMessage>}
-        </form>
-      </Section>
-
-      <BottomNav>
-        <ActionButton 
-          type="submit" 
-          disabled={!isFormValid()} 
-          primary
-          style={{ 
-            opacity: isFormValid() ? 1 : 0.6,
-            cursor: isFormValid() ? 'pointer' : 'not-allowed'
-          }}
-          onClick={handleSubmit}
-        >
-          {isSubmitting ? "Creating..." : "Create Artifact"}
-        </ActionButton>
-      </BottomNav>
-
-      {isSubmitting && (<LoadingCandles />)}
-    </PageContainer>
-  );
-};
-
-export default CreateArtifactPage;

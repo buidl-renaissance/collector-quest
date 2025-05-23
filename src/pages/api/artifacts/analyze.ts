@@ -11,7 +11,7 @@ export default async function handler(
   }
 
   try {
-    const { imageUrl, medium, yearCreated } = req.body;
+    const { imageUrl, medium, yearCreated, artistName, owner } = req.body;
 
     const errors = [];
     
@@ -31,7 +31,8 @@ export default async function handler(
     // The user will claim ownership in a later step
     const createdArtifact = await createArtifact({
       title: analysisResult.artworkTitle,
-      artist: 'Unknown', // Will be updated when user claims
+      artist: artistName ?? "Unknown",
+      owner: owner ?? null,
       medium: medium,
       year: yearCreated,
       description: analysisResult.description,

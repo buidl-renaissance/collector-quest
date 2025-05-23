@@ -3,6 +3,60 @@ import styled from "@emotion/styled";
 import Image from "next/image";
 import { FaTimes } from "react-icons/fa";
 import LoadingCandles from "@/components/LoadingCandles";
+import { NextButton } from "@/components/styled/character";
+
+interface RelicModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  isGenerating: boolean;
+  relicImageUrl: string | null;
+}
+
+const RelicModal: React.FC<RelicModalProps> = ({
+  isOpen,
+  onClose,
+  isGenerating,
+  relicImageUrl,
+}) => {
+  if (!isOpen) return null;
+
+  return (
+    <ModalOverlay onClick={onClose}>
+      <ModalContent onClick={(e) => e.stopPropagation()}>
+        <CloseButton onClick={onClose}>
+          <FaTimes />
+        </CloseButton>
+        {isGenerating ? (
+          <LoadingContainer>
+            <LoadingCandles />
+            <LoadingMessage>Generating your relic...</LoadingMessage>
+          </LoadingContainer>
+        ) : relicImageUrl ? (
+          <RelicContainer>
+            <RelicImage>
+              <Image
+                src={relicImageUrl}
+                alt="Generated Relic"
+                style={{ objectFit: "cover" }}
+                width={256}
+              height={256}
+              />
+            </RelicImage>
+            <RelicDescription>
+              <RelicTitle>RELIC UNLOCKED</RelicTitle>
+              <p>
+                This is a unique Relic<br /> a symbol of your journey through
+                Collector Quest.
+              </p>
+            </RelicDescription>
+          </RelicContainer>
+        ) : null}
+      </ModalContent>
+    </ModalOverlay>
+  );
+};
+
+export default RelicModal;
 
 // Styled components for the modal
 const ModalOverlay = styled.div`
@@ -101,6 +155,13 @@ const spinAndGlow = `
   }
 `;
 
+const RelicContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+`;
+
 const RelicImage = styled.div`
   position: relative;
   width: 256px;
@@ -125,46 +186,34 @@ const RelicImage = styled.div`
   }
 `;
 
-interface RelicModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  isGenerating: boolean;
-  relicImageUrl: string | null;
-}
+const RelicTitle = styled.h2`
+  font-family: "Cinzel", serif;
+  font-size: 1.5rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #bb8930;
+  margin: 0.5rem auto;
+`;
 
-const RelicModal: React.FC<RelicModalProps> = ({
-  isOpen,
-  onClose,
-  isGenerating,
-  relicImageUrl,
-}) => {
-  if (!isOpen) return null;
+const RelicDescription = styled.div`
+  margin-top: 1rem;
+  text-align: center;
+  font-family: "Cinzel", serif;
+`;
 
-  return (
-    <ModalOverlay onClick={onClose}>
-      <ModalContent onClick={(e) => e.stopPropagation()}>
-        <CloseButton onClick={onClose}>
-          <FaTimes />
-        </CloseButton>
-        {isGenerating ? (
-          <LoadingContainer>
-            <LoadingCandles />
-            <LoadingMessage>Generating your relic...</LoadingMessage>
-          </LoadingContainer>
-        ) : relicImageUrl ? (
-          <RelicImage>
-            <Image
-              src={relicImageUrl}
-              alt="Generated Relic"
-              style={{ objectFit: "cover" }}
-              width={256}
-              height={256}
-            />
-          </RelicImage>
-        ) : null}
-      </ModalContent>
-    </ModalOverlay>
-  );
-};
+const ClaimButton = styled(NextButton)`
+  background-color: #bb8930;
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1rem;
+  margin: 1rem auto;
+  text-transform: uppercase;
+  font-size: 1.2rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 
-export default RelicModal;
+  &:hover {
+    background-color: #d4a040;
+  }
+`;

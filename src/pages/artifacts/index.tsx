@@ -10,6 +10,80 @@ import {
 import { Artifact } from '@/data/artifacts';
 import { listArtifacts } from '@/db/artifacts';
 
+interface ArtifactsPageProps {
+  artifacts: Artifact[];
+}
+
+const ArtifactsPage = ({ artifacts }: ArtifactsPageProps) => {
+  return (
+    <PageContainer>
+      <Header>
+        <Title>Artifacts Collection</Title>
+        <CreateButton href="/artifacts/create">
+          Create Artifact
+        </CreateButton>
+      </Header>
+
+      <SectionTitle>Browse Artifacts</SectionTitle>
+
+      {artifacts.length > 0 ? (
+        <ArtifactsGrid>
+          {artifacts.map((artifact) => (
+            <Link href={`/artifacts/${artifact.id}`} key={artifact.id} passHref>
+              <ArtifactCard>
+                <ArtifactImageContainer>
+                  <Image
+                    src={artifact.imageUrl}
+                    alt={artifact.title}
+                    fill
+                    style={{ objectFit: "cover" }}
+                  />
+                </ArtifactImageContainer>
+                <ArtifactInfo>
+                  <ArtifactTitle>{artifact.title}</ArtifactTitle>
+                  <ArtifactArtist>By {artifact.artist}, {artifact.year}</ArtifactArtist>
+                  <BadgeContainer>
+                    <Badge>{artifact.properties.rarity}</Badge>
+                    <Badge>{artifact.properties.element}</Badge>
+                  </BadgeContainer>
+                </ArtifactInfo>
+              </ArtifactCard>
+            </Link>
+          ))}
+        </ArtifactsGrid>
+      ) : (
+        <EmptyState>
+          <p>No artifacts found. Create your first artifact!</p>
+          <CreateButton href="/artifacts/create">
+            Create Artifact
+          </CreateButton>
+        </EmptyState>
+      )}
+    </PageContainer>
+  );
+};
+
+export const getServerSideProps: GetServerSideProps = async () => {
+  try {
+    const artifacts = await listArtifacts();
+    
+    return {
+      props: {
+        artifacts,
+      },
+    };
+  } catch (error) {
+    console.error('Error fetching artifacts:', error);
+    return {
+      props: {
+        artifacts: [],
+      },
+    };
+  }
+};
+
+export default ArtifactsPage;
+
 // Styled components
 const PageContainer = styled.div`
   max-width: 1200px;
@@ -173,77 +247,3 @@ const EmptyState = styled.div`
     margin-top: 2rem;
   }
 `;
-
-interface ArtifactsPageProps {
-  artifacts: Artifact[];
-}
-
-const ArtifactsPage = ({ artifacts }: ArtifactsPageProps) => {
-  return (
-    <PageContainer>
-      <Header>
-        <Title>Artifacts Collection</Title>
-        <CreateButton href="/artifacts/create">
-          Create Artifact
-        </CreateButton>
-      </Header>
-
-      <SectionTitle>Browse Artifacts</SectionTitle>
-
-      {artifacts.length > 0 ? (
-        <ArtifactsGrid>
-          {artifacts.map((artifact) => (
-            <Link href={`/artifacts/${artifact.id}`} key={artifact.id} passHref>
-              <ArtifactCard>
-                <ArtifactImageContainer>
-                  <Image
-                    src={artifact.imageUrl}
-                    alt={artifact.title}
-                    fill
-                    style={{ objectFit: "cover" }}
-                  />
-                </ArtifactImageContainer>
-                <ArtifactInfo>
-                  <ArtifactTitle>{artifact.title}</ArtifactTitle>
-                  <ArtifactArtist>By {artifact.artist}, {artifact.year}</ArtifactArtist>
-                  <BadgeContainer>
-                    <Badge>{artifact.properties.rarity}</Badge>
-                    <Badge>{artifact.properties.element}</Badge>
-                  </BadgeContainer>
-                </ArtifactInfo>
-              </ArtifactCard>
-            </Link>
-          ))}
-        </ArtifactsGrid>
-      ) : (
-        <EmptyState>
-          <p>No artifacts found. Create your first artifact!</p>
-          <CreateButton href="/artifacts/create">
-            Create Artifact
-          </CreateButton>
-        </EmptyState>
-      )}
-    </PageContainer>
-  );
-};
-
-export const getServerSideProps: GetServerSideProps = async () => {
-  try {
-    const artifacts = await listArtifacts();
-    
-    return {
-      props: {
-        artifacts,
-      },
-    };
-  } catch (error) {
-    console.error('Error fetching artifacts:', error);
-    return {
-      props: {
-        artifacts: [],
-      },
-    };
-  }
-};
-
-export default ArtifactsPage;
