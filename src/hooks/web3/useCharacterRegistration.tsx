@@ -1,46 +1,46 @@
-import { useState } from 'react';
-import { useWallet } from '@suiet/wallet-kit';
-import { Character } from '@/data/character';
-import { TransactionBlock } from '@mysten/sui.js/transactions';
-import { SuiClient } from "@mysten/sui.js/client";
-import { useCharacter } from '@/hooks/useCharacter';
-// Package and registry constants - update these with your deployed contract addresses
-export const CHARACTER_PACKAGE_ID = '0xac616046431e16cbe4524e24c0219aa9e5efbd52f6750aafe63b82c4a92f6ee7';
+import { useState } from "react";
+import { Character } from "@/data/character";
+import { TransactionBlock } from "@mysten/sui.js/transactions";
+import { SuiClient as SuiAppClient } from "@/lib/client";
+import { useCharacter } from "@/hooks/useCharacter";
+import { getWallet } from "@/lib/wallet";
 
-const client = new SuiClient({
-  url: process.env.SUI_CLIENT_URL || "https://fullnode.testnet.sui.io:443",
-});
+// Package and registry constants - update these with your deployed contract addresses
+export const CHARACTER_PACKAGE_ID =
+  "0xac616046431e16cbe4524e24c0219aa9e5efbd52f6750aafe63b82c4a92f6ee7";
 
 export const useCharacterRegistration = () => {
   const { character, updateCharacter, saveCharacter } = useCharacter();
   const [isRegistering, setIsRegistering] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [registeredCharacter, setRegisteredCharacter] = useState<any>(null);
-  const wallet = useWallet();
+  const wallet = getWallet();
 
   const registerCharacter = async () => {
-    if (!wallet.connected) {
-      setError('Wallet not connected');
-      return null;
-    }
-
     setIsRegistering(true);
     setError(null);
     setRegisteredCharacter(null);
 
-    try {      
+    try {
       // Execute the transaction
       const result = await executeCharacterRegisterTransaction();
-
-      // Wait for the transaction to be confirmed
-      await confirmTransaction(result.digest);
-      
-      setRegisteredCharacter(result);
+      console.log("result", result);
+      if (result && result.events[0].parsedJson) {
+        const createdCharacter = result.events[0].parsedJson;
+        setRegisteredCharacter(createdCharacter);
+        if (createdCharacter.character_id) {
+          await updateCharacter({
+            registration_id: createdCharacter.character_id,
+          });
+          await saveCharacter();
+        }
+      }
       return result;
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to register character';
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to register character";
       setError(errorMessage);
-      console.error('Character registration error:', err);
+      console.error("Character registration error:", err);
       return null;
     } finally {
       setIsRegistering(false);
@@ -49,55 +49,18 @@ export const useCharacterRegistration = () => {
 
   const executeCharacterRegisterTransaction = async () => {
     if (!character) {
-      throw new Error('Character not found');
+      throw new Error("Character not found");
     }
 
-    const tx = registerCharacterTransaction(character);
-
-    const txResult = await wallet.signAndExecuteTransactionBlock({
-      transactionBlock: tx as any,
-      options: {
-        showObjectChanges: true,
-        showEvents: true,
-        showEffects: true,
-      },
-    });
-    return txResult;
-  }
- 
-  const confirmTransaction = async (digest: string) => {
-    let confirmedResult;
-    for (let i = 0; i < 10; i++) {
-      confirmedResult = await client.getTransactionBlock({ digest, options: {
-        showObjectChanges: true,
-        showEvents: true,
-        showEffects: true,
-      }});
-
-      // Find the created character from object changes
-      const createdCharacter = confirmedResult.objectChanges?.find((o: any) => 
-        o.type === 'created' && o.objectType.includes('character::Character')
-      );
-
-      if (createdCharacter) {
-        console.log("created character", createdCharacter);
-        setRegisteredCharacter(createdCharacter);
-        const objectId = (createdCharacter as any).objectId as string;
-        await updateCharacter({ registration_id: objectId });
-        await saveCharacter();
-        break;
-      }
-
-      console.log("confirmedResult", confirmedResult);
-
-      if (confirmedResult.confirmedLocalExecution) {
-        break;
-      }
-
-      // wait 1 sec
-      await new Promise((res) => setTimeout(res, 1000));
+    if (!wallet) {
+      setError("Please connect your wallet first");
+      return;
     }
-  }
+
+    const client = new SuiAppClient(wallet);
+    const result = await client.registerCharacter(character);
+    return result;
+  };
 
   const resetState = () => {
     setError(null);
@@ -111,12 +74,13 @@ export const useCharacterRegistration = () => {
     error,
     registeredCharacter,
     resetState,
-    isConnected: wallet.connected,
   };
 };
 
 // Create a transaction to create a new character
-export function registerCharacterTransaction(character: Character): TransactionBlock {
+export function registerCharacterTransaction(
+  character: Character
+): TransactionBlock {
   const tx = new TransactionBlock();
 
   // Set a gas budget to avoid dry run budget determination issues
@@ -125,15 +89,23 @@ export function registerCharacterTransaction(character: Character): TransactionB
   tx.moveCall({
     target: `${CHARACTER_PACKAGE_ID}::character::create_character`,
     arguments: [
-      tx.pure(Array.from(new TextEncoder().encode(character.name || ''))),
-      tx.pure(Array.from(new TextEncoder().encode('BEGIN YOUR COLLECTOR QUEST at https://collectorquest.ai'))),
-      tx.pure(Array.from(new TextEncoder().encode(character.image_url || ''))),
-      tx.pure(Array.from(new TextEncoder().encode(character.race?.name || ''))),
-      tx.pure(Array.from(new TextEncoder().encode(character.class?.name || ''))),
+      tx.pure(Array.from(new TextEncoder().encode(character.name || ""))),
+      tx.pure(
+        Array.from(
+          new TextEncoder().encode(
+            "BEGIN YOUR COLLECTOR QUEST at https://collectorquest.ai"
+          )
+        )
+      ),
+      tx.pure(Array.from(new TextEncoder().encode(character.image_url || ""))),
+      tx.pure(Array.from(new TextEncoder().encode(character.race?.name || ""))),
+      tx.pure(
+        Array.from(new TextEncoder().encode(character.class?.name || ""))
+      ),
       // tx.pure(Array.from(new TextEncoder().encode(''))),
       // tx.pure(Array.from(new TextEncoder().encode(character.motivation || ''))),
       // tx.pure(Array.from(new TextEncoder().encode(character.backstory || ''))),
-      tx.pure(Array.from(new TextEncoder().encode(character.sex || ''))),
+      tx.pure(Array.from(new TextEncoder().encode(character.sex || ""))),
     ],
   });
 
@@ -141,53 +113,53 @@ export function registerCharacterTransaction(character: Character): TransactionB
 }
 
 // Create a transaction to update character level
-export function setCharacterLevelTransaction(characterId: string, level: number): TransactionBlock {
+export function setCharacterLevelTransaction(
+  characterId: string,
+  level: number
+): TransactionBlock {
   const tx = new TransactionBlock();
-  
+
   // Set a gas budget
   tx.setGasBudget(5000000); // 0.005 SUI
 
   tx.moveCall({
     target: `${CHARACTER_PACKAGE_ID}::character::set_level`,
-    arguments: [
-      tx.object(characterId),
-      tx.pure.u8(level),
-    ],
+    arguments: [tx.object(characterId), tx.pure.u8(level)],
   });
 
   return tx;
 }
 
 // Create a transaction to transfer character ownership
-export function transferCharacterTransaction(characterId: string, recipient: string): TransactionBlock {
+export function transferCharacterTransaction(
+  characterId: string,
+  recipient: string
+): TransactionBlock {
   const tx = new TransactionBlock();
-  
+
   // Set a gas budget
   tx.setGasBudget(5000000); // 0.005 SUI
 
   tx.moveCall({
     target: `${CHARACTER_PACKAGE_ID}::character::transfer_character`,
-    arguments: [
-      tx.object(characterId),
-      tx.pure.address(recipient),
-    ],
+    arguments: [tx.object(characterId), tx.pure.address(recipient)],
   });
 
   return tx;
 }
 
 // Create a transaction to delete a character
-export function deleteCharacterTransaction(characterId: string): TransactionBlock {
+export function deleteCharacterTransaction(
+  characterId: string
+): TransactionBlock {
   const tx = new TransactionBlock();
-  
+
   // Set a gas budget
   tx.setGasBudget(5000000); // 0.005 SUI
 
   tx.moveCall({
     target: `${CHARACTER_PACKAGE_ID}::character::delete_character`,
-    arguments: [
-      tx.object(characterId),
-    ],
+    arguments: [tx.object(characterId)],
   });
 
   return tx;

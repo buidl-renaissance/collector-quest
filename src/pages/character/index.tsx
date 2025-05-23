@@ -10,6 +10,7 @@ import {
   FaUserPlus,
   FaCopy,
   FaWallet,
+  FaExternalLinkAlt,
 } from "react-icons/fa";
 import Image from "next/image";
 import { GetServerSideProps } from "next";
@@ -54,11 +55,20 @@ const CharacterPage: React.FC<CharacterPageProps> = () => {
   const { registerCharacter, isRegistering, registeredCharacter } =
     useCharacterRegistration();
   const wallet = useWallet();
+  const [registeredCharacterId, setRegisteredCharacterId] = useState<any>(null);
 
   useEffect(() => {
     fetchArtifacts();
     fetchCharacter();
   }, []);
+
+  useEffect(() => {
+    if (registeredCharacter) {
+      setRegisteredCharacterId(
+        character?.registration_id || registeredCharacter.character_id
+      );
+    }
+  }, [registeredCharacter]);
 
   const fetchArtifacts = async () => {
     try {
@@ -176,18 +186,7 @@ const CharacterPage: React.FC<CharacterPageProps> = () => {
               </BioCardContainer>
 
               <RegisterSection>
-                {!wallet.connected ? (
-                  <>
-                    <RegisterTitle>Connect Your Wallet</RegisterTitle>
-                    <RegisterDescription>
-                      Connect your Sui wallet to register your character and
-                      begin your journey.
-                    </RegisterDescription>
-                    <StyledConnectButton>
-                      <FaWallet /> Connect Wallet
-                    </StyledConnectButton>
-                  </>
-                ) : character.registration_id ? (
+                {registeredCharacterId ? (
                   <>
                     <RegisterTitle>Character Registered!</RegisterTitle>
                     <RegisterDescription>
@@ -198,28 +197,26 @@ const CharacterPage: React.FC<CharacterPageProps> = () => {
                     <RegistredCharacter
                       onClick={() => {
                         if (character.registration_id) {
-                          navigator.clipboard.writeText(
-                            character.registration_id
-                          );
+                          navigator.clipboard.writeText(registeredCharacterId);
                           openModal(
                             "Success",
                             "Character ID copied to clipboard!"
                           );
                         }
                       }}
-                      data-full-id={character.registration_id}
+                      data-full-id={registeredCharacterId}
                     >
                       <FaCheckCircle />
                       <span>
-                        {character.registration_id.slice(0, 6)}...
-                        {character.registration_id.slice(-4)}
+                        {registeredCharacterId.slice(0, 6)}...
+                        {registeredCharacterId.slice(-4)}
                       </span>
                       <CopyButton
                         onClick={(e) => {
                           e.stopPropagation();
-                          if (character.registration_id) {
+                          if (registeredCharacterId) {
                             navigator.clipboard.writeText(
-                              character.registration_id
+                              registeredCharacterId
                             );
                             openModal(
                               "Success",
@@ -230,6 +227,18 @@ const CharacterPage: React.FC<CharacterPageProps> = () => {
                       >
                         <FaCopy />
                       </CopyButton>
+                      <ExternalLinkButton
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          window.open(
+                            `https://suiscan.xyz/testnet/object/${registeredCharacterId}/tx-blocks`,
+                            "_blank"
+                          );
+                        }}
+                        title="View on Sui Explorer"
+                      >
+                        <FaExternalLinkAlt />
+                      </ExternalLinkButton>
                     </RegistredCharacter>
                   </>
                 ) : (
@@ -257,7 +266,7 @@ const CharacterPage: React.FC<CharacterPageProps> = () => {
                 )}
               </RegisterSection>
 
-              {character.registration_id && (
+              {registeredCharacterId && (
                 <ArtifactsSection>
                   <CharacterSectionTitle>Artifacts</CharacterSectionTitle>
                   {loadingArtifacts ? (
@@ -385,6 +394,14 @@ const CharacterImagePlaceholder = styled.div`
     margin-bottom: 1rem;
     opacity: 0.7;
   }
+`;
+
+const ExternalLinkButton = styled.button`
+  background: none;
+  border: none;
+  color: #bb8930;
+  cursor: pointer;
+  margin-left: 0.15rem;
 `;
 
 const CharacterTitle = styled(Title)`

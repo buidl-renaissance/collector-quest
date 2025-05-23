@@ -1,6 +1,9 @@
+import { TransactionBlock } from "@mysten/sui.js/transactions";
 import { registerHandleTransaction } from "./mint";
 import { getSuiClient } from "./wallet";
 import { Ed25519Keypair } from "@mysten/sui.js/keypairs/ed25519";
+import { Character } from "@/data/character";
+import { CHARACTER_PACKAGE_ID } from "@/hooks/web3/useCharacterRegistration";
 
 export class SuiClient {
   private client: ReturnType<typeof getSuiClient>;
@@ -9,6 +12,41 @@ export class SuiClient {
     this.client = getSuiClient();
     this.userWallet = userWallet;
   }
+
+  async registerCharacter(character: Character) {
+    const owner = this.userWallet.getPublicKey().toSuiAddress();
+    // Create a transaction to create a new character
+    const tx = new TransactionBlock();
+
+    // Set a gas budget to avoid dry run budget determination issues
+    tx.setGasBudget(10_000_000); // 0.01 SUI
+
+    tx.moveCall({
+      target: `${CHARACTER_PACKAGE_ID}::character::create_character`,
+      arguments: [
+        tx.pure(Array.from(new TextEncoder().encode(character.name || ''))),
+        tx.pure(Array.from(new TextEncoder().encode('BEGIN YOUR COLLECTOR QUEST at https://collectorquest.ai'))),
+        tx.pure(Array.from(new TextEncoder().encode(character.image_url || ''))),
+        tx.pure(Array.from(new TextEncoder().encode(character.race?.name || ''))),
+        tx.pure(Array.from(new TextEncoder().encode(character.class?.name || ''))),
+        // tx.pure(Array.from(new TextEncoder().encode(''))),
+        // tx.pure(Array.from(new TextEncoder().encode(character.motivation || ''))),
+        // tx.pure(Array.from(new TextEncoder().encode(character.backstory || ''))),
+        tx.pure(Array.from(new TextEncoder().encode(character.sex || ''))),
+      ],
+    });
+
+    tx.setSender(owner);
+    tx.setGasOwner('0x1551923e851c9ffe82ea65139d123b0ec32784d65c06ab6b7a3d75aea00b6b85');
+    tx.setGasBudget(100000000);
+    const bytes = await tx.build({
+      client: this.client,
+    //   onlyTransactionKind: true,
+    });
+    const signedTx = await this.userWallet.signTransactionBlock(bytes);
+    return await this.sponsorTransaction(signedTx.bytes, signedTx.signature);
+  }
+
 
   async registerHandle(
     handle: string,

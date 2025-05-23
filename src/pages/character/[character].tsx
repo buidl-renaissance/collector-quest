@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import styled from "@emotion/styled";
 import { keyframes } from "@emotion/react";
-import { FaCheckCircle, FaFeather, FaPlus, FaSpinner, FaUserPlus } from "react-icons/fa";
+import { FaFeather, FaPlus } from "react-icons/fa";
 import Image from "next/image";
 import { GetServerSideProps } from "next";
 import PageTransition from "@/components/PageTransition";
@@ -13,7 +13,7 @@ import { Character } from "@/data/character";
 import { Artifact } from "@/data/artifacts";
 import CharacterBio from "@/components/CharacterBio";
 import useModal from "@/hooks/useModal";
-import { useCharacterRegistration } from "@/hooks/web3/useCharacterRegistration";
+
 interface CharacterPageProps {
   character: Character | null;
 }
@@ -38,9 +38,6 @@ const CharacterPage: React.FC<CharacterPageProps> = ({ character }) => {
   const [loadingArtifacts, setLoadingArtifacts] = useState(true);
   const [realms, setRealms] = useState<Realm[]>([]);
   const [loadingRealms, setLoadingRealms] = useState(true);
-  const [isCreating, setIsCreating] = useState(false);
-  const { registerCharacter, isRegistering, registeredCharacter } =
-    useCharacterRegistration();
 
   useEffect(() => {
     if (character) {
@@ -83,31 +80,6 @@ const CharacterPage: React.FC<CharacterPageProps> = ({ character }) => {
 
   const handleCreateArtifact = () => {
     router.push("/artifacts/create");
-  };
-
-  const handleRegisterCharacter = async () => {
-    if (!character) {
-      openModal("Error", "Character data is missing.");
-      return;
-    }
-
-    setIsCreating(true);
-    try {
-      await registerCharacter();
-    } catch (error) {
-      console.error("Error registering character:", error);
-      openModal(
-        "Registration Failed",
-        <div>
-          <p>Failed to register character. Please try again later.</p>
-          <p>
-            Error: {error instanceof Error ? error.message : "Unknown error"}
-          </p>
-        </div>
-      );
-    } finally {
-      setIsCreating(false);
-    }
   };
 
   if (!character) {
@@ -167,38 +139,6 @@ const CharacterPage: React.FC<CharacterPageProps> = ({ character }) => {
                 <CharacterSectionTitle>Backstory</CharacterSectionTitle>
                 <CharacterBio character={character} openModal={openModal} />
               </BioCardContainer>
-
-              <RegisterSection>
-                <RegisterTitle>Begin Your Quest</RegisterTitle>
-                <RegisterDescription>
-                  Register your character to begin your journey. Create and
-                  discover artifacts, join realms, and forge your legacy.
-                </RegisterDescription>
-                {character.registration_id ? (
-                  <RegistredCharacter>
-                    <FaCheckCircle /> Character registered:{" "}
-                    {character.registration_id.concat(
-                      "...",
-                      character.registration_id.slice(6)
-                    )}
-                  </RegistredCharacter>
-                ) : (
-                  <RegisterButton
-                    onClick={handleRegisterCharacter}
-                    disabled={isRegistering}
-                  >
-                    {isRegistering ? (
-                      <>
-                        <FaSpinner className="animate-spin" /> Registering...
-                      </>
-                    ) : (
-                      <>
-                        <FaUserPlus /> Register Character
-                      </>
-                    )}
-                  </RegisterButton>
-                )}
-              </RegisterSection>
 
               <ArtifactsSection>
                 <CharacterSectionTitle>Artifacts</CharacterSectionTitle>
@@ -389,13 +329,6 @@ const CharacterImageSection = styled.div`
   display: flex;
   flex-direction: column;
   gap: 1rem;
-`;
-
-const RegistredCharacter = styled.div`
-  color: #a89bb4;
-  font-family: "Cormorant Garamond", serif;
-  font-size: 1.1rem;
-  line-height: 1.6;
 `;
 
 const BioCardContainer = styled.div`
@@ -635,62 +568,6 @@ const CreateArtifactButton = styled.button`
 
   svg {
     font-size: 0.9rem;
-  }
-`;
-
-const RegisterSection = styled.div`
-  background-color: #2d2d44;
-  border-radius: 8px;
-  padding: 2rem;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-  border: 1px solid #4a3b6b;
-  margin-top: 2rem;
-  text-align: center;
-`;
-
-const RegisterTitle = styled.h3`
-  color: #bb8930;
-  font-family: "Cinzel", serif;
-  font-size: 1.5rem;
-  margin-bottom: 1rem;
-`;
-
-const RegisterDescription = styled.p`
-  color: #a89bb4;
-  font-family: "Cormorant Garamond", serif;
-  font-size: 1.1rem;
-  line-height: 1.6;
-  margin-bottom: 1.5rem;
-  max-width: 600px;
-  margin-left: auto;
-  margin-right: auto;
-`;
-
-const RegisterButton = styled.button`
-  background-color: #bb8930;
-  color: #1e1e2d;
-  border: none;
-  border-radius: 4px;
-  padding: 0.75rem 1.5rem;
-  font-family: "Cinzel", serif;
-  font-size: 1rem;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  transition: all 0.2s ease-in-out;
-
-  &:hover {
-    background-color: #d4a03c;
-    transform: translateY(-2px);
-  }
-
-  &:active {
-    transform: translateY(0);
-  }
-
-  svg {
-    font-size: 1rem;
   }
 `;
 
