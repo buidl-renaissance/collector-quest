@@ -159,6 +159,7 @@ const CreateArtifactPage = () => {
               <option value="Acrylic">Acrylic</option>
               <option value="Airbrush">Airbrush</option>
               <option value="Digital">Digital</option>
+              <option value="Jewelry">Jewelry</option>
               <option value="Mixed Media">Mixed Media</option>
               <option value="Oil">Oil</option>
               <option value="Pencil">Pencil</option>
