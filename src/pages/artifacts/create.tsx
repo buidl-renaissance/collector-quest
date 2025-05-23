@@ -93,7 +93,7 @@ const CreateArtifactPage = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          artistName: character?.name || "Unknown",
+          artistName: formData.isOriginalCreator ? character?.name || "Unknown" : formData.artistName,
           owner: character?.id || null,
           medium: formData.medium,
           yearCreated: formData.yearCreated,
@@ -235,6 +235,20 @@ const CreateArtifactPage = () => {
             
             {!formData.isOriginalCreator && (
               <ConsentContainer>
+                <FormGroup>
+                  <Label htmlFor="artistName">Original Artist Name <span style={{ color: '#bb8930' }}>*</span></Label>
+                  <Input
+                    type="text"
+                    id="artistName"
+                    name="artistName"
+                    value={formData.artistName}
+                    onChange={handleInputChange}
+                    placeholder="Enter the original artist's name"
+                    required={!formData.isOriginalCreator}
+                  />
+                  {errors.artistName && <ErrorMessage>{errors.artistName}</ErrorMessage>}
+                </FormGroup>
+                
                 <CheckboxContainer>
                   <Checkbox
                     type="checkbox"
@@ -385,6 +399,27 @@ const Select = styled.select`
   }
 `;
 
+const Input = styled.input`
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #3a3347;
+  border-radius: 0.25rem;
+  background-color: #1a1a2e;
+  color: #c7bfd4;
+  font-size: 1rem;
+  margin-top: 0.5rem;
+  font-family: "Cormorant Garamond", serif;
+  
+  &:focus {
+    outline: none;
+    border-color: #6c5ce7;
+  }
+  
+  &::placeholder {
+    color: #6a6a8a;
+  }
+`;
+
 const Button = styled.button<{ primary?: boolean }>`
   width: 100%;
   padding: 0.75rem 1.5rem;
@@ -460,7 +495,7 @@ const OwnershipTitle = styled.h3`
 `;
 
 const ConsentContainer = styled.div`
-  margin-left: 1.5rem;
+  /* margin-left: 1.5rem; */
   margin-top: 0.5rem;
   padding: 0.75rem;
   background: rgba(187, 137, 48, 0.1);

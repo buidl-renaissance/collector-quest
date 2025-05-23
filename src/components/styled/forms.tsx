@@ -221,6 +221,7 @@ export const Checkbox = styled.input`
   cursor: pointer;
   position: relative;
   margin: 0;
+  margin-bottom: 0.5rem;
   transition: all 0.2s ease;
   flex-shrink: 0;
 

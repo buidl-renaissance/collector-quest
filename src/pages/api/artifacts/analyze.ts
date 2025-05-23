@@ -32,7 +32,7 @@ export default async function handler(
     const createdArtifact = await createArtifact({
       title: analysisResult.title,
       artist: artistName ?? "Unknown",
-      owner: owner ?? null,
+      owner:  owner ?? null,
       medium: medium,
       year: yearCreated,
       description: analysisResult.description,
