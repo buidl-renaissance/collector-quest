@@ -19,6 +19,7 @@ module character::artifact {
     const ENotOwner: u64 = 0;
     const EInvalidRarity: u64 = 1;
     const ENotAuthorized: u64 = 2;
+    const ENotAdmin: u64 = 3;
 
     /// Represents an artifact NFT
     public struct Artifact has key, store {
@@ -59,6 +60,12 @@ module character::artifact {
         creator: address,
     }
 
+    /// Admin capability for contract management
+    public struct AdminCap has key, store {
+        id: UID,
+        admin: address,
+    }
+
     /// Events
     public struct ArtifactCreated has copy, drop {
         artifact_id: address,
@@ -71,6 +78,11 @@ module character::artifact {
         artifact_id: address,
         title: String,
         owner: address,
+    }
+
+    public struct AdminTransferred has copy, drop {
+        old_admin: address,
+        new_admin: address,
     }
 
     /// One-time witness for the package
@@ -117,6 +129,65 @@ module character::artifact {
             creator: tx_context::sender(ctx),
         };
         transfer::public_transfer(artifact_cap, tx_context::sender(ctx));
+
+        // Create and transfer the AdminCap to the transaction sender
+        let admin_cap = AdminCap {
+            id: object::new(ctx),
+            admin: tx_context::sender(ctx),
+        };
+        transfer::public_transfer(admin_cap, tx_context::sender(ctx));
+    }
+
+    /// Transfer admin ownership to a new address
+    public entry fun transfer_admin(
+        admin_cap: AdminCap,
+        new_admin: address,
+        ctx: &mut TxContext
+    ) {
+        assert!(tx_context::sender(ctx) == admin_cap.admin, ENotAdmin);
+        
+        let old_admin = admin_cap.admin;
+        
+        // Create new admin cap for the new admin
+        let new_admin_cap = AdminCap {
+            id: object::new(ctx),
+            admin: new_admin,
+        };
+
+        // Emit event
+        event::emit(AdminTransferred {
+            old_admin,
+            new_admin,
+        });
+
+        // Delete the old admin cap
+        let AdminCap { id, admin: _ } = admin_cap;
+        object::delete(id);
+
+        // Transfer new admin cap to the new admin
+        transfer::public_transfer(new_admin_cap, new_admin);
+    }
+
+    /// Admin function to transfer any artifact to a new owner
+    public entry fun admin_transfer_artifact(
+        _admin_cap: &AdminCap,
+        artifact: Artifact,
+        new_owner: address,
+        ctx: &mut TxContext
+    ) {
+        assert!(tx_context::sender(ctx) == _admin_cap.admin, ENotAdmin);
+        transfer::public_transfer(artifact, new_owner);
+    }
+
+    /// Admin function to transfer any relic to a new owner
+    public entry fun admin_transfer_relic(
+        _admin_cap: &AdminCap,
+        relic: Relic,
+        new_owner: address,
+        ctx: &mut TxContext
+    ) {
+        assert!(tx_context::sender(ctx) == _admin_cap.admin, ENotAdmin);
+        transfer::public_transfer(relic, new_owner);
     }
 
     /// Create a new artifact
@@ -366,5 +437,10 @@ module character::artifact {
 
     public fun get_relic_created_at(relic: &Relic): u64 {
         relic.created_at
+    }
+
+    // Getter for AdminCap
+    public fun get_admin(admin_cap: &AdminCap): address {
+        admin_cap.admin
     }
 }

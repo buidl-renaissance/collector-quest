@@ -19,6 +19,7 @@ module character::character {
     const ENotOwner: u64 = 0;
     const EInvalidLevel: u64 = 1;
     const ENotAuthorized: u64 = 2;
+    const ENotAdmin: u64 = 3;
 
     /// Represents a D&D character NFT
     public struct Character has key, store {
@@ -45,6 +46,13 @@ module character::character {
         character_id: address,
         name: String,
         owner: address,
+    }
+
+    public struct OwnershipTransferred has copy, drop {
+        character_id: address,
+        old_owner: address,
+        new_owner: address,
+        transferred_by: address,
     }
 
     /// One-time witness for the package
@@ -158,6 +166,48 @@ module character::character {
         character.image_url = string::utf8(image_url);
     }
 
+    /// Admin function to transfer ownership of a character
+    public entry fun admin_transfer_ownership(
+        cap: &CharacterMasterCap,
+        character: &mut Character,
+        new_owner: address,
+        ctx: &mut TxContext
+    ) {
+        assert!(tx_context::sender(ctx) == cap.creator, ENotAdmin);
+        
+        let old_owner = character.owner;
+        character.owner = new_owner;
+
+        event::emit(OwnershipTransferred {
+            character_id: object::uid_to_address(&character.id),
+            old_owner,
+            new_owner,
+            transferred_by: tx_context::sender(ctx),
+        });
+    }
+
+    /// Admin function to transfer a character to a new owner (including the object itself)
+    public entry fun admin_transfer_character(
+        cap: &CharacterMasterCap,
+        character: Character,
+        new_owner: address,
+        ctx: &mut TxContext
+    ) {
+        assert!(tx_context::sender(ctx) == cap.creator, ENotAdmin);
+        
+        let old_owner = character.owner;
+        let character_id = object::uid_to_address(&character.id);
+
+        event::emit(OwnershipTransferred {
+            character_id,
+            old_owner,
+            new_owner,
+            transferred_by: tx_context::sender(ctx),
+        });
+
+        transfer::public_transfer(character, new_owner);
+    }
+
     // Getters
     public fun get_character_name(character: &Character): String {
         character.name
@@ -185,5 +235,9 @@ module character::character {
 
     public fun get_character_owner(character: &Character): address {
         character.owner
+    }
+
+    public fun get_master_cap_creator(cap: &CharacterMasterCap): address {
+        cap.creator
     }
 }
