@@ -84,7 +84,7 @@ export class SuiClient {
   }
 
   // Generate a relic tied to an artifact
-  async registerRelic(relic: Relic) {
+  async registerRelic(artifact: Artifact, relic: Relic) {
     const owner = getWalletAddress();
 
     const tx = new TransactionBlock();
@@ -95,8 +95,9 @@ export class SuiClient {
     tx.moveCall({
       target: `${CHARACTER_PACKAGE_ID}::artifact::generate_relic`,
       arguments: [
-        tx.object(relic.id), // Reference to the artifact object
+        tx.object(artifact.registration_id ?? ''), // Reference to the artifact object
         tx.pure(Array.from(new TextEncoder().encode(relic.imageUrl || ""))),
+        tx.pure(Array.from(new TextEncoder().encode(relic.class || ""))),
         tx.pure(Array.from(new TextEncoder().encode(relic.element || ""))),
         tx.pure(Array.from(new TextEncoder().encode(relic.effect || ""))),
         tx.pure(Array.from(new TextEncoder().encode(relic.rarity || ""))),
