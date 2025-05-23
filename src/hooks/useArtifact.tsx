@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Artifact, Relic } from '@/data/artifacts';
+import { useRelicRegistration } from './web3/useRelicRegistration';
 
 interface PollResult {
   success: boolean;
@@ -23,6 +24,7 @@ export const useArtifact = (initialArtifact: Artifact): UseArtifactReturn => {
   const [generatedRelic, setGeneratedRelic] = useState<Relic | null>(initialArtifact?.relic || null);
   const [generatedRelicUrl, setGeneratedRelicUrl] = useState<string | null>(null);
   const [showRelicModal, setShowRelicModal] = useState(false);
+  const { registerRelic } = useRelicRegistration();
   
   const closeModal = () => {
     setShowRelicModal(false);
@@ -70,6 +72,9 @@ export const useArtifact = (initialArtifact: Artifact): UseArtifactReturn => {
             if (result.relic?.imageUrl) {
               setGeneratedRelic(result.relic);
               setGeneratedRelicUrl(result.relic.imageUrl);
+              if (!result.relic.objectId) {
+                await registerRelic(result.relic);
+              }
             }
 
             if (data.status === 'completed') {

@@ -90,7 +90,7 @@ const ArtifactPage = ({ artifact: initialArtifact }: { artifact: Artifact }) => 
         </ArtifactDetails>
       </ArtifactContainer>
 
-      {true && (
+      {showRelicModal && (
         <RelicModal 
           isOpen={true}
           onClose={closeModal}

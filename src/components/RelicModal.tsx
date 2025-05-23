@@ -6,6 +6,7 @@ import LoadingCandles from "@/components/LoadingCandles";
 import { NextButton } from "@/components/styled/character";
 import { useRouter } from "next/router";
 import { Relic } from "@/data/artifacts";
+import AddressDisplay from "./AddressDisplay";
 interface RelicModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -53,6 +54,9 @@ const RelicModal: React.FC<RelicModalProps> = ({
             </RelicImage>
             <RelicDescription>
               <RelicTitle>RELIC UNLOCKED</RelicTitle>
+              {relic.objectId && (
+                <AddressDisplay address={relic.objectId} explorerUrl={`https://suiscan.xyz/testnet/object/${relic.objectId}`}/>
+              )}
               <p>
                 This is a unique Relic<br /> Examine it to learn about its
                 mystical properties.

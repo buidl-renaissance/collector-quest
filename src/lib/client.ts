@@ -3,7 +3,7 @@ import { registerHandleTransaction } from "./mint";
 import { getSuiClient, getWalletAddress } from "./wallet";
 import { Ed25519Keypair } from "@mysten/sui.js/keypairs/ed25519";
 import { Character } from "@/data/character";
-import { Artifact } from "@/data/artifacts";
+import { Artifact, Relic } from "@/data/artifacts";
 
 export const CHARACTER_PACKAGE_ID =
   "0xbb31d59792af0c6175efc4922c4a44c7aba946694e452f5258092712a1cc2437";
@@ -84,7 +84,7 @@ export class SuiClient {
   }
 
   // Generate a relic tied to an artifact
-  async generateRelic(artifact: Artifact) {
+  async registerRelic(relic: Relic) {
     const owner = getWalletAddress();
 
     const tx = new TransactionBlock();
@@ -95,17 +95,17 @@ export class SuiClient {
     tx.moveCall({
       target: `${CHARACTER_PACKAGE_ID}::artifact::generate_relic`,
       arguments: [
-        tx.object(artifact.id), // Reference to the artifact object
-        tx.pure(Array.from(new TextEncoder().encode(artifact.relic?.imageUrl || ""))),
-        tx.pure(Array.from(new TextEncoder().encode(artifact.relic?.element || ""))),
-        tx.pure(Array.from(new TextEncoder().encode(artifact.relic?.effect || ""))),
-        tx.pure(Array.from(new TextEncoder().encode(artifact.relic?.rarity || ""))),
-        tx.pure(Array.from(new TextEncoder().encode(artifact.relic?.properties.visualAsset || ""))),
-        tx.pure(Array.from(new TextEncoder().encode(artifact.relic?.properties.passiveBonus || ""))),
-        tx.pure(Array.from(new TextEncoder().encode(artifact.relic?.properties.activeUse || ""))),
-        tx.pure(Array.from(new TextEncoder().encode(artifact.relic?.properties.unlockCondition || ""))),
-        tx.pure(Array.from(new TextEncoder().encode(artifact.relic?.properties.reflectionTrigger || ""))),
-        tx.pure(Array.from(new TextEncoder().encode(artifact.relic?.story || ""))),
+        tx.object(relic.id), // Reference to the artifact object
+        tx.pure(Array.from(new TextEncoder().encode(relic.imageUrl || ""))),
+        tx.pure(Array.from(new TextEncoder().encode(relic.element || ""))),
+        tx.pure(Array.from(new TextEncoder().encode(relic.effect || ""))),
+        tx.pure(Array.from(new TextEncoder().encode(relic.rarity || ""))),
+        tx.pure(Array.from(new TextEncoder().encode(relic.properties.visualAsset || ""))),
+        tx.pure(Array.from(new TextEncoder().encode(relic.properties.passiveBonus || ""))),
+        tx.pure(Array.from(new TextEncoder().encode(relic.properties.activeUse || ""))),
+        tx.pure(Array.from(new TextEncoder().encode(relic.properties.unlockCondition || ""))),
+        tx.pure(Array.from(new TextEncoder().encode(relic.properties.reflectionTrigger || ""))),
+        tx.pure(Array.from(new TextEncoder().encode(relic.story || ""))),
       ],
     });
 

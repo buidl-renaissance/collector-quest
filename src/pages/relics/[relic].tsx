@@ -5,9 +5,8 @@ import Image from 'next/image';
 import { Container } from '@/components/styled/layout';
 import { getRelic } from '@/db/relics';
 import { Relic } from '@/data/artifacts';
-import { BackButton } from '@/components/styled/buttons';
-import { FaArrowLeft } from 'react-icons/fa';
 import { useRouter } from 'next/router';
+import AddressDisplay from '@/components/AddressDisplay';
 
 interface RelicPageProps {
   relic: Relic | null;
@@ -50,7 +49,9 @@ const RelicPage: React.FC<RelicPageProps> = ({ relic }) => {
           
           <RelicDetails>
             <RelicTitle>{relic.name}</RelicTitle>
-            
+            {relic.objectId && (
+              <AddressDisplay address={relic.objectId} explorerUrl={`https://suiscan.xyz/testnet/object/${relic.objectId}`}/>
+            )}
             <PropertyGrid>
               <RelicType>
                 <PropertyLabel>Effect</PropertyLabel>
@@ -84,12 +85,15 @@ const RelicPage: React.FC<RelicPageProps> = ({ relic }) => {
               <PropertiesSection>
                 <PropertiesTitle>Properties</PropertiesTitle>
                 <PropertiesGrid>
-                  {Object.entries(relic.properties).map(([key, value]) => (
-                    <PropertyItem key={key}>
-                      <PropertyLabel>{key}</PropertyLabel>
-                      <PropertyValue>{String(value)}</PropertyValue>
-                    </PropertyItem>
-                  ))}
+                  {Object.entries(relic.properties).map(([key, value]) => {
+                    const label = key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+                    return (
+                      <PropertyItem key={key}>
+                        <PropertyLabel>{label}</PropertyLabel>
+                        <PropertyValue>{String(value)}</PropertyValue>
+                      </PropertyItem>
+                    )
+                  })}
                 </PropertiesGrid>
               </PropertiesSection>
             )}
