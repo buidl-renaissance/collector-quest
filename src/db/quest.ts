@@ -1,12 +1,14 @@
 import client from './client';
 import { Quest, QuestObjective, QuestProgress } from '@/data/quest';
+import { v4 as uuidv4 } from 'uuid';
 
 export const questDb = {
   // Quest CRUD operations
-  async createQuest(quest: Omit<Quest, 'created_at' | 'updated_at'>): Promise<Quest> {
+  async createQuest(quest: Omit<Quest, 'id' | 'created_at' | 'updated_at'>): Promise<Quest> {
+    const id = uuidv4();
     const [result] = await client('quests')
       .insert({
-        id: quest.id,
+        id,
         title: quest.title,
         description: quest.description,
         story: quest.story,
@@ -285,8 +287,8 @@ export const questDb = {
       location: dbQuest.location,
       estimatedDuration: dbQuest.estimated_duration,
       imageUrl: dbQuest.image_url,
-      created_at: dbQuest.created_at.toISOString(),
-      updated_at: dbQuest.updated_at.toISOString(),
+      created_at: dbQuest.created_at,
+      updated_at: dbQuest.updated_at,
     };
   },
 

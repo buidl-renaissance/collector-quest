@@ -10,7 +10,10 @@ export const generateQuestFunction = inngest.createFunction(
 
     // Step 1: Generate the quest using AI
     const quest = await step.run("generate-quest-content", async () => {
-      return await generateQuest({ relic });
+      return await generateQuest({ 
+        relic,
+        eventId: event.id
+      });
     });
 
     // Step 2: Save the quest to the database

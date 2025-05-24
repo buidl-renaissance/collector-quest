@@ -10,6 +10,7 @@ const openai = new OpenAI({
 interface GenerateQuestInput {
   relic: Relic;
   character?: Character;
+  eventId?: string;
 }
 
 export async function generateQuest(input: GenerateQuestInput): Promise<Quest> {

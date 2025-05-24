@@ -11,15 +11,15 @@ export default async function handler(
   }
 
   try {
-    const { artifactId } = req.body;
+    const { relicId } = req.body;
 
-    if (!artifactId) {
+    if (!relicId) {
       return res.status(400).json({ 
-        error: 'Artifact ID is required' 
+        error: 'Relic ID is required' 
       });
     }
 
-    const relic = await getRelic(artifactId);
+    const relic = await getRelic(relicId);
 
     if (!relic) {
       return res.status(404).json({
@@ -27,7 +27,7 @@ export default async function handler(
       });
     }
 
-    // Validate artifact structure
+    // Validate relic structure
     if (!relic.id || !relic.name || !relic.story) {
       return res.status(400).json({ 
         error: 'Relic must have id, name, and story' 
