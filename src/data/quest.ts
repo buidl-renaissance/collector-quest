@@ -22,8 +22,8 @@ export interface Quest {
   location?: string;
   estimatedDuration: number; // in minutes
   imageUrl?: string;
-  created_at: string;
-  updated_at: string;
+  created_at?: string;
+  updated_at?: string;
 }
 
 export interface QuestObjective {

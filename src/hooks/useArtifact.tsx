@@ -72,6 +72,7 @@ export const useArtifact = (initialArtifact: Artifact): UseArtifactReturn => {
 
             if (result.relic?.imageUrl) {
               setGeneratedRelic(result.relic);
+              setIsGenerating(false);
               if (!result.relic.objectId) {
                 await registerRelic(artifact, result.relic);
               }

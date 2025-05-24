@@ -7,7 +7,7 @@ import { generateTraits } from "@/inngest/generateTraits";
 import { generateEquipment } from "@/inngest/generateEquipment";
 import { generateCharacterSheet } from "@/inngest/generateCharacterSheet";
 import { generateRelicFunction } from "@/inngest/generateArtifactRelic";
-
+import { generateQuestFunction } from "@/inngest/generateQuest";
 export const config = {
   api: {
     bodyParser: {
@@ -27,6 +27,7 @@ export default serve({
     generateCharacterImageFunction,
     generateCharacterSheet,
     generateRelicFunction,
+    generateQuestFunction,
     generateStoryFunction,
     generateTraits,
     generateEquipment,
