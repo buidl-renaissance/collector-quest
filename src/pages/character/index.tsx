@@ -171,7 +171,7 @@ const CharacterPage: React.FC<CharacterPageProps> = () => {
             <CharacterSubtitle>
               {character.race?.name} • {character.class?.name}
             </CharacterSubtitle>
-            {address && (
+            {/* {address && (
               <AddressDisplay
                 address={address}
                 label="Wallet Address"
@@ -181,7 +181,7 @@ const CharacterPage: React.FC<CharacterPageProps> = () => {
                 }}
                 explorerUrl={`https://suiscan.xyz/testnet/account/${address}/tx-blocks`}
               />
-            )}
+            )} */}
           </CharacterHeader>
 
           <CharacterContent>
@@ -242,7 +242,7 @@ const CharacterPage: React.FC<CharacterPageProps> = () => {
 
               {registeredCharacterId && (
                 <ArtifactsSection>
-                  <CharacterSectionTitle>Artifacts</CharacterSectionTitle>
+                  <CharacterSectionTitle>Your Artifacts</CharacterSectionTitle>
                   {loadingArtifacts ? (
                     <LoadingText>Loading artifacts...</LoadingText>
                   ) : (
@@ -325,6 +325,7 @@ const CharacterContainer = styled.div`
   max-width: 1200px;
   margin: 0 auto;
   margin-top: 2rem;
+  padding-bottom: 80px;
 `;
 
 const CharacterHeader = styled.div`
@@ -413,170 +414,13 @@ const CharacterImageSection = styled.div`
   gap: 1rem;
 `;
 
-const RegistredCharacter = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  padding: 0.5rem;
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 0.5rem;
-  font-family: monospace;
-  font-size: 0.9rem;
-  color: #4ade80;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  position: relative;
-  width: fit-content;
-  margin: 0 auto;
-
-  &:hover {
-    background: rgba(0, 0, 0, 0.3);
-  }
-
-  svg {
-    color: #4ade80;
-  }
-
-  &:hover::after {
-    content: attr(data-full-id);
-    position: absolute;
-    bottom: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    padding: 0.5rem;
-    background: rgba(0, 0, 0, 0.9);
-    border-radius: 0.25rem;
-    font-size: 0.8rem;
-    white-space: nowrap;
-    z-index: 10;
-    margin-bottom: 0.5rem;
-  }
-`;
-
-const CopyButton = styled.button`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.25rem;
-  background: none;
-  border: none;
-  color: #4ade80;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  margin-left: 0.25rem;
-
-  &:hover {
-    color: #22c55e;
-  }
-`;
-
 const BioCardContainer = styled.div`
-  background-color: #2d2d44;
+  /* background-color: #2d2d44; */
   border-radius: 8px;
-  padding: 1.5rem;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-  border: 1px solid #4a3b6b;
+  /* padding: 1.5rem; */
+  /* box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  border: 1px solid #4a3b6b; */
   margin-top: 1rem;
-`;
-
-const CharacterInfoSection = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  animation: ${fadeIn} 0.5s ease-in-out;
-  animation-delay: 0.4s;
-  animation-fill-mode: both;
-`;
-
-const InfoCard = styled.div`
-  background-color: #2d2d44;
-  border-radius: 8px;
-  padding: 1.5rem;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-  border: 1px solid #4a3b6b;
-`;
-
-const InfoCardTitle = styled.h3`
-  font-family: "Cinzel", serif;
-  color: #bb8930;
-  margin-bottom: 1rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 1.2rem;
-
-  svg {
-    color: #bb8930;
-  }
-`;
-
-const InfoCardContent = styled.p`
-  color: #c7bfd4;
-  font-family: "Cormorant Garamond", serif;
-  line-height: 1.6;
-  font-size: 1.1rem;
-`;
-
-const TraitsList = styled.ul`
-  list-style-type: none;
-  padding: 0;
-  margin: 0;
-`;
-
-const TraitItem = styled.li`
-  color: #c7bfd4;
-  font-family: "Cormorant Garamond", serif;
-  padding: 0.5rem 0;
-  border-bottom: 1px solid #3d3d54;
-  line-height: 1.5;
-  font-size: 1.1rem;
-
-  &:last-child {
-    border-bottom: none;
-  }
-`;
-
-const BackButton = styled.button`
-  background: none;
-  border: none;
-  color: #bb8930;
-  font-family: "Cinzel", serif;
-  font-size: 1rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  cursor: pointer;
-  margin-bottom: 2rem;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  transition: background-color 0.2s;
-
-  &:hover {
-    background-color: rgba(187, 137, 48, 0.1);
-  }
-
-  svg {
-    font-size: 0.9rem;
-  }
-`;
-
-const LoadingContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 60vh;
-`;
-
-const LoadingSpinner = styled.div`
-  width: 50px;
-  height: 50px;
-  border: 4px solid rgba(187, 137, 48, 0.3);
-  border-radius: 50%;
-  border-top-color: #bb8930;
-  animation: ${spin} 1s linear infinite;
-  margin-bottom: 1rem;
 `;
 
 const LoadingText = styled.p`
@@ -610,11 +454,11 @@ const ErrorMessage = styled.p`
 // New styled components for artifacts section
 const ArtifactsSection = styled.div`
   margin-top: 2rem;
-  background-color: #2d2d44;
+  /* background-color: #2d2d44; */
   border-radius: 8px;
-  padding: 1.5rem;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-  border: 1px solid #4a3b6b;
+  /* padding: 1.5rem; */
+  /* box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); */
+  /* border: 1px solid #4a3b6b; */
 `;
 
 const ArtifactsGrid = styled.div`

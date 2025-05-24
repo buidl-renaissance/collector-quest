@@ -3,6 +3,7 @@ import styled from '@emotion/styled';
 import Link from 'next/link';
 import Image from 'next/image';
 import { GetServerSideProps } from 'next';
+import { FaPlus } from 'react-icons/fa';
 import { 
   Title,
   SectionTitle,
@@ -19,13 +20,8 @@ const ArtifactsPage = ({ artifacts }: ArtifactsPageProps) => {
   return (
     <PageContainer>
       <Header>
-        <Title>Artifacts Collection</Title>
-        <CreateButton href="/artifacts/create">
-          Create Artifact
-        </CreateButton>
+        <Title>Explore Artifacts</Title>
       </Header>
-
-      <SectionTitle>Browse Artifacts</SectionTitle>
 
       {artifacts.length > 0 ? (
         <ArtifactsGrid>
@@ -55,11 +51,14 @@ const ArtifactsPage = ({ artifacts }: ArtifactsPageProps) => {
       ) : (
         <EmptyState>
           <p>No artifacts found. Create your first artifact!</p>
-          <CreateButton href="/artifacts/create">
-            Create Artifact
-          </CreateButton>
         </EmptyState>
       )}
+      
+      <FloatingActionButton href="/artifacts/create">
+        <FaPlus />
+        <span>Submit Artifact</span>
+      </FloatingActionButton>
+      
       <BottomNavigationBar />
     </PageContainer>
   );
@@ -92,6 +91,7 @@ const PageContainer = styled.div`
   margin: 0 auto;
   padding: 2rem;
   font-family: "Cormorant Garamond", serif;
+  padding-bottom: 180px;
 
   @media (min-width: 640px) {
     padding: 2rem;
@@ -102,37 +102,13 @@ const Header = styled.div`
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  margin-bottom: 2rem;
   
   @media (min-width: 640px) {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 2rem;
-  }
-`;
-
-const CreateButton = styled.a`
-  display: inline-block;
-  background-color: #6c5ce7;
-  color: #c7bfd4;
-  padding: 0.75rem 1.5rem;
-  border-radius: 0.25rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.3s, transform 0.2s;
-  text-decoration: none;
-  font-family: "Cinzel", serif;
-  text-align: center;
-  width: 100%;
-  margin-bottom: 2rem;
-  
-  @media (min-width: 640px) {
-    width: auto;
-  }
-  
-  &:hover {
-    background-color: #bb8930;
-    transform: translateY(-2px);
   }
 `;
 
@@ -247,5 +223,50 @@ const EmptyState = styled.div`
   @media (min-width: 640px) {
     padding: 3rem;
     margin-top: 2rem;
+  }
+`;
+const FloatingActionButton = styled(Link)`
+  position: fixed;
+  bottom: 96px;
+  left: 20px;
+  right: 20px;
+  height: 56px;
+  border-radius: 28px;
+  background-color: #bb8930;
+  color: #1a1a2e;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.75);
+  transition: all 0.3s ease;
+  z-index: 1000;
+  text-decoration: none;
+  font-family: "Cinzel", serif;
+  font-weight: 600;
+  font-size: 1.1rem;
+  
+  svg {
+    font-size: 20px;
+  }
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6);
+    background-color: #d4a959;
+  }
+  
+  @media (min-width: 640px) {
+    bottom: 90px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 400px;
+    right: auto;
+  }
+  
+  @media (min-width: 640px) {
+    &:hover {
+      transform: translateX(-50%) translateY(-2px);
+    }
   }
 `;

@@ -14,15 +14,6 @@ interface QuestsPageProps {
 }
 
 const QuestsPage: React.FC<QuestsPageProps> = ({ quests, error }) => {
-  const getDifficultyColor = (difficulty: Quest['difficulty']) => {
-    switch (difficulty) {
-      case 'easy': return '#4ade80';
-      case 'medium': return '#fbbf24';
-      case 'hard': return '#f87171';
-      case 'epic': return '#a855f7';
-      default: return '#bb8930';
-    }
-  };
 
   const getTypeIcon = (type: Quest['type']) => {
     switch (type) {
@@ -38,11 +29,6 @@ const QuestsPage: React.FC<QuestsPageProps> = ({ quests, error }) => {
   if (error) {
     return (
       <PageContainer>
-        <Header>
-          <Link href="/">
-            <BackButton>← Back to Home</BackButton>
-          </Link>
-        </Header>
         <ErrorMessage>{error}</ErrorMessage>
       </PageContainer>
     );
@@ -50,11 +36,6 @@ const QuestsPage: React.FC<QuestsPageProps> = ({ quests, error }) => {
 
   return (
     <PageContainer>
-      <Header>
-        <Link href="/">
-          <BackButton>← Back to Home</BackButton>
-        </Link>
-      </Header>
 
       <QuestsContainer>
         <PageTitle>Available Quests</PageTitle>

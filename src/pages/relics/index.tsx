@@ -62,7 +62,7 @@ const RelicsPage: React.FC<RelicsPageProps> = ({ relics, error }) => {
                 key={relic.id} 
                 relic={relic} 
                 onClick={handleRelicClick} 
-                isLocked={false} 
+                isLocked={true} 
               />
             ))}
           </RelicGrid>
@@ -108,6 +108,7 @@ const PageContainer = styled.div`
   min-height: 100vh;
   background: rgba(30, 20, 50, 0.95);
   font-family: "Cormorant Garamond", serif;
+  padding-bottom: 180px;
 `;
 
 const RelicsContainer = styled.div`
