@@ -43,7 +43,7 @@ const CharacterPage: React.FC<CharacterPageProps> = () => {
   const { openModal, closeModal, modalContent, Modal } = useModal();
   const { character, fetchCharacter } = useCharacter();
   const [artifacts, setArtifacts] = useState<Artifact[]>([]);
-  const [loadingArtifacts, setLoadingArtifacts] = useState(true);
+  const [loadingArtifacts, setLoadingArtifacts] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
   const { registerCharacter, isRegistering, registeredCharacter, error } =
     useCharacterRegistration();
@@ -52,9 +52,14 @@ const CharacterPage: React.FC<CharacterPageProps> = () => {
   const [registeredCharacterId, setRegisteredCharacterId] = useState<any>(null);
 
   useEffect(() => {
-    fetchArtifacts();
     fetchCharacter();
   }, []);
+
+  useEffect(() => {
+    if (character) {
+      fetchArtifacts();
+    }
+  }, [character]);
 
   useEffect(() => {
     setRegisteredCharacterId(
@@ -63,10 +68,10 @@ const CharacterPage: React.FC<CharacterPageProps> = () => {
   }, [registeredCharacter, character?.registration_id]);
 
   const fetchArtifacts = async () => {
+    if (!character?.id) return;
+    setLoadingArtifacts(true);
     try {
-      const response = await fetch(
-        `/api/characters/${character?.id}/artifacts`
-      );
+      const response = await fetch(`/api/characters/${character.id}/artifacts`);
       if (!response.ok) throw new Error("Failed to fetch artifacts");
       const data = await response.json();
       setArtifacts(data);
@@ -242,43 +247,44 @@ const CharacterPage: React.FC<CharacterPageProps> = () => {
                   <CharacterSectionTitle>Artifacts</CharacterSectionTitle>
                   {loadingArtifacts ? (
                     <LoadingText>Loading artifacts...</LoadingText>
-                  ) : artifacts.length > 0 ? (
-                    <ArtifactsGrid>
-                      {artifacts.map((artifact) => (
-                        <ArtifactCard
-                          key={artifact.id}
-                          onClick={() =>
-                            router.push(`/artifacts/${artifact.id}`)
-                          }
-                        >
-                          <ArtifactImageContainer>
-                            <Image
-                              src={artifact.imageUrl}
-                              alt={artifact.title}
-                              layout="fill"
-                              objectFit="cover"
-                            />
-                          </ArtifactImageContainer>
-                          <ArtifactInfo>
-                            <ArtifactTitle>{artifact.title}</ArtifactTitle>
-                            <ArtifactArtist>
-                              By {artifact.artist}, {artifact.year}
-                            </ArtifactArtist>
-                            {/* <BadgeContainer>
-                              <Badge>{artifact.relic?.rarity}</Badge>
-                              <Badge>{artifact.relic?.element}</Badge>
-                            </BadgeContainer> */}
-                          </ArtifactInfo>
-                        </ArtifactCard>
-                      ))}
-                    </ArtifactsGrid>
                   ) : (
-                    <EmptyState>
-                      <EmptyStateText>No artifacts found</EmptyStateText>
-                      <CreateArtifactButton onClick={handleCreateArtifact}>
-                        <FaPlus /> Create Artifact
-                      </CreateArtifactButton>
-                    </EmptyState>
+                    <>
+                      {artifacts.length > 0 && (
+                        <ArtifactsGrid>
+                          {artifacts.map((artifact) => (
+                            <ArtifactCard
+                              key={artifact.id}
+                              onClick={() =>
+                                router.push(`/artifacts/${artifact.id}`)
+                              }
+                            >
+                              <ArtifactImageContainer>
+                                <Image
+                                  src={artifact.imageUrl}
+                                  alt={artifact.title}
+                                  layout="fill"
+                                  objectFit="cover"
+                                />
+                              </ArtifactImageContainer>
+                              <ArtifactInfo>
+                                <ArtifactTitle>{artifact.title}</ArtifactTitle>
+                                <ArtifactArtist>
+                                  By {artifact.artist}, {artifact.year}
+                                </ArtifactArtist>
+                              </ArtifactInfo>
+                            </ArtifactCard>
+                          ))}
+                        </ArtifactsGrid>
+                      )}
+                      <CreateArtifactContainer hasEmptyState={artifacts.length === 0}>
+                        {artifacts.length === 0 && (
+                          <EmptyStateText>No artifacts found</EmptyStateText>
+                        )}
+                        <CreateArtifactButton onClick={handleCreateArtifact}>
+                          <FaPlus /> Create Artifact
+                        </CreateArtifactButton>
+                      </CreateArtifactContainer>
+                    </>
                   )}
                 </ArtifactsSection>
               )}
@@ -761,6 +767,13 @@ const RegisterButton = styled.button`
   svg {
     font-size: 1rem;
   }
+`;
+
+const CreateArtifactContainer = styled.div<{ hasEmptyState?: boolean }>`
+  text-align: center;
+  padding: 2rem 0 0;
+  border-top: 1px solid rgba(74, 59, 107, 0.5);
+  margin-top: ${props => props.hasEmptyState ? '1rem' : '0'};
 `;
 
 export default CharacterPage;
