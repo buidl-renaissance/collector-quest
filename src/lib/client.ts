@@ -29,7 +29,7 @@ export class SuiClient {
       arguments: [
         tx.pure(Array.from(new TextEncoder().encode(character.name || ''))),
         tx.pure(Array.from(new TextEncoder().encode('BEGIN YOUR COLLECTOR QUEST at https://collectorquest.ai'))),
-        tx.pure(Array.from(new TextEncoder().encode(character.image_url || 'https://nyc3.digitaloceanspaces.com/dpop/2dd00590-afb2-4e87-9425-137e0821486e.png'))),
+        tx.pure(Array.from(new TextEncoder().encode(character.image_url || ''))),
         tx.pure(Array.from(new TextEncoder().encode(character.race?.name || ''))),
         tx.pure(Array.from(new TextEncoder().encode(character.class?.name || ''))),
         // tx.pure(Array.from(new TextEncoder().encode(''))),
