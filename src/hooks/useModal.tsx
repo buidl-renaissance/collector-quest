@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from "@emotion/styled";
 import { FaTimes } from "react-icons/fa";
 
@@ -10,7 +10,7 @@ const ModalOverlay = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 50;
+  z-index: 10000;
 `;
 
 const ModalContent = styled.div`
@@ -134,6 +134,18 @@ export const useModal = () => {
     title: "",
     content: null,
   });
+
+  useEffect(() => {
+    if (modalContent.isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [modalContent.isOpen]);
 
   const openModal = (title: string, content: React.ReactNode) => {
     setModalContent({

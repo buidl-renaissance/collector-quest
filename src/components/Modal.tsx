@@ -64,7 +64,7 @@ const ModalOverlay = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 100000;
+  z-index: 10000;
   backdrop-filter: blur(3px);
 `;
 
@@ -79,7 +79,7 @@ const ModalContainer = styled.div`
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
   border: 1px solid rgba(255, 215, 0, 0.3);
   position: relative;
-  z-index: 100001;
+  z-index: 10001;
   
   @media (min-width: 768px) {
     width: 80%;

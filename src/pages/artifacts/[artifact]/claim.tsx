@@ -8,7 +8,7 @@ import Link from 'next/link';
 import { NextButton, Title as CharacterTitle } from '@/components/styled/character';
 import { FormGroup, Label, Input, CheckboxContainer, Checkbox } from '@/components/styled/forms';
 import PhoneInput from '@/components/PhoneInput';
-import RelicModal from '@/components/RelicModal';
+import RelicModal from '@/components/RelicUnlockModal';
 
 interface ArtifactClaimProps {
   artifact: any;

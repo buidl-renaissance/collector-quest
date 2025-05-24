@@ -9,6 +9,7 @@ import {
 } from '@/components/styled/typography';
 import { Artifact } from '@/data/artifacts';
 import { listArtifacts } from '@/db/artifacts';
+import BottomNavigationBar from '@/components/BottomNavigationBar';
 
 interface ArtifactsPageProps {
   artifacts: Artifact[];
@@ -59,6 +60,7 @@ const ArtifactsPage = ({ artifacts }: ArtifactsPageProps) => {
           </CreateButton>
         </EmptyState>
       )}
+      <BottomNavigationBar />
     </PageContainer>
   );
 };

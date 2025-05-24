@@ -54,7 +54,7 @@ const ModalOverlay = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
+  z-index: 10000;
 `;
 
 // Styled components
@@ -117,7 +117,7 @@ const NavigationButtons = styled.div`
   transform: translateX(-50%);
   border-bottom-left-radius: 1rem;
   border-bottom-right-radius: 1rem;
-  z-index: 1001;
+  z-index: 10001;
 `;
 
 const NavButton = styled.button`

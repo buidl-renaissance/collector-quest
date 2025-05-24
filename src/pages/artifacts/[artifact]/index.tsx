@@ -12,7 +12,7 @@ import Link from "next/link";
 import { Artifact } from "@/data/artifacts";
 import { getArtifact } from "@/db/artifacts";
 import { useArtifact } from "@/hooks/useArtifact";
-import RelicModal from "@/components/RelicModal";
+import RelicModal from "@/components/RelicUnlockModal";
 import { keyframes } from "@emotion/react";
 import AddressDisplay from "@/components/AddressDisplay";
 import { getCurrentCharacterId } from "@/utils/storage";

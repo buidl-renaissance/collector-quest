@@ -18,7 +18,7 @@ export const useGenerateQuest = () => {
     setGeneratedQuest(null);
 
     try {
-      const response = await fetch('/api/quest/generate', {
+      const response = await fetch('/api/quests/generate', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -38,7 +38,7 @@ export const useGenerateQuest = () => {
       // Start polling for the quest generation result
       const pollInterval = setInterval(async () => {
         try {
-          const statusResponse = await fetch(`/api/quest/status?eventId=${result.eventId}`);
+          const statusResponse = await fetch(`/api/quests/status?eventId=${result.eventId}`);
           
           if (!statusResponse.ok) {
             throw new Error('Failed to fetch quest generation status');

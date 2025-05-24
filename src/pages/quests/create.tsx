@@ -41,7 +41,7 @@ const CreateQuestPage: React.FC<CreateQuestPageProps> = ({ relics, error }) => {
         throw new Error('Selected relic not found');
       }
 
-      const response = await fetch('/api/quest/generate', {
+      const response = await fetch('/api/quests/generate', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

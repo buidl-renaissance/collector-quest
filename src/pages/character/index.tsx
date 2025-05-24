@@ -21,6 +21,8 @@ import { useCharacterRegistration } from "@/hooks/web3/useCharacterRegistration"
 import { useCharacter } from "@/hooks/useCharacter";
 import { useWallet } from "@/hooks/useWallet";
 import AddressDisplay from "@/components/AddressDisplay";
+import BottomNavigationBar from "@/components/BottomNavigationBar";
+
 interface CharacterPageProps {
   character: Character | null;
 }
@@ -146,13 +148,10 @@ const CharacterPage: React.FC<CharacterPageProps> = () => {
   return (
     <PageTransition>
       <Page>
-        {/* <BackButton onClick={handleBack}>
-          <FaArrowLeft /> Back
-        </BackButton> */}
-
         <CharacterContainer>
           <CharacterHeader>
-            <CharacterImageWrapper>
+          <CharacterTitle>{character.name}</CharacterTitle>
+          <CharacterImageWrapper>
               {character.image_url ? (
                 <CharacterImageContainer>
                   <Image
@@ -169,7 +168,6 @@ const CharacterPage: React.FC<CharacterPageProps> = () => {
                 </CharacterImagePlaceholder>
               )}
             </CharacterImageWrapper>
-            <CharacterTitle>{character.name}</CharacterTitle>
             <CharacterSubtitle>
               {character.race?.name} • {character.class?.name}
             </CharacterSubtitle>
@@ -299,6 +297,7 @@ const CharacterPage: React.FC<CharacterPageProps> = () => {
         >
           {modalContent.content}
         </Modal>
+        <BottomNavigationBar />
       </Page>
     </PageTransition>
   );
@@ -330,7 +329,6 @@ const CharacterContainer = styled.div`
 
 const CharacterHeader = styled.div`
   text-align: center;
-  margin-bottom: 2rem;
   animation: ${slideUp} 0.5s ease-in-out;
   display: flex;
   flex-direction: column;

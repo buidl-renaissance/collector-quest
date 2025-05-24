@@ -6,6 +6,7 @@ import { Quest } from "@/data/quest";
 import { Header } from "@/components/styled/layout";
 import { BackButton, NextButton } from "@/components/styled/buttons";
 import { questDb } from "@/db/quest";
+import BottomNavigationBar from "@/components/BottomNavigationBar";
 
 interface QuestsPageProps {
   quests: Quest[];
@@ -118,6 +119,7 @@ const QuestsPage: React.FC<QuestsPageProps> = ({ quests, error }) => {
           </QuestGrid>
         )}
       </QuestsContainer>
+      <BottomNavigationBar />
     </PageContainer>
   );
 };
