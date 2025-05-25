@@ -3,7 +3,7 @@ import styled from "@emotion/styled";
 import { keyframes } from "@emotion/react";
 import Link from "next/link";
 import Head from "next/head";
-import { FaPlus, FaUsers, FaUserTag, FaUserSecret, FaBook, FaUserCheck, FaToggleOn, FaToggleOff, FaFeather, FaCalendarAlt, FaGem, FaCrown, FaScroll, FaRing, FaUserAlt } from "react-icons/fa";
+import { FaPlus, FaUsers, FaUserTag, FaUserSecret, FaBook, FaUserCheck, FaToggleOn, FaToggleOff, FaFeather, FaCalendarAlt, FaGem, FaCrown, FaScroll, FaRing, FaUserAlt, FaMapMarkedAlt } from "react-icons/fa";
 import useIsAdmin from "@/hooks/useIsAdmin";
 import BottomNavigationBar from "@/components/BottomNavigationBar";
 
@@ -86,18 +86,9 @@ const MagicSpan = styled.span`
 
 const AdminGrid = styled.div`
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 1.5rem;
-  width: 100%;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
   margin-top: 2rem;
-  
-  @media (min-width: 768px) {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  
-  @media (min-width: 1024px) {
-    grid-template-columns: repeat(3, 1fr);
-  }
 `;
 
 const AdminCard = styled(Link)`
@@ -163,6 +154,17 @@ const AdminToggleButton = styled.button`
   }
 `;
 
+const Subtitle = styled.h2`
+  font-size: 2rem;
+  font-family: "Cinzel Decorative", "Uncial Antiqua", serif;
+  margin-bottom: 2rem;
+  animation: ${fadeIn} 0.8s ease-out;
+  text-align: center;
+
+  @media (min-width: 768px) {
+    font-size: 3rem;
+  }
+`;
 
 const AdminPage: React.FC = () => {
   const { isAdmin, toggleAdminMode } = useIsAdmin();
@@ -192,6 +194,8 @@ const AdminPage: React.FC = () => {
             )}
           </AdminToggleButton>
           
+          <Subtitle>Manage your game content</Subtitle>
+          
           <AdminGrid>
             <AdminCard href="/create-story">
               <CardIcon>
@@ -204,23 +208,15 @@ const AdminPage: React.FC = () => {
             </AdminCard>
             
             <AdminCard href="/admin/artifacts">
-              <CardIcon>
-                <FaScroll />
-              </CardIcon>
+              <CardIcon><FaScroll /></CardIcon>
               <CardTitle>Manage Artifacts</CardTitle>
-              <CardDescription>
-                Manage artifacts and their associated relics
-              </CardDescription>
+              <CardDescription>Manage artifacts and their associated relics</CardDescription>
             </AdminCard>
             
             <AdminCard href="/admin/relics">
-              <CardIcon>
-                <FaRing />
-              </CardIcon>
+              <CardIcon><FaRing /></CardIcon>
               <CardTitle>Manage Relics</CardTitle>
-              <CardDescription>
-                Manage powerful relics and their properties
-              </CardDescription>
+              <CardDescription>Manage powerful relics and their properties</CardDescription>
             </AdminCard>
             
             <AdminCard href="/character/race/admin">
@@ -247,6 +243,12 @@ const AdminPage: React.FC = () => {
               <CardIcon><FaUserAlt /></CardIcon>
               <CardTitle>Manage Characters</CardTitle>
               <CardDescription>Manage characters and their details</CardDescription>
+            </AdminCard>
+            
+            <AdminCard href="/admin/quests">
+              <CardIcon><FaMapMarkedAlt /></CardIcon>
+              <CardTitle>Manage Quests</CardTitle>
+              <CardDescription>Manage quests and their objectives</CardDescription>
             </AdminCard>
             
             <AdminCard href="/events/admin">

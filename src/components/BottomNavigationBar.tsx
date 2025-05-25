@@ -1,9 +1,9 @@
-import React from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/router';
-import styled from '@emotion/styled';
-import { FaUser, FaGem, FaScroll, FaTrophy, FaCog } from 'react-icons/fa';
-import useIsAdmin from '@/hooks/useIsAdmin';
+import React from "react";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import styled from "@emotion/styled";
+import { FaUser, FaGem, FaScroll, FaTrophy, FaCog } from "react-icons/fa";
+import useIsAdmin from "@/hooks/useIsAdmin";
 
 const BottomNavigationBar: React.FC = () => {
   const router = useRouter();
@@ -11,37 +11,37 @@ const BottomNavigationBar: React.FC = () => {
 
   const navItems = [
     {
-      href: '/character',
+      href: "/character",
       icon: FaUser,
-      label: 'Character',
-      isActive: router.pathname.startsWith('/character')
+      label: "Character",
+      isActive: router.pathname.startsWith("/character"),
     },
     {
-      href: '/artifacts',
+      href: "/artifacts",
       icon: FaGem,
-      label: 'Artifacts',
-      isActive: router.pathname.startsWith('/artifacts')
+      label: "Artifacts",
+      isActive: router.pathname.startsWith("/artifacts"),
     },
     {
-      href: '/relics',
+      href: "/relics",
       icon: FaTrophy,
-      label: 'Relics',
-      isActive: router.pathname.startsWith('/relics')
+      label: "Relics",
+      isActive: router.pathname.startsWith("/relics"),
     },
     {
-      href: '/quests',
+      href: "/quests",
       icon: FaScroll,
-      label: 'Quests',
-      isActive: router.pathname.startsWith('/quests')
-    }
+      label: "Quests",
+      isActive: router.pathname.startsWith("/quests"),
+    },
   ];
 
   if (isAdmin) {
     navItems.push({
-      href: '/admin',
+      href: "/admin",
       icon: FaCog,
-      label: 'Admin',
-      isActive: router.pathname.startsWith('/admin')
+      label: "Admin",
+      isActive: router.pathname.startsWith("/admin"),
     });
   }
 
@@ -49,14 +49,17 @@ const BottomNavigationBar: React.FC = () => {
     <NavigationContainer>
       <NavigationBar>
         {navItems.map((item) => (
-          <Link key={item.href} href={item.href}>
-            <NavItem isActive={item.isActive}>
-              <NavIcon>
-                <item.icon />
-              </NavIcon>
-              <NavLabel>{item.label}</NavLabel>
-            </NavItem>
-          </Link>
+          <NavItem
+            key={item.href}
+            href={item.href}
+            isActive={item.isActive}
+            width={`${100 / navItems.length}%`}
+          >
+            <NavIcon>
+              <item.icon />
+            </NavIcon>
+            <NavLabel>{item.label}</NavLabel>
+          </NavItem>
         ))}
       </NavigationBar>
     </NavigationContainer>
@@ -84,7 +87,7 @@ const NavigationContainer = styled.div`
 
 const NavigationBar = styled.nav`
   display: flex;
-  justify-content: space-around;
+  justify-content: space-evenly;
   align-items: center;
   max-width: 600px;
   margin: 0 auto;
@@ -95,18 +98,21 @@ const NavigationBar = styled.nav`
   }
 `;
 
-const NavItem = styled.div<{ isActive: boolean }>`
+const NavItem = styled(Link)<{ isActive: boolean; width: string }>`
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 0.25rem;
   padding: 0.5rem 1rem;
   border-radius: 8px;
+  width: ${(props) => props.width};
   transition: all 0.3s ease;
   cursor: pointer;
-  color: ${props => props.isActive ? '#bb8930' : '#e8e3f0'};
-  background: ${props => props.isActive ? 'rgba(187, 137, 48, 0.1)' : 'transparent'};
-  border: 1px solid ${props => props.isActive ? 'rgba(187, 137, 48, 0.3)' : 'transparent'};
+  color: ${(props) => (props.isActive ? "#bb8930" : "#e8e3f0")};
+  background: ${(props) =>
+    props.isActive ? "rgba(187, 137, 48, 0.1)" : "transparent"};
+  border: 1px solid
+    ${(props) => (props.isActive ? "rgba(187, 137, 48, 0.3)" : "transparent")};
 
   &:hover {
     color: #bb8930;
