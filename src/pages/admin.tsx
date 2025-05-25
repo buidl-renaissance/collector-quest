@@ -3,8 +3,9 @@ import styled from "@emotion/styled";
 import { keyframes } from "@emotion/react";
 import Link from "next/link";
 import Head from "next/head";
-import { FaPlus, FaUsers, FaUserTag, FaUserSecret, FaBook, FaUserCheck, FaToggleOn, FaToggleOff } from "react-icons/fa";
+import { FaPlus, FaUsers, FaUserTag, FaUserSecret, FaBook, FaUserCheck, FaToggleOn, FaToggleOff, FaFeather, FaCalendarAlt, FaGem, FaCrown, FaScroll, FaRing, FaUserAlt } from "react-icons/fa";
 import useIsAdmin from "@/hooks/useIsAdmin";
+import BottomNavigationBar from "@/components/BottomNavigationBar";
 
 // Animations
 const fadeIn = keyframes`
@@ -44,7 +45,7 @@ const PageWrapper = styled.div`
 `;
 
 const Container = styled.div`
-  max-width: 1000px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 2rem 1rem;
   position: relative;
@@ -55,9 +56,10 @@ const Container = styled.div`
   align-items: center;
   justify-content: flex-start;
   padding-top: 4rem;
+  padding-bottom: 120px;
 
   @media (min-width: 768px) {
-    padding: 4rem 2rem;
+    padding: 4rem 2rem 120px 2rem;
   }
 `;
 
@@ -91,6 +93,10 @@ const AdminGrid = styled.div`
   
   @media (min-width: 768px) {
     grid-template-columns: repeat(2, 1fr);
+  }
+  
+  @media (min-width: 1024px) {
+    grid-template-columns: repeat(3, 1fr);
   }
 `;
 
@@ -197,6 +203,26 @@ const AdminPage: React.FC = () => {
               </CardDescription>
             </AdminCard>
             
+            <AdminCard href="/admin/artifacts">
+              <CardIcon>
+                <FaScroll />
+              </CardIcon>
+              <CardTitle>Manage Artifacts</CardTitle>
+              <CardDescription>
+                Manage artifacts and their associated relics
+              </CardDescription>
+            </AdminCard>
+            
+            <AdminCard href="/admin/relics">
+              <CardIcon>
+                <FaRing />
+              </CardIcon>
+              <CardTitle>Manage Relics</CardTitle>
+              <CardDescription>
+                Manage powerful relics and their properties
+              </CardDescription>
+            </AdminCard>
+            
             <AdminCard href="/character/race/admin">
               <CardIcon>
                 <FaUsers />
@@ -214,6 +240,32 @@ const AdminPage: React.FC = () => {
               <CardTitle>Manage Classes</CardTitle>
               <CardDescription>
                 Add, edit, or remove character classes
+              </CardDescription>
+            </AdminCard>
+            
+            <AdminCard href="/admin/characters">
+              <CardIcon><FaUserAlt /></CardIcon>
+              <CardTitle>Manage Characters</CardTitle>
+              <CardDescription>Manage characters and their details</CardDescription>
+            </AdminCard>
+            
+            <AdminCard href="/events/admin">
+              <CardIcon>
+                <FaCalendarAlt />
+              </CardIcon>
+              <CardTitle>Manage Events</CardTitle>
+              <CardDescription>
+                Create and manage realm events and quests
+              </CardDescription>
+            </AdminCard>
+            
+            <AdminCard href="/realms/admin">
+              <CardIcon>
+                <FaCrown />
+              </CardIcon>
+              <CardTitle>Manage Realms</CardTitle>
+              <CardDescription>
+                Create and manage different realms
               </CardDescription>
             </AdminCard>
             
@@ -248,6 +300,7 @@ const AdminPage: React.FC = () => {
             </AdminCard>
           </AdminGrid>
         </Container>
+        <BottomNavigationBar />
       </PageWrapper>
     </>
   );

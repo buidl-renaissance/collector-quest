@@ -4,16 +4,18 @@ const ADMIN_MODE_KEY = 'admin_mode_enabled';
 
 /**
  * Hook to get and set admin status using localStorage
- * @returns Object with isAdmin status and functions to enable/disable admin mode
+ * @returns Object with isAdmin status, loading state, and functions to enable/disable admin mode
  */
 const useIsAdmin = () => {
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
     // Load admin mode status from localStorage on component mount
     if (typeof window !== 'undefined') {
       const storedAdminMode = localStorage.getItem(ADMIN_MODE_KEY);
       setIsAdmin(storedAdminMode === 'true');
+      setIsLoading(false);
     }
   }, []);
 
@@ -41,6 +43,7 @@ const useIsAdmin = () => {
 
   return {
     isAdmin,
+    isLoading,
     enableAdminMode,
     disableAdminMode,
     toggleAdminMode

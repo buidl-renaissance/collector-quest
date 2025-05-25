@@ -2,10 +2,12 @@ import React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import styled from '@emotion/styled';
-import { FaUser, FaGem, FaScroll, FaTrophy } from 'react-icons/fa';
+import { FaUser, FaGem, FaScroll, FaTrophy, FaCog } from 'react-icons/fa';
+import useIsAdmin from '@/hooks/useIsAdmin';
 
 const BottomNavigationBar: React.FC = () => {
   const router = useRouter();
+  const { isAdmin } = useIsAdmin();
 
   const navItems = [
     {
@@ -33,6 +35,15 @@ const BottomNavigationBar: React.FC = () => {
       isActive: router.pathname.startsWith('/quests')
     }
   ];
+
+  if (isAdmin) {
+    navItems.push({
+      href: '/admin',
+      icon: FaCog,
+      label: 'Admin',
+      isActive: router.pathname.startsWith('/admin')
+    });
+  }
 
   return (
     <NavigationContainer>
