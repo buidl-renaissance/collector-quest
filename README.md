@@ -20,14 +20,11 @@ Artists can verify and tokenize their creations, joining a decentralized economy
 ### 🧩 Quests & Realms
 Guardians create realms and invite players to participate in narrative-driven quests. Quests unlock relics and lore.
 
-### 🪪 On-Chain Identity & Handles
-Players claim unique handles as NFTs, portable across realms. Handles are soulbound to characters and evolve with progress.
-
 ### 🔐 Sponsored Onboarding
 Players can join without wallets—sponsored onboarding allows anyone to begin their journey securely and seamlessly.
 
 ## 📦 Tech Stack
-- **Frontend**: React / Next.js / TailwindCSS
+- **Frontend**: React / Next.js
 - **Smart Contracts**: Move (Sui Blockchain)
 - **AI Integration**: Character & artifact generation, trait modeling
 
