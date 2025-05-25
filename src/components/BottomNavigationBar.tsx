@@ -53,7 +53,6 @@ const BottomNavigationBar: React.FC = () => {
             key={item.href}
             href={item.href}
             isActive={item.isActive}
-            width={`${100 / navItems.length}%`}
           >
             <NavIcon>
               <item.icon />
@@ -79,6 +78,12 @@ const NavigationContainer = styled.div`
   border-top: 1px solid rgba(187, 137, 48, 0.3);
   padding: 0.5rem 0;
   box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.3);
+  overflow-x: auto;
+  overflow-y: hidden;
+
+  -webkit-overflow-scrolling: touch;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 
   @media (max-width: 640px) {
     padding: 0.75rem 0;
@@ -87,25 +92,25 @@ const NavigationContainer = styled.div`
 
 const NavigationBar = styled.nav`
   display: flex;
-  justify-content: space-evenly;
   align-items: center;
-  max-width: 600px;
-  margin: 0 auto;
+  min-width: 100%;
   padding: 0 1rem;
+  gap: 0;
 
   @media (max-width: 640px) {
     padding: 0 0.5rem;
   }
 `;
 
-const NavItem = styled(Link)<{ isActive: boolean; width: string }>`
+const NavItem = styled(Link)<{ isActive: boolean }>`
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 0.25rem;
   padding: 0.5rem 1rem;
   border-radius: 8px;
-  width: ${(props) => props.width};
+  min-width: 25%;
+  flex: 0 0 25%;
   transition: all 0.3s ease;
   cursor: pointer;
   color: ${(props) => (props.isActive ? "#bb8930" : "#e8e3f0")};
