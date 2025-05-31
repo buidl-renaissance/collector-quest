@@ -1,25 +1,27 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import styled from "@emotion/styled";
 import { keyframes } from "@emotion/react";
 import { FaArrowLeft, FaPlus } from "react-icons/fa";
 import Image from "next/image";
-import { GetServerSideProps } from "next";
 import PageTransition from "@/components/PageTransition";
 import Page from "@/components/Page";
 import { Title, Subtitle } from "@/components/styled/typography";
-import { CharacterDB } from "@/db/character";
 import { Character } from "@/data/character";
 import useModal from "@/hooks/useModal";
 import CharacterBio from "@/components/CharacterBio";
+import { getCharacters } from "@/utils/storage";
 
-interface CharactersPageProps {
-  characters: Character[];
-}
-
-const CharactersPage: React.FC<CharactersPageProps> = ({ characters }) => {
+const CharactersPage: React.FC = () => {
   const router = useRouter();
   const { openModal, closeModal, modalContent, Modal } = useModal();
+  const [characters, setCharacters] = useState<Character[]>([]);
+
+  useEffect(() => {
+    const storedCharacters = getCharacters();
+    const characterArray = Object.values(storedCharacters) as Character[];
+    setCharacters(characterArray);
+  }, []);
 
   const handleBack = () => {
     router.push("/");
@@ -36,15 +38,14 @@ const CharactersPage: React.FC<CharactersPageProps> = ({ characters }) => {
   return (
     <PageTransition>
       <Page>
-        <BackButton onClick={handleBack}>
-          <FaArrowLeft /> Return Home
-        </BackButton>
+        <TopBar>
+          <BackButton onClick={handleBack}>
+            <FaArrowLeft /> Return Home
+          </BackButton>
+        </TopBar>
 
         <HeaderContainer>
           <Title>Characters</Title>
-          {/* <CreateButton onClick={handleCreateNew}>
-            <FaPlus /> Create New Character
-          </CreateButton> */}
         </HeaderContainer>
 
         {characters.length === 0 ? (
@@ -99,17 +100,6 @@ const CharactersPage: React.FC<CharactersPageProps> = ({ characters }) => {
       </Page>
     </PageTransition>
   );
-};
-
-export const getServerSideProps: GetServerSideProps = async () => {
-  const characterDb = new CharacterDB();
-  const characters = await characterDb.listCharacters();
-
-  return {
-    props: {
-      characters,
-    },
-  };
 };
 
 // Animations
@@ -273,6 +263,13 @@ const EmptyState = styled.div`
     max-width: 400px;
     margin: 0 auto;
   }
+`;
+
+const TopBar = styled.div`
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-bottom: 2rem;
 `;
 
 export default CharactersPage;

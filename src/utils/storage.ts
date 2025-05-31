@@ -1,6 +1,8 @@
 export const STORAGE_KEYS = {
   CURRENT_CHARACTER_ID: 'currentCharacterId',
   CHARACTERS: 'characters',
+  CURRENT_USER: 'currentUser',
+  USERS: 'users',
 };
 
 export const getCurrentCharacterId = () => localStorage.getItem(STORAGE_KEYS.CURRENT_CHARACTER_ID);
@@ -58,4 +60,38 @@ export const removeCharacterKey = (id: string, key: string) => {
     delete characters[id][key];
     localStorage.setItem(STORAGE_KEYS.CHARACTERS, JSON.stringify(characters));
   }
+};
+
+// User management functions
+export const getCurrentUser = () => {
+  return localStorage.getItem(STORAGE_KEYS.CURRENT_USER);
+};
+
+export const setCurrentUser = (username: string) => {
+  localStorage.setItem(STORAGE_KEYS.CURRENT_USER, username);
+};
+
+export const getUsers = (): string[] => {
+  return JSON.parse(localStorage.getItem(STORAGE_KEYS.USERS) || '[]');
+};
+
+export const addUser = (username: string) => {
+  const users = getUsers();
+  if (!users.includes(username)) {
+    users.push(username);
+    localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(users));
+  }
+  return users;
+};
+
+export const removeUser = (username: string) => {
+  const users = getUsers();
+  const filteredUsers = users.filter(u => u !== username);
+  localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(filteredUsers));
+  
+  // If removing current user, clear it
+  if (getCurrentUser() === username) {
+    localStorage.removeItem(STORAGE_KEYS.CURRENT_USER);
+  }
+  return filteredUsers;
 }; 

@@ -20,6 +20,7 @@ import useIsAdmin from "@/hooks/useIsAdmin";
 import { NextButton } from "@/components/styled/buttons";
 import router from "next/router";
 import PressStart from "@/components/PressStart";
+import { useCharacter } from "@/hooks/useCharacter";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   return {
@@ -40,6 +41,7 @@ const IndexPage: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [error, setError] = useState("");
+  const { character } = useCharacter();
   const [parallaxOffset, setParallaxOffset] = useState(0);
   const [showShareModal, setShowShareModal] = useState(false);
   const { isAdmin } = useIsAdmin();
@@ -281,11 +283,10 @@ const IndexPage: React.FC = () => {
           <Tagline>Where art becomes legend.</Tagline>
         </Section>
 
+        <PressStart />
         {/* A Section for Artists to Register their Artifacts */}
         {isAdmin && (
           <>
-            <PressStart />
-
             {/* <Section>
               <SectionTitle>Register An Artifact</SectionTitle>
               <Description>
@@ -301,7 +302,7 @@ const IndexPage: React.FC = () => {
           </>
         )}
 
-        {/* {isAdmin && (
+        {isAdmin && (
           <QRCodeSection>
             <QRCode
               value="https://collectorquest.ai"
@@ -310,7 +311,19 @@ const IndexPage: React.FC = () => {
               size={288}
             />
           </QRCodeSection>
-        )} */}
+        )}
+
+        {isAdmin && character && (
+          <Section>
+            <SectionTitle>View Characters</SectionTitle>
+            <Description>
+              View your characters and their adventures.
+            </Description>
+            <NextButton onClick={() => router.push("/characters")}>
+              View Characters
+            </NextButton>
+          </Section>
+        )}
 
         {/* <FounderBadge>
           <BadgeIcon><FaScroll /></BadgeIcon>

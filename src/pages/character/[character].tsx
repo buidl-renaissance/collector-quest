@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import styled from "@emotion/styled";
 import { keyframes } from "@emotion/react";
-import { FaFeather, FaPlus } from "react-icons/fa";
+import { FaFeather, FaPlus, FaStar } from "react-icons/fa";
 import Image from "next/image";
 import { GetServerSideProps } from "next";
 import PageTransition from "@/components/PageTransition";
@@ -13,6 +13,7 @@ import { Character } from "@/data/character";
 import { Artifact } from "@/data/artifacts";
 import CharacterBio from "@/components/CharacterBio";
 import useModal from "@/hooks/useModal";
+import { getCurrentCharacterId, setCurrentCharacterId } from "@/utils/storage";
 
 interface CharacterPageProps {
   character: Character | null;
@@ -38,11 +39,14 @@ const CharacterPage: React.FC<CharacterPageProps> = ({ character }) => {
   const [loadingArtifacts, setLoadingArtifacts] = useState(true);
   const [realms, setRealms] = useState<Realm[]>([]);
   const [loadingRealms, setLoadingRealms] = useState(true);
+  const [isCurrentCharacter, setIsCurrentCharacter] = useState(false);
 
   useEffect(() => {
     if (character) {
       fetchArtifacts();
-      // fetchRealms();
+      // Check if this is the current character
+      const currentCharacterId = getCurrentCharacterId();
+      setIsCurrentCharacter(currentCharacterId === character.id);
     }
   }, [character]);
 
@@ -80,6 +84,13 @@ const CharacterPage: React.FC<CharacterPageProps> = ({ character }) => {
 
   const handleCreateArtifact = () => {
     router.push("/artifacts/create");
+  };
+
+  const handleActivateCharacter = () => {
+    if (character?.id) {
+      setCurrentCharacterId(character.id);
+      router.push("/character");
+    }
   };
 
   if (!character) {
@@ -131,6 +142,11 @@ const CharacterPage: React.FC<CharacterPageProps> = ({ character }) => {
             <CharacterSubtitle>
               {character.race?.name} • {character.class?.name}
             </CharacterSubtitle>
+            {!isCurrentCharacter && (
+              <ActivateButton onClick={handleActivateCharacter}>
+                <FaStar /> Activate Character
+              </ActivateButton>
+            )}
           </CharacterHeader>
 
           <CharacterContent>
@@ -564,6 +580,31 @@ const CreateArtifactButton = styled.button`
 
   &:hover {
     background-color: #d4a03c;
+  }
+
+  svg {
+    font-size: 0.9rem;
+  }
+`;
+
+const ActivateButton = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #bb8930;
+  color: #1a1625;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  font-family: "Cinzel", serif;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 1rem;
+
+  &:hover {
+    background: #d6a140;
+    transform: translateY(-2px);
   }
 
   svg {
