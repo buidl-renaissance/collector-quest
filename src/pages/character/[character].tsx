@@ -13,7 +13,7 @@ import { Character } from "@/data/character";
 import { Artifact } from "@/data/artifacts";
 import CharacterBio from "@/components/CharacterBio";
 import useModal from "@/hooks/useModal";
-import { getCurrentCharacterId, setCurrentCharacterId } from "@/utils/storage";
+import { getCurrentCharacterId, setCurrentCharacterId, getCharacters } from "@/utils/storage";
 
 interface CharacterPageProps {
   character: Character | null;
@@ -40,6 +40,7 @@ const CharacterPage: React.FC<CharacterPageProps> = ({ character }) => {
   const [realms, setRealms] = useState<Realm[]>([]);
   const [loadingRealms, setLoadingRealms] = useState(true);
   const [isCurrentCharacter, setIsCurrentCharacter] = useState(false);
+  const [isInLocalStorage, setIsInLocalStorage] = useState(false);
 
   useEffect(() => {
     if (character) {
@@ -47,6 +48,10 @@ const CharacterPage: React.FC<CharacterPageProps> = ({ character }) => {
       // Check if this is the current character
       const currentCharacterId = getCurrentCharacterId();
       setIsCurrentCharacter(currentCharacterId === character.id);
+
+      // Check if character exists in local storage
+      const storedCharacters = getCharacters();
+      setIsInLocalStorage(!!character.id && !!storedCharacters[character.id]);
     }
   }, [character]);
 
@@ -142,7 +147,7 @@ const CharacterPage: React.FC<CharacterPageProps> = ({ character }) => {
             <CharacterSubtitle>
               {character.race?.name} • {character.class?.name}
             </CharacterSubtitle>
-            {!isCurrentCharacter && (
+            {isInLocalStorage && (
               <ActivateButton onClick={handleActivateCharacter}>
                 <FaStar /> Activate Character
               </ActivateButton>

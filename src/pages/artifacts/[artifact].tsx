@@ -63,6 +63,16 @@ const ArtifactPage: React.FC<ArtifactPageProps> = ({ artifact }) => {
                   <RelicValue>{artifact.relic.element}</RelicValue>
                 </RelicInfo>
               </DetailContent>
+              {artifact.owner && artifact.relic.imageUrl && (
+                <RelicImageContainer>
+                  <Image
+                    src={artifact.relic.imageUrl}
+                    alt={`${artifact.relic.name} Relic`}
+                    fill
+                    style={{ objectFit: 'contain' }}
+                  />
+                </RelicImageContainer>
+              )}
             </DetailSection>
           )}
         </ArtifactDetails>
@@ -167,6 +177,17 @@ const RelicLabel = styled.span`
 
 const RelicValue = styled.span`
   color: #e8e3f0;
+`;
+
+const RelicImageContainer = styled.div`
+  position: relative;
+  width: 100%;
+  height: 300px;
+  margin-top: 1.5rem;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid rgba(187, 137, 48, 0.3);
+  background: rgba(20, 15, 35, 0.8);
 `;
 
 const ErrorContainer = styled.div`

@@ -10,18 +10,16 @@ import { Title, Subtitle } from "@/components/styled/typography";
 import { Character } from "@/data/character";
 import useModal from "@/hooks/useModal";
 import CharacterBio from "@/components/CharacterBio";
-import { getCharacters } from "@/utils/storage";
+import { GetServerSideProps } from "next";
+import { CharacterDB } from "@/db/character";
 
-const CharactersPage: React.FC = () => {
+interface CharactersPageProps {
+  characters: Character[];
+}
+
+const CharactersPage: React.FC<CharactersPageProps> = ({ characters }) => {
   const router = useRouter();
   const { openModal, closeModal, modalContent, Modal } = useModal();
-  const [characters, setCharacters] = useState<Character[]>([]);
-
-  useEffect(() => {
-    const storedCharacters = getCharacters();
-    const characterArray = Object.values(storedCharacters) as Character[];
-    setCharacters(characterArray);
-  }, []);
 
   const handleBack = () => {
     router.push("/");
@@ -100,6 +98,26 @@ const CharactersPage: React.FC = () => {
       </Page>
     </PageTransition>
   );
+};
+
+export const getServerSideProps: GetServerSideProps = async () => {
+  try {
+    const characterDb = new CharacterDB();
+    const characters = await characterDb.listRegisteredCharacters();
+
+    return {
+      props: {
+        characters,
+      },
+    };
+  } catch (error) {
+    console.error("Error fetching characters:", error);
+    return {
+      props: {
+        characters: [],
+      },
+    };
+  }
 };
 
 // Animations

@@ -145,6 +145,18 @@ export class CharacterDB {
       })
     );
   }
+
+  async listRegisteredCharacters(): Promise<Character[]> {
+    const results = await client("characters")
+      .select("*")
+      .whereNotNull("registration_id");
+      
+    return Promise.all(
+      results.map(async (result) => {
+        return mapCharacter(result);
+      })
+    );
+  }
 }
 
 const mapCharacter = async (result: any): Promise<Character> => {
