@@ -22,7 +22,7 @@ const CharactersPage: React.FC<CharactersPageProps> = ({ characters }) => {
   const { openModal, closeModal, modalContent, Modal } = useModal();
 
   const handleBack = () => {
-    router.push("/");
+    router.push("/character");
   };
 
   const handleCreateNew = () => {
@@ -38,7 +38,7 @@ const CharactersPage: React.FC<CharactersPageProps> = ({ characters }) => {
       <Page>
         <TopBar>
           <BackButton onClick={handleBack}>
-            <FaArrowLeft /> Return Home
+            <FaArrowLeft /> Back
           </BackButton>
         </TopBar>
 

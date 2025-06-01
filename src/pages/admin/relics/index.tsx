@@ -116,7 +116,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ relics: initialRelics }) => {
           filteredRelics.map(relic => (
             <RelicItem key={relic.id}>
               <RelicInfo>
-                <RelicImageContainer>
+                <RelicImageContainer onClick={() => router.push(`/relics/${relic.id}`)}>
                   <Image
                     src={relic.imageUrl || '/images/default-relic.png'}
                     alt={relic.name}
@@ -125,7 +125,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ relics: initialRelics }) => {
                   />
                 </RelicImageContainer>
                 <RelicDetails>
-                  <RelicName>{relic.name}</RelicName>
+                  <RelicName onClick={() => router.push(`/relics/${relic.id}`)}>{relic.name}</RelicName>
                   <RelicPower>Effect: {relic.effect}</RelicPower>
                   <RelicDescription>{relic.story?.substring(0, 150) || 'No story available'}...</RelicDescription>
                   <RelicStats>
@@ -310,14 +310,15 @@ const RelicImageContainer = styled.div`
   position: relative;
   width: 120px;
   height: 120px;
-  flex-shrink: 0;
-  border-radius: 4px;
+  border-radius: 8px;
   overflow: hidden;
-  border: 1px solid #bb8930;
+  border: 1px solid #4a3b6b;
+  cursor: pointer;
+  transition: transform 0.2s ease, border-color 0.2s ease;
 
-  @media (max-width: 768px) {
-    width: 100%;
-    height: 200px;
+  &:hover {
+    transform: scale(1.05);
+    border-color: #bb8930;
   }
 `;
 
@@ -326,10 +327,16 @@ const RelicDetails = styled.div`
 `;
 
 const RelicName = styled.h3`
-  font-size: 1.5rem;
-  color: #bb8930;
-  margin-bottom: 0.5rem;
   font-family: "Cinzel", serif;
+  font-size: 1.2rem;
+  color: #bb8930;
+  margin: 0;
+  cursor: pointer;
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: #d4a03c;
+  }
 `;
 
 const RelicPower = styled.p`

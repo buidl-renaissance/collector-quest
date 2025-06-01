@@ -9,12 +9,20 @@ const BottomNavigationBar: React.FC = () => {
   const router = useRouter();
   const { isAdmin } = useIsAdmin();
 
+  const handleCharacterClick = (e: React.MouseEvent) => {
+    if (router.pathname.startsWith("/character")) {
+      e.preventDefault();
+      router.push("/characters");
+    }
+  };
+
   const navItems = [
     {
       href: "/character",
       icon: FaUser,
       label: "Character",
       isActive: router.pathname.startsWith("/character"),
+      onClick: handleCharacterClick,
     },
     {
       href: "/artifacts",
@@ -53,6 +61,7 @@ const BottomNavigationBar: React.FC = () => {
             key={item.href}
             href={item.href}
             isActive={item.isActive}
+            onClick={item.onClick}
           >
             <NavIcon>
               <item.icon />

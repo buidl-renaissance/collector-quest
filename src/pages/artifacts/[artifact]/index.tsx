@@ -16,6 +16,16 @@ import RelicModal from "@/components/RelicUnlockModal";
 import { keyframes } from "@emotion/react";
 import AddressDisplay from "@/components/AddressDisplay";
 import { getCurrentCharacterId } from "@/utils/storage";
+import { FaArrowLeft, FaSave } from 'react-icons/fa';
+import type { Relic, ArtifactClass, Effect, Element, Rarity } from '@/data/artifacts';
+import { getRelic } from '@/db/relics';
+import useIsAdmin from '@/hooks/useIsAdmin';
+
+// Define the available options for each enum
+const artifactClasses: ArtifactClass[] = ["Tool", "Weapon", "Symbol", "Wearable", "Key"];
+const effectTypes: Effect[] = ["Reveal", "Heal", "Unlock", "Boost", "Summon"];
+const elementTypes: Element[] = ["Fire", "Water", "Nature", "Shadow", "Light", "Electric"];
+const rarityLevels: Rarity[] = ["Common", "Uncommon", "Rare", "Epic"];
 
 const ArtifactPage = ({ artifact: initialArtifact }: { artifact: Artifact }) => {
   const router = useRouter();
