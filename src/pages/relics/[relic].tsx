@@ -45,7 +45,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       metadata: {
         title: `${relicData?.name || 'Unknown Relic'} | COLLECTOR QUEST Relic`,
         description: `${relicData?.story || 'A mysterious relic from the Collector Quest universe.'}`,
-        image: relicData?.imageUrl,
+        image: relicData?.imageUrl || null,
       },
       relic: relicData || null,
     },

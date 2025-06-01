@@ -21,6 +21,7 @@ const ArtifactPage = ({ artifact: initialArtifact }: { artifact: Artifact }) => 
   const router = useRouter();
   const [imageHeight, setImageHeight] = useState<number | undefined>();
   const [showRegisterModal, setShowRegisterModal] = useState(false);
+  const [currentCharacterId, setCurrentCharacterId] = useState<string | null>(null);
   const {
     artifact,
     isGenerating,
@@ -32,14 +33,18 @@ const ArtifactPage = ({ artifact: initialArtifact }: { artifact: Artifact }) => 
   } = useArtifact(initialArtifact);
 
   useEffect(() => {
-    if ((!artifact.relic || (artifact.relic && !artifact.relic.objectId)) && artifact.owner === getCurrentCharacterId()) {
+    setCurrentCharacterId(getCurrentCharacterId());
+  }, []);
+
+  useEffect(() => {
+    if ((!artifact.relic || (artifact.relic && !artifact.relic.objectId)) && artifact.owner === currentCharacterId) {
       const timer = setTimeout(() => {
         setShowRegisterModal(true);
       }, 7000);
 
       return () => clearTimeout(timer);
     }
-  }, [artifact.owner, artifact.relic]);
+  }, [artifact.owner, artifact.relic, currentCharacterId]);
 
   const handleImageLoad = (event: any) => {
     const img = event.target;
@@ -47,6 +52,12 @@ const ArtifactPage = ({ artifact: initialArtifact }: { artifact: Artifact }) => 
     const containerWidth = img.parentElement.offsetWidth;
     const newHeight = containerWidth / aspectRatio;
     setImageHeight(newHeight);
+  };
+
+  const handleRelicClick = () => {
+    if (artifact.relic?.id) {
+      router.push(`/relics/${artifact.relic.id}`);
+    }
   };
 
   return (
@@ -87,6 +98,19 @@ const ArtifactPage = ({ artifact: initialArtifact }: { artifact: Artifact }) => 
             <DetailTitle>Medium</DetailTitle>
             <DetailContent>{artifact.medium}</DetailContent>
           </DetailSection>
+
+          {currentCharacterId && artifact.owner === currentCharacterId && artifact.relic && artifact.relic.imageUrl && (
+            <DetailSection>
+              <GlowingRelicImageContainer onClick={handleRelicClick}>
+                <Image
+                  src={artifact.relic.imageUrl}
+                  alt={`${artifact.relic.name} Relic`}
+                  fill
+                  style={{ objectFit: "cover" }}
+                />
+              </GlowingRelicImageContainer>
+            </DetailSection>
+          )}
 
         </ArtifactDetails>
       </ArtifactContainer>
@@ -600,4 +624,37 @@ const ModalButton = styled.button<{ primary?: boolean }>`
       color: #c7bfd4;
     }
   `}
+`;
+
+const GlowingRelicImageContainer = styled.div`
+  position: relative;
+  width: 200px;
+  height: 200px;
+  margin: 1rem auto;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 1px solid rgba(187, 137, 48, 0.3);
+  background: rgba(30, 20, 50, 0.5);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  animation: ${glow} 2s infinite;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+  &:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 25px rgba(187, 137, 48, 0.4);
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: -1px;
+    left: -1px;
+    right: -1px;
+    bottom: -1px;
+    background: linear-gradient(135deg, #bb8930 0%, #4a3b6b 100%);
+    border-radius: 50%;
+    z-index: -1;
+    opacity: 0.5;
+  }
 `;
