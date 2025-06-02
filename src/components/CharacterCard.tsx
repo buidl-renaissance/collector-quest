@@ -1,94 +1,121 @@
-import React from "react";
-import styled from "@emotion/styled";
-import CharacterImage from "./CharacterImage";
-import CharacterDescription from "./CharacterDescription";
-import { Character } from "@/hooks/useCharacter";
+import React from 'react';
+import styled from '@emotion/styled';
+import { Character } from '../data/character';
+import { FaCheck } from 'react-icons/fa';
 
 interface CharacterCardProps {
   character: Character;
-  onSelect?: () => void;
-  showEditButton?: boolean;
-  size?: "small" | "large";
+  isSelected?: boolean;
+  onClick?: () => void;
+  showId?: boolean;
 }
 
 const CharacterCard: React.FC<CharacterCardProps> = ({
   character,
-  onSelect,
-  showEditButton = false,
-  size = "large",
+  isSelected = false,
+  onClick,
+  showId = false,
 }) => {
   return (
-    <Card>
-      <CardHeader>
+    <CardContainer onClick={onClick} isSelected={isSelected} clickable={!!onClick}>
+      {character.image_url && (
+        <CharacterImage src={character.image_url} alt={character.name} />
+      )}
+      <CharacterInfo>
         <CharacterName>{character.name}</CharacterName>
-        {character.level && (
-          <CharacterLevel>Level {character.level}</CharacterLevel>
-        )}
-      </CardHeader>
-      <CardContent>
-        {character.race && character.class && (
-          <>
-            <CharacterImage
-              race={character.race}
-              characterClass={character.class}
-              size={size}
-          />
-          <CharacterDescription
-            race={character.race}
-            characterClass={character.class}
-              size={size}
-            />
-          </>
-        )}
-      </CardContent>
-    </Card>
+        <CharacterDetails>
+          {character.race?.name} {character.class?.name}
+        </CharacterDetails>
+        {showId && <CharacterId>{character.id}</CharacterId>}
+      </CharacterInfo>
+      {isSelected && (
+        <SelectedIndicator>
+          <FaCheck />
+        </SelectedIndicator>
+      )}
+    </CardContainer>
   );
 };
 
-export default CharacterCard;
-
-const Card = styled.div`
-  background-color: #2a2e35;
-  border-radius: 8px;
-  padding: 1rem;
-  margin-bottom: 1.5rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+const CardContainer = styled.div<{ isSelected: boolean; clickable: boolean }>`
   display: flex;
-  flex-direction: column;
-  cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
-  max-width: 420px;
+  align-items: center;
+  padding: 0.75rem;
+  border: 1px solid ${props => props.isSelected ? '#bb8930' : 'rgba(187, 137, 48, 0.3)'};
+  border-radius: 8px;
+  cursor: ${props => props.clickable ? 'pointer' : 'default'};
+  position: relative;
+  background-color: ${props => props.isSelected ? 'rgba(187, 137, 48, 0.1)' : 'rgba(46, 30, 15, 0.7)'};
+  transition: all 0.2s;
+
+  @media (max-width: 768px) {
+    padding: 0.5rem;
+  }
 
   &:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    border-color: #bb8930;
+    background-color: rgba(187, 137, 48, 0.1);
+    transform: ${props => props.clickable ? 'translateY(-2px)' : 'none'};
   }
 `;
 
-const CardHeader = styled.div`
+const CharacterImage = styled.img`
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 0.75rem;
+  border: 2px solid #bb8930;
+
+  @media (max-width: 768px) {
+    width: 64px;
+    height: 64px;
+    margin-right: 0.5rem;
+  }
+`;
+
+const CharacterInfo = styled.div`
+  flex: 1;
+`;
+
+const CharacterName = styled.div`
+  font-family: "Cinzel", serif;
+  font-weight: 600;
+  color: #bb8930;
+  margin-bottom: 0.25rem;
+  font-size: 1.4rem;
+
+  @media (max-width: 768px) {
+    font-size: 1.2rem;
+    margin-bottom: 0;
+  }
+`;
+
+const CharacterDetails = styled.div`
+  font-size: 0.875rem;
+  color: #a89bb4;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
-  text-align: center;
-  flex-direction: column;
+  gap: 0.5rem;
+
+  &::after {
+    content: "•";
+    color: #6e6378;
+  }
 `;
 
-const CharacterName = styled.h3`
-  font-size: 1.5rem;
-  margin: 0;
-  color: #e1e1e6;
-  text-align: center;
+const CharacterId = styled.div`
+  font-size: 0.6rem;
+  color: #6e6378;
+  font-family: monospace;
+  word-break: break-all;
 `;
 
-const CharacterLevel = styled.span`
-  font-size: 1rem;
-  color: #a0a0a0;
+const SelectedIndicator = styled.div`
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  color: #bb8930;
 `;
 
-const CardContent = styled.div`
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  gap: 1rem;
-`;
+export default CharacterCard;

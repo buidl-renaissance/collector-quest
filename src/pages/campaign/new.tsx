@@ -1,18 +1,41 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import styled from '@emotion/styled';
 import { Character } from '../../data/character';
 import CharacterSelection from '../../components/CharacterSelection';
+import CharacterCard from '../../components/CharacterCard';
 import PageTransition from '@/components/PageTransition';
 import Page from '@/components/Page';
 import { Title, Subtitle } from '@/components/styled/typography';
+import { useWallet } from "@/hooks/useWallet";
 
 export default function NewCampaignPage() {
   const router = useRouter();
-  const [selectedCharacters, setSelectedCharacters] = useState<Character[]>([]);
-  const [campaignName, setCampaignName] = useState('');
-  const [description, setDescription] = useState('');
+  const { address } = useWallet();
+  const [additionalPlayers, setAdditionalPlayers] = useState<Character[]>([]);
   const [loading, setLoading] = useState(false);
+  const [userCharacter, setUserCharacter] = useState<Character | null>(null);
+
+  useEffect(() => {
+    async function loadUserCharacter() {
+      if (!address) return;
+
+      try {
+        const response = await fetch(`/api/characters?owner=${address}`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch characters');
+        }
+        const data = await response.json();
+        if (data.length > 0) {
+          setUserCharacter(data[0]);
+        }
+      } catch (error) {
+        console.error('Error loading user character:', error);
+      }
+    }
+
+    loadUserCharacter();
+  }, [address]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,13 +46,14 @@ export default function NewCampaignPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name: campaignName,
-          description,
           status: 'active',
-          characters: selectedCharacters.map(char => ({
-            characterId: char.id,
-            role: 'player'
-          }))
+          characters: [
+            { characterId: userCharacter?.id, role: 'owner' },
+            ...additionalPlayers.map(char => ({
+              characterId: char.id,
+              role: 'player'
+            }))
+          ].filter(char => char.characterId != null)
         })
       });
 
@@ -47,6 +71,30 @@ export default function NewCampaignPage() {
     }
   };
 
+  if (!address) {
+    return (
+      <PageTransition>
+        <Page>
+          <Container>
+            <ErrorMessage>Please connect your wallet to create a campaign</ErrorMessage>
+          </Container>
+        </Page>
+      </PageTransition>
+    );
+  }
+
+  if (!userCharacter) {
+    return (
+      <PageTransition>
+        <Page>
+          <Container>
+            <ErrorMessage>You need to have at least one character to create a campaign</ErrorMessage>
+          </Container>
+        </Page>
+      </PageTransition>
+    );
+  }
+
   return (
     <PageTransition>
       <Page>
@@ -56,32 +104,22 @@ export default function NewCampaignPage() {
           
           <Form onSubmit={handleSubmit}>
             <FormGroup>
-              <Label>Campaign Name</Label>
-              <Input
-                type="text"
-                value={campaignName}
-                onChange={(e) => setCampaignName(e.target.value)}
-                placeholder="Enter the name of your campaign"
-                required
+              <Label>Campaign Owner</Label>
+              <CharacterCard
+                character={userCharacter}
+                isSelected={true}
+                showId={true}
               />
             </FormGroup>
 
-            {/* <FormGroup>
-              <Label>Description</Label>
-              <TextArea
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="Describe your campaign's story and objectives"
-                rows={4}
-              />
-            </FormGroup> */}
-
             <FormGroup>
-              <Label>Select Your Party</Label>
+              <Label>Additional Players</Label>
               <CharacterSelection
-                selectedCharacters={selectedCharacters}
-                onSelectionChange={setSelectedCharacters}
+                selectedCharacters={additionalPlayers}
+                onSelectionChange={setAdditionalPlayers}
                 multiSelect={true}
+                showSearch={true}
+                currentCharacter={userCharacter}
               />
             </FormGroup>
           </Form>
@@ -95,7 +133,7 @@ export default function NewCampaignPage() {
               </CancelButton>
               <CreateButton 
                 onClick={handleSubmit}
-                disabled={selectedCharacters.length === 0 || loading}
+                disabled={loading}
               >
                 {loading ? 'Creating...' : 'Create'}
               </CreateButton>
@@ -149,48 +187,6 @@ const Label = styled.label`
   font-size: 1.1rem;
   color: #bb8930;
   font-weight: 500;
-`;
-
-const Input = styled.input`
-  padding: 0.75rem 1rem;
-  background-color: rgba(46, 30, 15, 0.7);
-  border: 1px solid #bb8930;
-  border-radius: 4px;
-  font-size: 1rem;
-  color: #a89bb4;
-  transition: all 0.2s ease;
-
-  &:focus {
-    outline: none;
-    border-color: #d4a959;
-    box-shadow: 0 0 0 2px rgba(187, 137, 48, 0.2);
-  }
-
-  &::placeholder {
-    color: #6e6378;
-  }
-`;
-
-const TextArea = styled.textarea`
-  padding: 0.75rem 1rem;
-  background-color: rgba(46, 30, 15, 0.7);
-  border: 1px solid #bb8930;
-  border-radius: 4px;
-  font-size: 1rem;
-  color: #a89bb4;
-  resize: vertical;
-  min-height: 100px;
-  transition: all 0.2s ease;
-
-  &:focus {
-    outline: none;
-    border-color: #d4a959;
-    box-shadow: 0 0 0 2px rgba(187, 137, 48, 0.2);
-  }
-
-  &::placeholder {
-    color: #6e6378;
-  }
 `;
 
 const BottomBar = styled.div`
@@ -281,4 +277,14 @@ const CancelButton = styled(BaseButton)`
   &:hover {
     background-color: rgba(187, 137, 48, 0.1);
   }
+`;
+
+const ErrorMessage = styled.div`
+  text-align: center;
+  padding: 2rem;
+  color: #bb8930;
+  font-family: "Cinzel", serif;
+  background-color: rgba(46, 30, 15, 0.7);
+  border-radius: 8px;
+  border: 1px dashed #bb8930;
 `;
