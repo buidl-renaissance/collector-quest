@@ -1,5 +1,5 @@
 import { serve } from "inngest/next";
-import { inngest } from "@/inngest/client";
+import { inngest } from "@/utils/inngest";
 import { generateImageFunction, generateRaceImageFunction } from "@/inngest/functions";
 import { generateCharacterImageFunction } from "@/inngest/generateCharacterImage";
 import { generateStoryFunction } from "@/inngest/generateStoryFunction";
@@ -8,6 +8,8 @@ import { generateEquipment } from "@/inngest/generateEquipment";
 import { generateCharacterSheet } from "@/inngest/generateCharacterSheet";
 import { generateRelicFunction } from "@/inngest/generateArtifactRelic";
 import { generateQuestFunction } from "@/inngest/generateQuest";
+import { convertTextToSpeech } from "@/inngest/convertTextToSpeech";
+
 export const config = {
   api: {
     bodyParser: {
@@ -16,7 +18,6 @@ export const config = {
     responseLimit: '8mb',
   },
 };
-
 
 // Create an API that serves zero functions
 export default serve({
@@ -31,5 +32,6 @@ export default serve({
     generateStoryFunction,
     generateTraits,
     generateEquipment,
+    convertTextToSpeech,
   ],
 });
