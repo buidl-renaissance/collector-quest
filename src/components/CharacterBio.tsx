@@ -18,7 +18,7 @@ const CharacterBio: React.FC<BioProps> = ({ character, openModal }) => {
   const handleOpenModal = () => {
     openModal?.(`About ${character.name}`, (
       <>
-        {character.traits && (
+        {/* {character.traits && (
           <>
             {character.traits.personality && (
               <BioModalSection>
@@ -71,11 +71,11 @@ const CharacterBio: React.FC<BioProps> = ({ character, openModal }) => {
             <BioModalTitle>Motivation</BioModalTitle>
             <BioModalText>{character.motivation}</BioModalText>
           </BioModalSection>
-        )}
+        )} */}
         
         {character.backstory && (
           <BioModalSection>
-            <BioModalTitle>Backstory</BioModalTitle>
+            {/* <BioModalTitle>Backstory</BioModalTitle> */}
             <BioModalText>{character.backstory}</BioModalText>
           </BioModalSection>
         )}
@@ -88,10 +88,10 @@ const CharacterBio: React.FC<BioProps> = ({ character, openModal }) => {
       <BioContainer>
         {character.backstory ? (
           <>
-            <BioText>{truncateText(character.backstory)}</BioText>
+            <BioText>{truncateText(character.backstory, 250)}</BioText>
             {openModal && (
               <ViewMoreButton onClick={handleOpenModal}>
-                Read Full Bio
+                Read Full Backstory
               </ViewMoreButton>
             )}
           </>
