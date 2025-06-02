@@ -10,7 +10,10 @@ export default async function handler(
 
   if (req.method === 'GET') {
     try {
-      const characters = await characterDB.listCharacters();
+      const { owner } = req.query;
+      const characters = await characterDB.listCharacters({
+        owner: owner as string
+      });
       return res.status(200).json(characters);
     } catch (error) {
       console.error('Error fetching characters:', error);
@@ -28,8 +31,11 @@ export default async function handler(
   } else if (req.method === 'PUT') {
     try {
       const character: Character = req.body;
-      const id = await characterDB.updateCharacter(character.id!, character);
-      return res.status(200).json({ id, ...character });
+      const success = await characterDB.updateCharacter(character.id!, character);
+      if (!success) {
+        return res.status(404).json({ error: 'Character not found' });
+      }
+      return res.status(200).json(character);
     } catch (error) {
       console.error('Error updating character:', error);
       return res.status(500).json({ error: 'Failed to update character' });

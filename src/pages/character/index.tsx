@@ -22,22 +22,11 @@ import { useCharacter } from "@/hooks/useCharacter";
 import { useWallet } from "@/hooks/useWallet";
 import AddressDisplay from "@/components/AddressDisplay";
 import BottomNavigationBar from "@/components/BottomNavigationBar";
+import ArtifactsList from "@/components/ArtifactsList";
+import RegisterCharacter from "@/components/RegisterCharacter";
 
 interface CharacterPageProps {
   character: Character | null;
-}
-
-interface Realm {
-  id: string;
-  name: string;
-  description: string;
-  imageUrl: string;
-  location: string;
-  kingdomName: string;
-  guardians: string[];
-  invitationOnly: boolean;
-  requiresVerification: boolean;
-  createdAt: string;
 }
 
 const CharacterPage: React.FC<CharacterPageProps> = () => {
@@ -126,6 +115,11 @@ const CharacterPage: React.FC<CharacterPageProps> = () => {
     }
   };
 
+  const handleCopyId = (id: string) => {
+    navigator.clipboard.writeText(id);
+    openModal("Success", "Character ID copied to clipboard!");
+  };
+
   if (!character) {
     return (
       <PageTransition>
@@ -191,99 +185,23 @@ const CharacterPage: React.FC<CharacterPageProps> = () => {
                 <CharacterBio character={character} openModal={openModal} />
               </BioCardContainer>
 
-              <RegisterSection>
-                {registeredCharacterId ? (
-                  <>
-                    <RegisterTitle>Character Registered!</RegisterTitle>
-                    <RegisterDescription>
-                      Your character has been successfully registered on the
-                      blockchain. You can now create artifacts, join realms, and
-                      begin your journey.
-                    </RegisterDescription>
-                    <AddressDisplay
-                      address={registeredCharacterId}
-                      label="Character ID"
-                      onCopy={() => {
-                        navigator.clipboard.writeText(registeredCharacterId);
-                        openModal("Success", "Character ID copied to clipboard!");
-                      }}
-                      explorerUrl={`https://suiscan.xyz/testnet/object/${registeredCharacterId}/tx-blocks`}
-                    />
-                  </>
-                ) : (
-                  <>
-                    <RegisterTitle>Begin Your Quest</RegisterTitle>
-                    <RegisterDescription>
-                      Register your character to begin your journey. Create and
-                      discover artifacts, join realms, and forge your legacy.
-                    </RegisterDescription>
-                    {error && (
-                      <ErrorMessage>
-                        {error}
-                      </ErrorMessage>
-                    )}
-                    <RegisterButton
-                      onClick={handleRegisterCharacter}
-                      disabled={isRegistering}
-                    >
-                      {isRegistering ? (
-                        <>
-                          <FaSpinner className="animate-spin" /> Registering...
-                        </>
-                      ) : (
-                        <>
-                          <FaUserPlus /> Register Character
-                        </>
-                      )}
-                    </RegisterButton>
-                  </>
-                )}
-              </RegisterSection>
+              <RegisterCharacter
+                character={character}
+                isRegistering={isRegistering}
+                error={error}
+                registeredCharacterId={registeredCharacterId}
+                onRegister={handleRegisterCharacter}
+                onCopyId={handleCopyId}
+              />
 
               {registeredCharacterId && (
                 <ArtifactsSection>
                   <CharacterSectionTitle>Your Artifacts</CharacterSectionTitle>
-                  {loadingArtifacts ? (
-                    <LoadingText>Loading artifacts...</LoadingText>
-                  ) : (
-                    <>
-                      {artifacts.length > 0 && (
-                        <ArtifactsGrid>
-                          {artifacts.map((artifact) => (
-                            <ArtifactCard
-                              key={artifact.id}
-                              onClick={() =>
-                                router.push(`/artifacts/${artifact.id}`)
-                              }
-                            >
-                              <ArtifactImageContainer>
-                                <Image
-                                  src={artifact.imageUrl}
-                                  alt={artifact.title}
-                                  layout="fill"
-                                  objectFit="cover"
-                                />
-                              </ArtifactImageContainer>
-                              <ArtifactInfo>
-                                <ArtifactTitle>{artifact.title}</ArtifactTitle>
-                                <ArtifactArtist>
-                                  By {artifact.artist}, {artifact.year}
-                                </ArtifactArtist>
-                              </ArtifactInfo>
-                            </ArtifactCard>
-                          ))}
-                        </ArtifactsGrid>
-                      )}
-                      <CreateArtifactContainer hasEmptyState={artifacts.length === 0}>
-                        {artifacts.length === 0 && (
-                          <EmptyStateText>No artifacts found</EmptyStateText>
-                        )}
-                        <CreateArtifactButton onClick={handleCreateArtifact}>
-                          <FaPlus /> Create Artifact
-                        </CreateArtifactButton>
-                      </CreateArtifactContainer>
-                    </>
-                  )}
+                  <ArtifactsList
+                    artifacts={artifacts}
+                    loading={loadingArtifacts}
+                    onCreateArtifact={handleCreateArtifact}
+                  />
                 </ArtifactsSection>
               )}
             </CharacterImageSection>
@@ -552,62 +470,6 @@ const CreateArtifactButton = styled.button`
 
   svg {
     font-size: 0.9rem;
-  }
-`;
-
-const RegisterSection = styled.div`
-  background-color: #2d2d44;
-  border-radius: 8px;
-  padding: 2rem;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-  border: 1px solid #4a3b6b;
-  margin-top: 2rem;
-  text-align: center;
-`;
-
-const RegisterTitle = styled.h3`
-  color: #bb8930;
-  font-family: "Cinzel", serif;
-  font-size: 1.3rem;
-  margin-bottom: 1rem;
-`;
-
-const RegisterDescription = styled.p`
-  color: #a89bb4;
-  font-family: "Cormorant Garamond", serif;
-  font-size: 1rem;
-  line-height: 1.6;
-  margin-bottom: 1.5rem;
-  max-width: 600px;
-  margin-left: auto;
-  margin-right: auto;
-`;
-
-const RegisterButton = styled.button`
-  background-color: #bb8930;
-  color: #1e1e2d;
-  border: none;
-  border-radius: 4px;
-  padding: 0.75rem 1.5rem;
-  font-family: "Cinzel", serif;
-  font-size: 1rem;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  transition: all 0.2s ease-in-out;
-
-  &:hover {
-    background-color: #d4a03c;
-    transform: translateY(-2px);
-  }
-
-  &:active {
-    transform: translateY(0);
-  }
-
-  svg {
-    font-size: 1rem;
   }
 `;
 

@@ -228,4 +228,5 @@ export interface Character {
   creature?: string;
   image_url?: string;
   sheet?: CharacterSheet | null;
+  is_active?: boolean;
 }

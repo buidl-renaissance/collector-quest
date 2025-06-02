@@ -5,6 +5,11 @@ import { getClassById } from "./classes";
 import { getRaceById } from "./races";
 import crypto from "crypto";
 
+export interface CharacterListOptions {
+  owner?: string;
+  status?: CharacterStatus;
+}
+
 export class CharacterDB {
   async createCharacter(character: Character): Promise<string> {
     const id = uuidv4();
@@ -137,8 +142,15 @@ export class CharacterDB {
     return count > 0;
   }
 
-  async listCharacters(): Promise<Character[]> {
-    const results = await client("characters").select("*");
+  async listCharacters(options?: CharacterListOptions): Promise<Character[]> {
+    const query = client("characters").select("*");
+    if (options?.owner) {
+      query.where("owner", options.owner);
+    }
+    if (options?.status) {
+      query.where("status", options.status);
+    }
+    const results = await query;
     return Promise.all(
       results.map(async (result) => {
         return mapCharacter(result);
