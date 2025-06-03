@@ -97,3 +97,20 @@ export const BackLink = styled(Link)`
     background-color: rgba(187, 137, 48, 0.1);
   }
 `; 
+
+export const CTAButton = styled.button`
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 50px;
+  color: black;
+  font-weight: bold;
+  font-size: 1.2rem;
+  cursor: pointer;
+  margin-top: 1rem;
+  transition: transform 0.2s;
+
+  &:hover {
+    transform: scale(1.05);
+  }
+`;

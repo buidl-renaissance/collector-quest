@@ -54,8 +54,7 @@ export async function generateCampaign(characters: Character[]) {
         content: `Here are the characters:\n\n${characterDescriptions}\n\nGenerate a campaign name and description that reflects each character's personal arc while tying into a shared world conflict. Format the response as JSON with 'name' and 'description' fields.`
       }
     ],
-    temperature: 0.8,
-    response_format: { type: "json_object" }
+    temperature: 0.8
   });
 
   const content = response.choices[0].message.content;

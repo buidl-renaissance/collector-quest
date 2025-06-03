@@ -6,6 +6,7 @@ import { NextButton } from './styled/buttons';
 interface BottomNavigationProps {
   selectedItem?: string;
   selectedItemLabel?: string;
+  nextLabel?: string;
   onNext: () => void;
   disabled?: boolean;
 }
@@ -13,19 +14,22 @@ interface BottomNavigationProps {
 const BottomNavigation: React.FC<BottomNavigationProps> = ({
   selectedItem,
   selectedItemLabel,
+  nextLabel,
   onNext,
   disabled = false,
 }) => {
   return (
     <NavigationContainer>
-      {selectedItem && selectedItemLabel && (
+      {selectedItem && selectedItemLabel ? (
         <SelectedItem>
           <SelectedItemLabel>{selectedItemLabel}:</SelectedItemLabel>
           <SelectedItemValue>{selectedItem}</SelectedItemValue>
         </SelectedItem>
+      ) : (
+        <SelectedItem />
       )}
       <NextButton onClick={onNext} disabled={disabled}>
-        Next Step <FaArrowRight />
+        {nextLabel || 'Next Step'} <FaArrowRight />
       </NextButton>
     </NavigationContainer>
   );

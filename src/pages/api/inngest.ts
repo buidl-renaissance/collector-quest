@@ -8,6 +8,8 @@ import { generateEquipment } from "@/inngest/generateEquipment";
 import { generateCharacterSheet } from "@/inngest/generateCharacterSheet";
 import { generateRelicFunction } from "@/inngest/generateArtifactRelic";
 import { generateQuestFunction } from "@/inngest/generateQuest";
+import { generateCampaignFunction } from "@/inngest/generateCampaign";
+
 export const config = {
   api: {
     bodyParser: {
@@ -31,5 +33,6 @@ export default serve({
     generateStoryFunction,
     generateTraits,
     generateEquipment,
+    generateCampaignFunction,
   ],
 });

@@ -126,10 +126,6 @@ const CharacterSelection: React.FC<CharacterSelectionProps> = ({
     return <ErrorMessage>Please connect your wallet to view characters</ErrorMessage>;
   }
 
-  if (characters.length === 0) {
-    return <EmptyMessage>No additional characters available</EmptyMessage>;
-  }
-
   return (
     <Container>
       {showSearch && (

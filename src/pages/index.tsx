@@ -21,6 +21,7 @@ import { NextButton } from "@/components/styled/buttons";
 import router from "next/router";
 import PressStart from "@/components/PressStart";
 import { useCharacter } from "@/hooks/useCharacter";
+import { FeaturedDescription, FeaturedGrid, FeaturedIcon, FeaturedItem, FeaturedSection, FeaturedTitle } from "@/components/styled/section";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   return {
@@ -205,46 +206,46 @@ const IndexPage: React.FC = () => {
           )}
         </PreRegisterSection> */}
 
-        <FeatureSection>
-          <FeatureGrid>
-            <FeatureItem>
-              <FeatureIcon>
+        <FeaturedSection>
+          <FeaturedGrid>
+            <FeaturedItem>
+              <FeaturedIcon>
                 <FaDungeon />
-              </FeatureIcon>
-              <FeatureTitle>Infinite Adventures</FeatureTitle>
-              <FeatureDescription>
+              </FeaturedIcon>
+              <FeaturedTitle>Infinite Adventures</FeaturedTitle>
+              <FeaturedDescription>
                 Every quest is uniquely crafted for your character
-              </FeatureDescription>
-            </FeatureItem>
-            <FeatureItem>
-              <FeatureIcon>
+              </FeaturedDescription>
+            </FeaturedItem>
+            <FeaturedItem>
+              <FeaturedIcon>
                 <FaDice />
-              </FeatureIcon>
-              <FeatureTitle>Dynamic Storytelling</FeatureTitle>
-              <FeatureDescription>
+              </FeaturedIcon>
+              <FeaturedTitle>Dynamic Storytelling</FeaturedTitle>
+              <FeaturedDescription>
                 Your choices shape the narrative and consequences
-              </FeatureDescription>
-            </FeatureItem>
-            <FeatureItem>
-              <FeatureIcon>
+              </FeaturedDescription>
+            </FeaturedItem>
+            <FeaturedItem>
+              <FeaturedIcon>
                 <FaScroll />
-              </FeatureIcon>
-              <FeatureTitle>Collectible Quests</FeatureTitle>
-              <FeatureDescription>
+              </FeaturedIcon>
+              <FeaturedTitle>Collectible Quests</FeaturedTitle>
+              <FeaturedDescription>
                 Build your library of completed adventures
-              </FeatureDescription>
-            </FeatureItem>
-            <FeatureItem>
-              <FeatureIcon>
+              </FeaturedDescription>
+            </FeaturedItem>
+            <FeaturedItem>
+              <FeaturedIcon>
                 <FaBook />
-              </FeatureIcon>
-              <FeatureTitle>Growing World</FeatureTitle>
-              <FeatureDescription>
+              </FeaturedIcon>
+              <FeaturedTitle>Growing World</FeaturedTitle>
+              <FeaturedDescription>
                 Discover new realms, items, and characters
-              </FeatureDescription>
-            </FeatureItem>
-          </FeatureGrid>
-        </FeatureSection>
+              </FeaturedDescription>
+            </FeaturedItem>
+          </FeaturedGrid>
+        </FeaturedSection>
 
         <Section>
           {/* <SectionIcon>
@@ -254,32 +255,32 @@ const IndexPage: React.FC = () => {
           <Description>
             Turn your artwork into legendary digital relics. Each piece becomes a unique artifact with mystical powers.
           </Description>
-          <ArtifactGrid>
-            <ArtifactItem>
-              <ArtifactTitle>Register Art</ArtifactTitle>
-              <ArtifactDescription>
+          <FeaturedGrid>
+            <FeaturedItem>
+              <FeaturedTitle>Register Art</FeaturedTitle>
+              <FeaturedDescription>
                 Transform your artwork into a digital relic
-              </ArtifactDescription>
-            </ArtifactItem>
-            <ArtifactItem>
-              <ArtifactTitle>Magical Powers</ArtifactTitle>
-              <ArtifactDescription>
+              </FeaturedDescription>
+            </FeaturedItem>
+            <FeaturedItem>
+              <FeaturedTitle>Magical Powers</FeaturedTitle>
+              <FeaturedDescription>
                 Each artifact gains unique mystical abilities
-              </ArtifactDescription>
-            </ArtifactItem>
-            <ArtifactItem>
-              <ArtifactTitle>Verified Collection</ArtifactTitle>
-              <ArtifactDescription>
+              </FeaturedDescription>
+            </FeaturedItem>
+            <FeaturedItem>
+              <FeaturedTitle>Verified Collection</FeaturedTitle>
+              <FeaturedDescription>
                 Build a collection of authentic digital relics
-              </ArtifactDescription>
-            </ArtifactItem>
-            <ArtifactItem>
-              <ArtifactTitle>Live Forever</ArtifactTitle>
-              <ArtifactDescription>
+              </FeaturedDescription>
+            </FeaturedItem>
+            <FeaturedItem>
+              <FeaturedTitle>Live Forever</FeaturedTitle>
+              <FeaturedDescription>
                 Your art becomes a legendary game artifact
-              </ArtifactDescription>
-            </ArtifactItem>
-          </ArtifactGrid>
+              </FeaturedDescription>
+            </FeaturedItem>
+          </FeaturedGrid>
           <Tagline>Where art becomes legend.</Tagline>
         </Section>
 
@@ -556,138 +557,6 @@ const Section = styled.section`
   }
 `;
 
-const PreRegisterSection = styled(Section)`
-  background: rgba(58, 38, 6, 0.8);
-  border: 1px solid rgba(187, 137, 48, 0.5);
-  scroll-margin-top: 20px;
-`;
-
-const PreRegisterForm = styled.form`
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  margin-top: 1.5rem;
-
-  @media (min-width: 768px) {
-    flex-direction: row;
-  }
-`;
-
-const PreRegisterInput = styled.input`
-  padding: 0.75rem 1rem;
-  border-radius: 4px;
-  border: 1px solid #bb8930;
-  background: rgba(58, 38, 6, 0.5);
-  color: #e6e6e6;
-  font-family: inherit;
-  flex: 1;
-
-  &::placeholder {
-    color: rgba(230, 230, 230, 0.6);
-  }
-
-  &:focus {
-    outline: none;
-    border-color: #b6551c;
-    box-shadow: 0 0 0 2px rgba(182, 85, 28, 0.3);
-  }
-`;
-
-const PreRegisterButton = styled.button`
-  padding: 0.75rem 1.5rem;
-  border-radius: 4px;
-  border: none;
-  background: linear-gradient(90deg, #bb8930, #b6551c);
-  color: #fff;
-  font-weight: bold;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-family: "Cinzel", serif;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 150px;
-
-  &:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  }
-
-  &:disabled {
-    opacity: 0.7;
-    cursor: not-allowed;
-  }
-`;
-
-const ErrorMessage = styled.div`
-  color: #ff6b6b;
-  font-size: 0.9rem;
-  margin-top: 0.5rem;
-`;
-
-const SuccessMessage = styled.div`
-  background: rgba(187, 137, 48, 0.1);
-  border: 1px solid #bb8930;
-  border-radius: 8px;
-  padding: 1.5rem;
-  text-align: center;
-  margin-top: 1.5rem;
-  animation: ${unfurl} 0.5s ease-out;
-`;
-
-const FeatureSection = styled(Section)`
-  background: rgba(58, 38, 6, 0.6);
-`;
-
-const FeatureGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1.5rem;
-  margin-top: 1.5rem;
-`;
-
-const FeatureItem = styled.div`
-  background: rgba(187, 137, 48, 0.1);
-  border-radius: 8px;
-  padding: 1.5rem;
-  text-align: center;
-  transition: all 0.3s ease;
-
-  &:hover {
-    transform: translateY(-5px);
-    background: rgba(187, 137, 48, 0.2);
-  }
-`;
-
-const FeatureIcon = styled.div`
-  font-size: 2rem;
-  color: #bb8930;
-  margin-bottom: 1rem;
-  display: inline-flex;
-  align-items: center;
-`;
-
-const FeatureTitle = styled.h4`
-  font-size: 1.1rem;
-  color: #bb8930;
-  margin-bottom: 0.5rem;
-  font-family: "Cinzel", serif;
-`;
-
-const FeatureDescription = styled.p`
-  font-size: 0.9rem;
-`;
-
-const SectionIcon = styled.div`
-  font-size: 1.8rem;
-  color: #bb8930;
-  margin-bottom: 1rem;
-  text-align: center;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
-
 const SectionTitle = styled.h3`
   font-size: 1.5rem;
   color: #b6551c;
@@ -720,54 +589,6 @@ const Tagline = styled.p`
 
   @media (min-width: 768px) {
     font-size: 1.2rem;
-  }
-`;
-
-const FounderBadge = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  background: rgba(27, 58, 84, 0.2);
-  border: 1px solid #1b3a54;
-  border-radius: 20px;
-  padding: 0.5rem 1rem;
-  margin: 2rem auto;
-  max-width: fit-content;
-`;
-
-const BadgeIcon = styled.div`
-  color: #bb8930;
-  font-size: 1rem;
-`;
-
-const BadgeText = styled.span`
-  color: #bb8930;
-  font-size: 0.9rem;
-  font-family: "Cinzel", serif;
-`;
-
-const LoadingSpinner = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 1.5rem;
-  height: 1.5rem;
-
-  &::after {
-    content: "";
-    width: 1.2rem;
-    height: 1.2rem;
-    border: 2px solid #fff;
-    border-top-color: transparent;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-  }
-
-  @keyframes spin {
-    to {
-      transform: rotate(360deg);
-    }
   }
 `;
 
@@ -886,41 +707,6 @@ const ShareOption = styled.a<{ color: string }>`
     transform: translateY(-2px);
     filter: brightness(1.1);
   }
-`;
-
-const ArtifactGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1.5rem;
-  margin: 2rem 0;
-`;
-
-const ArtifactItem = styled.div`
-  background: rgba(187, 137, 48, 0.1);
-  border: 1px solid rgba(187, 137, 48, 0.3);
-  border-radius: 8px;
-  padding: 1.5rem;
-  text-align: center;
-  transition: all 0.3s ease;
-
-  &:hover {
-    transform: translateY(-5px);
-    background: rgba(187, 137, 48, 0.2);
-    border-color: rgba(187, 137, 48, 0.5);
-  }
-`;
-
-const ArtifactTitle = styled.h4`
-  color: #bb8930;
-  font-family: "Cinzel", serif;
-  font-size: 1.1rem;
-  margin-bottom: 0.5rem;
-`;
-
-const ArtifactDescription = styled.p`
-  color: #e6e6e6;
-  font-size: 0.9rem;
-  line-height: 1.4;
 `;
 
 export default IndexPage;

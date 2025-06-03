@@ -3,46 +3,75 @@ import { Campaign, CampaignCharacter, CampaignQuest } from "../data/campaigns";
 import { Character } from "../data/character";
 import { Quest } from "../data/quest";
 import { v4 as uuidv4 } from "uuid";
+// import { getCharacter } from "@/utils/storage";
+import { CharacterDB } from "./character";
 
-function mapCampaignFromDb(campaign: any): Campaign {
+const characterDB = new CharacterDB();
+
+interface CampaignDb {
+  id: string;
+  name: string;
+  description: string;
+  status: Campaign["status"];
+  targetAudience: string;
+  startDate: string | null;
+  endDate: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface CampaignCharacterDb {
+  id: string;
+  campaign_id: string;
+  character_id: string;
+  role: CampaignCharacter["role"];
+  is_active: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface CampaignQuestDb {
+  id: string;
+  campaign_id: string;
+  quest_id: string;
+  status: string;
+  start_date: string | null;
+  end_date: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+function mapCampaignFromDb(campaign: CampaignDb): Campaign {
   return {
     ...campaign,
-    startDate: new Date(campaign.startDate),
-    endDate: new Date(campaign.endDate),
-    targetAudience: campaign.targetAudience,
-    quests: campaign.quests || [],
-    characters: campaign.characters || [],
-    createdAt: new Date(campaign.createdAt),
-    updatedAt: new Date(campaign.updatedAt),
+    targetAudience: campaign.targetAudience ? JSON.parse(campaign.targetAudience) : null,
   };
 }
 
-function mapCampaignCharacterFromDb(campaignChar: any): CampaignCharacter {
+async function mapCampaignCharacterFromDb(campaignChar: CampaignCharacterDb): Promise<CampaignCharacter> {
+  const character = await characterDB.getCharacter(campaignChar.character_id);
   return {
     id: campaignChar.id,
-    campaign: mapCampaignFromDb(campaignChar.campaign),
-    character: campaignChar.character as Character,
+    campaign_id: campaignChar.campaign_id,
+    character_id: campaignChar.character_id,
     role: campaignChar.role,
     isActive: campaignChar.is_active,
-    createdAt: new Date(campaignChar.createdAt),
-    updatedAt: new Date(campaignChar.updatedAt),
+    createdAt: campaignChar.createdAt,
+    updatedAt: campaignChar.updatedAt,
   };
 }
 
-function mapCampaignQuestFromDb(campaignQuest: any): CampaignQuest {
+function mapCampaignQuestFromDb(campaignQuest: CampaignQuestDb): CampaignQuest {
+  // const quest = await getQuest(campaignQuest.quest_id);
   return {
     id: campaignQuest.id,
-    campaign: mapCampaignFromDb(campaignQuest.campaign),
-    quest: campaignQuest.quest as Quest,
-    status: campaignQuest.status,
-    startDate: campaignQuest.start_date
-      ? new Date(campaignQuest.start_date)
-      : undefined,
-    endDate: campaignQuest.end_date
-      ? new Date(campaignQuest.end_date)
-      : undefined,
-    createdAt: new Date(campaignQuest.createdAt),
-    updatedAt: new Date(campaignQuest.updatedAt),
+    campaign_id: campaignQuest.campaign_id,
+    quest_id: campaignQuest.quest_id,
+    status: campaignQuest.status as CampaignQuest["status"],
+    startDate: campaignQuest.start_date,
+    endDate: campaignQuest.end_date,
+    createdAt: campaignQuest.createdAt,
+    updatedAt: campaignQuest.updatedAt,
   };
 }
 
@@ -64,17 +93,12 @@ export async function createCampaign(
   const id = uuidv4();
 
   // Insert campaign
-  const [result] = await client("campaigns").insert({
+  await client("campaigns").insert({
     id,
     name: campaign.name,
     description: campaign.description,
     status: campaign.status,
   });
-
-  const newCampaign = await getCampaign(id);
-  if (!newCampaign) {
-    throw new Error("Failed to create campaign");
-  }
 
   // Insert character relationships
   if (characters?.length) {
@@ -87,12 +111,13 @@ export async function createCampaign(
         )
       )
     );
-    newCampaign.characters = characterResults.filter(
-      (char): char is CampaignCharacter => char !== null
-    );
   }
 
-  return mapCampaignFromDb(result);
+  const newCampaign = await getCampaign(id);
+  if (!newCampaign) {
+    throw new Error("Failed to create campaign");
+  }
+  return newCampaign;
 }
 
 export async function getCampaign(id: string): Promise<Campaign | null> {
@@ -166,7 +191,7 @@ export async function getCampaignWithRelations(campaign: Campaign): Promise<{
     .where("campaign_quests.campaign_id", campaign.id);
 
   return {
-    characters: characters.map(mapCampaignCharacterFromDb),
+    characters: await Promise.all(characters.map(mapCampaignCharacterFromDb)),
     quests: quests.map(mapCampaignQuestFromDb),
   };
 }
@@ -218,37 +243,35 @@ export async function removeCharacterFromCampaign(
   return count > 0;
 }
 
-/**
- * Get all characters in a campaign
- * @param campaignId - The ID of the campaign to get the characters for
- * @returns An array of characters in the campaign
- */
-export async function getCharactersInCampaign(
-  campaignId: string
-): Promise<Character[]> {
-  const characters = await client("campaign_characters")
-    .select("campaign_characters.*")
-    .where("campaign_characters.campaign_id", campaignId);
-  return characters
-    .map(mapCampaignCharacterFromDb)
-    .map((campaignCharacter) => campaignCharacter.character);
-}
+// /**
+//  * Get all characters in a campaign
+//  * @param campaignId - The ID of the campaign to get the characters for
+//  * @returns An array of characters in the campaign
+//  */
+// export async function getCharactersInCampaign(
+//   campaignId: string
+// ): Promise<Character[]> {
+//   const characters = await client("campaign_characters")
+//     .select("campaign_characters.*")
+//     .where("campaign_characters.campaign_id", campaignId);
+//   return (await Promise.all(characters.map(mapCampaignCharacterFromDb))).map((campaignCharacter) => campaignCharacter.character);
+// }
 
-/**
- * Get all quests in a campaign
- * @param campaignId - The ID of the campaign to get the quests for
- * @returns An array of quests in the campaign
- */
-export async function getQuestsInCampaign(
-  campaignId: string
-): Promise<Quest[]> {
-  const quests = await client("campaign_quests")
-    .select("campaign_quests.*")
-    .where("campaign_quests.campaign_id", campaignId);
-  return quests
-    .map(mapCampaignQuestFromDb)
-    .map((campaignQuest) => campaignQuest.quest);
-}
+// /**
+//  * Get all quests in a campaign
+//  * @param campaignId - The ID of the campaign to get the quests for
+//  * @returns An array of quests in the campaign
+//  */
+// export async function getQuestsInCampaign(
+//   campaignId: string
+// ): Promise<Quest[]> {
+//   const quests = await client("campaign_quests")
+//     .select("campaign_quests.*")
+//     .where("campaign_quests.campaign_id", campaignId);
+//   return quests
+//     .map(mapCampaignQuestFromDb)
+//     .map((campaignQuest) => campaignQuest.quest_id);
+// }
 
 /**
  * Add a quest to a campaign

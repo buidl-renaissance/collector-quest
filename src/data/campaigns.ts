@@ -5,33 +5,33 @@ export interface Campaign {
   id: string;
   name: string;
   description: string;
-  startDate: Date;
-  endDate: Date;
+  startDate: string | null;
+  endDate: string | null;
   status: 'active' | 'inactive' | 'completed';
-  targetAudience: string[];
-  quests: CampaignQuest[];
-  characters: CampaignCharacter[];
-  createdAt: Date;
-  updatedAt: Date;
+  targetAudience: string[] | null;
+  quests?: CampaignQuest[] | null;
+  characters?: CampaignCharacter[] | null;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface CampaignCharacter {
   id: string;
-  campaign: Campaign;
-  character: Character;
+  campaign_id: string;
+  character_id: string;
   role: 'player' | 'npc' | 'boss' | 'ally' | 'owner';
   isActive: boolean;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface CampaignQuest {
   id: string;
-  campaign: Campaign;
-  quest: Quest;
+  campaign_id: string;
+  quest_id: string;
   status: 'not_started' | 'in_progress' | 'completed' | 'failed';
-  startDate?: Date;
-  endDate?: Date;
-  createdAt: Date;
-  updatedAt: Date;
+  startDate?: string | null;
+  endDate?: string | null;
+  createdAt: string;
+  updatedAt: string;
 }

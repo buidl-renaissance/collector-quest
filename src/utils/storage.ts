@@ -3,6 +3,7 @@ export const STORAGE_KEYS = {
   CHARACTERS: 'characters',
   CURRENT_USER: 'currentUser',
   USERS: 'users',
+  CAMPAIGNS: 'campaigns',
 };
 
 export const getCurrentCharacterId = () => localStorage.getItem(STORAGE_KEYS.CURRENT_CHARACTER_ID);

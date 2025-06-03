@@ -7,7 +7,7 @@ exports.up = function(knex) {
     table.uuid('id').primary();
     table.uuid('campaign_id').references('id').inTable('campaigns').onDelete('CASCADE').notNullable();
     table.uuid('character_id').references('id').inTable('characters').onDelete('CASCADE').notNullable();
-    table.enu('role', ['player', 'npc', 'boss', 'ally']).notNullable();
+    table.enu('role', ['player', 'npc', 'boss', 'ally', 'owner']).notNullable();
     table.boolean('is_active').defaultTo(true);
     table.timestamps(true, true);
     

@@ -61,8 +61,8 @@ export default function NewCampaignPage() {
         throw new Error('Failed to create campaign');
       }
 
-      const campaign = await response.json();
-      router.push(`/campaign/${campaign.id}`);
+    //   const campaign = await response.json();
+    //   router.push(`/campaign/${campaign.id}`);
     } catch (error) {
       console.error('Error creating campaign:', error);
       // TODO: Show error message to user
