@@ -19,7 +19,7 @@ export interface CampaignCharacter {
   id: string;
   campaign: Campaign;
   character: Character;
-  role: 'player' | 'npc' | 'boss' | 'ally';
+  role: 'player' | 'npc' | 'boss' | 'ally' | 'owner';
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;

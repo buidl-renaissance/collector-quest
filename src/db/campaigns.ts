@@ -2,7 +2,7 @@ import client from "./client";
 import { Campaign, CampaignCharacter, CampaignQuest } from "../data/campaigns";
 import { Character } from "../data/character";
 import { Quest } from "../data/quest";
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 
 function mapCampaignFromDb(campaign: any): Campaign {
   return {
@@ -13,7 +13,7 @@ function mapCampaignFromDb(campaign: any): Campaign {
     quests: campaign.quests || [],
     characters: campaign.characters || [],
     createdAt: new Date(campaign.createdAt),
-    updatedAt: new Date(campaign.updatedAt)
+    updatedAt: new Date(campaign.updatedAt),
   };
 }
 
@@ -25,7 +25,7 @@ function mapCampaignCharacterFromDb(campaignChar: any): CampaignCharacter {
     role: campaignChar.role,
     isActive: campaignChar.is_active,
     createdAt: new Date(campaignChar.createdAt),
-    updatedAt: new Date(campaignChar.updatedAt)
+    updatedAt: new Date(campaignChar.updatedAt),
   };
 }
 
@@ -35,22 +35,70 @@ function mapCampaignQuestFromDb(campaignQuest: any): CampaignQuest {
     campaign: mapCampaignFromDb(campaignQuest.campaign),
     quest: campaignQuest.quest as Quest,
     status: campaignQuest.status,
-    startDate: campaignQuest.start_date ? new Date(campaignQuest.start_date) : undefined,
-    endDate: campaignQuest.end_date ? new Date(campaignQuest.end_date) : undefined,
+    startDate: campaignQuest.start_date
+      ? new Date(campaignQuest.start_date)
+      : undefined,
+    endDate: campaignQuest.end_date
+      ? new Date(campaignQuest.end_date)
+      : undefined,
     createdAt: new Date(campaignQuest.createdAt),
-    updatedAt: new Date(campaignQuest.updatedAt)
+    updatedAt: new Date(campaignQuest.updatedAt),
   };
 }
 
-export async function createCampaign(campaign: Campaign): Promise<Campaign> {
-  const [result] = await client('campaigns').insert(campaign).returning('*');
+export async function createCampaign(
+  campaign: Omit<
+    Campaign,
+    | "id"
+    | "startDate"
+    | "endDate"
+    | "characters"
+    | "quests"
+    | "targetAudience"
+    | "createdAt"
+    | "updatedAt"
+  >,
+  ownerId: string,
+  characters: Character[]
+): Promise<Campaign> {
+  const id = uuidv4();
+
+  // Insert campaign
+  const [result] = await client("campaigns").insert({
+    id,
+    name: campaign.name,
+    description: campaign.description,
+    status: campaign.status,
+  });
+
+  const newCampaign = await getCampaign(id);
+  if (!newCampaign) {
+    throw new Error("Failed to create campaign");
+  }
+
+  // Insert character relationships
+  if (characters?.length) {
+    const characterResults = await Promise.all(
+      characters.map((char) =>
+        addCharacterToCampaign(
+          id,
+          char.id!,
+          char.id === ownerId ? "owner" : "player"
+        )
+      )
+    );
+    newCampaign.characters = characterResults.filter(
+      (char): char is CampaignCharacter => char !== null
+    );
+  }
+
   return mapCampaignFromDb(result);
 }
 
 export async function getCampaign(id: string): Promise<Campaign | null> {
-  const result = await client('campaigns')
-    .select('campaigns.*')
-    .where('campaigns.id', id)
+  const result = await client("campaigns")
+    .select("campaigns.*")
+    .where("campaigns.id", id)
     .first();
 
   const campaign = result ? mapCampaignFromDb(result) : null;
@@ -61,31 +109,40 @@ export async function getCampaign(id: string): Promise<Campaign | null> {
   return { ...campaign, characters, quests };
 }
 
-export async function updateCampaign(id: string, campaign: Partial<Campaign>): Promise<Campaign | null> {
-  const [result] = await client('campaigns')
+export async function updateCampaign(
+  id: string,
+  campaign: Partial<Campaign>
+): Promise<Campaign | null> {
+  const [result] = await client("campaigns")
     .where({ id })
     .update(campaign)
-    .returning('*');
+    .returning("*");
   return result ? mapCampaignFromDb(result) : null;
 }
 
 export async function deleteCampaign(id: string): Promise<boolean> {
-  const count = await client('campaigns').where({ id }).delete();
+  const count = await client("campaigns").where({ id }).delete();
   return count > 0;
 }
 
 export async function listCampaigns(characterId: string): Promise<Campaign[]> {
-  const results = await client('campaigns')
-    .select('campaigns.*')
-    .leftJoin('campaign_characters', 'campaigns.id', 'campaign_characters.campaign_id')
-    .where('campaign_characters.character_id', characterId);
+  const results = await client("campaigns")
+    .select("campaigns.*")
+    .leftJoin(
+      "campaign_characters",
+      "campaigns.id",
+      "campaign_characters.campaign_id"
+    )
+    .where("campaign_characters.character_id", characterId);
   return results.map(mapCampaignFromDb);
 }
 
-export async function getCampaignsByStatus(status: Campaign['status']): Promise<Campaign[]> {
-  const results = await client('campaigns')
-    .select('campaigns.*')
-    .where('campaigns.status', status);
+export async function getCampaignsByStatus(
+  status: Campaign["status"]
+): Promise<Campaign[]> {
+  const results = await client("campaigns")
+    .select("campaigns.*")
+    .where("campaigns.status", status);
   return results.map(mapCampaignFromDb);
 }
 
@@ -96,21 +153,21 @@ export async function getCampaignWithRelations(campaign: Campaign): Promise<{
   if (!campaign) {
     return {
       characters: [],
-      quests: []
+      quests: [],
     };
   }
 
-  const characters = await client('campaign_characters')
-    .select('campaign_characters.*')
-    .where('campaign_characters.campaign_id', campaign.id);
+  const characters = await client("campaign_characters")
+    .select("campaign_characters.*")
+    .where("campaign_characters.campaign_id", campaign.id);
 
-  const quests = await client('campaign_quests')
-    .select('campaign_quests.*') 
-    .where('campaign_quests.campaign_id', campaign.id);
+  const quests = await client("campaign_quests")
+    .select("campaign_quests.*")
+    .where("campaign_quests.campaign_id", campaign.id);
 
   return {
     characters: characters.map(mapCampaignCharacterFromDb),
-    quests: quests.map(mapCampaignQuestFromDb)
+    quests: quests.map(mapCampaignQuestFromDb),
   };
 }
 
@@ -124,24 +181,25 @@ export async function getCampaignWithRelations(campaign: Campaign): Promise<{
 export async function addCharacterToCampaign(
   campaignId: string,
   characterId: string,
-  role: CampaignCharacter['role']
+  role: CampaignCharacter["role"]
 ): Promise<CampaignCharacter | null> {
   const id = uuidv4();
-  await client('campaign_characters')
-    .insert({
-      id,
-      campaign_id: campaignId,
-      character_id: characterId,
-      role,
-      is_active: true
-    });
+  await client("campaign_characters").insert({
+    id,
+    campaign_id: campaignId,
+    character_id: characterId,
+    role,
+    is_active: true,
+  });
 
-  const campaignCharacter = await client('campaign_characters')
-    .select('campaign_characters.*')
-    .where('campaign_characters.id', id)
+  const campaignCharacter = await client("campaign_characters")
+    .select("campaign_characters.*")
+    .where("campaign_characters.id", id)
     .first();
 
-  return campaignCharacter ? mapCampaignCharacterFromDb(campaignCharacter) : null;
+  return campaignCharacter
+    ? mapCampaignCharacterFromDb(campaignCharacter)
+    : null;
 }
 
 /**
@@ -154,7 +212,7 @@ export async function removeCharacterFromCampaign(
   campaignId: string,
   characterId: string
 ): Promise<boolean> {
-  const count = await client('campaign_characters')
+  const count = await client("campaign_characters")
     .where({ campaign_id: campaignId, character_id: characterId })
     .delete();
   return count > 0;
@@ -165,11 +223,15 @@ export async function removeCharacterFromCampaign(
  * @param campaignId - The ID of the campaign to get the characters for
  * @returns An array of characters in the campaign
  */
-export async function getCharactersInCampaign(campaignId: string): Promise<Character[]> {
-  const characters = await client('campaign_characters')
-    .select('campaign_characters.*')
-    .where('campaign_characters.campaign_id', campaignId);
-  return characters.map(mapCampaignCharacterFromDb).map(campaignCharacter => campaignCharacter.character);
+export async function getCharactersInCampaign(
+  campaignId: string
+): Promise<Character[]> {
+  const characters = await client("campaign_characters")
+    .select("campaign_characters.*")
+    .where("campaign_characters.campaign_id", campaignId);
+  return characters
+    .map(mapCampaignCharacterFromDb)
+    .map((campaignCharacter) => campaignCharacter.character);
 }
 
 /**
@@ -177,11 +239,15 @@ export async function getCharactersInCampaign(campaignId: string): Promise<Chara
  * @param campaignId - The ID of the campaign to get the quests for
  * @returns An array of quests in the campaign
  */
-export async function getQuestsInCampaign(campaignId: string): Promise<Quest[]> {
-  const quests = await client('campaign_quests')
-    .select('campaign_quests.*')
-    .where('campaign_quests.campaign_id', campaignId);
-  return quests.map(mapCampaignQuestFromDb).map(campaignQuest => campaignQuest.quest);
+export async function getQuestsInCampaign(
+  campaignId: string
+): Promise<Quest[]> {
+  const quests = await client("campaign_quests")
+    .select("campaign_quests.*")
+    .where("campaign_quests.campaign_id", campaignId);
+  return quests
+    .map(mapCampaignQuestFromDb)
+    .map((campaignQuest) => campaignQuest.quest);
 }
 
 /**
@@ -190,21 +256,23 @@ export async function getQuestsInCampaign(campaignId: string): Promise<Quest[]> 
  * @param questId - The ID of the quest to add to the campaign
  * @returns The campaign quest that was added
  */
-export async function addQuestToCampaign(campaignId: string, questId: string): Promise<CampaignQuest | null> {
+export async function addQuestToCampaign(
+  campaignId: string,
+  questId: string
+): Promise<CampaignQuest | null> {
   const id = uuidv4();
-  const result = await client('campaign_quests')
-    .insert({
-      id,
-      campaign_id: campaignId,
-      quest_id: questId,
-      status: 'not_started',
-      start_date: new Date(),
-      end_date: null
-    });
+  const result = await client("campaign_quests").insert({
+    id,
+    campaign_id: campaignId,
+    quest_id: questId,
+    status: "not_started",
+    start_date: new Date(),
+    end_date: null,
+  });
 
-  const campaignQuest = await client('campaign_quests')
-    .select('campaign_quests.*')
-    .where('campaign_quests.id', id)
+  const campaignQuest = await client("campaign_quests")
+    .select("campaign_quests.*")
+    .where("campaign_quests.id", id)
     .first();
 
   return campaignQuest ? mapCampaignQuestFromDb(campaignQuest) : null;
@@ -214,10 +282,13 @@ export async function addQuestToCampaign(campaignId: string, questId: string): P
  * Remove a quest from a campaign
  * @param campaignId - The ID of the campaign to remove the quest from
  * @param questId - The ID of the quest to remove from the campaign
- * @returns True if the quest was removed, false otherwise  
+ * @returns True if the quest was removed, false otherwise
  */
-export async function removeQuestFromCampaign(campaignId: string, questId: string): Promise<boolean> {
-  const count = await client('campaign_quests')
+export async function removeQuestFromCampaign(
+  campaignId: string,
+  questId: string
+): Promise<boolean> {
+  const count = await client("campaign_quests")
     .where({ campaign_id: campaignId, quest_id: questId })
     .delete();
   return count > 0;
@@ -229,11 +300,14 @@ export async function removeQuestFromCampaign(campaignId: string, questId: strin
  * @param questId - The ID of the quest to get from the campaign
  * @returns The campaign quest that was found
  */
-export async function getQuestFromCampaign(campaignId: string, questId: string): Promise<CampaignQuest | null> {
-  const quest = await client('campaign_quests')
-    .select('campaign_quests.*')
-    .where('campaign_quests.campaign_id', campaignId)
-    .where('campaign_quests.quest_id', questId)
+export async function getQuestFromCampaign(
+  campaignId: string,
+  questId: string
+): Promise<CampaignQuest | null> {
+  const quest = await client("campaign_quests")
+    .select("campaign_quests.*")
+    .where("campaign_quests.campaign_id", campaignId)
+    .where("campaign_quests.quest_id", questId)
     .first();
 
   return quest ? mapCampaignQuestFromDb(quest) : null;
