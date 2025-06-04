@@ -1,10 +1,18 @@
 import styled from "@emotion/styled";
 import { motion, px } from "framer-motion";
-import { FaFistRaised, FaScroll, FaUsers, FaChevronDown, FaDollarSign, FaShieldAlt } from "react-icons/fa";
-import { GiSkills } from "react-icons/gi";
+import {
+  FaFistRaised,
+  FaScroll,
+  FaUsers,
+  FaChevronDown,
+  FaDollarSign,
+  FaShieldAlt,
+} from "react-icons/fa";
+import { GiSkills, GiSwordClash } from "react-icons/gi";
 import CharacterImage from "@/components/CharacterImage";
 import { useState } from "react";
 import { Character } from "@/data/character";
+import { Attack } from "@/data/attacks";
 import CharacterSheetModal from "@/components/CharacterSheetModal";
 import { useCharacterSheet } from "@/hooks/useCharacterSheet";
 import { MenuModal } from "./MenuModal";
@@ -13,7 +21,7 @@ interface CharacterMenuProps {
   character: Character | null;
 }
 
-type ModalType = 'skills' | 'equipment' | null;
+type ModalType = "skills" | "equipment" | "attacks" | null;
 
 export const CharacterMenu = ({ character }: CharacterMenuProps) => {
   const [isMenuExpanded, setIsMenuExpanded] = useState(false);
@@ -44,22 +52,26 @@ export const CharacterMenu = ({ character }: CharacterMenuProps) => {
           <ActionButtonContainer expanded={isMenuExpanded}>
             <ActionButton
               title="Equipment"
-              onClick={() => setActiveModal('equipment')}
+              onClick={() => setActiveModal("equipment")}
             >
               <FaShieldAlt />
               {isMenuExpanded && <span>EQUIP</span>}
             </ActionButton>
             <ActionButton
               title="Skills"
-              onClick={() => setActiveModal('skills')}
+              onClick={() => setActiveModal("skills")}
             >
               <GiSkills />
               {isMenuExpanded && <span>SKILLS</span>}
             </ActionButton>
             <ActionButton
-              title="Character Sheet"
-              onClick={handleSheetClick}
+              title="Attacks"
+              onClick={() => setActiveModal("attacks")}
             >
+              <GiSwordClash />
+              {isMenuExpanded && <span>ATTACKS</span>}
+            </ActionButton>
+            <ActionButton title="Character Sheet" onClick={handleSheetClick}>
               <FaScroll />
               {isMenuExpanded && <span>SHEET</span>}
             </ActionButton>
@@ -92,7 +104,7 @@ export const CharacterMenu = ({ character }: CharacterMenuProps) => {
       )}
 
       <MenuModal
-        isOpen={activeModal === 'skills'}
+        isOpen={activeModal === "skills"}
         onClose={handleModalClose}
         title="Skills"
       >
@@ -111,7 +123,7 @@ export const CharacterMenu = ({ character }: CharacterMenuProps) => {
       </MenuModal>
 
       <MenuModal
-        isOpen={activeModal === 'equipment'}
+        isOpen={activeModal === "equipment"}
         onClose={handleModalClose}
         title="Equipment"
       >
@@ -120,17 +132,40 @@ export const CharacterMenu = ({ character }: CharacterMenuProps) => {
             {Object.entries(character.equipment).map(([category, items]) => (
               <EquipmentCategory key={category}>
                 <CategoryTitle>{formatCategory(category)}</CategoryTitle>
-                {Array.isArray(items) && items.map((item, index) => (
-                  <EquipmentItem key={index}>
-                    <span>{item.name}</span>
-                    <QuantityBadge>×{item.quantity}</QuantityBadge>
-                  </EquipmentItem>
-                ))}
+                {Array.isArray(items) &&
+                  items.map((item, index) => (
+                    <EquipmentItem key={index}>
+                      <span>{item.name}</span>
+                      <QuantityBadge>×{item.quantity}</QuantityBadge>
+                    </EquipmentItem>
+                  ))}
               </EquipmentCategory>
             ))}
           </EquipmentList>
         ) : (
           <EmptyState>No equipment available</EmptyState>
+        )}
+      </MenuModal>
+
+      <MenuModal
+        isOpen={activeModal === "attacks"}
+        onClose={handleModalClose}
+        title="Attacks"
+      >
+        {characterSheet?.combat?.attacks ? (
+          <AttacksList>
+            {characterSheet.combat.attacks.map((attack: Attack, index) => (
+              <AttackItem key={index}>
+                <AttackType>
+                  {attack.element} / {attack.attackType}
+                </AttackType>
+                <AttackName>{attack.name}</AttackName>
+                <AttackEffect>{attack.effect}</AttackEffect>
+              </AttackItem>
+            ))}
+          </AttacksList>
+        ) : (
+          <EmptyState>No attacks available</EmptyState>
         )}
       </MenuModal>
     </>
@@ -198,7 +233,7 @@ const ActionButton = styled.button`
   &:hover {
     color: #f5cc50;
     border-color: #f5cc50;
-    background: rgba(212, 175, 55, 0.1);
+    background: #221e1c;
   }
 `;
 
@@ -274,7 +309,7 @@ const EmptyState = styled.div`
 
 const EquipmentCategory = styled.div`
   margin-bottom: 0.5rem;
-  
+
   &:last-child {
     margin-bottom: 0;
   }
@@ -292,8 +327,34 @@ const QuantityBadge = styled.span`
   font-size: 0.75rem;
 `;
 
+const AttacksList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+`;
+
+const AttackItem = styled.div`
+  padding: 0.25rem 0.5rem;
+  background: rgba(26, 26, 46, 0.5);
+  border-radius: 4px;
+`;
+
+const AttackName = styled.div`
+  color: #d4af37;
+  font-weight: bold;
+`;
+
+const AttackType = styled.div`
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.6);
+`;
+
+const AttackEffect = styled.div`
+  margin-top: 0;
+`;
+
 const formatCategory = (category: string): string => {
   return category
-    .replace(/([A-Z])/g, ' $1')
-    .replace(/^./, str => str.toUpperCase());
+    .replace(/([A-Z])/g, " $1")
+    .replace(/^./, (str) => str.toUpperCase());
 };

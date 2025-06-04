@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import styled from '@emotion/styled';
 import PageTransition from '@/components/PageTransition';
@@ -9,40 +9,21 @@ import { NextButton } from '@/components/styled/buttons';
 import BottomNavigation from '@/components/BottomNavigation';
 import { useCharacters } from '@/hooks/useCharacters';
 import CharacterList from '@/components/CharacterList';
+import { useCurrentCampaign } from '@/hooks/useCurrentCampaign';
+import { useCampaign } from '@/hooks/useCampaign';
 
 export default function CampaignPage() {
   const router = useRouter();
   const { campaign: campaignId } = router.query;
-  const [campaign, setCampaign] = useState<Campaign | null>(null);
-  const [loading, setLoading] = useState(true);
-  const { characters, loading: charactersLoading } = useCharacters(
-    campaign?.characters?.map((c) => c.character_id) || []
-  );
+  const { campaign, characters, loading } = useCampaign(campaignId as string);
+  const { setCampaign: setCurrentCampaign } = useCurrentCampaign();
 
-  useEffect(() => {
-    async function loadCampaign() {
-      if (!campaignId) return;
-
-      try {
-        const response = await fetch(`/api/campaigns/${campaignId}`);
-        if (!response.ok) {
-          throw new Error('Failed to fetch campaign');
-        }
-        const data = await response.json();
-        setCampaign(data);
-      } catch (error) {
-        console.error('Error loading campaign:', error);
-      } finally {
-        setLoading(false);
-      }
+  const handlePlay = useCallback(() => {
+    if (campaign) {
+      setCurrentCampaign(campaign);
+      router.push('/play');
     }
-
-    loadCampaign();
-  }, [campaignId]);
-
-  const handlePlay = () => {
-    router.push(`/campaign/${campaignId}/play`);
-  };
+  }, [campaign, setCurrentCampaign, router]);
 
   if (loading) {
     return (

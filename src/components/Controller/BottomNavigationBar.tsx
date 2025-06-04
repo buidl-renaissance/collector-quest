@@ -1,8 +1,11 @@
 import styled from "@emotion/styled";
-import { FaCog, FaMap, FaChevronDown } from "react-icons/fa";
+import { FaMap, FaChevronDown } from "react-icons/fa";
 import { MdLocationOn, MdOutlineExplore } from "react-icons/md";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useRef, useEffect } from "react";
+import { useCurrentCampaign } from "@/hooks/useCurrentCampaign";
+import { useRouter } from "next/router";
+import { TeamButton } from "./TeamButton";
 
 interface LocationData {
   location: string;
@@ -10,7 +13,7 @@ interface LocationData {
   region: string;
   nearbyPOIs: string[];
   activeQuests: number;
-  description?: string; // Added description field
+  description?: string;
 }
 
 interface BottomNavigationBarProps {
@@ -20,6 +23,8 @@ interface BottomNavigationBarProps {
 export const BottomNavigationBar = ({ locationData }: BottomNavigationBarProps) => {
   const [isLocationExpanded, setIsLocationExpanded] = useState(false);
   const locationButtonRef = useRef<HTMLButtonElement>(null);
+  const { characters, charactersLoading, currentCampaign } = useCurrentCampaign();
+  const router = useRouter();
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -38,10 +43,19 @@ export const BottomNavigationBar = ({ locationData }: BottomNavigationBarProps) 
     };
   }, [isLocationExpanded]);
 
+  const handleMapClick = () => {
+    if (currentCampaign) {
+      router.push(`/campaign/${currentCampaign.id}/map`);
+    }
+  };
+
   return (
     <BottomNavigation>
-      <IconNavButton title="Settings">
-        <FaCog />
+      <IconNavButton 
+        title="Realm Map"
+        onClick={handleMapClick}
+      >
+        <FaMap />
       </IconNavButton>
       <LocationButton 
         ref={locationButtonRef}
@@ -90,9 +104,7 @@ export const BottomNavigationBar = ({ locationData }: BottomNavigationBarProps) 
           )}
         </AnimatePresence>
       </LocationButton>
-      <IconNavButton title="View Realm Map">
-        <FaMap />
-      </IconNavButton>
+      <TeamButton characters={characters || []} loading={charactersLoading} />
     </BottomNavigation>
   );
 };
@@ -106,7 +118,6 @@ const BottomNavigation = styled.div`
   padding: 0.5rem;
   background: rgba(26, 26, 46, 0.95);
   border-top: 1px solid rgba(187, 137, 48, 0.3);
-  /* border-radius: 8px 8px 0 0; */
   box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.2);
   position: fixed;
   bottom: 0;
@@ -128,6 +139,7 @@ const IconNavButton = styled.button`
   cursor: pointer;
   transition: all 0.3s ease;
   padding: 0;
+  position: relative;
 
   svg {
     font-size: 1.2rem;
@@ -136,7 +148,7 @@ const IconNavButton = styled.button`
   &:hover {
     color: #f5cc50;
     border-color: #f5cc50;
-    background: rgba(212, 175, 55, 0.1);
+    background: #221e1c;
   }
 `;
 
@@ -158,25 +170,25 @@ const LocationButton = styled.button<{ expanded: boolean }>`
   &:hover {
     color: #f5cc50;
     border-color: #f5cc50;
-    background: rgba(212, 175, 55, 0.1);
+    background: #221e1c;
   }
 `;
 
 const ButtonContent = styled.div`
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0 0.75rem;
+  gap: 0.25rem;
+  padding: 0 0.5rem;
   height: 100%;
   width: 100%;
-  font-size: 0.9rem;
+  font-size: 1rem;
 
   span {
     flex: 1;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    line-height: 1;
+    line-height: 1.25;
     text-align: center;
   }
 

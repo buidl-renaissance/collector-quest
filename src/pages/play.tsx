@@ -10,6 +10,7 @@ import { BottomNavigationBar } from "@/components/Controller/BottomNavigationBar
 import { TopNavigationBar } from "@/components/Controller/TopNavigationBar";
 import { GameArea } from "@/components/Controller/GameArea";
 import { QRCharacterModal } from "@/components/Controller/QRCharacterModal";
+import { useCurrentCampaign } from "@/hooks/useCurrentCampaign";
 
 const mockLocationData = {
   village: "Willowbrook",
@@ -17,13 +18,13 @@ const mockLocationData = {
   region: "Greenmeadow Valley",
   nearbyPOIs: ["Market Square", "Village Well", "Elder's Hut"],
   activeQuests: 3,
-  collectibles: 7
+  collectibles: 7,
 };
 
 const Controller = () => {
   const { character } = useCharacter();
   const [isQRModalOpen, setIsQRModalOpen] = useState(false);
-  
+
   const handleSendMessage = (message: string) => {
     console.log("Sending message:", message);
   };
@@ -41,54 +42,55 @@ const Controller = () => {
   };
 
   return (
-    <Page width="wide">
-      <ControllerLayout>
-        <TopNavigationBar 
-          onMenuClick={handleMenuClick}
-          onScanClick={handleScanClick}
-        />
+    <ControllerLayout>
+      <TopNavigationBar
+        onMenuClick={handleMenuClick}
+        onScanClick={handleScanClick}
+      />
 
-        <GameArea>
-          <p>Your adventure awaits...</p>
-        </GameArea>
+      <GameArea>
+        <p>Your adventure awaits...</p>
+      </GameArea>
 
-        <CharacterMenu character={character} />
-        <ChatBox onSendMessage={handleSendMessage} />
-        <BottomNavigationBar locationData={mockLocationData} />
+      <CharacterMenu character={character} />
+      <ChatBox onSendMessage={handleSendMessage} />
+      <BottomNavigationBar locationData={mockLocationData} />
 
-        <AnimatePresence>
-          {isQRModalOpen && (
-            <QRCharacterModal
-              isOpen={isQRModalOpen}
-              onClose={handleCloseQRModal}
-              characterId={character?.id}
-            />
-          )}
-        </AnimatePresence>
-      </ControllerLayout>
-    </Page>
+      <AnimatePresence>
+        {isQRModalOpen && (
+          <QRCharacterModal
+            isOpen={isQRModalOpen}
+            onClose={handleCloseQRModal}
+            characterId={character?.id}
+          />
+        )}
+      </AnimatePresence>
+    </ControllerLayout>
   );
 };
 
 const ControllerLayout = styled.div`
   position: relative;
-  min-height: 100vh;
   height: 100vh;
+  display: flex;
+  flex-direction: column;
   background: ${theme.colors.background};
   overflow: hidden;
+  font-family: "Cormorant Garamond", serif;
 `;
 
 const MainSection = styled.div`
-  display: flex;
   flex: 1;
-  min-height: 0;
+  display: flex;
   position: relative;
+  overflow: hidden;
 `;
 
 const MiddleSection = styled.div`
   display: flex;
   gap: 2rem;
   flex: 1;
+  overflow: hidden;
 `;
 
 const PlayerAvatar = styled.div`
@@ -98,7 +100,7 @@ const PlayerAvatar = styled.div`
   overflow: hidden;
   border: 2px solid #d4af37;
   position: relative;
-  
+
   img {
     width: 100%;
     height: 100%;
@@ -130,7 +132,7 @@ const MainContentBox = styled.div`
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 `;
 
-const NavigationArrow = styled.button<{ direction: 'left' | 'right' }>`
+const NavigationArrow = styled.button<{ direction: "left" | "right" }>`
   background: none;
   border: none;
   color: #d4af37;

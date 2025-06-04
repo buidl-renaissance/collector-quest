@@ -42,7 +42,7 @@ const GameAreaContainer = styled.main`
   left: 0;
   right: 0;
   padding: 0.5rem;
-  bottom: calc(60px + 0.5rem + 96px); /* BottomNavigationBar + gap + ChatBox height */
+  bottom: calc(60px + 0.5rem + 86px); /* BottomNavigationBar + gap + ChatBox height */
   background: rgba(26, 26, 46, 0.8);
   /* border: 1px solid rgba(187, 137, 48, 0.3); */
   /* border-radius: 8px; */

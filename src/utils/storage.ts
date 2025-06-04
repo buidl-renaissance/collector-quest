@@ -1,5 +1,6 @@
 export const STORAGE_KEYS = {
   CURRENT_CHARACTER_ID: 'currentCharacterId',
+  CURRENT_CAMPAIGN_ID: 'currentCampaignId',
   CHARACTERS: 'characters',
   CURRENT_USER: 'currentUser',
   USERS: 'users',

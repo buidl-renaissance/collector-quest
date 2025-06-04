@@ -7,43 +7,32 @@ import PageTransition from "@/components/PageTransition";
 import Page from "@/components/Page";
 import { Title, Subtitle } from "@/components/styled/typography";
 import Image from "next/image";
+import { useCharacter } from "@/hooks/useCharacter";
 
 export default function CampaignPage() {
   const router = useRouter();
-  const [selectedCharacter, setSelectedCharacter] = useState<Character | null>(
-    null
-  );
+  const { character } = useCharacter();
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function loadData() {
-      const characterId = router.query.characterId as string;
+      if (!character?.id) {
+        setCampaigns([]);
+        setLoading(false);
+        return;
+      }
 
       try {
-        // First load character if ID is provided
-        if (characterId) {
-          const characterResponse = await fetch(
-            `/api/characters/${characterId}`
-          );
-          if (!characterResponse.ok) {
-            throw new Error("Failed to fetch character");
-          }
-          const character = await characterResponse.json();
-          setSelectedCharacter(character);
-
-          // Then load campaigns for this character
-          const campaignsResponse = await fetch(
-            `/api/campaigns?characterId=${characterId}`
-          );
-          if (!campaignsResponse.ok) {
-            throw new Error("Failed to fetch campaigns");
-          }
-          const campaignsList = await campaignsResponse.json();
-          setCampaigns(campaignsList);
-        } else {
-          setCampaigns([]);
+        // Load campaigns for this character
+        const campaignsResponse = await fetch(
+          `/api/campaigns?characterId=${character.id}`
+        );
+        if (!campaignsResponse.ok) {
+          throw new Error("Failed to fetch campaigns");
         }
+        const campaignsList = await campaignsResponse.json();
+        setCampaigns(campaignsList);
       } catch (error) {
         console.error("Failed to load data:", error);
         setCampaigns([]);
@@ -53,7 +42,7 @@ export default function CampaignPage() {
     }
 
     loadData();
-  }, [router.query.characterId]);
+  }, [character?.id]);
 
   if (loading) {
     return (

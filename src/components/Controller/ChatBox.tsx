@@ -31,7 +31,7 @@ export const ChatBox = ({ onSendMessage }: ChatBoxProps) => {
 
 const ChatBoxContainer = styled.div`
   position: fixed;
-  padding: 0.5rem;
+  padding-right: 0.35rem;
   bottom: 60px; /* Match BottomNavigationBar height */
   left: 0rem;
   right: 4rem;
@@ -64,14 +64,14 @@ const InputContainer = styled.div`
   border: 1px solid rgba(212, 175, 55, 0.3);
   border-radius: 1rem;
   padding: 0.5rem;
-  height: 76px;
+  height: 62px;
 `;
 
 const InputField = styled.textarea`
   flex: 1;
   background: transparent;
   border: none;
-  padding: 0.5rem;
+  padding: 0.25rem 0.5rem;
   color: #fff;
   font-size: 1rem;
   min-width: 0;

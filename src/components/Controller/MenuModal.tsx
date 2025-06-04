@@ -55,9 +55,9 @@ const Overlay = styled(motion.div)`
 
 const ModalContainer = styled(motion.div)`
   position: fixed;
-  right: calc(84px + 1rem);
+  right: calc(100px + 1rem);
   bottom: 164px;
-  width: calc(100% - 108px);
+  width: calc(100% - 124px);
   background: rgba(26, 26, 46, 0.97);
   border: 1px solid #d4af37;
   max-height: 50vh;
@@ -101,23 +101,14 @@ const CloseButton = styled.button`
 `;
 
 const ModalContent = styled.div`
-  padding: 1rem;
+  padding: 0.5rem;
   color: #fff;
   overflow-y: auto;
   flex-grow: 1;
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
 
-  /* Custom scrollbar */
   &::-webkit-scrollbar {
-    width: 8px;
-  }
-
-  &::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: 4px;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: #d4af37;
-    border-radius: 4px;
+    display: none;  /* Chrome, Safari and Opera */
   }
 `; 
