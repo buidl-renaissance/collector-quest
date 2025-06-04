@@ -65,7 +65,10 @@ export const BottomNavigationBar = ({ locationData }: BottomNavigationBarProps) 
       >
         <ButtonContent>
           <MdLocationOn />
-          <span>{locationData.location}, {locationData.village}, {locationData.region}</span>
+          <LocaleInfo>
+            <LocaleName>{locationData.location}</LocaleName>
+            <LocaleDetails>{locationData.village}, {locationData.region}</LocaleDetails>
+          </LocaleInfo>
           <FaChevronDown 
             style={{ 
               transform: isLocationExpanded ? 'rotate(180deg)' : 'none',
@@ -183,15 +186,6 @@ const ButtonContent = styled.div`
   width: 100%;
   font-size: 1rem;
 
-  span {
-    flex: 1;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    line-height: 1.25;
-    text-align: center;
-  }
-
   svg:first-of-type {
     font-size: 1.2rem;
     flex-shrink: 0;
@@ -200,6 +194,27 @@ const ButtonContent = styled.div`
   svg:last-of-type {
     flex-shrink: 0;
   }
+`;
+
+const LocaleInfo = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: left;
+  justify-content: left;
+  line-height: 1.1;
+  text-align: left;
+`;
+
+const LocaleName = styled.div`
+  font-size: 0.8rem;
+  color: #d4af37;
+  font-weight: bold;
+`;
+
+const LocaleDetails = styled.div`
+  font-size: 0.6rem;
+  color: #d4af37;
 `;
 
 const LocationDetails = styled(motion.div)`

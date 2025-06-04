@@ -233,6 +233,7 @@ const ActionButton = styled.button`
   align-items: center;
   gap: 0.5rem;
   background: rgba(26, 26, 46, 0.97);
+  box-shadow: 0 0 15px 0 rgba(0, 0, 0, 0.8);
   color: #d4af37;
   border: 1px solid #d4af37;
   padding: 0.5rem;

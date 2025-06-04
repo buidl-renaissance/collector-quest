@@ -55,7 +55,6 @@ const GameContent = styled.div`
   width: 100%;
   height: 100%;
   padding: 0;
-  padding-right: 0.5rem;
   overflow-y: auto;
   color: #fff;
 
@@ -80,7 +79,7 @@ const GameContent = styled.div`
 `;
 
 const DungeonMasterSection = styled.div`
-  margin: 1rem;
+  padding: 0.5rem;
 `;
 
 const DmHeader = styled.div`
