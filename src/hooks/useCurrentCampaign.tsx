@@ -8,6 +8,7 @@ export const useCurrentCampaign = () => {
   const [currentCampaignId, setCurrentCampaignId] = useState<string | null>(null);
   const [currentCampaign, setCurrentCampaign] = useState<Campaign | null>(null);
   const [characterIds, setCharacterIds] = useState<string[]>([]);
+  const [loading, setLoading] = useState(false);
   const { characters, loading: charactersLoading, error: charactersError } = useCharacters(characterIds);
 
   // Load campaign ID from localStorage on mount
@@ -27,9 +28,14 @@ export const useCurrentCampaign = () => {
         return;
       }
 
-      const campaign = await getCampaignById(currentCampaignId);
-      setCurrentCampaign(campaign);
-      setCharacterIds(campaign?.characters?.map(c => c.character_id) || []);
+      setLoading(true);
+      try {
+        const campaign = await getCampaignById(currentCampaignId);
+        setCurrentCampaign(campaign);
+        setCharacterIds(campaign?.characters?.map(c => c.character_id) || []);
+      } finally {
+        setLoading(false);
+      }
     };
 
     loadCampaign();
@@ -53,15 +59,20 @@ export const useCurrentCampaign = () => {
   const updateCampaign = async (updates: Partial<Campaign>) => {
     if (!currentCampaign) return;
     
-    const updatedCampaign = {
-      ...currentCampaign,
-      ...updates
-    };
+    setLoading(true);
+    try {
+      const updatedCampaign = {
+        ...currentCampaign,
+        ...updates
+      };
 
-    // Update in cache
-    await getCampaignById(updatedCampaign.id); // This will update the cache
-    setCurrentCampaign(updatedCampaign);
-    setCharacterIds(updatedCampaign.characters?.map(c => c.character_id) || []);
+      // Update in cache
+      await getCampaignById(updatedCampaign.id); // This will update the cache
+      setCurrentCampaign(updatedCampaign);
+      setCharacterIds(updatedCampaign.characters?.map(c => c.character_id) || []);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const clearCampaign = () => {
@@ -79,6 +90,7 @@ export const useCurrentCampaign = () => {
     setCampaign,
     updateCampaign,
     clearCampaign,
+    loading,
     isLoading: currentCampaignId !== null && currentCampaign === null
   };
 };

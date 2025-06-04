@@ -2,7 +2,8 @@ import styled from "@emotion/styled";
 import { AnimatePresence } from "framer-motion";
 import Page from "@/components/Page";
 import { theme } from "@/styles/theme";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/router";
 import { useCharacter } from "@/hooks/useCharacter";
 import { ChatBox } from "@/components/Controller/ChatBox";
 import { CharacterMenu } from "@/components/Controller/CharacterMenu";
@@ -11,6 +12,7 @@ import { TopNavigationBar } from "@/components/Controller/TopNavigationBar";
 import { GameArea } from "@/components/Controller/GameArea";
 import { QRCharacterModal } from "@/components/Controller/QRCharacterModal";
 import { useCurrentCampaign } from "@/hooks/useCurrentCampaign";
+import { CampaignSelectionModal } from "@/components/CampaignSelectionModal";
 
 const mockLocationData = {
   village: "Willowbrook",
@@ -22,8 +24,17 @@ const mockLocationData = {
 };
 
 const Controller = () => {
+  const router = useRouter();
   const { character } = useCharacter();
+  const { currentCampaign, loading } = useCurrentCampaign();
   const [isQRModalOpen, setIsQRModalOpen] = useState(false);
+  const [isCampaignModalOpen, setIsCampaignModalOpen] = useState(false);
+
+  // useEffect(() => {
+  //   if (!currentCampaign && !loading) {
+  //     setIsCampaignModalOpen(true);
+  //   }
+  // }, [currentCampaign, loading]);
 
   const handleSendMessage = (message: string) => {
     console.log("Sending message:", message);
@@ -41,17 +52,24 @@ const Controller = () => {
     setIsQRModalOpen(false);
   };
 
+  const handleCloseCampaignModal = () => {
+    setIsCampaignModalOpen(false);
+    if (!currentCampaign) {
+      router.replace('/campaign');
+    }
+  };
+
+  if (loading) {
+    return null;
+  }
+
   return (
     <ControllerLayout>
       <TopNavigationBar
         onMenuClick={handleMenuClick}
         onScanClick={handleScanClick}
       />
-
-      <GameArea>
-        <p>Your adventure awaits...</p>
-      </GameArea>
-
+      <GameArea />
       <CharacterMenu character={character} />
       <ChatBox onSendMessage={handleSendMessage} />
       <BottomNavigationBar locationData={mockLocationData} />
@@ -65,6 +83,11 @@ const Controller = () => {
           />
         )}
       </AnimatePresence>
+
+      <CampaignSelectionModal 
+        isOpen={isCampaignModalOpen}
+        onClose={handleCloseCampaignModal}
+      />
     </ControllerLayout>
   );
 };

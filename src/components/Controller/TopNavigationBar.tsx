@@ -1,5 +1,6 @@
 import styled from "@emotion/styled";
 import { FaBars, FaQrcode } from "react-icons/fa";
+import { useCurrentCampaign } from "@/hooks/useCurrentCampaign";
 
 interface TopNavigationBarProps {
   onMenuClick?: () => void;
@@ -7,13 +8,22 @@ interface TopNavigationBarProps {
 }
 
 export const TopNavigationBar = ({ onMenuClick, onScanClick }: TopNavigationBarProps) => {
+  const { currentCampaign } = useCurrentCampaign();
+
   return (
     <TopNavigation>
       <IconNavButton title="Menu" onClick={onMenuClick}>
         <FaBars />
       </IconNavButton>
       <TitleContainer>
-        <Title>Collector Quest</Title>
+        {currentCampaign ? (
+          <CampaignContainer>
+            <CampaignLabel>Current Campaign</CampaignLabel>
+            <CampaignTitle>{currentCampaign.name}</CampaignTitle>
+          </CampaignContainer>
+        ) : (
+          <Title>Collector Quest</Title>
+        )}
       </TitleContainer>
       <IconNavButton title="Scan QR Code" onClick={onScanClick}>
         <FaQrcode />
@@ -82,4 +92,34 @@ const Title = styled.h1`
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+`;
+
+const CampaignContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.1rem;
+`;
+
+const CampaignLabel = styled.div`
+  color: rgba(212, 175, 55, 0.7);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  line-height: 1;
+`;
+
+const CampaignTitle = styled.h2`
+  margin: 0;
+  color: #d4af37;
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: "Cinzel", serif;
+  text-align: center;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.2;
+  max-height: 2.4em;
 `; 

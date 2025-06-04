@@ -7,8 +7,9 @@ import {
   FaChevronDown,
   FaDollarSign,
   FaShieldAlt,
+  FaBrain,
 } from "react-icons/fa";
-import { GiSkills, GiSwordClash } from "react-icons/gi";
+import { GiSkills, GiSwordClash, GiBrain } from "react-icons/gi";
 import CharacterImage from "@/components/CharacterImage";
 import { useState } from "react";
 import { Character } from "@/data/character";
@@ -112,8 +113,22 @@ export const CharacterMenu = ({ character }: CharacterMenuProps) => {
           <SkillsList>
             {characterSheet.skills.map((skill, index) => (
               <SkillItem key={index}>
-                <SkillName>{skill.name}</SkillName>
-                {skill.proficient && <ProficiencyDot />}
+                <SkillInfo>
+                  <SkillName>{skill.name}</SkillName>
+                  <SkillAbility>{skill.ability}</SkillAbility>
+                  <SkillModifier>
+                    {skill.modifier === 0 ? (
+                      <span style={{ color: "#999999" }}>+0</span>
+                    ) : skill.modifier > 0 ? (
+                      `+${skill.modifier}`
+                    ) : (
+                      skill.modifier
+                    )}
+                  </SkillModifier>
+                  <ProficiencyIcon title={skill.proficient ? "Proficient" : "Not Proficient"}>
+                    <FaBrain />
+                  </ProficiencyIcon>
+                </SkillInfo>
               </SkillItem>
             ))}
           </SkillsList>
@@ -263,26 +278,60 @@ const ToggleMenuButton = styled.button`
 const SkillsList = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.5rem;
 `;
 
 const SkillItem = styled.div`
   display: flex;
   align-items: center;
-  justify-content: space-between;
   padding: 0.25rem 0.5rem;
   font-size: 0.875rem;
+  background: rgba(26, 26, 46, 0.5);
+  border-radius: 4px;
+`;
+
+const SkillInfo = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
 `;
 
 const SkillName = styled.span`
   color: #fff;
+  flex: 1;
 `;
 
-const ProficiencyDot = styled.div`
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #d4af37;
+const SkillAbility = styled.span`
+  color: #d4af37;
+  font-size: 0.75rem;
+  width: 40px;
+  text-align: center;
+`;
+
+const SkillModifier = styled.span`
+  color: ${(props) =>
+    props.children && parseInt(props.children.toString()) >= 0
+      ? "#4CAF50"
+      : "#f44336"};
+  font-weight: bold;
+  width: 30px;
+  text-align: right;
+`;
+
+const ProficiencyIcon = styled.div<{ title: string }>`
+  color: #d4af37;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: ${props => props.title === "Proficient" ? 1 : 0.2};
+  transition: opacity 0.2s ease;
+  width: 20px;
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
 `;
 
 const EquipmentList = styled.div`
@@ -351,6 +400,7 @@ const AttackType = styled.div`
 
 const AttackEffect = styled.div`
   margin-top: 0;
+  font-size: 0.75rem;
 `;
 
 const formatCategory = (category: string): string => {

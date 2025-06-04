@@ -44,58 +44,10 @@ const GameAreaContainer = styled.main`
   padding: 0.5rem;
   bottom: calc(60px + 0.5rem + 86px); /* BottomNavigationBar + gap + ChatBox height */
   background: rgba(26, 26, 46, 0.8);
-  /* border: 1px solid rgba(187, 137, 48, 0.3); */
-  /* border-radius: 8px; */
   overflow: hidden;
   display: flex;
   flex-direction: column;
   z-index: 1;
-`;
-
-const DungeonMasterSection = styled.div`
-  /* background: rgba(0, 0, 0, 0.3);
-  border-bottom: 1px solid rgba(187, 137, 48, 0.3); */
-`;
-
-const DmHeader = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  /* padding: 1rem; */
-`;
-
-const DmImageContainer = styled.div`
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  overflow: hidden;
-  border: 1px solid #d4af37;
-  flex-shrink: 0;
-`;
-
-const DmImage = styled.img`
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-`;
-
-const DmInfo = styled.div`
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 0.25rem;
-`;
-
-const DmTitle = styled.div`
-  color: #d4af37;
-  font-size: 1.4rem;
-  font-weight: 600;
-`;
-
-const DmStatus = styled.div`
-  color: #4CAF50;
-  font-size: 0.8rem;
 `;
 
 const GameContent = styled.div`
@@ -125,4 +77,42 @@ const GameContent = styled.div`
   /* Firefox scrollbar styling */
   scrollbar-width: thin;
   scrollbar-color: rgba(212, 175, 55, 0.3) rgba(0, 0, 0, 0.2);
-`; 
+`;
+
+const DungeonMasterSection = styled.div`
+  margin: 1rem;
+`;
+
+const DmHeader = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+`;
+
+const DmImageContainer = styled.div`
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 1px solid #d4af37;
+  flex-shrink: 0;
+`;
+
+const DmImage = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+`;
+
+const DmInfo = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+`;
+
+const DmTitle = styled.div`
+  color: #d4af37;
+  font-size: 1.2rem;
+  font-weight: 600;
+  font-family: "Cinzel", serif;
+`;
