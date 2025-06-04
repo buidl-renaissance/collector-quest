@@ -1,22 +1,24 @@
 import React, { useEffect, useState } from "react";
 import styled from "@emotion/styled";
 import { FaSpinner } from "react-icons/fa";
-import { CharacterClass } from "@/data/character";
+import { CharacterClass, Character } from "@/data/character";
 import { Race } from "@/data/races";
 import { generateImage } from "@/lib/image";
 
 interface CharacterImageProps {
-  race?: Race;
-  characterClass?: CharacterClass;
-  size?: "small" | "medium" | "large";
+  character?: Character;
+  size?: "small" | "medium" | "large" | "thumbnail";
   alt?: string;
+  circular?: boolean;
+  bordered?: boolean;
 }
 
 const CharacterImage: React.FC<CharacterImageProps> = ({
-  race,
-  characterClass,
+  character,
   size = "medium",
   alt = "Character Image",
+  circular = false,
+  bordered = false,
 }) => {
   const [imageUrl, setImageUrl] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(true);
@@ -25,15 +27,21 @@ const CharacterImage: React.FC<CharacterImageProps> = ({
 
   useEffect(() => {
     const loadImage = async () => {
+      // If character has an image, use that
+      if (character?.image_url) {
+        setImageUrl(character.image_url);
+        setLoading(false);
+        return;
+      }
 
-      if (!race || !characterClass) {
+      if (!character?.race || !character?.class) {
         setImageUrl("/images/COLLECTOR-quest-intro-1024.png");
         setLoading(false);
         return;
       }
 
-      if (race.image) {
-        setImageUrl(race.image);
+      if (character.race.image) {
+        setImageUrl(character.race.image);
         setLoading(false);
         return;
       }
@@ -41,8 +49,8 @@ const CharacterImage: React.FC<CharacterImageProps> = ({
       try {
         // In a real app, this would be an API call to get a generated image
         // For now, we'll use a mock path based on race and class
-        const formattedRace = race.name.toLowerCase().replace(/\s+/g, "-");
-        const formattedClass = characterClass.name
+        const formattedRace = character.race.name.toLowerCase().replace(/\s+/g, "-");
+        const formattedClass = character.class.name
           .toLowerCase()
           .replace(/\s+/g, "-");
 
@@ -60,7 +68,7 @@ const CharacterImage: React.FC<CharacterImageProps> = ({
           setIsGeneratedImage(false);
         } else {
           // If specific image doesn't exist, generate one based on race image and class
-          await generateCharacterImage(race, characterClass);
+          await generateCharacterImage(character.race, character.class);
         }
 
         setLoading(false);
@@ -107,11 +115,11 @@ const CharacterImage: React.FC<CharacterImageProps> = ({
 
     setLoading(true);
     loadImage();
-  }, [race, characterClass]);
+  }, [character]);
 
   if (loading) {
     return (
-      <ImageContainer size={size}>
+      <ImageContainer size={size} circular={circular} bordered={bordered}>
         <LoadingSpinner>
           <FaSpinner />
         </LoadingSpinner>
@@ -121,14 +129,14 @@ const CharacterImage: React.FC<CharacterImageProps> = ({
 
   if (error) {
     return (
-      <ImageContainer size={size}>
+      <ImageContainer size={size} circular={circular} bordered={bordered}>
         <ErrorMessage>{error}</ErrorMessage>
       </ImageContainer>
     );
   }
 
   return (
-    <ImageContainer size={size}>
+    <ImageContainer size={size} circular={circular} bordered={bordered}>
       <StyledImage
         src={imageUrl}
         alt={alt}
@@ -138,9 +146,9 @@ const CharacterImage: React.FC<CharacterImageProps> = ({
             "/images/COLLECTOR-quest-intro-1024.png";
         }}
       />
-      {/* {isGeneratedImage && race && characterClass && (
+      {/* {isGeneratedImage && character?.race && character?.class && (
         <GeneratedOverlay>
-          <GeneratedText>{`${race.name} ${characterClass.name}`}</GeneratedText>
+          <GeneratedText>{`${character.race.name} ${character.class.name}`}</GeneratedText>
         </GeneratedOverlay>
       )} */}
     </ImageContainer>
@@ -150,9 +158,11 @@ const CharacterImage: React.FC<CharacterImageProps> = ({
 export default CharacterImage;
 
 // Styled Components
-const ImageContainer = styled.div<{ size: string }>`
+const ImageContainer = styled.div<{ size: string; circular: boolean; bordered: boolean }>`
   width: ${(props) => {
     switch (props.size) {
+      case "thumbnail":
+        return "60px";
       case "small":
         return "100px";
       case "large":
@@ -163,6 +173,8 @@ const ImageContainer = styled.div<{ size: string }>`
   }};
   height: ${(props) => {
     switch (props.size) {
+      case "thumbnail":
+        return "60px";
       case "small":
         return "100px";
       case "large":
@@ -172,7 +184,7 @@ const ImageContainer = styled.div<{ size: string }>`
     }
   }};
   max-width: 300px;
-  border-radius: 8px;
+  border-radius: ${props => props.circular ? '50%' : '8px'};
   overflow: hidden;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   background-color: #f0f0f0;
@@ -180,8 +192,8 @@ const ImageContainer = styled.div<{ size: string }>`
   justify-content: center;
   align-items: center;
   margin: 0 auto;
-  margin-bottom: 1rem;
   position: relative;
+  border: ${props => props.bordered ? '2px solid #d4af37' : 'none'};
 `;
 
 const StyledImage = styled.img`

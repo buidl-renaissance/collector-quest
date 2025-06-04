@@ -7,8 +7,8 @@ import { Title, Subtitle } from '@/components/styled/typography';
 import { Campaign, CampaignCharacter, CampaignQuest } from '@/data/campaigns';
 import { NextButton } from '@/components/styled/buttons';
 import BottomNavigation from '@/components/BottomNavigation';
-import CharacterImageTile from '@/components/CharacterImageTile';
 import { useCharacters } from '@/hooks/useCharacters';
+import CharacterList from '@/components/CharacterList';
 
 export default function CampaignPage() {
   const router = useRouter();
@@ -73,15 +73,7 @@ export default function CampaignPage() {
 
           {campaign.characters && campaign.characters.length > 0 && (
             <Section>
-              <CharactersList>
-                {characters.map((char) => (
-                  <CharacterImageTile
-                    key={char.id}
-                    name={char.name}
-                    imageUrl={char.image_url}
-                  />
-                ))}
-              </CharactersList>
+              <CharacterList characters={characters} />
             </Section>
           )}
 
@@ -89,7 +81,6 @@ export default function CampaignPage() {
             <SectionTitle>Description</SectionTitle>
             <Description>{campaign.description}</Description>
           </Section>
-
 
           {campaign.quests && campaign.quests.length > 0 && (
             <Section>
@@ -136,13 +127,6 @@ const Description = styled.p`
   font-size: 1.1rem;
   line-height: 1.6;
   margin-bottom: 2rem;
-`;
-
-const CharactersList = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  justify-content: center;
 `;
 
 const QuestList = styled.div`

@@ -1,3 +1,4 @@
+import { Character } from "@/data/character";
 import OpenAI from "openai";
 
 const openai = new OpenAI({
@@ -143,3 +144,144 @@ export function createHitDiceJSON(characterClass: string, level: number, usedHit
     used: usedHitDice
   };
 }
+
+/**
+ * Rolls a hit die and returns the result
+ * @param hitDieType The type of hit die (e.g. 'd6', 'd8', 'd10', 'd12')
+ * @param constitutionModifier The character's constitution modifier
+ * @returns Object containing the roll result and total healing
+ */
+export function rollHitDie(hitDieType: string, constitutionModifier: number = 0) {
+  // Extract the die size number from the hit die type (e.g. 8 from 'd8')
+  const dieSize = parseInt(hitDieType.replace('d', ''));
+  
+  // Roll the die (random number from 1 to die size)
+  const roll = Math.floor(Math.random() * dieSize) + 1;
+  
+  // Calculate total healing (roll + constitution modifier)
+  const total = roll + constitutionModifier;
+  
+  return {
+    roll,
+    constitutionModifier,
+    total: Math.max(1, total) // Ensure minimum healing of 1
+  };
+}
+
+/**
+ * Represents different types of dice and their use cases in the game
+ */
+export const DICE_TYPES = {
+  d4: { sides: 4, useCase: 'Small weapon damage, healing potions' },
+  d6: { sides: 6, useCase: 'Common weapon damage, sneak attack' },
+  d8: { sides: 8, useCase: 'Medium weapon damage' },
+  d10: { sides: 10, useCase: 'Heavy weapon, spell damage' },
+  d12: { sides: 12, useCase: 'Greataxe, Barbarian hit dice' },
+  d20: { sides: 20, useCase: 'Attacks, skills, saves' },
+  d100: { sides: 100, useCase: 'Random loot, wild magic' }
+} as const;
+
+/**
+ * Rolls dice based on standard dice notation (e.g. "2d6+3")
+ * @param notation Dice notation string (e.g. "2d6+3")
+ * @returns Object containing individual rolls, modifier, and total
+ */
+export function rollDice(notation: string) {
+  // Parse dice notation (e.g. "2d6+3" -> {count: 2, sides: 6, modifier: 3})
+  const match = notation.toLowerCase().match(/^(\d+)d(\d+)(?:([+-])(\d+))?$/);
+  if (!match) throw new Error('Invalid dice notation');
+
+  const [_, countStr, sidesStr, op, modStr] = match;
+  const count = parseInt(countStr);
+  const sides = parseInt(sidesStr);
+  const modifier = op && modStr ? (op === '+' ? 1 : -1) * parseInt(modStr) : 0;
+
+  // Roll the dice
+  const rolls = Array.from({ length: count }, () => 
+    Math.floor(Math.random() * sides) + 1
+  );
+
+  // Calculate total
+  const total = rolls.reduce((sum, roll) => sum + roll, 0) + modifier;
+
+  return {
+    rolls,
+    modifier,
+    total
+  };
+}
+
+/**
+ * Rolls for specific game mechanics
+ */
+export const gameRolls = {
+  attackRoll: (modifier: number) => {
+    const roll = Math.floor(Math.random() * 20) + 1;
+    return { roll, total: roll + modifier };
+  },
+
+  savingThrow: (saveBonus: number) => {
+    const roll = Math.floor(Math.random() * 20) + 1;
+    return { roll, total: roll + saveBonus };
+  },
+
+  initiative: (dexModifier: number) => {
+    const roll = Math.floor(Math.random() * 20) + 1;
+    return { roll, total: roll + dexModifier };
+  },
+
+  deathSave: () => {
+    const roll = Math.floor(Math.random() * 20) + 1;
+    return {
+      roll,
+      success: roll >= 10,
+      critical: roll === 20,
+      criticalFail: roll === 1
+    };
+  }
+};
+
+/**
+ * Gets the dice notation string for a character action
+ */
+export const getDiceNotation = (
+  action: 'attack' | 'damage' | 'heal' | 'ability' | 'save',
+  character: Character
+): string => {
+  switch (action) {
+    case 'attack':
+      // Standard attack roll is 1d20 + modifiers
+      return '1d20';
+
+    case 'damage': {
+      // Different weapons/classes have different damage dice
+      const baseDamage = ((): string => {
+        switch(character.class?.name) {
+          case 'Fighter': return '1d8';
+          case 'Rogue': return '1d6';
+          case 'Wizard': return '1d6';
+          case 'Cleric': return '1d6';
+          default: return '1d8';
+        }
+      })();
+      return baseDamage;
+    }
+
+    case 'heal': {
+      // Healing typically scales with level
+      const healDice = Math.ceil(character.level || 1 / 2);
+      return `${healDice}d8`;
+    }
+
+    case 'ability':
+      // Ability checks are 1d20
+      return '1d20';
+
+    case 'save':
+      // Saving throws are 1d20
+      return '1d20';
+
+    default:
+      return '1d20';
+  }
+};

@@ -1,0 +1,299 @@
+import styled from "@emotion/styled";
+import { motion, px } from "framer-motion";
+import { FaFistRaised, FaScroll, FaUsers, FaChevronDown, FaDollarSign, FaShieldAlt } from "react-icons/fa";
+import { GiSkills } from "react-icons/gi";
+import CharacterImage from "@/components/CharacterImage";
+import { useState } from "react";
+import { Character } from "@/data/character";
+import CharacterSheetModal from "@/components/CharacterSheetModal";
+import { useCharacterSheet } from "@/hooks/useCharacterSheet";
+import { MenuModal } from "./MenuModal";
+
+interface CharacterMenuProps {
+  character: Character | null;
+}
+
+type ModalType = 'skills' | 'equipment' | null;
+
+export const CharacterMenu = ({ character }: CharacterMenuProps) => {
+  const [isMenuExpanded, setIsMenuExpanded] = useState(false);
+  const [isSheetModalOpen, setIsSheetModalOpen] = useState(false);
+  const [activeModal, setActiveModal] = useState<ModalType>(null);
+  const { characterSheet } = useCharacterSheet();
+
+  const handleSheetClick = () => {
+    setIsSheetModalOpen(true);
+  };
+
+  const handleModalClose = () => {
+    setActiveModal(null);
+  };
+
+  const handleMenuToggle = () => {
+    const newExpandedState = !isMenuExpanded;
+    setIsMenuExpanded(newExpandedState);
+    if (!newExpandedState) {
+      setActiveModal(null);
+    }
+  };
+
+  return (
+    <>
+      <MenuWrapper>
+        <RightButtonPanel expanded={isMenuExpanded}>
+          <ActionButtonContainer expanded={isMenuExpanded}>
+            <ActionButton
+              title="Equipment"
+              onClick={() => setActiveModal('equipment')}
+            >
+              <FaShieldAlt />
+              {isMenuExpanded && <span>EQUIP</span>}
+            </ActionButton>
+            <ActionButton
+              title="Skills"
+              onClick={() => setActiveModal('skills')}
+            >
+              <GiSkills />
+              {isMenuExpanded && <span>SKILLS</span>}
+            </ActionButton>
+            <ActionButton
+              title="Character Sheet"
+              onClick={handleSheetClick}
+            >
+              <FaScroll />
+              {isMenuExpanded && <span>SHEET</span>}
+            </ActionButton>
+          </ActionButtonContainer>
+        </RightButtonPanel>
+        <CharacterImageContainer>
+          <ToggleMenuButton
+            onClick={handleMenuToggle}
+            title={isMenuExpanded ? "Collapse Menu" : "Expand Menu"}
+          >
+            <FaChevronDown
+              style={{
+                transform: isMenuExpanded ? "rotate(0deg)" : "rotate(180deg)",
+              }}
+            />
+            {character && (
+              <CharacterImage character={character} bordered size="thumbnail" />
+            )}
+          </ToggleMenuButton>
+        </CharacterImageContainer>
+      </MenuWrapper>
+
+      {character && characterSheet && (
+        <CharacterSheetModal
+          isOpen={isSheetModalOpen}
+          onClose={() => setIsSheetModalOpen(false)}
+          character={character}
+          characterSheet={characterSheet}
+        />
+      )}
+
+      <MenuModal
+        isOpen={activeModal === 'skills'}
+        onClose={handleModalClose}
+        title="Skills"
+      >
+        {characterSheet?.skills ? (
+          <SkillsList>
+            {characterSheet.skills.map((skill, index) => (
+              <SkillItem key={index}>
+                <SkillName>{skill.name}</SkillName>
+                {skill.proficient && <ProficiencyDot />}
+              </SkillItem>
+            ))}
+          </SkillsList>
+        ) : (
+          <EmptyState>No skills available</EmptyState>
+        )}
+      </MenuModal>
+
+      <MenuModal
+        isOpen={activeModal === 'equipment'}
+        onClose={handleModalClose}
+        title="Equipment"
+      >
+        {character?.equipment ? (
+          <EquipmentList>
+            {Object.entries(character.equipment).map(([category, items]) => (
+              <EquipmentCategory key={category}>
+                <CategoryTitle>{formatCategory(category)}</CategoryTitle>
+                {Array.isArray(items) && items.map((item, index) => (
+                  <EquipmentItem key={index}>
+                    <span>{item.name}</span>
+                    <QuantityBadge>×{item.quantity}</QuantityBadge>
+                  </EquipmentItem>
+                ))}
+              </EquipmentCategory>
+            ))}
+          </EquipmentList>
+        ) : (
+          <EmptyState>No equipment available</EmptyState>
+        )}
+      </MenuModal>
+    </>
+  );
+};
+
+const MenuWrapper = styled.div`
+  position: fixed;
+  right: 0.5rem;
+  bottom: 164px;
+  z-index: 10;
+  width: 120px;
+  display: flex;
+  justify-content: flex-end;
+`;
+
+const RightButtonPanel = styled.div<{ expanded: boolean }>`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  width: ${(props) => (props.expanded ? "88px" : "60px")};
+`;
+
+const ActionButtonContainer = styled.div<{ expanded: boolean }>`
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  overflow: hidden;
+  max-height: ${(props) => (props.expanded ? "300px" : "0px")};
+  opacity: ${(props) => (props.expanded ? "1" : "0")};
+  transition: all 0.3s ease;
+  transform-origin: bottom;
+  order: -1;
+  margin-bottom: 60px + 0.5rem;
+`;
+
+const CharacterImageContainer = styled.div`
+  position: fixed;
+  right: 0.5rem;
+  bottom: 60px;
+  z-index: 10;
+  width: 60px;
+`;
+
+const ActionButton = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(26, 26, 46, 0.97);
+  color: #d4af37;
+  border: 1px solid #d4af37;
+  padding: 0.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  justify-content: left;
+  text-align: left;
+  span {
+    font-size: 0.9rem;
+  }
+
+  &:hover {
+    color: #f5cc50;
+    border-color: #f5cc50;
+    background: rgba(212, 175, 55, 0.1);
+  }
+`;
+
+const ToggleMenuButton = styled.button`
+  background: transparent;
+  border: none;
+  color: #d4af37;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.3s ease;
+  margin-bottom: 0.5rem;
+  width: 100%;
+  gap: 0.5rem;
+
+  svg {
+    transition: transform 0.3s ease;
+  }
+
+  &:hover {
+    color: #f5cc50;
+  }
+`;
+
+const SkillsList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+`;
+
+const SkillItem = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+`;
+
+const SkillName = styled.span`
+  color: #fff;
+`;
+
+const ProficiencyDot = styled.div`
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #d4af37;
+`;
+
+const EquipmentList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+`;
+
+const EquipmentItem = styled.div`
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+  color: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+const EmptyState = styled.div`
+  text-align: center;
+  color: rgba(255, 255, 255, 0.6);
+  padding: 1rem 0;
+  font-size: 0.875rem;
+`;
+
+const EquipmentCategory = styled.div`
+  margin-bottom: 0.5rem;
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+`;
+
+const CategoryTitle = styled.h3`
+  color: #d4af37;
+  font-size: 0.875rem;
+  margin: 0 0 0.25rem 0;
+  font-family: "Cinzel", serif;
+`;
+
+const QuantityBadge = styled.span`
+  color: #d4af37;
+  font-size: 0.75rem;
+`;
+
+const formatCategory = (category: string): string => {
+  return category
+    .replace(/([A-Z])/g, ' $1')
+    .replace(/^./, str => str.toUpperCase());
+};

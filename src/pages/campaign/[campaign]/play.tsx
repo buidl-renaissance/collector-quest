@@ -1,25 +1,17 @@
-import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import styled from "@emotion/styled";
 import PageTransition from "@/components/PageTransition";
 import Page from "@/components/Page";
 import { Title } from "@/components/styled/typography";
-import { Campaign } from "@/data/campaigns";
 import BottomNavigation from "@/components/BottomNavigation";
-import CharacterImageTile from "@/components/CharacterImageTile";
 import { useCampaign } from "@/hooks/useCampaign";
-import { useCharacters } from "@/hooks/useCharacters";
-import { Character } from "@/data/character";
+import CharacterList from "@/components/CharacterList";
+import CharacterImageTile from "@/components/CharacterImageTile";
 
 export default function CampaignPlayPage() {
   const router = useRouter();
   const { campaign: campaignId } = router.query;
-  const { campaign, loading, error } = useCampaign(campaignId as string);
-  const {
-    characters,
-    loading: charactersLoading,
-    error: charactersError,
-  } = useCharacters(campaign?.characters?.map((c) => c.character_id) || []);
+  const { campaign, loading, characters } = useCampaign(campaignId as string);
 
   if (loading) {
     return (
@@ -45,18 +37,15 @@ export default function CampaignPlayPage() {
     <PageTransition>
       <Page>
         <Container>
-          <Title style={{ fontSize: "1rem" }}>{campaign.name}</Title>
+          <Title style={{ fontSize: "1rem", marginBottom: "2rem" }}>{campaign.name}</Title>
+
+          <CharacterImageTile
+            name={"Dungeon Master"}
+            imageUrl={'/images/COLLECTOR-quest-intro-1024.jpg'}
+          />
 
           <CharactersSection>
-            <CharactersList>
-              {characters.map((char: Character) => (
-                <CharacterImageTile
-                  key={char.id}
-                  name={char.name}
-                  imageUrl={char.image_url}
-                />
-              ))}
-            </CharactersList>
+            <CharacterList characters={characters} highlightedCharacterId={characters[0]?.id} />
           </CharactersSection>
 
           <GameArea>
@@ -74,7 +63,7 @@ export default function CampaignPlayPage() {
 const Container = styled.div`
   max-width: 1200px;
   margin: 0 auto;
-  padding: 1rem;
+  padding: 0rem;
   padding-bottom: 80px;
 `;
 
@@ -87,47 +76,14 @@ const GameArea = styled.div`
 `;
 
 const GameContent = styled.div`
-  padding: 2rem;
+  padding: 1rem;
   color: #e0dde5;
 `;
 
 const CharactersSection = styled.div`
-  margin: 2rem 0;
+  margin-top: 1rem;
+  margin-bottom: 2rem;
   text-align: center;
-`;
-
-const SectionTitle = styled.h2`
-  font-family: "Cinzel", serif;
-  color: #bb8930;
-  font-size: 1.2rem;
-  margin-bottom: 1rem;
-`;
-
-const CharactersList = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  justify-content: center;
-`;
-
-const CharacterItem = styled.div`
-  background: rgba(187, 137, 48, 0.1);
-  border: 1px solid rgba(187, 137, 48, 0.3);
-  border-radius: 8px;
-  padding: 0.75rem;
-  min-width: 200px;
-`;
-
-const CharacterRole = styled.div`
-  color: #bb8930;
-  font-weight: 500;
-  text-transform: capitalize;
-  margin-bottom: 0.25rem;
-`;
-
-const CharacterID = styled.div`
-  font-size: 0.9rem;
-  opacity: 0.8;
 `;
 
 const LoadingMessage = styled.div`

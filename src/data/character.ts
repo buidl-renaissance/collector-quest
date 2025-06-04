@@ -209,6 +209,12 @@ export interface CharacterSheet {
   languages?: string[];
 }
 
+export interface CharacterBasics {
+  id: string;
+  name: string;
+  imageUrl?: string;
+}
+
 export interface Character {
   id?: string;
   name: string;
