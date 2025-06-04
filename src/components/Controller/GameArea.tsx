@@ -21,8 +21,9 @@ export const GameArea = ({ children }: GameAreaProps) => {
           </DmHeader>
           <CharacterScript 
             character={null}
-            locationName="The Sleeping Dragon Tavern"
-            locationImage="/images/the-sleeping-dragon-tavern.png"
+            image="/images/the-sleeping-dragon-tavern.png"
+            imageTitle="The Sleeping Dragon Tavern"
+            imageCaption="The Sleeping Dragon Tavern"
             locale={{
               village: "Willowbrook",
               region: "Greenmeadow Valley"
@@ -37,13 +38,14 @@ export const GameArea = ({ children }: GameAreaProps) => {
 
 const GameAreaContainer = styled.main`
   position: fixed;
-  top: calc(60px + 0.5rem); /* TopNavigationBar height + gap */
-  left: 0.5rem;
-  right: 0.5rem;
+  top: calc(60px); /* TopNavigationBar height + gap */
+  left: 0;
+  right: 0;
+  padding: 0.5rem;
   bottom: calc(60px + 0.5rem + 96px); /* BottomNavigationBar + gap + ChatBox height */
   background: rgba(26, 26, 46, 0.8);
-  border: 1px solid rgba(187, 137, 48, 0.3);
-  border-radius: 8px;
+  /* border: 1px solid rgba(187, 137, 48, 0.3); */
+  /* border-radius: 8px; */
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -58,13 +60,13 @@ const DungeonMasterSection = styled.div`
 const DmHeader = styled.div`
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.5rem;
   /* padding: 1rem; */
 `;
 
 const DmImageContainer = styled.div`
-  width: 32px;
-  height: 32px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   overflow: hidden;
   border: 1px solid #d4af37;
@@ -87,7 +89,7 @@ const DmInfo = styled.div`
 
 const DmTitle = styled.div`
   color: #d4af37;
-  font-size: 0.9rem;
+  font-size: 1.4rem;
   font-weight: 600;
 `;
 
@@ -100,7 +102,8 @@ const GameContent = styled.div`
   flex: 1;
   width: 100%;
   height: 100%;
-  padding: 1rem;
+  padding: 0;
+  padding-right: 0.5rem;
   overflow-y: auto;
   color: #fff;
 

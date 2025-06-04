@@ -4,8 +4,9 @@ import { Character } from "@/data/character";
 
 interface CharacterScriptProps {
   character: Character | null;
-  locationName?: string;
-  locationImage?: string;
+  image?: string;
+  imageTitle?: string;
+  imageCaption?: string;
   locale?: {
     village?: string;
     region?: string;
@@ -14,8 +15,9 @@ interface CharacterScriptProps {
 
 export const CharacterScript = ({
   character,
-  locationName = "The Sleeping Dragon Tavern",
-  locationImage = "/images/the-sleeping-dragon-tavern.png",
+  image = "/images/the-sleeping-dragon-tavern.png",
+  imageTitle = "The Sleeping Dragon Tavern",
+  imageCaption,
   locale,
 }: CharacterScriptProps) => {
   return (
@@ -26,23 +28,7 @@ export const CharacterScript = ({
           <CharacterName>{character.name}</CharacterName>
         </CharacterHeader>
       )}
-      <LocationHeader>
-        {locationImage && (
-          <LocationImageWrapper>
-            <StyledLocationImage src={locationImage} alt={locationName} />
-          </LocationImageWrapper>
-        )}
-        <LocationInfo>
-          <LocationTitle>{locationName}</LocationTitle>
-          {locale && (
-            <LocaleText>
-              {locale.village && <span>{locale.village}</span>}
-              {locale.village && locale.region && <span> • </span>}
-              {locale.region && <span>{locale.region}</span>}
-            </LocaleText>
-          )}
-        </LocationInfo>
-      </LocationHeader>
+
       <ScriptContent>
         You find yourself in the warm, inviting atmosphere of The Sleeping
         Dragon Tavern. The air is thick with the aroma of spiced mead and hearty
@@ -51,6 +37,26 @@ export const CharacterScript = ({
         the scattered tables, their conversations creating a gentle murmur
         throughout the room.
       </ScriptContent>
+      <LocationHeader>
+        {image && (
+          <LocationImageContainer>
+            <LocationImageWrapper>
+              <StyledLocationImage src={image} alt={imageTitle} />
+            </LocationImageWrapper>
+            <ImageContainer>
+              <LocationTitle>{imageTitle}</LocationTitle>
+              {imageCaption && <ImageCaption>{imageCaption}</ImageCaption>}
+              {locale && (
+                <LocaleText>
+                  {locale.village && <span>{locale.village}</span>}
+                  {locale.village && locale.region && <span> • </span>}
+                  {locale.region && <span>{locale.region}</span>}
+                </LocaleText>
+              )}
+            </ImageContainer>
+          </LocationImageContainer>
+        )}
+      </LocationHeader>
     </ScriptContainer>
   );
 };
@@ -60,20 +66,27 @@ const ScriptContainer = styled.div`
   border: 1px solid rgba(212, 175, 55, 0.3); */
   border-radius: 8px;
   margin-bottom: 1rem;
-  padding-left: 2.75rem;
-  padding-top: 0.5rem;
+  padding-left: 3rem;
+  padding-top: 0;
 `;
 
 const LocationHeader = styled.div`
   margin-bottom: 0.5rem;
 `;
 
+const LocationImageContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-top: 1rem;
+`;
+
 const LocationImageWrapper = styled.div`
-  width: 100%;
+  width: 256px;
   height: auto;
   border-radius: 8px;
   overflow: hidden;
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
 `;
 
 const StyledLocationImage = styled.img`
@@ -82,15 +95,21 @@ const StyledLocationImage = styled.img`
   object-fit: cover;
 `;
 
-const LocationInfo = styled.div`
+const ImageContainer = styled.div`
   margin-bottom: 0.5rem;
 `;
 
 const LocationTitle = styled.h2`
   color: #d4af37;
   font-family: "Cinzel", serif;
-  font-size: 1.2rem;
+  font-size: 1rem;
   margin: 0;
+`;
+
+const ImageCaption = styled.div`
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+  /* margin-top: 0.25rem; */
 `;
 
 const LocaleText = styled.div`

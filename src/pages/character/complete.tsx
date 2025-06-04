@@ -76,8 +76,7 @@ const CompletionPage: React.FC = () => {
         {selectedRace && selectedClass && (
           <CharacterSection>
             <CharacterImage
-              race={selectedRace}
-              characterClass={selectedClass}
+              character={character || undefined}
               size="large"
             />
             <CharacterDescription

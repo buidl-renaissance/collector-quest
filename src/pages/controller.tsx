@@ -1,18 +1,15 @@
 import styled from "@emotion/styled";
-import { motion, AnimatePresence } from "framer-motion";
-import { FaBars, FaMap, FaMicrophone, FaPlay, FaVolumeMute, FaArrowLeft, FaArrowRight, FaBrain, FaScroll, FaUsers, FaChevronDown, FaCog } from "react-icons/fa";
-import { MdCameraAlt, MdLocationOn, MdOutlineExplore } from "react-icons/md";
+import { AnimatePresence } from "framer-motion";
 import Page from "@/components/Page";
 import { theme } from "@/styles/theme";
 import { useState } from "react";
-import CharacterImage from "@/components/CharacterImage";
 import { useCharacter } from "@/hooks/useCharacter";
 import { ChatBox } from "@/components/Controller/ChatBox";
 import { CharacterMenu } from "@/components/Controller/CharacterMenu";
 import { BottomNavigationBar } from "@/components/Controller/BottomNavigationBar";
 import { TopNavigationBar } from "@/components/Controller/TopNavigationBar";
 import { GameArea } from "@/components/Controller/GameArea";
-import { QQCharacterModal, QRCharacterModal } from "@/components/Controller/QRCharacterModal";
+import { QRCharacterModal } from "@/components/Controller/QRCharacterModal";
 
 const mockLocationData = {
   village: "Willowbrook",

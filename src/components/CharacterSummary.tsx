@@ -19,8 +19,7 @@ const CharacterSummary: React.FC<CharacterSummaryProps> = ({ character }) => {
 
       {character.race && character.class && (
         <CharacterImage
-          race={character.race}
-          characterClass={character.class}
+          character={character}
           size="large"
         />
       )}
