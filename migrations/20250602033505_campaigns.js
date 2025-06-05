@@ -23,3 +23,20 @@ exports.up = function(knex) {
 exports.down = function(knex) {
   return knex.schema.dropTable('campaigns');
 };
+
+/**
+ * MySQL equivalent:
+  
+  CREATE TABLE campaigns (
+    id CHAR(36) PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    startDate TIMESTAMP NULL,
+    endDate TIMESTAMP NULL, 
+    status ENUM('active', 'inactive', 'completed') NOT NULL,
+    targetAudience JSON NULL,
+    quests JSON NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  );
+ */

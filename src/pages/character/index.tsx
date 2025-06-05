@@ -24,6 +24,7 @@ import AddressDisplay from "@/components/AddressDisplay";
 import BottomNavigationBar from "@/components/BottomNavigationBar";
 import ArtifactsList from "@/components/ArtifactsList";
 import RegisterCharacter from "@/components/RegisterCharacter";
+import CharacterSheetModal from "@/components/CharacterSheetModal";
 
 interface CharacterPageProps {
   character: Character | null;
@@ -39,6 +40,7 @@ const CharacterPage: React.FC<CharacterPageProps> = () => {
   const { registerCharacter, isRegistering, registeredCharacter, error } =
     useCharacterRegistration();
   const { address } = useWallet();
+  const [isCharacterSheetOpen, setIsCharacterSheetOpen] = useState(false);
 
   const [registeredCharacterId, setRegisteredCharacterId] = useState<any>(null);
 
@@ -183,6 +185,9 @@ const CharacterPage: React.FC<CharacterPageProps> = () => {
               <BioCardContainer>
                 <CharacterSectionTitle>Backstory</CharacterSectionTitle>
                 <CharacterBio character={character} openModal={openModal} />
+                <ViewCharacterSheetButton onClick={() => setIsCharacterSheetOpen(true)}>
+                  View Character Sheet
+                </ViewCharacterSheetButton>
               </BioCardContainer>
 
               <RegisterCharacter
@@ -215,6 +220,16 @@ const CharacterPage: React.FC<CharacterPageProps> = () => {
         >
           {modalContent.content}
         </Modal>
+
+        {character && character.sheet && (
+          <CharacterSheetModal
+            isOpen={isCharacterSheetOpen}
+            onClose={() => setIsCharacterSheetOpen(false)}
+            character={character}
+            characterSheet={character.sheet}
+          />
+        )}
+
         <BottomNavigationBar />
       </Page>
     </PageTransition>
@@ -339,6 +354,25 @@ const BioCardContainer = styled.div`
   /* box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
   border: 1px solid #4a3b6b; */
   margin-top: 1rem;
+`;
+
+const ViewCharacterSheetButton = styled.button`
+  background: #2d2d44;
+  color: #bb8930;
+  border: 1px solid #4a3b6b;
+  border-radius: 4px;
+  padding: 0.75rem 1.5rem;
+  font-family: "Cinzel", serif;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-top: 1rem;
+  width: 100%;
+  transition: all 0.2s ease-in-out;
+
+  &:hover {
+    background: #3d3d54;
+    transform: translateY(-2px);
+  }
 `;
 
 const LoadingText = styled.p`
