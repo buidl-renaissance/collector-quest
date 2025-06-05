@@ -17,7 +17,7 @@ import { Attack } from "@/data/attacks";
 import CharacterSheetModal from "@/components/CharacterSheetModal";
 import { useCharacterSheet } from "@/hooks/useCharacterSheet";
 import { MenuModal } from "./MenuModal";
-import { useCharacter } from "@/hooks/useCharacter";
+import { useCurrentCharacter } from "@/hooks/useCurrentCharacter";
 
 interface CharacterMenuProps {
   size?: "small" | "normal";
@@ -29,7 +29,7 @@ export const CharacterMenu = ({ size = "normal" }: CharacterMenuProps) => {
   const [isMenuExpanded, setIsMenuExpanded] = useState(false);
   const [isSheetModalOpen, setIsSheetModalOpen] = useState(false);
   const [activeModal, setActiveModal] = useState<ModalType>(null);
-  const { character } = useCharacter();
+  const { character } = useCurrentCharacter();
   const { characterSheet } = useCharacterSheet();
 
   const handleSheetClick = () => {

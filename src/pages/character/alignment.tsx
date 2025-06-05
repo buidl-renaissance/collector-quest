@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import styled from "@emotion/styled";
 import { keyframes } from "@emotion/react";
 import { FaArrowRight, FaArrowLeft, FaBalanceScale, FaTimes } from "react-icons/fa";
-import { useCharacter } from "@/hooks/useCharacter";
+import { useCurrentCharacter } from "@/hooks/useCurrentCharacter";
 import { useRace } from "@/hooks/useRace";
 import { useCharacterClass } from "@/hooks/useCharacterClass";
 import { 
@@ -21,7 +21,7 @@ import BottomNavigation from "@/components/BottomNavigation";
 
 const AlignmentPage: React.FC = () => {
   const router = useRouter();
-  const { character, updateCharacter, saveCharacter, updateCharacterTrait } = useCharacter();
+  const { character, updateCharacter, saveCharacter, updateCharacterTrait } = useCurrentCharacter();
   const { selectedRace, loading: raceLoading } = useRace();
   const { selectedClass, loading: classLoading } = useCharacterClass();
   const [selectedAlignment, setSelectedAlignment] = React.useState(character?.traits?.alignment || "");

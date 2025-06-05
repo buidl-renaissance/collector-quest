@@ -8,34 +8,14 @@ import PageTransition from '@/components/PageTransition';
 import Page from '@/components/Page';
 import { Title, Subtitle } from '@/components/styled/typography';
 import { useWallet } from "@/hooks/useWallet";
+import { useCurrentCharacter } from "@/hooks/useCurrentCharacter";
 
 export default function NewCampaignPage() {
   const router = useRouter();
   const { address } = useWallet();
+  const { character: userCharacter } = useCurrentCharacter();
   const [additionalPlayers, setAdditionalPlayers] = useState<Character[]>([]);
   const [loading, setLoading] = useState(false);
-  const [userCharacter, setUserCharacter] = useState<Character | null>(null);
-
-  useEffect(() => {
-    async function loadUserCharacter() {
-      if (!address) return;
-
-      try {
-        const response = await fetch(`/api/characters?owner=${address}`);
-        if (!response.ok) {
-          throw new Error('Failed to fetch characters');
-        }
-        const data = await response.json();
-        if (data.length > 0) {
-          setUserCharacter(data[0]);
-        }
-      } catch (error) {
-        console.error('Error loading user character:', error);
-      }
-    }
-
-    loadUserCharacter();
-  }, [address]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

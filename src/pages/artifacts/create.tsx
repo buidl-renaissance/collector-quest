@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 import { FormGroup, Label, CheckboxContainer, Checkbox, CheckboxLabel } from "@/components/styled/forms";
 import { ErrorMessage } from "@/components/styled/typography";
 import { UploadMedia } from "@/components/UploadMedia";
-import { useCharacter } from "@/hooks/useCharacter";
+import { useCurrentCharacter } from "@/hooks/useCurrentCharacter";
 import { useArtifactRegistration } from "@/hooks/web3/useArtifactRegistration";
 import LoadingBasic from "@/components/LoadingBasic";
 
@@ -23,7 +23,7 @@ const CreateArtifactPage = () => {
     hasArtistConsent: false,
   });
 
-  const { character } = useCharacter();
+  const { character } = useCurrentCharacter();
   const { registerArtifact } = useArtifactRegistration();
 
   const [imagePreview, setImagePreview] = useState<string | null>(null);

@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { getCurrentCharacterId } from "@/utils/storage";
-import { useCharacter } from "./useCharacter";
-import { Traits } from "./useCharacter";
+import { useCurrentCharacter } from "./useCurrentCharacter";
+import { Traits } from "./useCurrentCharacter";
 
 interface GenerateTraitsResponse {
   success: boolean;
@@ -32,7 +32,7 @@ interface ResultData {
 const GENERATED_TRAITS_STORAGE_KEY = "generatedTraits";
 
 export function useGeneratedTraits() {
-  const { character } = useCharacter();
+  const { character } = useCurrentCharacter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [resultId, setResultId] = useState<string | null>(null);

@@ -3,7 +3,7 @@ import styled from "@emotion/styled";
 import {
   Character,
   CharacterSheet as CharacterSheetType,
-} from "@/hooks/useCharacter";
+} from "@/hooks/useCurrentCharacter";
 import CharacterSheet from "./CharacterSheet";
 import { FaTimes } from "react-icons/fa";
 import CharacterCard from "./CharacterCard";

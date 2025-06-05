@@ -18,7 +18,7 @@ import { Artifact } from "@/data/artifacts";
 import CharacterBio from "@/components/CharacterBio";
 import useModal from "@/hooks/useModal";
 import { useCharacterRegistration } from "@/hooks/web3/useCharacterRegistration";
-import { useCharacter } from "@/hooks/useCharacter";
+import { useCurrentCharacter } from "@/hooks/useCurrentCharacter";
 import { useWallet } from "@/hooks/useWallet";
 import AddressDisplay from "@/components/AddressDisplay";
 import BottomNavigationBar from "@/components/BottomNavigationBar";
@@ -33,7 +33,7 @@ interface CharacterPageProps {
 const CharacterPage: React.FC<CharacterPageProps> = () => {
   const router = useRouter();
   const { openModal, closeModal, modalContent, Modal } = useModal();
-  const { character, fetchCharacter } = useCharacter();
+  const { character, fetchCharacter } = useCurrentCharacter();
   const [artifacts, setArtifacts] = useState<Artifact[]>([]);
   const [loadingArtifacts, setLoadingArtifacts] = useState(false);
   const [isCreating, setIsCreating] = useState(false);

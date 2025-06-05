@@ -20,7 +20,7 @@ import useIsAdmin from "@/hooks/useIsAdmin";
 import { NextButton } from "@/components/styled/buttons";
 import router from "next/router";
 import PressStart from "@/components/PressStart";
-import { useCharacter } from "@/hooks/useCharacter";
+import { useCurrentCharacter } from "@/hooks/useCurrentCharacter";
 import { FeaturedDescription, FeaturedGrid, FeaturedIcon, FeaturedItem, FeaturedSection, FeaturedTitle } from "@/components/styled/section";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
@@ -42,7 +42,7 @@ const IndexPage: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [error, setError] = useState("");
-  const { character } = useCharacter();
+  const { character } = useCurrentCharacter();
   const [parallaxOffset, setParallaxOffset] = useState(0);
   const [showShareModal, setShowShareModal] = useState(false);
   const { isAdmin } = useIsAdmin();

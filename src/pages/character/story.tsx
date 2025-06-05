@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import styled from "@emotion/styled";
 import { keyframes } from "@emotion/react";
 import { useStoryGenerator } from "@/hooks/useStoryGenerator";
-import { Character, useCharacter } from "@/hooks/useCharacter";
+import { Character, useCurrentCharacter } from "@/hooks/useCurrentCharacter";
 import Head from "next/head";
 import { Title, Subtitle, NextButton } from "@/components/styled/character";
 import PageTransition from "@/components/PageTransition";
@@ -72,7 +72,7 @@ const SpinnerIcon = styled.div`
 
 export default function CharacterStoryPage() {
   const router = useRouter();
-  const { character } = useCharacter();
+  const { character } = useCurrentCharacter();
 //   const [characterImage, setCharacterImage] = useState<string | null>(character?.image_url || character?.race?.image || null);
   const {
     generateStory,

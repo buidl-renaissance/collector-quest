@@ -1,4 +1,4 @@
-import { useCharacter } from '@/hooks/useCharacter';
+import { useCurrentCharacter } from '@/hooks/useCurrentCharacter';
 import { useState, useEffect, useCallback, useRef } from 'react';
 
 interface StoryGenerationResult {
@@ -28,7 +28,7 @@ interface UseStoryGeneratorReturn {
 }
 
 export const useStoryGenerator = (): UseStoryGeneratorReturn => {
-  const { character, updateCharacter } = useCharacter();
+  const { character, updateCharacter } = useCurrentCharacter();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [backstory, setBackstory] = useState<string | null>(null);

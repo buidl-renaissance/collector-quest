@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { CharacterDB } from '@/db/character';
-import { Character } from '@/hooks/useCharacter';
+import { Character } from '@/hooks/useCurrentCharacter';
 
 export default async function handler(
   req: NextApiRequest,

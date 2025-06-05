@@ -1,4 +1,4 @@
-import { Character } from "@/hooks/useCharacter";
+import { Character } from "@/hooks/useCurrentCharacter";
 
 interface BackstoryGenerationResult {
   backstory: string;

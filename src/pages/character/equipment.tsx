@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import styled from "@emotion/styled";
 import { keyframes } from "@emotion/react";
 import { FaArrowLeft, FaArrowRight, FaShoppingBag, FaCoins, FaDice, FaCheck, FaRandom } from "react-icons/fa";
-import { useCharacter } from "@/hooks/useCharacter";
+import { useCurrentCharacter } from "@/hooks/useCurrentCharacter";
 import { useRace } from "@/hooks/useRace";
 import { useCharacterClass } from "@/hooks/useCharacterClass";
 import { useEquipment } from "@/hooks/useEquipment";

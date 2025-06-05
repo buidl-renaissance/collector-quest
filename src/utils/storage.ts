@@ -19,6 +19,9 @@ export const getCharacters = () => {
 
 export const getCharacter = (id: string) => {
   const characters = getCharacters();
+  if (characters[id]?.data) {
+    return characters[id].data;
+  }
   return characters[id] || null;
 };
 

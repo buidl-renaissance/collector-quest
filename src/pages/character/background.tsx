@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import styled from "@emotion/styled";
 import { keyframes } from "@emotion/react";
 import { FaArrowLeft, FaArrowRight, FaScroll, FaTimes } from "react-icons/fa";
-import { useCharacter } from "@/hooks/useCharacter";
+import { useCurrentCharacter } from "@/hooks/useCurrentCharacter";
 import { useRace } from "@/hooks/useRace";
 import { useCharacterClass } from "@/hooks/useCharacterClass";
 import {
@@ -20,7 +20,7 @@ import { navigateTo } from "@/utils/navigation";
 const BackgroundPage: React.FC = () => {
   const router = useRouter();
   const { character, updateCharacterTrait } =
-    useCharacter();
+    useCurrentCharacter();
   const { selectedRace, loading: raceLoading } = useRace();
   const { selectedClass, loading: classLoading } = useCharacterClass();
   const [selectedBackground, setSelectedBackground] = useState(

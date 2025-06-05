@@ -9,7 +9,7 @@ import {
 import PageTransition from "@/components/PageTransition";
 import { useRace } from "@/hooks/useRace";
 import { useCharacterClass } from "@/hooks/useCharacterClass";
-import { useCharacter } from "@/hooks/useCharacter";
+import { useCurrentCharacter } from "@/hooks/useCurrentCharacter";
 import Page from "@/components/Page";
 import { Container, LoadingMessage, ActionButtons, CrownIcon } from "@/components/styled/layout";
 import { Title, Subtitle } from "@/components/styled/typography";
@@ -23,7 +23,7 @@ const BackstoryPage: React.FC = () => {
   const router = useRouter();
   const { selectedRace, loading: raceLoading } = useRace();
   const { selectedClass, loading: classLoading } = useCharacterClass();
-  const { character, saveCharacter } = useCharacter();
+  const { character, saveCharacter } = useCurrentCharacter();
   const { 
     backstory, 
     isGeneratingBackstory, 

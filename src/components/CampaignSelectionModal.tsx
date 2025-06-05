@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import styled from "@emotion/styled";
 import { Campaign } from "../data/campaigns";
 import { Title, Subtitle } from "./styled/typography";
-import { useCharacter } from "@/hooks/useCharacter";
+import { useCurrentCharacter } from "@/hooks/useCurrentCharacter";
 import Modal from "./Modal";
 
 interface CampaignSelectionModalProps {
@@ -13,7 +13,7 @@ interface CampaignSelectionModalProps {
 
 export const CampaignSelectionModal = ({ isOpen, onClose }: CampaignSelectionModalProps) => {
   const router = useRouter();
-  const { character } = useCharacter();
+  const { character } = useCurrentCharacter();
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [loading, setLoading] = useState(true);
 

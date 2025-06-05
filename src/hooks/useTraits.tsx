@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { getCurrentCharacterId, getCharacterKey, setCharacterKey } from '@/utils/storage';
-import { useCharacter } from './useCharacter';
-import { Traits } from './useCharacter';
+import { useCurrentCharacter } from './useCurrentCharacter';
+import { Traits } from './useCurrentCharacter';
 export function useTraits() {
-  const { character, updateCharacter } = useCharacter();
+  const { character, updateCharacter } = useCurrentCharacter();
   const [selectedTraits, setSelectedTraits] = useState<Traits | null>(null);
   const [loading, setLoading] = useState(true);
 

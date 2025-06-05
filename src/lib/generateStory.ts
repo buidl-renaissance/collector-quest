@@ -1,4 +1,4 @@
-import { Character } from "@/hooks/useCharacter";
+import { Character } from "@/hooks/useCurrentCharacter";
 import OpenAI from "openai";
 
 const openai = new OpenAI({

@@ -25,24 +25,36 @@ interface FeaturesProps {
   featuresAndTraits: FeaturesTraits;
 }
 
+interface Feature {
+  name: string;
+  description: string;
+}
+
+const featureText = (feature: string | Feature) => {
+  if (typeof feature === 'string') {
+    return feature;
+  }
+  return feature.name;
+};
+
 const Features: React.FC<FeaturesProps> = ({ featuresAndTraits }) => {
   if (!featuresAndTraits) return null;
   return (
     <FeatureList>
       {featuresAndTraits.backgroundFeature && (
-        <FeatureItem>{featuresAndTraits.backgroundFeature}</FeatureItem>
+        <FeatureItem>{featureText(featuresAndTraits.backgroundFeature)}</FeatureItem>
       )}
       {featuresAndTraits.classFeatures.map((feature, index) => (
-        <FeatureItem key={`feature-${index}`}>{feature}</FeatureItem>
+        <FeatureItem key={`feature-${index}`}>{featureText(feature)}</FeatureItem>
       ))}
       {featuresAndTraits.raceTraits.map((feature, index) => (
-        <FeatureItem key={`feature-${index}`}>{feature}</FeatureItem>
+        <FeatureItem key={`feature-${index}`}>{featureText(feature)}</FeatureItem>
       ))}
       {featuresAndTraits.subclassFeatures.map((feature, index) => (
-        <FeatureItem key={`feature-${index}`}>{feature}</FeatureItem>
+        <FeatureItem key={`feature-${index}`}>{featureText(feature)}</FeatureItem>
       ))}
       {featuresAndTraits.customFeatures.map((feature, index) => (
-        <FeatureItem key={`feature-${index}`}>{feature}</FeatureItem>
+        <FeatureItem key={`feature-${index}`}>{featureText(feature)}</FeatureItem>
       ))}
       {featuresAndTraits.description && (
         <FeatureItem>{featuresAndTraits.description}</FeatureItem>

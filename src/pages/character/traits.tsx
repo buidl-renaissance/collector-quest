@@ -13,7 +13,7 @@ import PageTransition from "@/components/PageTransition";
 import { useCharacterClass } from "@/hooks/useCharacterClass";
 import { useRace } from "@/hooks/useRace";
 import Page from "@/components/Page";
-import { useCharacter, Traits } from "@/hooks/useCharacter";
+import { useCurrentCharacter, Traits } from "@/hooks/useCurrentCharacter";
 import BottomNavigation from "@/components/BottomNavigation";
 import { Title, Subtitle } from "@/components/styled/typography";
 import { FormSection } from "@/components/styled/forms";
@@ -22,7 +22,7 @@ import useGeneratedTraits from "@/hooks/useGeneratedTraits";
 
 const CharacterTraitsPage: React.FC = () => {
   const router = useRouter();
-  const { character, updateCharacter, saveCharacter, updateCharacterTrait } = useCharacter();
+  const { character, updateCharacter, saveCharacter, updateCharacterTrait } = useCurrentCharacter();
   const { selectedClass, loading: classLoading } = useCharacterClass();
   const { selectedRace, loading: raceLoading } = useRace();
   const { generateTraits, loading: traitsLoading, error: traitsError, traits: generatedTraits } = useGeneratedTraits();
@@ -41,21 +41,27 @@ const CharacterTraitsPage: React.FC = () => {
   // Update traits when generated traits are available
   useEffect(() => {
     if (generatedTraits && character) {
-      // Only initialize selections if they're empty
-      if (!selectedPersonality.length && generatedTraits.personality) {
-        setSelectedPersonality(character.traits?.personality || []);
-      }
-      if (!selectedIdeals.length && generatedTraits.ideals) {
-        setSelectedIdeals(character.traits?.ideals || []);
-      }
-      if (!selectedFlaws.length && generatedTraits.flaws) {
-        setSelectedFlaws(character.traits?.flaws || []);
-      }
-      if (!selectedBonds.length && generatedTraits.bonds) {
-        setSelectedBonds(character.traits?.bonds || []);
+      // Merge existing character traits with generated traits
+      const mergedPersonality = [...new Set([...(character.traits?.personality || []), ...(generatedTraits.personality || [])])];
+      const mergedIdeals = [...new Set([...(character.traits?.ideals || []), ...(generatedTraits.ideals || [])])];
+      const mergedFlaws = [...new Set([...(character.traits?.flaws || []), ...(generatedTraits.flaws || [])])];
+      const mergedBonds = [...new Set([...(character.traits?.bonds || []), ...(generatedTraits.bonds || [])])];
+
+      // Initialize selections with existing character traits
+      setSelectedPersonality(character.traits?.personality || []);
+      setSelectedIdeals(character.traits?.ideals || []);
+      setSelectedFlaws(character.traits?.flaws || []);
+      setSelectedBonds(character.traits?.bonds || []);
+
+      // Update generated traits with merged values
+      if (generatedTraits) {
+        generatedTraits.personality = mergedPersonality;
+        generatedTraits.ideals = mergedIdeals;
+        generatedTraits.flaws = mergedFlaws;
+        generatedTraits.bonds = mergedBonds;
       }
     }
-  }, [generatedTraits, character, selectedPersonality.length, selectedIdeals.length, selectedFlaws.length, selectedBonds.length]);
+  }, [generatedTraits, character]);
 
   // Update character with selected traits only when selections change
   useEffect(() => {

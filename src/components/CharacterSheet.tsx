@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import styled from "@emotion/styled";
 import { Character } from "@/data/character";
-import { CharacterSheet as CharacterSheetType } from "@/hooks/useCharacter";
+import { CharacterSheet as CharacterSheetType } from "@/hooks/useCurrentCharacter";
 import Emblems from "./CharacterSheet/Emblems";
 import Attacks from "./CharacterSheet/Attacks";
 import HitDice from "./CharacterSheet/HitDice";

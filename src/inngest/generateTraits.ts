@@ -1,5 +1,5 @@
 import { Inngest } from "inngest";
-import { Character } from "@/hooks/useCharacter";
+import { Character } from "@/hooks/useCurrentCharacter";
 import { generateTraits as generateTraitsLib } from "@/lib/generateTraits";
 import { CharacterDB } from "@/db/character";
 import { completeResult, failResult, updateResult } from "@/lib/storage";

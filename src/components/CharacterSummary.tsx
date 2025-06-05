@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "@emotion/styled";
 import CharacterImage from "./CharacterImage";
-import { Character } from "@/hooks/useCharacter";
+import { Character } from "@/hooks/useCurrentCharacter";
 
 interface CharacterSummaryProps {
   character: Character;

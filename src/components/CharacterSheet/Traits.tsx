@@ -1,5 +1,5 @@
 import React from 'react';
-import { Traits } from '@/hooks/useCharacter';
+import { Traits } from '@/hooks/useCurrentCharacter';
 
 interface TraitsProps {
   traits: Traits;

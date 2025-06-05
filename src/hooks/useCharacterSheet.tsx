@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Character, CharacterSheet, useCharacter } from './useCharacter';;
+import { Character, CharacterSheet, useCurrentCharacter } from './useCurrentCharacter';;
 import { getCurrentCharacterId, getCharacterKey, setCharacterKey } from '@/utils/storage';
 
 interface PollResult {
@@ -12,7 +12,7 @@ const MAX_POLL_ATTEMPTS = 30;
 const POLL_INTERVAL = 3000;
 
 export function useCharacterSheet() {
-  const { character } = useCharacter();
+  const { character } = useCurrentCharacter();
   const [characterSheet, setCharacterSheet] = useState<CharacterSheet | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

@@ -12,7 +12,7 @@ import { useCharacterClass } from "@/hooks/useCharacterClass";
 import { useRace } from "@/hooks/useRace";
 import Page from "@/components/Page";
 import { BackButton } from "@/components/styled/character";
-import { useCharacter, Traits } from "@/hooks/useCharacter";
+import { useCurrentCharacter, Traits } from "@/hooks/useCurrentCharacter";
 import BottomNavigation from "@/components/BottomNavigation";
 import { Title, Subtitle } from "@/components/styled/typography";
 import {
@@ -32,7 +32,7 @@ import { navigateTo } from "@/utils/navigation";
 const CharacterTraitsPage: React.FC = () => {
   const router = useRouter();
   const [darkMode, setDarkMode] = useState(true);
-  const { character, updateCharacter, saveCharacter, updateCharacterTrait } = useCharacter();
+  const { character, updateCharacter, saveCharacter, updateCharacterTrait } = useCurrentCharacter();
   const { selectedClass, loading: classLoading } = useCharacterClass();
   const { selectedRace, loading: raceLoading } = useRace();
 

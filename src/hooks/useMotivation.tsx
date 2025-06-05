@@ -4,10 +4,10 @@ import {
   getCharacterKey,
   setCharacterKey,
 } from "@/utils/storage";
-import { useCharacter } from "./useCharacter";
+import { useCurrentCharacter } from "./useCurrentCharacter";
 
 export function useMotivation() {
-  const { character, updateCharacter } = useCharacter();
+  const { character, updateCharacter } = useCurrentCharacter();
   const [motivation, setMotivation] = useState<string | null>(null);
   const [actions, setActions] = useState<string[]>([]);
   const [forces, setForces] = useState<string[]>([]);

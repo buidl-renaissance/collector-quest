@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useCharacter } from "./useCharacter";
+import { useCurrentCharacter } from "./useCurrentCharacter";
 import { useRace } from "./useRace";
 import { useCharacterClass } from "./useCharacterClass";
 import { useTraits } from "./useTraits";
@@ -23,7 +23,7 @@ export function useBackstory() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const { character, loading: characterLoading } = useCharacter();
+  const { character, loading: characterLoading } = useCurrentCharacter();
   const { selectedRace, loading: raceLoading } = useRace();
   const { selectedClass, loading: classLoading } = useCharacterClass();
   const { selectedTraits, loading: traitsLoading } = useTraits();

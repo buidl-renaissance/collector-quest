@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { SuiClient as SuiAppClient } from "@/lib/client";
-import { useCharacter } from "@/hooks/useCharacter";
+import { useCurrentCharacter } from "@/hooks/useCurrentCharacter";
 import { getOrCreateWallet } from "@/lib/wallet";
 
 // Package and registry constants - update these with your deployed contract addresses
 
 export const useCharacterRegistration = () => {
-  const { character, updateCharacter, saveCharacter } = useCharacter();
+  const { character, updateCharacter, saveCharacter } = useCurrentCharacter();
   const [isRegistering, setIsRegistering] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [registeredCharacter, setRegisteredCharacter] = useState<any>(null);

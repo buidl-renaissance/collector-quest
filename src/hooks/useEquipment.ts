@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { Character } from "./useCharacter";
-import { useCharacter } from "./useCharacter";
+import { Character } from "./useCurrentCharacter";
+import { useCurrentCharacter } from "./useCurrentCharacter";
 interface EquipmentItem {
   name: string;
   quantity: number;
@@ -25,7 +25,7 @@ export const useEquipment = () => {
   const [error, setError] = useState<string | null>(null);
   const [status, setStatus] = useState<GenerationStatus | null>(null);
   const [equipment, setEquipment] = useState<Equipment | null>(null);
-  const { character, updateCharacter } = useCharacter();
+  const { character, updateCharacter } = useCurrentCharacter();
   const [hasAttemptedGeneration, setHasAttemptedGeneration] = useState(false);
 
   const generateEquipment = async () => {

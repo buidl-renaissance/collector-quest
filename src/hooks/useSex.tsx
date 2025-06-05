@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { getCurrentCharacterId, getCharacterKey } from '@/utils/storage';
-import { useCharacter } from './useCharacter';
+import { useCurrentCharacter } from './useCurrentCharacter';
 
 export type Sex = 'male' | 'female' | 'other';
 
 export function useSex() {
-  const { updateCharacter } = useCharacter();
+  const { updateCharacter } = useCurrentCharacter();
   const [selectedSex, setSelectedSex] = useState<Sex | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();

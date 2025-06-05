@@ -10,7 +10,7 @@ import { Race } from "@/data/races";
 import { getAllRaces } from "@/db/races";
 import { GetServerSideProps } from "next";
 import { BackButton } from "@/components/styled/character";
-import { useCharacter } from "@/hooks/useCharacter";
+import { useCurrentCharacter } from "@/hooks/useCurrentCharacter";
 import { Title, Subtitle } from "@/components/styled/character";
 
 interface CharacterCreatePageProps {

@@ -7,11 +7,11 @@ import PageTransition from "@/components/PageTransition";
 import Page from "@/components/Page";
 import { Title, Subtitle } from "@/components/styled/typography";
 import Image from "next/image";
-import { useCharacter } from "@/hooks/useCharacter";
+import { useCurrentCharacter } from "@/hooks/useCurrentCharacter";
 
 export default function CampaignPage() {
   const router = useRouter();
-  const { character } = useCharacter();
+  const { character } = useCurrentCharacter();
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [loading, setLoading] = useState(true);
 

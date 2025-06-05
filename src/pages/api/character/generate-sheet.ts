@@ -1,5 +1,5 @@
 import { attacks } from "@/data/attacks";
-import { Character } from "@/hooks/useCharacter";
+import { Character } from "@/hooks/useCurrentCharacter";
 import type { NextApiRequest, NextApiResponse } from "next";
 import OpenAI from "openai";
 

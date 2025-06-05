@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import styled from "@emotion/styled";
 import { keyframes } from "@emotion/react";
-import { useCharacter } from "@/hooks/useCharacter";
+import { useCurrentCharacter } from "@/hooks/useCurrentCharacter";
 import { useRouter } from "next/router";
 
 interface PressStartProps {
@@ -10,7 +10,7 @@ interface PressStartProps {
 
 const PressStart: React.FC<PressStartProps> = ({ className }) => {
   const [isCreating, setIsCreating] = useState(false);
-  const { createCharacter } = useCharacter();
+  const { createCharacter } = useCurrentCharacter();
   const router = useRouter();
   const handlePressStart = async () => {
     try {

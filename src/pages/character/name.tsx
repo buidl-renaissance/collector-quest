@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import styled from "@emotion/styled";
 import { keyframes } from "@emotion/react";
 import { useRouter } from "next/router";
-import { useCharacter } from "@/hooks/useCharacter";
+import { useCurrentCharacter } from "@/hooks/useCurrentCharacter";
 import { FaArrowLeft } from "react-icons/fa";
 import PageTransition from "@/components/PageTransition";
 import Page from "@/components/Page";
@@ -22,7 +22,7 @@ const slideUp = keyframes`
 
 const NamePage = () => {
   const router = useRouter();
-  const { character, updateCharacter } = useCharacter();
+  const { character, updateCharacter } = useCurrentCharacter();
   const [name, setName] = useState(character?.name || "");
   const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);

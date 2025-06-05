@@ -32,10 +32,10 @@ export function CharacterProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function useCharacter() {
+export function useCurrentCharacter() {
   const context = useContext(CharacterContext);
   if (context === undefined) {
-    throw new Error('useCharacter must be used within a CharacterProvider');
+    throw new Error('useCurrentCharacter must be used within a CharacterProvider');
   }
   return context;
 } 

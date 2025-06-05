@@ -9,7 +9,7 @@ import { useCharacterClass } from "@/hooks/useCharacterClass";
 import { useRace } from "@/hooks/useRace";
 import { useTraits } from "@/hooks/useTraits";
 import { useMotivation } from "@/hooks/useMotivation";
-import { useCharacter } from "@/hooks/useCharacter";
+import { useCurrentCharacter } from "@/hooks/useCurrentCharacter";
 import CharacterImage from "@/components/CharacterImage";
 import CharacterDescription from "@/components/CharacterDescription";
 import { useSex } from "@/hooks/useSex";
@@ -20,7 +20,7 @@ const CompletionPage: React.FC = () => {
   const { selectedRace } = useRace();
   const { selectedTraits } = useTraits();
   const { motivation } = useMotivation();
-  const { character } = useCharacter();
+  const { character } = useCurrentCharacter();
   const { selectedSex } = useSex();
 
   const handleStartNew = () => {

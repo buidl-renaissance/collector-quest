@@ -2,14 +2,14 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { CharacterClass } from '@/data/character';
 import { getCurrentCharacterId, getCharacterKey, setCharacterKey } from '@/utils/storage';
-import { useCharacter } from './useCharacter';
+import { useCurrentCharacter } from './useCurrentCharacter';
 
 /**
  * Custom hook to manage character class selection state
  * Handles loading from localStorage and persisting changes
  */
 export function useCharacterClass() {
-  const { saveCharacter, updateCharacter } = useCharacter();
+  const { saveCharacter, updateCharacter } = useCurrentCharacter();
   const [selectedClass, setSelectedClass] = useState<CharacterClass | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();

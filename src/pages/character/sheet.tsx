@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { FaArrowLeft, FaTimes, FaSpinner } from "react-icons/fa";
 import styled from "@emotion/styled";
 import { keyframes } from "@emotion/react";
-import { useCharacter } from "@/hooks/useCharacter";
+import { useCurrentCharacter } from "@/hooks/useCurrentCharacter";
 import { useCharacterSheet } from "@/hooks/useCharacterSheet";
 import Page from "@/components/Page";
 import { Container } from "@/components/styled/layout";
@@ -371,7 +371,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }) => {
 
 const CharacterSheetPage: React.FC = () => {
   const router = useRouter();
-  const { character, loading: characterLoading } = useCharacter();
+  const { character, loading: characterLoading } = useCurrentCharacter();
   const {
     characterSheet,
     loading: sheetLoading,

@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router';
-import { useCharacter } from '@/hooks/useCharacter';
+import { useCurrentCharacter } from '@/hooks/useCurrentCharacter';
 import Page from '@/components/Page';
 import { Container, LoadingMessage } from '@/components/styled/layout';
 import styled from '@emotion/styled';
@@ -29,7 +29,7 @@ const CreateButton = styled.button`
 
 const CreatePage = () => {
   const router = useRouter();
-  const { createCharacter, loading, error } = useCharacter();
+  const { createCharacter, loading, error } = useCurrentCharacter();
 
   const handleCreateCharacter = async () => {
     try {

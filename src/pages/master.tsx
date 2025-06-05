@@ -10,7 +10,7 @@ import {
   FaBook,
 } from "react-icons/fa";
 import Footer from '@/components/Footer';
-import { useCharacter } from '@/hooks/useCharacter';
+import { useCurrentCharacter } from '@/hooks/useCurrentCharacter';
 import { useRouter } from 'next/router';
 import PressStart from '@/components/PressStart';
 
@@ -33,7 +33,7 @@ const MasterPage: React.FC = () => {
   const [audioEnabled, setAudioEnabled] = useState(false);
   const [parallaxOffset, setParallaxOffset] = useState(0);
   const [isCreating, setIsCreating] = useState(false);
-  const { createCharacter } = useCharacter();
+  const { createCharacter } = useCurrentCharacter();
   const router = useRouter();
 
   useEffect(() => {

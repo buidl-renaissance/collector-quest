@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import styled from "@emotion/styled";
 import { keyframes } from "@emotion/react";
 import { useRouter } from "next/router";
-import { useCharacter } from "@/hooks/useCharacter";
+import { useCurrentCharacter } from "@/hooks/useCurrentCharacter";
 import { useCharacterImageGenerator } from "@/hooks/useCharacterImageGenerator";
 import { navigateTo } from "@/utils/navigation";
 import { NextButton } from "@/components/styled/buttons";
@@ -21,7 +21,7 @@ const slideUp = keyframes`
 
 const ImageGeneratorPage = () => {
   const router = useRouter();
-  const { character, updateCharacter } = useCharacter();
+  const { character, updateCharacter } = useCurrentCharacter();
   const {
     generateImage,
     isGenerating,

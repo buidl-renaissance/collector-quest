@@ -30,14 +30,14 @@ export const ChatBox = ({ onSendMessage }: ChatBoxProps) => {
 };
 
 const ChatBoxContainer = styled.div`
-  /* position: fixed; */
+  position: fixed;
   /* padding-right: 0.35rem; */
-  /* bottom: 60px;
+  bottom: 60px;
   left: 0rem;
-  right: 4rem; */
+  right: 0rem;
   width: auto;
   max-width: 400px;
-  z-index: 0;
+  z-index: 10;
   transition: bottom 0.3s ease;
 
   /* @media (max-height: 400px) {

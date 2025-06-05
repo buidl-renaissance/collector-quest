@@ -2,14 +2,14 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { Race } from '@/data/races';
 import { getCurrentCharacterId, getCharacterKey, setCharacterKey } from '@/utils/storage';
-import { useCharacter } from './useCharacter';
+import { useCurrentCharacter } from './useCurrentCharacter';
 
 /**
  * Custom hook to manage character race selection state
  * Handles loading from localStorage and persisting changes
  */
 export function useRace() {
-  const { saveCharacter, updateCharacter } = useCharacter();
+  const { saveCharacter, updateCharacter } = useCurrentCharacter();
   const [selectedRace, setSelectedRace] = useState<Race | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();

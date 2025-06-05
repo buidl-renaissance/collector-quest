@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
-import { useCharacter } from './useCharacter';
+import { useCurrentCharacter } from './useCurrentCharacter';
 
 interface GenerateImageResult {
   resultId: string;
@@ -11,7 +11,7 @@ interface PollResult {
   error?: string;
 }
 
-interface UseCharacterImageGeneratorResult {
+interface useCharacterImageGeneratorResult {
   generateImage: (imageData: string) => Promise<GenerateImageResult>;
   isGenerating: boolean;
   error: string | null;
@@ -29,8 +29,8 @@ interface UseCharacterImageGeneratorResult {
 const POLL_INTERVAL = 2000; // 2 seconds
 const MAX_POLL_ATTEMPTS = 60; // 2 minute maximum
 
-export function useCharacterImageGenerator(): UseCharacterImageGeneratorResult {
-  const { character, updateCharacter } = useCharacter();
+export function useCharacterImageGenerator(): useCharacterImageGeneratorResult {
+  const { character, updateCharacter } = useCurrentCharacter();
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [resultId, setResultId] = useState<string | null>(null);

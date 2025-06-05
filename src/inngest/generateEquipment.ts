@@ -1,6 +1,6 @@
 import { completeResult } from "@/lib/storage";
 import { inngest } from "./client";
-import { Character } from "@/hooks/useCharacter";
+import { Character } from "@/hooks/useCurrentCharacter";
 import { generateEquipment as generateEquipmentFunction } from "@/lib/generateEquipment";
 import { CharacterDB } from "@/db/character";
 import { Equipment } from "@/data/character";

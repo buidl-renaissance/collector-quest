@@ -15,14 +15,14 @@ import {
 import { Title, Subtitle } from "@/components/styled/typography";
 import { useMotivation } from "@/hooks/useMotivation";
 import BottomNavigation from "@/components/BottomNavigation";
-import { useCharacter } from "@/hooks/useCharacter";
+import { useCurrentCharacter } from "@/hooks/useCurrentCharacter";
 import { navigateTo } from "@/utils/navigation";
 
 const MotivationPage: React.FC = () => {
   const router = useRouter();
   const { selectedRace, loading: raceLoading } = useRace();
   const { selectedClass, loading: classLoading } = useCharacterClass();
-  const { character, saveCharacter } = useCharacter();
+  const { character, saveCharacter } = useCurrentCharacter();
   
   // Predefined options
   const actions = [

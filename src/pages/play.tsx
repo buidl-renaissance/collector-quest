@@ -4,7 +4,7 @@ import Page from "@/components/Page";
 import { theme } from "@/styles/theme";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import { useCharacter } from "@/hooks/useCharacter";
+import { useCurrentCharacter } from "@/hooks/useCurrentCharacter";
 import { ChatBox } from "@/components/Controller/ChatBox";
 import { CharacterMenu } from "@/components/Controller/CharacterMenu";
 import { BottomNavigationBar } from "@/components/Controller/BottomNavigationBar";
@@ -25,7 +25,7 @@ const mockLocationData = {
 
 const Controller = () => {
   const router = useRouter();
-  const { character } = useCharacter();
+  const { character } = useCurrentCharacter();
   const { currentCampaign, loading } = useCurrentCampaign();
   const [isQRModalOpen, setIsQRModalOpen] = useState(false);
   const [isCampaignModalOpen, setIsCampaignModalOpen] = useState(false);
