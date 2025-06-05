@@ -13,6 +13,8 @@ export interface ItemProperties {
 
 export interface Item {
   id: string;
+  objectId: string;
+  owner: string;
   name: string;
   description?: string;
   imageUrl?: string;

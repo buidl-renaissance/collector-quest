@@ -24,6 +24,8 @@ interface CampaignCharacterDb {
   id: string;
   campaign_id: string;
   character_id: string;
+  character_name?: string;
+  character_image?: string;
   role: CampaignCharacter["role"];
   is_active: boolean;
   createdAt: string;
@@ -54,6 +56,8 @@ async function mapCampaignCharacterFromDb(campaignChar: CampaignCharacterDb): Pr
     id: campaignChar.id,
     campaign_id: campaignChar.campaign_id,
     character_id: campaignChar.character_id,
+    character_name: campaignChar.character_name,
+    character_image: campaignChar.character_image,
     role: campaignChar.role,
     isActive: campaignChar.is_active,
     createdAt: campaignChar.createdAt,
@@ -183,7 +187,12 @@ export async function getCampaignWithRelations(campaign: Campaign): Promise<{
   }
 
   const characters = await client("campaign_characters")
-    .select("campaign_characters.*")
+    .select([
+      "campaign_characters.*",
+      "characters.name as character_name",
+      "characters.image_url as character_image"
+    ])
+    .join("characters", "campaign_characters.character_id", "characters.id") 
     .where("campaign_characters.campaign_id", campaign.id);
 
   const quests = await client("campaign_quests")

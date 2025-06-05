@@ -24,7 +24,7 @@ interface BottomNavigationBarProps {
 export const BottomNavigationBar = ({ locationData }: BottomNavigationBarProps) => {
   const [isLocationExpanded, setIsLocationExpanded] = useState(false);
   const locationButtonRef = useRef<HTMLButtonElement>(null);
-  const { characters, charactersLoading, currentCampaign } = useCurrentCampaign();
+  const { currentCampaign } = useCurrentCampaign();
   const router = useRouter();
 
   useEffect(() => {
@@ -49,6 +49,10 @@ export const BottomNavigationBar = ({ locationData }: BottomNavigationBarProps) 
       router.push(`/campaign/${currentCampaign.id}/map`);
     }
   };
+
+  if (!currentCampaign) {
+    return null;
+  }
 
   return (
     <BottomNavigation>
@@ -108,7 +112,7 @@ export const BottomNavigationBar = ({ locationData }: BottomNavigationBarProps) 
           )}
         </AnimatePresence>
       </LocationButton>
-      <TeamButton characters={characters || []} loading={charactersLoading} />
+      <TeamButton campaign={currentCampaign} />
       <CharacterMenu size="small" />
     </BottomNavigation>
   );

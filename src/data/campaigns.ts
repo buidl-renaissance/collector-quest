@@ -19,6 +19,8 @@ export interface CampaignCharacter {
   id: string;
   campaign_id: string;
   character_id: string;
+  character_name?: string;
+  character_image?: string;
   role: 'player' | 'npc' | 'boss' | 'ally' | 'owner';
   isActive: boolean;
   createdAt: string;

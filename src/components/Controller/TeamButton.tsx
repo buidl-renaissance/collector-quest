@@ -6,18 +6,19 @@ import { Character } from "@/data/character";
 import CharacterSheetModal from "@/components/CharacterSheetModal";
 import { useCharacterSheet } from "@/hooks/useCharacterSheet";
 import CharacterImageTile from "@/components/CharacterImageTile";
+import { Campaign, CampaignCharacter } from "@/data/campaigns";
+import { useCharacter } from "@/hooks/useCharacter";
 
 interface TeamButtonProps {
-  characters: Character[];
-  loading?: boolean;
+  campaign: Campaign;
 }
 
-export const TeamButton = ({ characters, loading }: TeamButtonProps) => {
+export const TeamButton = ({ campaign }: TeamButtonProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const [selectedCharacter, setSelectedCharacter] = useState<Character | null>(null);
+  const [selectedCharacter, setSelectedCharacter] = useState<CampaignCharacter | null>(null);
   const [isSheetModalOpen, setIsSheetModalOpen] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const { characterSheet } = useCharacterSheet();
+  const { character } = useCharacter(selectedCharacter?.character_id || null);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -36,7 +37,7 @@ export const TeamButton = ({ characters, loading }: TeamButtonProps) => {
     };
   }, [isExpanded]);
 
-  const handleCharacterClick = (character: Character) => {
+  const handleCharacterClick = (character: CampaignCharacter) => {
     setSelectedCharacter(character);
     setIsSheetModalOpen(true);
     setIsExpanded(false);
@@ -58,19 +59,17 @@ export const TeamButton = ({ characters, loading }: TeamButtonProps) => {
               exit={{ opacity: 0, y: 10 }}
               transition={{ duration: 0.2 }}
             >
-              {loading ? (
-                <LoadingTeam>Loading team...</LoadingTeam>
-              ) : characters.length > 0 ? (
-                characters.map((member) => (
+              {campaign.characters && campaign.characters.length > 0 ? (
+                campaign.characters.map((member) => (
                   <TeamMember 
                     key={member.id}
                     onClick={() => handleCharacterClick(member)}
                   >
                     <CharacterImageTile 
-                      name={member.name} 
-                      imageUrl={member.image_url} 
+                      name={member.character_name || ''} 
+                      imageUrl={member.character_image || ''} 
                       horizontal={true}
-                      subtext={`${member.race?.name || ''} • ${member.class?.name || ''}`}
+                      subtext={`${member.role || ''}`}
                     />
                   </TeamMember>
                 ))
@@ -82,12 +81,12 @@ export const TeamButton = ({ characters, loading }: TeamButtonProps) => {
         </AnimatePresence>
       </IconNavButton>
 
-      {selectedCharacter && characterSheet && (
+      {selectedCharacter && character && character.sheet && (
         <CharacterSheetModal
           isOpen={isSheetModalOpen}
           onClose={() => setIsSheetModalOpen(false)}
-          character={selectedCharacter}
-          characterSheet={characterSheet}
+          character={character}
+          characterSheet={character.sheet}
         />
       )}
     </>

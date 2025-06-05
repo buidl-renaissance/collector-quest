@@ -1,6 +1,7 @@
 import styled from "@emotion/styled";
 import { FaBars, FaQrcode } from "react-icons/fa";
 import { useCurrentCampaign } from "@/hooks/useCurrentCampaign";
+import useIsAdmin from "@/hooks/useIsAdmin";
 
 interface TopNavigationBarProps {
   onMenuClick?: () => void;
@@ -9,7 +10,7 @@ interface TopNavigationBarProps {
 
 export const TopNavigationBar = ({ onMenuClick, onScanClick }: TopNavigationBarProps) => {
   const { currentCampaign } = useCurrentCampaign();
-
+  const { isAdmin } = useIsAdmin();
   return (
     <TopNavigation>
       <IconNavButton title="Menu" onClick={onMenuClick}>
@@ -20,6 +21,7 @@ export const TopNavigationBar = ({ onMenuClick, onScanClick }: TopNavigationBarP
           <CampaignContainer>
             <CampaignLabel>Current Campaign</CampaignLabel>
             <CampaignTitle>{currentCampaign.name}</CampaignTitle>
+            {isAdmin && <CampaignId>{currentCampaign.id}</CampaignId>}
           </CampaignContainer>
         ) : (
           <Title>Collector Quest</Title>
@@ -47,6 +49,14 @@ const TopNavigation = styled.div`
   left: 0;
   right: 0;
   z-index: 99;
+`;
+
+const CampaignId = styled.div`
+  color: rgba(212, 175, 55, 0.7);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  line-height: 1;
 `;
 
 const IconNavButton = styled.button`
