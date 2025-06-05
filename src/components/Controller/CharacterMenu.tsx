@@ -17,17 +17,19 @@ import { Attack } from "@/data/attacks";
 import CharacterSheetModal from "@/components/CharacterSheetModal";
 import { useCharacterSheet } from "@/hooks/useCharacterSheet";
 import { MenuModal } from "./MenuModal";
+import { useCharacter } from "@/hooks/useCharacter";
 
 interface CharacterMenuProps {
-  character: Character | null;
+  size?: "small" | "normal";
 }
 
 type ModalType = "skills" | "equipment" | "attacks" | null;
 
-export const CharacterMenu = ({ character }: CharacterMenuProps) => {
+export const CharacterMenu = ({ size = "normal" }: CharacterMenuProps) => {
   const [isMenuExpanded, setIsMenuExpanded] = useState(false);
   const [isSheetModalOpen, setIsSheetModalOpen] = useState(false);
   const [activeModal, setActiveModal] = useState<ModalType>(null);
+  const { character } = useCharacter();
   const { characterSheet } = useCharacterSheet();
 
   const handleSheetClick = () => {
@@ -48,51 +50,49 @@ export const CharacterMenu = ({ character }: CharacterMenuProps) => {
 
   return (
     <>
-      <MenuWrapper>
-        <RightButtonPanel expanded={isMenuExpanded}>
-          <ActionButtonContainer expanded={isMenuExpanded}>
-            <ActionButton
-              title="Equipment"
-              onClick={() => setActiveModal("equipment")}
-            >
-              <FaShieldAlt />
-              {isMenuExpanded && <span>EQUIP</span>}
-            </ActionButton>
-            <ActionButton
-              title="Skills"
-              onClick={() => setActiveModal("skills")}
-            >
-              <GiSkills />
-              {isMenuExpanded && <span>SKILLS</span>}
-            </ActionButton>
-            <ActionButton
-              title="Attacks"
-              onClick={() => setActiveModal("attacks")}
-            >
-              <GiSwordClash />
-              {isMenuExpanded && <span>ATTACKS</span>}
-            </ActionButton>
-            <ActionButton title="Character Sheet" onClick={handleSheetClick}>
-              <FaScroll />
-              {isMenuExpanded && <span>SHEET</span>}
-            </ActionButton>
-          </ActionButtonContainer>
-        </RightButtonPanel>
-        <CharacterImageContainer>
-          <ToggleMenuButton
-            onClick={handleMenuToggle}
-            title={isMenuExpanded ? "Collapse Menu" : "Expand Menu"}
+      <MenuWrapper size={size}>
+        <CharacterButton 
+          onClick={handleMenuToggle} 
+          title={isMenuExpanded ? "Close Menu" : "Open Menu"}
+          size={size}
+        >
+          {character && (
+            <CharacterImage character={character} size="nano" />
+          )}
+        </CharacterButton>
+        <ActionButtonContainer expanded={isMenuExpanded} size={size}>
+          <ActionButton
+            title="Equipment"
+            onClick={() => setActiveModal("equipment")}
+            size={size}
+            active={activeModal === "equipment"}
           >
-            <FaChevronDown
-              style={{
-                transform: isMenuExpanded ? "rotate(0deg)" : "rotate(180deg)",
-              }}
-            />
-            {character && (
-              <CharacterImage character={character} bordered size="thumbnail" />
-            )}
-          </ToggleMenuButton>
-        </CharacterImageContainer>
+            <FaShieldAlt />
+          </ActionButton>
+          <ActionButton
+            title="Skills"
+            onClick={() => setActiveModal("skills")}
+            size={size}
+            active={activeModal === "skills"}
+          >
+            <GiSkills />
+          </ActionButton>
+          <ActionButton
+            title="Attacks"
+            onClick={() => setActiveModal("attacks")}
+            size={size}
+            active={activeModal === "attacks"}
+          >
+            <GiSwordClash />
+          </ActionButton>
+          <ActionButton 
+            title="Character Sheet" 
+            onClick={handleSheetClick}
+            size={size}
+          >
+            <FaScroll />
+          </ActionButton>
+        </ActionButtonContainer>
       </MenuWrapper>
 
       {character && characterSheet && (
@@ -108,6 +108,7 @@ export const CharacterMenu = ({ character }: CharacterMenuProps) => {
         isOpen={activeModal === "skills"}
         onClose={handleModalClose}
         title="Skills"
+        bottom={146}
       >
         {characterSheet?.skills ? (
           <SkillsList>
@@ -141,6 +142,7 @@ export const CharacterMenu = ({ character }: CharacterMenuProps) => {
         isOpen={activeModal === "equipment"}
         onClose={handleModalClose}
         title="Equipment"
+        bottom={186}
       >
         {character?.equipment ? (
           <EquipmentList>
@@ -166,6 +168,7 @@ export const CharacterMenu = ({ character }: CharacterMenuProps) => {
         isOpen={activeModal === "attacks"}
         onClose={handleModalClose}
         title="Attacks"
+        bottom={106}
       >
         {characterSheet?.combat?.attacks ? (
           <AttacksList>
@@ -187,64 +190,27 @@ export const CharacterMenu = ({ character }: CharacterMenuProps) => {
   );
 };
 
-const MenuWrapper = styled.div`
-  position: fixed;
-  right: 0.5rem;
-  bottom: 164px;
-  z-index: 10;
-  width: 120px;
-  display: flex;
-  justify-content: flex-end;
+const MenuWrapper = styled.div<{ size?: "small" | "normal" }>`
+  position: relative;
+  width: ${props => props.size === "small" ? "40px" : "60px"};
+  height: ${props => props.size === "small" ? "40px" : "60px"};
+  z-index: 2000;
 `;
 
-const RightButtonPanel = styled.div<{ expanded: boolean }>`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 0.5rem;
-  border-radius: 8px;
-  transition: all 0.3s ease;
-  width: ${(props) => (props.expanded ? "88px" : "60px")};
-`;
-
-const ActionButtonContainer = styled.div<{ expanded: boolean }>`
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  overflow: hidden;
-  max-height: ${(props) => (props.expanded ? "300px" : "0px")};
-  opacity: ${(props) => (props.expanded ? "1" : "0")};
-  transition: all 0.3s ease;
-  transform-origin: bottom;
-  order: -1;
-  margin-bottom: 60px + 0.5rem;
-`;
-
-const CharacterImageContainer = styled.div`
-  position: fixed;
-  right: 0.5rem;
-  bottom: 60px;
-  z-index: 10;
-  width: 60px;
-`;
-
-const ActionButton = styled.button`
+const CharacterButton = styled.button<{ size?: "small" | "normal" }>`
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  background: rgba(26, 26, 46, 0.97);
-  box-shadow: 0 0 15px 0 rgba(0, 0, 0, 0.8);
+  justify-content: center;
+  background: transparent;
   color: #d4af37;
-  border: 1px solid #d4af37;
-  padding: 0.5rem;
-  border-radius: 4px;
+  width: ${props => props.size === "small" ? "40px" : "60px"};
+  height: ${props => props.size === "small" ? "40px" : "60px"};
   cursor: pointer;
   transition: all 0.3s ease;
-  justify-content: left;
-  text-align: left;
-  span {
-    font-size: 0.9rem;
-  }
+  padding: 0;
+  border: 1px solid #d4af37;
+  border-radius: 4px;
+  overflow: hidden;
 
   &:hover {
     color: #f5cc50;
@@ -253,26 +219,47 @@ const ActionButton = styled.button`
   }
 `;
 
-const ToggleMenuButton = styled.button`
-  background: transparent;
-  border: none;
-  color: #d4af37;
-  cursor: pointer;
+const ActionButtonContainer = styled.div<{ expanded: boolean; size?: "small" | "normal" }>`
+  position: absolute;
+  bottom: calc(100% + 0.5rem);
+  right: 0;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  transition: all 0.3s ease;
-  margin-bottom: 0.5rem;
-  width: 100%;
   gap: 0.5rem;
+  background: rgba(26, 26, 46, 0.97);
+  box-shadow: 0 0 15px 0 rgba(0, 0, 0, 0.8);
+  padding: 0.25rem;
+  border-radius: 4px;
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  opacity: ${props => props.expanded ? 1 : 0};
+  visibility: ${props => props.expanded ? 'visible' : 'hidden'};
+  transform: translateY(${props => props.expanded ? '0' : '10px'});
+  transition: all 0.2s ease;
+  z-index: 100;
+`;
+
+const ActionButton = styled.button<{ size?: "small" | "normal"; active?: boolean }>`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: ${props => props.active ? 'rgba(212, 175, 55, 1)' : 'transparent'};
+  color: #d4af37;
+  border: 1px solid #d4af37;
+  width: ${props => props.size === "small" ? "32px" : "40px"};
+  height: ${props => props.size === "small" ? "32px" : "40px"};
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 0;
 
   svg {
-    transition: transform 0.3s ease;
+    font-size: ${props => props.size === "small" ? "1rem" : "1.2rem"};
   }
 
   &:hover {
     color: #f5cc50;
+    border-color: #f5cc50;
+    background: #221e1c;
   }
 `;
 

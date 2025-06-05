@@ -7,9 +7,10 @@ interface MenuModalProps {
   onClose: () => void;
   title: string;
   children: React.ReactNode;
+  bottom?: number;
 }
 
-export const MenuModal = ({ isOpen, onClose, title, children }: MenuModalProps) => {
+export const MenuModal = ({ isOpen, onClose, title, children, bottom = 164 }: MenuModalProps) => {
   return (
     <AnimatePresence>
       {isOpen && (
@@ -21,6 +22,7 @@ export const MenuModal = ({ isOpen, onClose, title, children }: MenuModalProps) 
             onClick={onClose}
           />
           <ModalContainer
+            bottom={bottom}
             initial={{ opacity: 0, x: -50 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -50 }}
@@ -53,10 +55,10 @@ const Overlay = styled(motion.div)`
   z-index: 8;
 `;
 
-const ModalContainer = styled(motion.div)`
+const ModalContainer = styled(motion.div)<{ bottom: number }>`
   position: fixed;
-  right: calc(100px + 1rem);
-  bottom: 164px;
+  right: calc(44px + 1rem);
+  bottom: ${props => props.bottom}px;
   width: calc(100% - 124px);
   background: rgba(26, 26, 46, 0.97);
   border: 1px solid #d4af37;

@@ -42,7 +42,8 @@ const GameAreaContainer = styled.main`
   left: 0;
   right: 0;
   padding: 0.5rem;
-  bottom: calc(60px + 0.5rem + 86px); /* BottomNavigationBar + gap + ChatBox height */
+  /* bottom: calc(60px + 0.5rem + 86px); BottomNavigationBar + gap + ChatBox height */
+  bottom: 60px;
   background: rgba(26, 26, 46, 0.8);
   overflow: hidden;
   display: flex;
@@ -91,7 +92,7 @@ const DmHeader = styled.div`
 const DmImageContainer = styled.div`
   width: 40px;
   height: 40px;
-  border-radius: 50%;
+  border-radius: 4px;
   overflow: hidden;
   border: 1px solid #d4af37;
   flex-shrink: 0;

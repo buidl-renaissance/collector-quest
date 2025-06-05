@@ -7,7 +7,7 @@ import { generateImage } from "@/lib/image";
 
 interface CharacterImageProps {
   character?: Character;
-  size?: "small" | "medium" | "large" | "thumbnail";
+  size?: "small" | "medium" | "large" | "thumbnail" | "nano";
   alt?: string;
   circular?: boolean;
   bordered?: boolean;
@@ -161,6 +161,8 @@ export default CharacterImage;
 const ImageContainer = styled.div<{ size: string; circular: boolean; bordered: boolean }>`
   width: ${(props) => {
     switch (props.size) {
+      case "nano":
+        return "40px";
       case "thumbnail":
         return "60px";
       case "small":
@@ -173,6 +175,8 @@ const ImageContainer = styled.div<{ size: string; circular: boolean; bordered: b
   }};
   height: ${(props) => {
     switch (props.size) {
+      case "nano":
+        return "40px";
       case "thumbnail":
         return "60px";
       case "small":

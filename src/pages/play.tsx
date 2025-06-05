@@ -70,7 +70,6 @@ const Controller = () => {
         onScanClick={handleScanClick}
       />
       <GameArea />
-      <CharacterMenu character={character} />
       <ChatBox onSendMessage={handleSendMessage} />
       <BottomNavigationBar locationData={mockLocationData} />
 

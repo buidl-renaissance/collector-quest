@@ -6,6 +6,7 @@ import { useState, useRef, useEffect } from "react";
 import { useCurrentCampaign } from "@/hooks/useCurrentCampaign";
 import { useRouter } from "next/router";
 import { TeamButton } from "./TeamButton";
+import { CharacterMenu } from "./CharacterMenu";
 
 interface LocationData {
   location: string;
@@ -108,13 +109,14 @@ export const BottomNavigationBar = ({ locationData }: BottomNavigationBarProps) 
         </AnimatePresence>
       </LocationButton>
       <TeamButton characters={characters || []} loading={charactersLoading} />
+      <CharacterMenu size="small" />
     </BottomNavigation>
   );
 };
 
 const BottomNavigation = styled.div`
   display: grid;
-  grid-template-columns: 40px calc(100% - 80px - 1rem) 40px;
+  grid-template-columns: 40px calc(100% - 120px - 1.5rem) 40px 40px;
   gap: 0.5rem;
   align-items: center;
   height: 60px;

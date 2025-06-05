@@ -30,19 +30,19 @@ export const ChatBox = ({ onSendMessage }: ChatBoxProps) => {
 };
 
 const ChatBoxContainer = styled.div`
-  position: fixed;
-  padding-right: 0.35rem;
-  bottom: 60px; /* Match BottomNavigationBar height */
+  /* position: fixed; */
+  /* padding-right: 0.35rem; */
+  /* bottom: 60px;
   left: 0rem;
-  right: 4rem;
+  right: 4rem; */
   width: auto;
   max-width: 400px;
   z-index: 0;
   transition: bottom 0.3s ease;
 
-  @media (max-height: 400px) {
-    bottom: 60px; /* Keep it above the navigation bar */
-  }
+  /* @media (max-height: 400px) {
+    bottom: 60px; 
+  } */
 `;
 
 const ChatBoxInner = styled.div`
