@@ -26,6 +26,7 @@ Character Details:
 - Background: ${character.traits?.background || "Unknown"}
 - Bonds: ${character.traits?.bonds?.join(", ") || "None"}
 - Backstory: ${character.backstory?.substring(0, 500) || "None"}
+- Alignment: ${character.traits?.alignment || "Unknown"}
 
 Please generate a comprehensive list of starting equipment appropriate for this character based on their class, background, and personal details. The equipment should be organized into the following categories:
 1. Weapons

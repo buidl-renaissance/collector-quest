@@ -2,7 +2,7 @@ import { Inngest } from "inngest";
 import { Character } from "@/hooks/useCurrentCharacter";
 import { generateTraits as generateTraitsLib } from "@/lib/generateTraits";
 import { CharacterDB } from "@/db/character";
-import { completeResult, failResult, updateResult } from "@/lib/storage";
+import { completeResult, failResult, updateResult } from "@/db/generate";
 
 // Create a client
 export const inngest = new Inngest({ id: "collector-quest" });
@@ -26,12 +26,12 @@ export const generateTraits = inngest.createFunction(
       }
 
       // Update the result with progress
-      updateResult(
+      await updateResult(
         resultId,
-        JSON.stringify({
-          message: "Generating character traits...",
-          step: "get-character",
-        })
+        "pending",
+        "get-character",
+        "Generating character traits...",
+        null
       );
 
       // Get the character from the database
@@ -43,12 +43,12 @@ export const generateTraits = inngest.createFunction(
         throw new Error(`Character not found: ${characterId}`);
       }
 
-      updateResult(
+      await updateResult(
         resultId,
-        JSON.stringify({
-          message: "Character found, generating traits...",
-          step: "generate-traits",
-        })
+        "pending",
+        "generate-traits",
+        "Character found, generating traits...",
+        null
       );
 
       // Generate traits using the OpenAI integration
@@ -56,13 +56,12 @@ export const generateTraits = inngest.createFunction(
         return await generateTraitsLib(character as Character);
       });
 
-      updateResult(
+      await updateResult(
         resultId,
-        JSON.stringify({
-          message: "Traits generated successfully, saving to character...",
-          step: "update-character",
-          traits,
-        })
+        "pending",
+        "update-character",
+        "Traits generated successfully, saving to character...",
+        traits
       );
 
       // Update the character with the generated traits
@@ -82,13 +81,10 @@ export const generateTraits = inngest.createFunction(
       );
 
       // Complete the result
-      completeResult(
+      await completeResult(
         resultId,
-        JSON.stringify({
-          step: "complete",
-          message: "Character traits generated successfully",
-          traits,
-        })
+        "Character traits generated successfully",
+        traits
       );
 
       return {
@@ -100,13 +96,11 @@ export const generateTraits = inngest.createFunction(
       console.error("Error generating traits:", error);
 
       if (event.data.resultId) {
-        failResult(
+        await failResult(
           event.data.resultId,
-          JSON.stringify({
-            error: `Failed to generate traits: ${
-              error instanceof Error ? error.message : String(error)
-            }`,
-          })
+          `Failed to generate traits: ${
+            error instanceof Error ? error.message : String(error)
+          }`
         );
       }
 

@@ -1,6 +1,5 @@
-import { completeResult } from "@/lib/storage";
+import { completeResult } from "@/db/generate";
 import { inngest } from "./client";
-import { Character } from "@/hooks/useCurrentCharacter";
 import { generateEquipment as generateEquipmentFunction } from "@/lib/generateEquipment";
 import { CharacterDB } from "@/db/character";
 import { Equipment } from "@/data/character";
@@ -8,39 +7,29 @@ import { Equipment } from "@/data/character";
 interface GenerateEquipmentEvent {
   data: {
     characterId: string;
-    character: Character;
     resultId?: string;
   };
 }
 
-interface EquipmentResult {
-  step: string;
-  message: string;
-  equipment: Equipment;
-}
-
 export const generateEquipment = inngest.createFunction(
   { name: "Generate Equipment", id: "generate-equipment" },
-  { event: "equipment/generate" },
+  { event: "character/generate-equipment" },
   async ({ event, step }) => {
-    const { characterId, character } =
+    const { characterId } =
       event.data as GenerateEquipmentEvent["data"];
+      
+    const characterDB = new CharacterDB();
+    const character = await characterDB.getCharacter(characterId);
 
     if (!character) {
       throw new Error("Character not found");
     }
 
-    const characterDB = new CharacterDB();
-
     if (character.equipment) {
-      completeResult(
+      await completeResult(
         event.data.resultId,
-        JSON.stringify({
-          success: true,
-          step: "complete",
-          message: "Equipment generated successfully",
-          equipment: character.equipment,
-        })
+        "Equipment already generated",
+        character.equipment
       );
 
       return {
@@ -81,14 +70,10 @@ export const generateEquipment = inngest.createFunction(
       };
     });
 
-    completeResult(
+    await completeResult(
       event.data.resultId,
-      JSON.stringify({
-        success: true,
-        step: "complete",
-        message: "Equipment generated successfully",
-        equipment: equipmentResult.equipment,
-      })
+      "Equipment generated successfully",
+      equipmentResult.equipment
     );
 
     return {

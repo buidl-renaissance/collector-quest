@@ -1,6 +1,9 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { inngest } from "@/inngest/generateTraits";
 import { createPendingResult } from "@/lib/storage";
+import { dispatchGenerationEvent } from "@/inngest/sendEvent";
+import { GenerationResult } from "@/data/generate";
+import { Equipment } from "@/data/character";
 
 export default async function handler(
   req: NextApiRequest,
@@ -17,22 +20,21 @@ export default async function handler(
       return res.status(400).json({ error: "Character ID is required" });
     }
 
-    // Create a result ID to track the progress
-    const result = await createPendingResult(crypto.randomUUID());
 
-    // Send the event to Inngest
-    await inngest.send({
-      name: "character/generate-traits",
+    const event: GenerationResult<Equipment> | null = await dispatchGenerationEvent({
+      eventName: "character/generate-traits",
+      objectType: "character",
+      objectId: characterId,
+      objectKey: "traits",
       data: {
         characterId,
-        resultId: result.id,
-      },
+      }
     });
 
     return res.status(200).json({
       success: true,
-      resultId: result.id,
       message: "Trait generation started",
+      event,
     });
   } catch (error) {
     console.error("Error starting trait generation:", error);

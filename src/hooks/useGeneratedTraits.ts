@@ -2,18 +2,12 @@ import { useState, useEffect, useCallback } from "react";
 import { getCurrentCharacterId } from "@/utils/storage";
 import { useCurrentCharacter } from "./useCurrentCharacter";
 import { Traits } from "./useCurrentCharacter";
+import { GenerationResult } from "@/data/generate";
 
 interface GenerateTraitsResponse {
   success: boolean;
-  resultId: string;
+  event: GenerationResult<Traits>;
   message: string;
-}
-
-interface PollResultResponse {
-  id: string;
-  status: "pending" | "completed" | "failed";
-  result?: string;
-  error?: string;
 }
 
 interface ResultData {
@@ -35,8 +29,8 @@ export function useGeneratedTraits() {
   const { character } = useCurrentCharacter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [resultId, setResultId] = useState<string | null>(null);
   const [traits, setTraits] = useState<Traits | null>(null);
+  const [event, setEvent] = useState<GenerationResult<Traits> | null>(null);
 
   const loadTraits = useCallback(() => {
     const characterId = getCurrentCharacterId();
@@ -61,7 +55,7 @@ export function useGeneratedTraits() {
   const generateTraits = async () => {
     const existingTraits = loadTraits();
 
-    if (resultId || existingTraits || loading) {
+    if (event || existingTraits || loading) {
       return;
     }
 
@@ -88,10 +82,10 @@ export function useGeneratedTraits() {
       }
 
       const data: GenerateTraitsResponse = await response.json();
-      setResultId(data.resultId);
+      setEvent(data.event);
 
       // Start polling for results
-      pollForResults(data.resultId);
+      pollForResults(data.event.id);
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "An unknown error occurred"
@@ -105,39 +99,38 @@ export function useGeneratedTraits() {
     let pollTimeout: NodeJS.Timeout;
 
     try {
-      const response = await fetch(`/api/image/status?id=${id}`);
+      const response = await fetch(`/api/generate/results?id=${id}`);
 
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.error || "Failed to fetch results");
       }
 
-      const result: PollResultResponse = await response.json();
+      const data = await response.json();
 
-      const resultData: ResultData = result.result
-        ? JSON.parse(result.result)
-        : null;
+      const result = data.result;
 
-      if (resultData?.traits) {
+      if (result) {
         // Update character with the generated traits
-        setTraits(resultData.traits);
+        setTraits(result);
+        setLoading(false);
 
         // Save to local storage
         const characterId = getCurrentCharacterId();
         if (characterId) {
           localStorage.setItem(
             `${GENERATED_TRAITS_STORAGE_KEY}_${characterId}`,
-            JSON.stringify(resultData.traits)
+            JSON.stringify(result)
           );
         }
       }
 
-      if (result.status === "pending") {
+      if (data.status === "pending") {
         // Continue polling after a delay
         pollTimeout = setTimeout(() => pollForResults(id), 2000);
-      } else if (result.status === "failed") {
-        throw new Error(result.error || "Trait generation failed");
-      } else if (result.status === "completed") {
+      } else if (data.status === "failed") {
+        throw new Error(data.error || "Trait generation failed");
+      } else if (data.status === "completed") {
         setLoading(false);
       }
     } catch (err) {
@@ -159,7 +152,7 @@ export function useGeneratedTraits() {
   const reset = () => {
     setLoading(false);
     setError(null);
-    setResultId(null);
+    setEvent(null);
     setTraits(null);
 
     // Clear from local storage
