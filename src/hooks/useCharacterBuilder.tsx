@@ -15,7 +15,7 @@ export function useCharacterBuilder() {
   const [builderState, setBuilderState] = useState<BuilderState>({
     step: 1,
     isComplete: false,
-    currentSection: 'sex',
+    currentSection: 'name',
     validations: {}
   });
   const [loading, setLoading] = useState(true);
@@ -56,6 +56,7 @@ export function useCharacterBuilder() {
     if (!character) return false;
 
     const validations: {[key: string]: (char: Character) => boolean} = {
+      name: (char) => !!char.name && char.name.length > 2,
       sex: (char) => !!char.sex,
       race: (char) => !!char.race,
       class: (char) => !!char.class,
@@ -99,7 +100,7 @@ export function useCharacterBuilder() {
   const nextStep = () => {
     if (validateSection(builderState.currentSection)) {
       const sections = [
-        'sex', 'race', 'class', 'background', 'alignment', 'deity', 'image',
+        'name', 'sex', 'race', 'class', 'background', 'alignment', 'deity', 'image',
         'traits', 'motivation', 'story', 'equipment', 'sheet'
       ];
       const currentIndex = sections.indexOf(builderState.currentSection);
@@ -130,7 +131,7 @@ export function useCharacterBuilder() {
 
   const previousStep = () => {
     const sections = [
-      'sex', 'race', 'class', 'background', 'alignment', 'deity', 'image',
+      'name', 'sex', 'race', 'class', 'background', 'alignment', 'deity', 'image',
       'traits', 'motivation', 'story', 'equipment', 'sheet'
     ];
     const currentIndex = sections.indexOf(builderState.currentSection);
