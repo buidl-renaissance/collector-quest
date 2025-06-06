@@ -39,12 +39,12 @@ For each item, specify the quantity. Follow D&D 5e rules for starting equipment 
 
 Format the response as a JSON object with the following structure:
 {
-  "weapons": [{"name": "Item name", "quantity": number}, ...],
-  "armor": [{"name": "Item name", "quantity": number}, ...],
-  "adventuringGear": [{"name": "Item name", "quantity": number}, ...],
-  "tools": [{"name": "Item name", "quantity": number}, ...],
-  "currency": [{"name": "Gold Pieces", "quantity": number}, ...],
-  "magicItems": [{"name": "Item name", "quantity": number}, ...]
+  "weapons": [{"name": "Item name", "description": "Item description", "quantity": number}, ...],
+  "armor": [{"name": "Item name", "description": "Item description", "quantity": number}, ...],
+  "adventuringGear": [{"name": "Item name", "description": "Item description", "quantity": number}, ...],
+  "tools": [{"name": "Item name", "description": "Item description", "quantity": number}, ...],
+  "currency": [{"name": "Gold Pieces", "description": "Item description", "quantity": number}, ...],
+  "magicItems": [{"name": "Item name", "description": "Item description", "quantity": number}, ...]
 }
 
 Ensure the equipment is realistic, balanced, and appropriate for a level 1 character.`;

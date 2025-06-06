@@ -9,47 +9,49 @@ import Page from '@/components/Page';
 import { Title, Subtitle } from '@/components/styled/typography';
 import { useWallet } from "@/hooks/useWallet";
 import { useCurrentCharacter } from "@/hooks/useCurrentCharacter";
+import { useCampaignGenerate } from "@/hooks/useCampaignGenerate";
 
 export default function NewCampaignPage() {
   const router = useRouter();
   const { address } = useWallet();
   const { character: userCharacter } = useCurrentCharacter();
   const [additionalPlayers, setAdditionalPlayers] = useState<Character[]>([]);
-  const [loading, setLoading] = useState(false);
+  const { createCampaign, isGenerating, error, campaign } = useCampaignGenerate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
+
+    if (!userCharacter?.id) return;
 
     try {
-      const response = await fetch('/api/campaigns', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          status: 'active',
-          characters: [
-            { characterId: userCharacter?.id, role: 'owner' },
-            ...additionalPlayers.map(char => ({
-              characterId: char.id,
-              role: 'player'
-            }))
-          ].filter(char => char.characterId != null)
-        })
-      });
+      const characters = [
+        { characterId: userCharacter.id, role: 'owner' as const },
+        ...additionalPlayers
+          .filter(char => char.id)
+          .map(char => ({
+            characterId: char.id!,
+            role: 'player' as const
+          }))
+      ];
 
-      if (!response.ok) {
-        throw new Error('Failed to create campaign');
+      const newCampaign = await createCampaign(characters);
+      
+      // If campaign is already complete, redirect immediately
+      if (newCampaign.status !== 'generating') {
+        router.push(`/campaign/${newCampaign.id}`);
       }
-
-    //   const campaign = await response.json();
-    //   router.push(`/campaign/${campaign.id}`);
     } catch (error) {
       console.error('Error creating campaign:', error);
-      // TODO: Show error message to user
-    } finally {
-      setLoading(false);
+      // Error is handled by the hook and displayed below
     }
   };
+
+  // Redirect when campaign generation is complete
+  useEffect(() => {
+    if (campaign && campaign.status !== 'generating') {
+      router.push(`/campaign/${campaign.id}`);
+    }
+  }, [campaign, router]);
 
   if (!address) {
     return (
@@ -102,6 +104,12 @@ export default function NewCampaignPage() {
                 currentCharacter={userCharacter}
               />
             </FormGroup>
+
+            {error && (
+              <ErrorMessage>
+                {error.message || 'Failed to create campaign. Please try again.'}
+              </ErrorMessage>
+            )}
           </Form>
         </Container>
 
@@ -113,9 +121,9 @@ export default function NewCampaignPage() {
               </CancelButton>
               <CreateButton 
                 onClick={handleSubmit}
-                disabled={loading}
+                disabled={isGenerating}
               >
-                {loading ? 'Creating...' : 'Create'}
+                {isGenerating ? 'Creating...' : 'Create Campaign'}
               </CreateButton>
             </ButtonGroup>
           </BottomBarContent>

@@ -1,5 +1,6 @@
 import { Attack } from "./attacks";
 import { DetailedAbilityScores } from "@/lib/generateAbilities";
+import { Item } from "./items";
 
 export interface AbilityModifier {
   name: string;
@@ -143,18 +144,13 @@ export interface Traits {
   archetype?: string;
 }
 
-export interface EquipmentItem {
-  name: string;
-  quantity: number;
-}
-
 export interface Equipment {
-  weapons: EquipmentItem[];
-  armor: EquipmentItem[];
-  adventuringGear: EquipmentItem[];
-  tools: EquipmentItem[];
-  currency: EquipmentItem[];
-  magicItems: EquipmentItem[];
+  weapons: Item[];
+  armor: Item[];
+  adventuringGear: Item[];
+  tools: Item[];
+  currency: Item[];
+  magicItems: Item[];
 }
 
 export interface FeaturesTraits {

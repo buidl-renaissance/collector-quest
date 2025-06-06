@@ -92,7 +92,7 @@ export async function createCampaign(
     | "updatedAt"
   >,
   ownerId: string,
-  characters: Character[]
+  characters: { characterId: string; role: CampaignCharacter["role"] }[]
 ): Promise<Campaign> {
   const id = uuidv4();
 
@@ -110,8 +110,8 @@ export async function createCampaign(
       characters.map((char) =>
         addCharacterToCampaign(
           id,
-          char.id!,
-          char.id === ownerId ? "owner" : "player"
+          char.characterId!,
+          char.role!
         )
       )
     );

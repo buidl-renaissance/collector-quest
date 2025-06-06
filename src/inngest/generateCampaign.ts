@@ -2,7 +2,7 @@ import { inngest } from "./client";
 import { Character } from "../data/character";
 import { generateCampaign } from "../lib/generateCampaign";
 import { CharacterDB } from "../db/character";
-import { createCampaign } from "@/db/campaigns";
+import { createCampaign, getCampaign, updateCampaign } from "@/db/campaigns";
 
 const characterDB = new CharacterDB();
 
@@ -10,10 +10,12 @@ export const generateCampaignFunction = inngest.createFunction(
   { id: "generate-campaign" },
   { event: "campaign/generate" },
   async ({ event, step }) => {
-    const { characterIds, ownerId } = event.data as {
+    const { characterIds, campaignId } = event.data as {
       characterIds: string[];
-      ownerId: string;
+      campaignId: string;
     };
+
+    const campaign = await getCampaign(campaignId);
 
     const characters = await step.run("fetch-characters", async () => {
       const chars = await Promise.all(
@@ -29,16 +31,12 @@ export const generateCampaignFunction = inngest.createFunction(
       }
     );
 
-    const campaign = await step.run("create-campaign", async () => {
-      return createCampaign(
-        {
-          status: "active",
-          name: campaignContent.name,
-          description: campaignContent.description,
-        },
-        ownerId,
-        characters
-      );
+    await step.run("generate-campaign-content", async () => {
+      return updateCampaign(campaignId, {
+        status: "active",
+        name: campaignContent.name,
+        description: campaignContent.description,
+      });
     });
 
     return {

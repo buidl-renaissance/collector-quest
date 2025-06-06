@@ -7,7 +7,7 @@ export interface Campaign {
   description: string;
   startDate: string | null;
   endDate: string | null;
-  status: 'active' | 'inactive' | 'completed';
+  status: 'generating' | 'active' | 'inactive' | 'completed';
   targetAudience: string[] | null;
   quests?: CampaignQuest[] | null;
   characters?: CampaignCharacter[] | null;

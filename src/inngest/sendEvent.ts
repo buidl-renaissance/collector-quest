@@ -56,8 +56,8 @@ export async function dispatchGenerationEvent<T>({
 }: {
   eventName: string;
   objectType: string;
-  objectId: string;
-  objectKey: string;
+  objectId: string | null;
+  objectKey: string | null;
   data: Record<string, any>;
 }): Promise<GenerationResult<T> | null> {
   // Check for existing pending result
@@ -65,8 +65,8 @@ export async function dispatchGenerationEvent<T>({
     event_name: eventName,
     status: 'pending',
     object_type: objectType,
-    object_id: objectId,
-    object_key: objectKey
+    object_id: objectId ?? "",
+    object_key: objectKey ?? ""
   });
 
   if (existingResult) {
@@ -77,8 +77,8 @@ export async function dispatchGenerationEvent<T>({
   return createGenerationEvent<T>({
     eventName,
     objectType,
-    objectId,
-    objectKey,
+    objectId: objectId ?? "",
+    objectKey: objectKey ?? "",
     data
   });
 }

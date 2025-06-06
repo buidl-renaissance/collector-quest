@@ -13,12 +13,13 @@ export interface ItemProperties {
 
 export interface Item {
   id: string;
-  objectId: string;
-  owner: string;
+  objectId?: string;
+  owner?: string;
   name: string;
   description?: string;
   imageUrl?: string;
   isActive?: boolean;
+  quantity?: number;
   attributes?: ItemAttribute[];
   properties?: ItemProperties;
   lore?: string;

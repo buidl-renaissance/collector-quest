@@ -3,6 +3,7 @@ import { listCampaigns, createCampaign } from "../../../db/campaigns";
 import { inngest } from "@/inngest/client";
 import { createPendingResult } from "@/lib/storage";
 import { v4 as uuidv4 } from "uuid";
+import { dispatchGenerationEvent } from "@/inngest/sendEvent";
 
 export default async function handler(
   req: NextApiRequest,
@@ -22,27 +23,30 @@ export default async function handler(
       res.status(500).json({ error: "Failed to fetch campaigns" });
     }
   } else if (req.method === "POST") {
-    const { status, characters } = req.body;
+    const { characters } = req.body;
 
-    if (!status || !characters || !Array.isArray(characters)) {
+    if (!characters || !Array.isArray(characters)) {
       return res.status(400).json({ error: "Invalid request body" });
     }
 
     try {
       const characterIds = characters.map((c) => c.characterId);
 
-      // Create a unique ID for this generation request
-      const resultId = uuidv4();
+      const campaign = await createCampaign({
+        status: "generating",
+        name: "New Campaign",
+        description: "New Campaign",
+      }, characters[0].characterId, characters);
 
-      // Create a pending result
-      await createPendingResult(resultId);
-
-      await inngest.send({
-        name: "campaign/generate",
-        data: { characterIds, ownerId: characters[0].characterId, resultId },
+      const event = await dispatchGenerationEvent({
+        eventName: "campaign/generate",
+        objectType: "campaign",
+        objectId: campaign.id,
+        objectKey: null,
+        data: { characterIds, ownerId: characters[0].characterId, campaignId: campaign.id },
       });
 
-      res.status(201).json({ resultId });
+      res.status(201).json({ campaign, event });
     } catch (error) {
       console.error("Error creating campaign:", error);
       res.status(500).json({ error: "Failed to create campaign" });

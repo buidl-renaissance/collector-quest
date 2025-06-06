@@ -13,6 +13,7 @@ exports.up = function(knex) {
     table.boolean('isActive').defaultTo(true);
     table.jsonb('attributes');
     table.jsonb('properties');
+    table.integer('quantity').defaultTo(1);
     table.text('lore');
     table.string('type');
     table.timestamps(true, true);

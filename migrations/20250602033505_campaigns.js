@@ -9,7 +9,7 @@ exports.up = function(knex) {
     table.text('description');
     table.timestamp('startDate').nullable();
     table.timestamp('endDate').nullable();
-    table.enu('status', ['active', 'inactive', 'completed']).notNullable();
+    table.enu('status', ['generating','active', 'inactive', 'completed']).notNullable();
     table.jsonb('targetAudience').nullable();
     table.jsonb('quests').nullable();
     table.timestamps(true, true);
