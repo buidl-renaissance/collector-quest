@@ -4,8 +4,6 @@ import styled from "@emotion/styled";
 import { keyframes } from "@emotion/react";
 import { FaArrowRight, FaArrowLeft, FaBalanceScale, FaTimes } from "react-icons/fa";
 import { useCurrentCharacter } from "@/hooks/useCurrentCharacter";
-import { useRace } from "@/hooks/useRace";
-import { useCharacterClass } from "@/hooks/useCharacterClass";
 import { 
   Container, 
   Title, 
@@ -21,22 +19,9 @@ import BottomNavigation from "@/components/BottomNavigation";
 
 const AlignmentPage: React.FC = () => {
   const router = useRouter();
-  const { character, updateCharacter, saveCharacter, updateCharacterTrait } = useCurrentCharacter();
-  const { selectedRace, loading: raceLoading } = useRace();
-  const { selectedClass, loading: classLoading } = useCharacterClass();
+  const { character, saveCharacter, updateCharacterTrait } = useCurrentCharacter();
   const [selectedAlignment, setSelectedAlignment] = React.useState(character?.traits?.alignment || "");
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  // Redirect if no race or class is selected
-  React.useEffect(() => {
-    if (!raceLoading && !classLoading) {
-      if (!selectedRace) {
-        router.push("/character/race");
-      } else if (!selectedClass) {
-        router.push("/character/class");
-      }
-    }
-  }, [selectedRace, selectedClass, raceLoading, classLoading, router]);
 
   const handleAlignmentSelect = (alignment: string) => {
     setSelectedAlignment(alignment);

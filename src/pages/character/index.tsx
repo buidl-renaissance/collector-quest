@@ -34,7 +34,7 @@ interface CharacterPageProps {
 const CharacterPage: React.FC<CharacterPageProps> = () => {
   const router = useRouter();
   const { openModal, closeModal, modalContent, Modal } = useModal();
-  const { character, fetchCharacter } = useCurrentCharacter();
+  const { character } = useCurrentCharacter();
   const [artifacts, setArtifacts] = useState<Artifact[]>([]);
   const [loadingArtifacts, setLoadingArtifacts] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
@@ -44,10 +44,6 @@ const CharacterPage: React.FC<CharacterPageProps> = () => {
   const [isCharacterSheetOpen, setIsCharacterSheetOpen] = useState(false);
 
   const [registeredCharacterId, setRegisteredCharacterId] = useState<any>(null);
-
-  useEffect(() => {
-    fetchCharacter();
-  }, []);
 
   useEffect(() => {
     if (character) {

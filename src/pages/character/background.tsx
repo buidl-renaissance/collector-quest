@@ -2,10 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import styled from "@emotion/styled";
 import { keyframes } from "@emotion/react";
-import { FaArrowLeft, FaArrowRight, FaScroll, FaTimes } from "react-icons/fa";
+import { FaArrowLeft, FaScroll, FaTimes } from "react-icons/fa";
 import { useCurrentCharacter } from "@/hooks/useCurrentCharacter";
-import { useRace } from "@/hooks/useRace";
-import { useCharacterClass } from "@/hooks/useCharacterClass";
 import {
   Title,
   Subtitle,
@@ -21,23 +19,10 @@ const BackgroundPage: React.FC = () => {
   const router = useRouter();
   const { character, updateCharacterTrait } =
     useCurrentCharacter();
-  const { selectedRace, loading: raceLoading } = useRace();
-  const { selectedClass, loading: classLoading } = useCharacterClass();
   const [selectedBackground, setSelectedBackground] = useState(
     character?.traits?.background || ""
   );
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  // Redirect if no race or class is selected
-  useEffect(() => {
-    if (!raceLoading && !classLoading) {
-      if (!selectedRace) {
-        router.push("/character/race");
-      } else if (!selectedClass) {
-        router.push("/character/class");
-      }
-    }
-  }, [selectedRace, selectedClass, raceLoading, classLoading, router]);
 
   const handleBackgroundSelect = (backgroundId: string) => {
     setSelectedBackground(backgroundId);
@@ -56,19 +41,6 @@ const BackgroundPage: React.FC = () => {
     e.preventDefault();
     setIsModalOpen(true);
   };
-
-  if (raceLoading || classLoading) {
-    return (
-      <Page>
-        <LoadingMessage>
-          <BackgroundIcon>
-            <FaScroll />
-          </BackgroundIcon>
-          Loading...
-        </LoadingMessage>
-      </Page>
-    );
-  }
 
   return (
     <PageTransition>

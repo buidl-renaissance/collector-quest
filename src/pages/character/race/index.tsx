@@ -5,7 +5,6 @@ import { keyframes } from "@emotion/react";
 import { FaCrown, FaArrowRight, FaArrowLeft } from "react-icons/fa";
 import CharacterRaces from "@/components/CharacterRaces";
 import { useRace } from "@/hooks/useRace";
-import { useSex } from "@/hooks/useSex";
 import { Race } from "@/data/races";
 import { getAllRaces } from "@/db/races";
 import { GetServerSideProps } from "next";
@@ -31,15 +30,7 @@ const CharacterCreatePage: React.FC<CharacterCreatePageProps> = ({
 }) => {
   const router = useRouter();
   const { selectedRace, selectRace, loading: raceLoading } = useRace();
-  const { selectedSex, loading: sexLoading } = useSex();
   const [error, setError] = React.useState("");
-
-  // Redirect if no sex is selected
-  React.useEffect(() => {
-    if (!sexLoading && !selectedSex) {
-      router.push('/character/sex');
-    }
-  }, [selectedSex, sexLoading, router]);
 
   const handleNext = () => {
     if (selectedRace) {
@@ -51,7 +42,7 @@ const CharacterCreatePage: React.FC<CharacterCreatePageProps> = ({
     router.push('/character/sex');
   };
 
-  if (raceLoading || sexLoading) {
+  if (raceLoading) {
     return (
       <Container>
         <LoadingMessage>

@@ -9,13 +9,11 @@ import {
   FaShieldAlt,
   FaBrain,
 } from "react-icons/fa";
-import { GiSkills, GiSwordClash, GiBrain } from "react-icons/gi";
+import { GiSkills, GiSwordClash } from "react-icons/gi";
 import CharacterImage from "@/components/CharacterImage";
 import { useState } from "react";
-import { Character } from "@/data/character";
 import { Attack } from "@/data/attacks";
 import CharacterSheetModal from "@/components/CharacterSheetModal";
-import { useCharacterSheet } from "@/hooks/useCharacterSheet";
 import { MenuModal } from "./MenuModal";
 import { useCurrentCharacter } from "@/hooks/useCurrentCharacter";
 
@@ -30,7 +28,6 @@ export const CharacterMenu = ({ size = "normal" }: CharacterMenuProps) => {
   const [isSheetModalOpen, setIsSheetModalOpen] = useState(false);
   const [activeModal, setActiveModal] = useState<ModalType>(null);
   const { character } = useCurrentCharacter();
-  const { characterSheet } = useCharacterSheet();
 
   const handleSheetClick = () => {
     setIsSheetModalOpen(true);
@@ -95,12 +92,12 @@ export const CharacterMenu = ({ size = "normal" }: CharacterMenuProps) => {
         </ActionButtonContainer>
       </MenuWrapper>
 
-      {character && characterSheet && (
+      {character && character?.sheet && (
         <CharacterSheetModal
           isOpen={isSheetModalOpen}
           onClose={() => setIsSheetModalOpen(false)}
           character={character}
-          characterSheet={characterSheet}
+          characterSheet={character?.sheet}
         />
       )}
 
@@ -110,9 +107,9 @@ export const CharacterMenu = ({ size = "normal" }: CharacterMenuProps) => {
         title="Skills"
         bottom={146}
       >
-        {characterSheet?.skills ? (
+        {character?.sheet?.skills ? (
           <SkillsList>
-            {characterSheet.skills.map((skill, index) => (
+            {character?.sheet?.skills.map((skill, index) => (
               <SkillItem key={index}>
                 <SkillInfo>
                   <SkillName>{skill.name}</SkillName>
@@ -170,9 +167,9 @@ export const CharacterMenu = ({ size = "normal" }: CharacterMenuProps) => {
         title="Attacks"
         bottom={106}
       >
-        {characterSheet?.combat?.attacks ? (
+        {character?.sheet?.combat?.attacks ? (
           <AttacksList>
-            {characterSheet.combat.attacks.map((attack: Attack, index) => (
+            {character?.sheet?.combat?.attacks.map((attack: Attack, index) => (
               <AttackItem key={index}>
                 <AttackType>
                   {attack.element} / {attack.attackType}

@@ -16,6 +16,7 @@ import { GetServerSideProps } from "next";
 import { BackButton, Subtitle, Title } from "@/components/styled/character";
 import { useModal } from "@/hooks/useModal";
 import LearnClasses from "@/components/Learn/LearnClasses";
+import { useCurrentCharacter } from "@/hooks/useCurrentCharacter";
 
 interface ClassSelectionPageProps {
   classes: CharacterClass[];
@@ -34,20 +35,13 @@ export const getServerSideProps: GetServerSideProps<
 
 const ClassSelectionPage: React.FC<ClassSelectionPageProps> = ({ classes }) => {
   const router = useRouter();
-  const { selectedRace, loading: raceLoading } = useRace();
   const {
     selectedClass,
     selectClass,
     loading: classLoading,
   } = useCharacterClass();
   const { openModal, closeModal, modalContent, Modal } = useModal();
-
-  // Redirect if no race is selected
-  React.useEffect(() => {
-    if (!raceLoading && !selectedRace) {
-      router.push("/character/race");
-    }
-  }, [selectedRace, raceLoading, router]);
+  const { character } = useCurrentCharacter();
 
   const handleNext = () => {
     if (selectedClass) {
@@ -59,7 +53,7 @@ const ClassSelectionPage: React.FC<ClassSelectionPageProps> = ({ classes }) => {
     router.push("/character/race");
   };
 
-  if (raceLoading || classLoading) {
+  if (classLoading) {
     return (
       <Container>
         <LoadingMessage>
@@ -91,15 +85,15 @@ const ClassSelectionPage: React.FC<ClassSelectionPageProps> = ({ classes }) => {
           Learn how classes define your character.
         </LearnMoreButton>
 
-        {selectedRace && (
+        {character?.race && (
           <SelectedRaceBanner>
             <RaceImage
-              src={selectedRace.image || "/images/races/default.jpg"}
-              alt={selectedRace.name}
+              src={character.race.image || "/images/races/default.jpg"}
+              alt={character.race.name}
             />
             <RaceInfo>
-              <RaceName>Selected Race: {selectedRace.name}</RaceName>
-              <RaceDescription>{selectedRace.description}</RaceDescription>
+              <RaceName>Selected Race: {character.race.name}</RaceName>
+              <RaceDescription>{character.race.description}</RaceDescription>
             </RaceInfo>
           </SelectedRaceBanner>
         )}

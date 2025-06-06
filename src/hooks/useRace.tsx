@@ -9,8 +9,8 @@ import { useCurrentCharacter } from './useCurrentCharacter';
  * Handles loading from localStorage and persisting changes
  */
 export function useRace() {
-  const { saveCharacter, updateCharacter } = useCurrentCharacter();
-  const [selectedRace, setSelectedRace] = useState<Race | null>(null);
+  const { character, updateCharacter, saveCharacter } = useCurrentCharacter();
+  const [selectedRace, setSelectedRace] = useState<Race | null>(character?.race as Race | null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 

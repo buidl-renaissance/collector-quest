@@ -41,25 +41,11 @@ const CharacterTraitsPage: React.FC = () => {
   // Update traits when generated traits are available
   useEffect(() => {
     if (generatedTraits && character) {
-      // Merge existing character traits with generated traits
-      const mergedPersonality = [...new Set([...(character.traits?.personality || []), ...(generatedTraits.personality || [])])];
-      const mergedIdeals = [...new Set([...(character.traits?.ideals || []), ...(generatedTraits.ideals || [])])];
-      const mergedFlaws = [...new Set([...(character.traits?.flaws || []), ...(generatedTraits.flaws || [])])];
-      const mergedBonds = [...new Set([...(character.traits?.bonds || []), ...(generatedTraits.bonds || [])])];
-
       // Initialize selections with existing character traits
       setSelectedPersonality(character.traits?.personality || []);
       setSelectedIdeals(character.traits?.ideals || []);
       setSelectedFlaws(character.traits?.flaws || []);
       setSelectedBonds(character.traits?.bonds || []);
-
-      // Update generated traits with merged values
-      if (generatedTraits) {
-        generatedTraits.personality = mergedPersonality;
-        generatedTraits.ideals = mergedIdeals;
-        generatedTraits.flaws = mergedFlaws;
-        generatedTraits.bonds = mergedBonds;
-      }
     }
   }, [generatedTraits, character]);
 
@@ -88,32 +74,6 @@ const CharacterTraitsPage: React.FC = () => {
       }
     }
   }, [selectedPersonality, selectedIdeals, selectedFlaws, selectedBonds, character, updateCharacter]);
-
-  const handleInputChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >
-  ) => {
-    const { name, value } = e.target;
-    if (!character || !name) return;
-    
-    // Create a copy of traits to avoid direct mutation
-    const updatedTraits: Traits = { ...character.traits };
-    
-    // Handle the assignment based on the field type
-    if (Array.isArray(updatedTraits[name as keyof Traits])) {
-      // For array fields, we need to handle differently
-      (updatedTraits[name as keyof Traits] as string[]) = [value];
-    } else {
-      // For string fields
-      (updatedTraits[name as keyof Traits] as string) = value;
-    }
-    
-    updateCharacter({
-      ...character,
-      traits: updatedTraits
-    });
-  };
 
   const handleTraitSelection = (category: 'personality' | 'ideals' | 'flaws' | 'bonds', trait: string) => {
     let currentSelection: string[] = [];
@@ -157,15 +117,6 @@ const CharacterTraitsPage: React.FC = () => {
     await saveCharacter();
     navigateTo(router, "/character/motivation");
   };
-
-  // Redirect if no race or class is selected
-  React.useEffect(() => {
-    if (!raceLoading && !classLoading) {
-      if (!selectedRace) {
-        router.push("/character/race");
-      }
-    }
-  }, [selectedRace, raceLoading, classLoading, router]);
 
   const isFormComplete = () => {
     return (

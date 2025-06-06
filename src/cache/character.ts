@@ -54,6 +54,7 @@ export async function getCharactersByIds(ids: string[], cache: ReturnType<typeof
 
 // Function to update character in cache
 export function updateCharacterCache(character: Character, cache: ReturnType<typeof useCache>) {
+  console.log('updateCharacterCache', character);
   if (character.id) {
     cache.set('character', character.id, character, CHARACTER_CACHE_DURATION);
   }

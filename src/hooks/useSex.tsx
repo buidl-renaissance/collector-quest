@@ -6,8 +6,8 @@ import { useCurrentCharacter } from './useCurrentCharacter';
 export type Sex = 'male' | 'female' | 'other';
 
 export function useSex() {
-  const { updateCharacter } = useCurrentCharacter();
-  const [selectedSex, setSelectedSex] = useState<Sex | null>(null);
+  const { character, updateCharacter } = useCurrentCharacter();
+  const [selectedSex, setSelectedSex] = useState<Sex | null>(character?.sex as Sex | null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
