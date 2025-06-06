@@ -25,6 +25,7 @@ import BottomNavigationBar from "@/components/BottomNavigationBar";
 import ArtifactsList from "@/components/ArtifactsList";
 import RegisterCharacter from "@/components/RegisterCharacter";
 import CharacterSheetModal from "@/components/CharacterSheetModal";
+import CharacterImage from "@/components/CharacterImage";
 
 interface CharacterPageProps {
   character: Character | null;
@@ -147,7 +148,7 @@ const CharacterPage: React.FC<CharacterPageProps> = () => {
         <CharacterContainer>
           <CharacterHeader>
           <CharacterTitle>{character.name}</CharacterTitle>
-          <CharacterImageWrapper>
+          {/* <CharacterImageWrapper>
               {character.image_url ? (
                 <CharacterImageContainer>
                   <Image
@@ -163,7 +164,8 @@ const CharacterPage: React.FC<CharacterPageProps> = () => {
                   <span>No image available</span>
                 </CharacterImagePlaceholder>
               )}
-            </CharacterImageWrapper>
+            </CharacterImageWrapper> */}
+            <CharacterImage character={character} size="large" bordered={true} />
             <CharacterSubtitle>
               {character.race?.name} • {character.class?.name}
             </CharacterSubtitle>

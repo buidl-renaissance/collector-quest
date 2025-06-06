@@ -1,80 +1,62 @@
 import { Campaign } from '@/data/campaigns';
-import { STORAGE_KEYS } from '@/utils/storage';
+import { useCache } from '@/context/CacheContext';
 
-// Cache duration in milliseconds (1 hour default)
-export const CACHE_DURATION_MS = 60 * 60 * 1000;
+// Default cache duration for campaigns (30 minutes)
+export const CAMPAIGN_CACHE_DURATION = 30 * 60 * 1000;
 
-function getCampaigns() {
-  return JSON.parse(localStorage.getItem(STORAGE_KEYS.CAMPAIGNS) || '{}');
-}
-
-function getCachedCampaign(id: string) {
-  const campaigns = getCampaigns();
-  return campaigns[id] || null;
-}
-
-function setCampaign(id: string, campaign: Campaign & { timestamp?: number }) {
-  const campaigns = getCampaigns();
-  campaigns[id] = {
-    ...campaign,
-    timestamp: Date.now()
-  };
-  localStorage.setItem(STORAGE_KEYS.CAMPAIGNS, JSON.stringify(campaigns));
-}
-
-export async function getCampaignById(id: string): Promise<Campaign | null> {
-  // Check local storage first
-  const cachedCampaign = getCachedCampaign(id);
-  if (cachedCampaign && cachedCampaign.timestamp && 
-      Date.now() - cachedCampaign.timestamp < CACHE_DURATION_MS) {
-    return cachedCampaign as Campaign;
+// Helper function to fetch campaign from API
+async function fetchCampaignFromAPI(id: string): Promise<Campaign> {
+  const response = await fetch(`/api/campaigns/${id}`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch campaign');
   }
+  return response.json();
+}
 
-  // Fetch from API if not in local storage or cache expired
+export async function getCampaignById(id: string, cache: ReturnType<typeof useCache>): Promise<Campaign | null> {
   try {
-    const response = await fetch(`/api/campaigns/${id}`);
-    if (!response.ok) {
-      throw new Error('Failed to fetch campaign');
-    }
-    const campaign: Campaign = await response.json();
-    
-    // Store in local storage with timestamp
-    setCampaign(id, campaign);
-    return campaign;
+    return await cache.fetch<Campaign>(
+      'campaign',
+      id,
+      () => fetchCampaignFromAPI(id),
+      CAMPAIGN_CACHE_DURATION
+    );
   } catch (error) {
     console.error('Error fetching campaign:', error);
     return null;
   }
 }
 
-export async function getCampaignsByIds(ids: string[]): Promise<(Campaign | null)[]> {
-  const campaigns: (Campaign | null)[] = [];
-  
-  for (const id of ids) {
-    // Check local storage first
-    const cachedCampaign = getCachedCampaign(id);
-    if (cachedCampaign && cachedCampaign.timestamp && 
-        Date.now() - cachedCampaign.timestamp < CACHE_DURATION_MS) {
-      campaigns.push(cachedCampaign as Campaign);
-      continue;
-    }
-
-    // Fetch from API if not in local storage or cache expired
-    try {
-      const response = await fetch(`/api/campaigns/${id}`);
-      if (!response.ok) {
-        throw new Error(`Failed to fetch campaign ${id}`);
+export async function getCampaignsByIds(ids: string[], cache: ReturnType<typeof useCache>): Promise<Campaign[]> {
+  const campaigns = await Promise.all(
+    ids.map(async (id) => {
+      try {
+        return await cache.fetch<Campaign>(
+          'campaign',
+          id,
+          () => fetchCampaignFromAPI(id),
+          CAMPAIGN_CACHE_DURATION
+        );
+      } catch (error) {
+        console.error(`Error fetching campaign ${id}:`, error);
+        return null;
       }
-      const campaign: Campaign = await response.json();
-      
-      // Store in local storage with timestamp
-      setCampaign(id, campaign);
-      campaigns.push(campaign);
-    } catch (error) {
-      console.error(`Error fetching campaign ${id}:`, error);
-      campaigns.push(null);
-    }
-  }
+    })
+  );
+  
+  return campaigns.filter((camp): camp is Campaign => camp !== null);
+}
 
-  return campaigns;
+export function updateCampaignCache(campaign: Campaign, cache: ReturnType<typeof useCache>) {
+  if (campaign.id) {
+    cache.set('campaign', campaign.id, campaign, CAMPAIGN_CACHE_DURATION);
+  }
+}
+
+export function removeCampaignFromCache(campaignId: string, cache: ReturnType<typeof useCache>) {
+  cache.remove('campaign', campaignId);
+}
+
+export function clearCampaignCache(cache: ReturnType<typeof useCache>) {
+  cache.clearCache('campaign');
 }

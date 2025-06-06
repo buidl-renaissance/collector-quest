@@ -3,8 +3,14 @@ import { Campaign } from '@/data/campaigns';
 import { getCampaignById } from '@/cache/campaign';
 import { STORAGE_KEYS } from '@/utils/storage';
 import { useCharacters } from './useCharacters';
+import { useCache } from '@/context/CacheContext';
+
+const getCurrentCampaignId = () => {
+  return localStorage.getItem(STORAGE_KEYS.CURRENT_CAMPAIGN_ID);
+};
 
 export const useCurrentCampaign = () => {
+  const cache = useCache();
   const [currentCampaignId, setCurrentCampaignId] = useState<string | null>(null);
   const [currentCampaign, setCurrentCampaign] = useState<Campaign | null>(null);
   const [characterIds, setCharacterIds] = useState<string[]>([]);
@@ -13,7 +19,7 @@ export const useCurrentCampaign = () => {
 
   // Load campaign ID from localStorage on mount
   useEffect(() => {
-    const storedCampaignId = localStorage.getItem(STORAGE_KEYS.CURRENT_CAMPAIGN_ID);
+    const storedCampaignId = getCurrentCampaignId();
     if (storedCampaignId) {
       setCurrentCampaignId(storedCampaignId);
     }
@@ -30,7 +36,7 @@ export const useCurrentCampaign = () => {
 
       setLoading(true);
       try {
-        const campaign = await getCampaignById(currentCampaignId);
+        const campaign = await getCampaignById(currentCampaignId, cache);
         setCurrentCampaign(campaign);
         setCharacterIds(campaign?.characters?.map(c => c.character_id) || []);
       } finally {
@@ -39,14 +45,12 @@ export const useCurrentCampaign = () => {
     };
 
     loadCampaign();
-  }, [currentCampaignId]);
+  }, [currentCampaignId, cache]);
 
   // Store campaign ID in localStorage whenever it changes
   useEffect(() => {
     if (currentCampaignId) {
       localStorage.setItem(STORAGE_KEYS.CURRENT_CAMPAIGN_ID, currentCampaignId);
-    } else {
-      localStorage.removeItem(STORAGE_KEYS.CURRENT_CAMPAIGN_ID);
     }
   }, [currentCampaignId]);
 
@@ -67,7 +71,7 @@ export const useCurrentCampaign = () => {
       };
 
       // Update in cache
-      await getCampaignById(updatedCampaign.id); // This will update the cache
+      await getCampaignById(updatedCampaign.id, cache); // This will update the cache
       setCurrentCampaign(updatedCampaign);
       setCharacterIds(updatedCampaign.characters?.map(c => c.character_id) || []);
     } finally {

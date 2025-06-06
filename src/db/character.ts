@@ -16,7 +16,7 @@ export class CharacterDB {
 
     await client("characters").insert({
       id,
-      name: character.name,
+      name: character.name || "",
       status: CharacterStatus.NEW,
       race: character.race?.id,
       class: character.class?.id,

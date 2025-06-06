@@ -1,25 +1,22 @@
 import React, { useState } from "react";
 import styled from "@emotion/styled";
 import { keyframes } from "@emotion/react";
-import { useCurrentCharacter } from "@/hooks/useCurrentCharacter";
+import { useCharacterCreate } from "@/hooks/useCharacterCreate";
 import { useRouter } from "next/router";
 
 interface PressStartProps {
   className?: string;
 }
 
-const PressStart: React.FC<PressStartProps> = ({ className }) => {
-  const [isCreating, setIsCreating] = useState(false);
-  const { createCharacter } = useCurrentCharacter();
+const PressStart: React .FC<PressStartProps> = ({ className }) => {
+  const { createCharacter, creating, error } = useCharacterCreate();
   const router = useRouter();
   const handlePressStart = async () => {
     try {
-      setIsCreating(true);
       await createCharacter();
       router.push("/character/name");
     } catch (err) {
       console.error("Error creating character:", err);
-      setIsCreating(false);
     }
   };
   return (
@@ -39,8 +36,8 @@ const PressStart: React.FC<PressStartProps> = ({ className }) => {
           Your browser does not support the video tag.
         </video>
         <VideoOverlay>
-          <PlayButton onClick={handlePressStart} disabled={isCreating}>
-            {isCreating ? <LoadingSpinner /> : <span>PRESS START</span>}
+          <PlayButton onClick={handlePressStart} disabled={creating}>
+            {creating ? <LoadingSpinner /> : <span>PRESS START</span>}
           </PlayButton>
         </VideoOverlay>
       </VideoContainer>

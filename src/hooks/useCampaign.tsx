@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Campaign } from '@/data/campaigns';
+import { useCache } from '@/context/CacheContext';
 import { getCampaignById } from '@/cache/campaign';
 import { useCharacters } from './useCharacters';
 
 export function useCampaign(id: string | undefined) {
+  const cache = useCache();
   const [campaign, setCampaign] = useState<Campaign | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
@@ -11,6 +13,8 @@ export function useCampaign(id: string | undefined) {
   const { characters, loading: charactersLoading, error: charactersError } = useCharacters(characterIds);
 
   useEffect(() => {
+    let mounted = true;
+
     async function loadCampaign() {
       if (!id) {
         setLoading(false);
@@ -18,18 +22,28 @@ export function useCampaign(id: string | undefined) {
       }
 
       try {
-        const campaignData = await getCampaignById(id);
-        setCampaign(campaignData);
-        setCharacterIds(campaignData?.characters?.map((c) => c.character_id) || []);
+        const campaignData = await getCampaignById(id, cache);
+        if (mounted) {
+          setCampaign(campaignData);
+          setCharacterIds(campaignData?.characters?.map((c) => c.character_id) || []);
+        }
       } catch (err) {
-        setError(err instanceof Error ? err : new Error('Failed to load campaign'));
+        if (mounted) {
+          setError(err instanceof Error ? err : new Error('Failed to load campaign'));
+        }
       } finally {
-        setLoading(false);
+        if (mounted) {
+          setLoading(false);
+        }
       }
     }
 
     loadCampaign();
-  }, [id]);
+
+    return () => {
+      mounted = false;
+    };
+  }, [cache, id]);
 
   return { campaign, loading, error, characterIds, characters, charactersLoading, charactersError };
 }

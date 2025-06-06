@@ -10,8 +10,6 @@ import {
   FaBook,
 } from "react-icons/fa";
 import Footer from '@/components/Footer';
-import { useCurrentCharacter } from '@/hooks/useCurrentCharacter';
-import { useRouter } from 'next/router';
 import PressStart from '@/components/PressStart';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
@@ -22,7 +20,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         description:
           "Embark on infinite adventures in this turn-based AI storytelling game. Create a hero, forge unique quests, and build your collection of legendary tales.",
         image: "/images/collector-quest-banner.jpg",
-        url: `https://collectorquest.theethical.ai`,
+        url: `https://collectorquest.ai`,
       },
     },
   };
@@ -32,9 +30,6 @@ const MasterPage: React.FC = () => {
   const [showMore, setShowMore] = useState(false);
   const [audioEnabled, setAudioEnabled] = useState(false);
   const [parallaxOffset, setParallaxOffset] = useState(0);
-  const [isCreating, setIsCreating] = useState(false);
-  const { createCharacter } = useCurrentCharacter();
-  const router = useRouter();
 
   useEffect(() => {
     const handleScroll = () => {

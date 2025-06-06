@@ -1,68 +1,70 @@
-import { getCharacter, setCharacter } from '@/utils/storage';
 import { Character } from '@/data/character';
+import { useCache } from '@/context/CacheContext';
 
-// Cache duration in milliseconds (1 hour default)
-export const CACHE_DURATION_MS = 60 * 60 * 1000;
+// Default cache duration for characters (30 minutes)
+export const CHARACTER_CACHE_DURATION = 30 * 60 * 1000;
 
-export async function getCharacterById(id: string): Promise<Character | null> {
-  // Check local storage first
-  const cachedCharacter = getCharacter(id);
-  if (cachedCharacter && cachedCharacter.timestamp && 
-      Date.now() - cachedCharacter.timestamp < CACHE_DURATION_MS) {
-    return cachedCharacter as Character;
+// Helper function to fetch character from API
+async function fetchCharacterFromAPI(id: string): Promise<Character> {
+  const response = await fetch(`/api/characters/${id}`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch character');
   }
+  return response.json();
+}
 
-  // Fetch from API if not in local storage or cache expired
-  try {
-    const response = await fetch(`/api/characters/${id}`);
-    if (!response.ok) {
-      throw new Error('Failed to fetch character');
-    }
-    const character: Character = await response.json();
+// Hook to get a single character with caching
+export function useCharacter(characterId: string | null) {
+  const cache = useCache();
+  
+  const getCharacter = async () => {
+    if (!characterId) return null;
     
-    // Store in local storage with timestamp
-    setCharacter(id, {
-      ...character,
-      timestamp: Date.now()
-    });
-    return character;
-  } catch (error) {
-    console.error('Error fetching character:', error);
-    return null;
+    return cache.fetch<Character>(
+      'character',
+      characterId,
+      () => fetchCharacterFromAPI(characterId),
+      CHARACTER_CACHE_DURATION
+    );
+  };
+  
+  return { getCharacter };
+}
+
+// Helper function to fetch multiple characters
+export async function getCharactersByIds(ids: string[], cache: ReturnType<typeof useCache>): Promise<Character[]> {
+  const characters = await Promise.all(
+    ids.map(async (id) => {
+      try {
+        return await cache.fetch<Character>(
+          'character',
+          id,
+          () => fetchCharacterFromAPI(id),
+          CHARACTER_CACHE_DURATION
+        );
+      } catch (error) {
+        console.error(`Failed to fetch character ${id}:`, error);
+        return null;
+      }
+    })
+  );
+  
+  return characters.filter((char): char is Character => char !== null);
+}
+
+// Function to update character in cache
+export function updateCharacterCache(character: Character, cache: ReturnType<typeof useCache>) {
+  if (character.id) {
+    cache.set('character', character.id, character, CHARACTER_CACHE_DURATION);
   }
 }
 
-export async function getCharactersByIds(ids: string[]): Promise<(Character | null)[]> {
-  const characters: (Character | null)[] = [];
-  
-  for (const id of ids) {
-    // Check local storage first
-    const cachedCharacter = getCharacter(id);
-    if (cachedCharacter && cachedCharacter.timestamp && 
-        Date.now() - cachedCharacter.timestamp < CACHE_DURATION_MS) {
-      characters.push(cachedCharacter as Character);
-      continue;
-    }
+// Function to remove character from cache
+export function removeCharacterFromCache(characterId: string, cache: ReturnType<typeof useCache>) {
+  cache.remove('character', characterId);
+}
 
-    // Fetch from API if not in local storage or cache expired
-    try {
-      const response = await fetch(`/api/characters/${id}`);
-      if (!response.ok) {
-        throw new Error(`Failed to fetch character ${id}`);
-      }
-      const character: Character = await response.json();
-      
-      // Store in local storage with timestamp
-      setCharacter(id, {
-        ...character,
-        timestamp: Date.now()
-      });
-      characters.push(character);
-    } catch (error) {
-      console.error(`Error fetching character ${id}:`, error);
-      characters.push(null);
-    }
-  }
-
-  return characters;
+// Function to clear all character cache
+export function clearCharacterCache(cache: ReturnType<typeof useCache>) {
+  cache.clearCache('character');
 }

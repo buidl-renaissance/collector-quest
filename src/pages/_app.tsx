@@ -10,6 +10,7 @@ import { theme } from "@/styles/theme";
 import { Global, css } from "@emotion/react";
 import Head from "next/head";
 import { CharacterProvider } from "@/context/CharacterContext";
+import { CacheProvider } from "@/context/CacheContext";
 
 export default function App({ Component, pageProps }: AppProps) {
   const metadata = pageProps.metadata || {};
@@ -65,24 +66,26 @@ export default function App({ Component, pageProps }: AppProps) {
             }
           `}
         />
-        <CharacterProvider>
-          <NextSeo
-            title={metadata.title || "COLLECTOR QUEST | A Turn-Based AI Dungeon Game"}
-            description={metadata.description || "Embark on infinite adventures in this turn-based AI storytelling game. Create a hero, forge unique quests, and build your collection of legendary tales."}
-            openGraph={{
-              title: metadata.title,
-              description: metadata.description,
-              images: metadata.image ? [{ url: metadata.image }] : undefined,
-              url: metadata.url,
-            }}
-          />
-          <WalletProvider autoConnect>
-            <AuthProvider>
-              <Component {...pageProps} />
-            </AuthProvider>
-          </WalletProvider>
-          <Analytics />
-        </CharacterProvider>
+        <CacheProvider>
+          <CharacterProvider>
+            <NextSeo
+              title={metadata.title || "COLLECTOR QUEST | A Turn-Based AI Dungeon Game"}
+              description={metadata.description || "Embark on infinite adventures in this turn-based AI storytelling game. Create a hero, forge unique quests, and build your collection of legendary tales."}
+              openGraph={{
+                title: metadata.title,
+                description: metadata.description,
+                images: metadata.image ? [{ url: metadata.image }] : undefined,
+                url: metadata.url,
+              }}
+            />
+            <WalletProvider autoConnect>
+              <AuthProvider>
+                <Component {...pageProps} />
+              </AuthProvider>
+            </WalletProvider>
+            <Analytics />
+          </CharacterProvider>
+        </CacheProvider>
       </ThemeProvider>
     </>
   );

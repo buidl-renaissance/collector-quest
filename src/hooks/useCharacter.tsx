@@ -1,14 +1,17 @@
 import { useState, useEffect } from 'react';
 import { Character } from '@/data/character';
-import { getCharacterById } from '@/cache/character';
+import { useCache } from '@/context/CacheContext';
 
-export const useCharacter = (characterId: string | null) => {
+export function useCharacter(characterId: string | null) {
+  const cache = useCache();
   const [character, setCharacter] = useState<Character | null>(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
-    const loadCharacter = async () => {
+    let mounted = true;
+
+    const fetchCharacter = async () => {
       if (!characterId) {
         setCharacter(null);
         return;
@@ -18,22 +21,37 @@ export const useCharacter = (characterId: string | null) => {
       setError(null);
 
       try {
-        const characterData = await getCharacterById(characterId);
-        setCharacter(characterData);
+        const data = await cache.fetch<Character>(
+          'character',
+          characterId,
+          async () => {
+            const response = await fetch(`/api/characters/${characterId}`);
+            if (!response.ok) throw new Error('Failed to fetch character');
+            return response.json();
+          },
+          30 * 60 * 1000 // 30 minute cache
+        );
+
+        if (mounted) {
+          setCharacter(data);
+        }
       } catch (err) {
-        console.error('Error loading character:', err);
-        setError('Failed to load character');
+        if (mounted) {
+          setError(err as Error);
+        }
       } finally {
-        setLoading(false);
+        if (mounted) {
+          setLoading(false);
+        }
       }
     };
 
-    loadCharacter();
-  }, [characterId]);
+    fetchCharacter();
 
-  return {
-    character,
-    loading,
-    error
-  };
-};
+    return () => {
+      mounted = false;
+    };
+  }, [characterId, cache]);
+
+  return { character, loading, error };
+}
