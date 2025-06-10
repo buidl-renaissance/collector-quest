@@ -17,6 +17,7 @@ import { useMotivation } from "@/hooks/useMotivation";
 import BottomNavigation from "@/components/BottomNavigation";
 import { useCurrentCharacter } from "@/hooks/useCurrentCharacter";
 import { navigateTo } from "@/utils/navigation";
+import { keyframes } from "@emotion/react";
 
 const MotivationPage: React.FC = () => {
   const router = useRouter();
@@ -96,6 +97,29 @@ const MotivationPage: React.FC = () => {
     navigateTo(router, "/character/story");
   };
 
+  const handleRandomSelection = () => {
+    // Helper function to get random items from array
+    const getRandomItems = (arr: string[], count: number) => {
+      const shuffled = [...arr].sort(() => 0.5 - Math.random());
+      return shuffled.slice(0, count);
+    };
+
+    // Select 2 random actions
+    const randomActions = getRandomItems(actions, 2);
+    setSelectedActions(randomActions);
+
+    // Select 2 random driving forces
+    const randomForces = getRandomItems(drivingForces, 2);
+    setSelectedForces(randomForces);
+
+    // Select 1 random archetype
+    const randomArchetype = archetypes[Math.floor(Math.random() * archetypes.length)].id;
+    setSelectedArchetype(randomArchetype);
+
+    // Generate motivation with new selections
+    generateMotivation();
+  };
+
   if (raceLoading || classLoading) {
     return (
       <PageContainer>
@@ -126,6 +150,10 @@ const MotivationPage: React.FC = () => {
         </Subtitle>
 
         <div>
+          <RandomizeButton onClick={handleRandomSelection}>
+            <FaDice /> Roll Random Motivation
+          </RandomizeButton>
+
           <StepContainer>
             <StepTitle>What are their primary actions? (Select up to 2)</StepTitle>
             <OptionsGrid>
@@ -201,6 +229,45 @@ const CrownIcon = styled.div`
   font-size: 2rem;
   margin-bottom: 1rem;
   color: #bb8930;
+`;
+
+const spin = keyframes`
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+`;
+
+const RandomizeButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin: 0 auto 2rem;
+  padding: 0.75rem 1.5rem;
+  background-color: #2d2d42;
+  color: #ffffff;
+  border: 2px solid #4a4ae4;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.3s;
+
+  &:hover {
+    background-color: #3d3d5c;
+    transform: translateY(-2px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  svg {
+    animation: ${spin} 2s linear infinite;
+    animation-play-state: paused;
+  }
+
+  &:hover svg {
+    animation-play-state: running;
+  }
 `;
 
 const StepContainer = styled.div`

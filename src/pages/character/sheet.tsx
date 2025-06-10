@@ -17,7 +17,8 @@ import Skills from "@/components/CharacterSheet/Skills";
 import TraitsDisplay from "@/components/CharacterSheet/Traits";
 import Bio from "@/components/CharacterSheet/Bio";
 import ProficienciesAndLanguages from "@/components/CharacterSheet/ProficienciesAndLanguages";
-import CharacterCard from "@/components/CharacterCard";
+import BottomNavigation from "@/components/BottomNavigation";
+import { navigateTo } from "@/utils/navigation";
 
 // Animations
 const spin = keyframes`
@@ -683,6 +684,13 @@ const CharacterSheetPage: React.FC = () => {
           Regenerate Character Sheet
         </RegenerateButton>
       </CharacterSheetContainer>
+
+      <BottomNavigation 
+        nextLabel="View Character"
+        onNext={() => {
+          navigateTo(router, "/character");
+        }}
+      />
 
       <Modal
         isOpen={modalContent.isOpen}

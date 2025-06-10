@@ -118,6 +118,22 @@ const CharacterTraitsPage: React.FC = () => {
     navigateTo(router, "/character/motivation");
   };
 
+  const handleRandomSelection = () => {
+    if (!generatedTraits) return;
+
+    // Helper function to get random items from array
+    const getRandomItems = (arr: string[], count: number) => {
+      const shuffled = [...arr].sort(() => 0.5 - Math.random());
+      return shuffled.slice(0, count);
+    };
+
+    // Select 3 random traits from each category
+    setSelectedPersonality(getRandomItems(generatedTraits.personality || [], 3));
+    setSelectedIdeals(getRandomItems(generatedTraits.ideals || [], 3));
+    setSelectedFlaws(getRandomItems(generatedTraits.flaws || [], 3));
+    setSelectedBonds(getRandomItems(generatedTraits.bonds || [], 3));
+  };
+
   const isFormComplete = () => {
     return (
       character?.name &&
@@ -155,6 +171,10 @@ const CharacterTraitsPage: React.FC = () => {
 
           {generatedTraits && (
             <>
+              <RandomizeButton onClick={handleRandomSelection}>
+                <FaRandom /> Randomize All Traits
+              </RandomizeButton>
+
               <TraitSection>
                 <TraitSectionTitle>Personality Traits (Select 3)</TraitSectionTitle>
                 <TraitSelectionInfo>Selected: {selectedPersonality.length}/3</TraitSelectionInfo>
@@ -267,6 +287,41 @@ const float = keyframes`
 const spin = keyframes`
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+`;
+
+const RandomizeButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin: 0 auto 2rem;
+  padding: 0.75rem 1.5rem;
+  background-color: rgba(187, 137, 48, 0.2);
+  color: #bb8930;
+  border: 1px solid #bb8930;
+  border-radius: 4px;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.3s;
+
+  &:hover {
+    background-color: rgba(187, 137, 48, 0.3);
+    transform: scale(1.02);
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  svg {
+    animation: ${spin} 2s linear infinite;
+    animation-play-state: paused;
+  }
+
+  &:hover svg {
+    animation-play-state: running;
+  }
 `;
 
 const HeroSection = styled.div`
