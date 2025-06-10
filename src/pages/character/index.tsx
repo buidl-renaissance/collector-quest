@@ -26,6 +26,7 @@ import ArtifactsList from "@/components/ArtifactsList";
 import RegisterCharacter from "@/components/RegisterCharacter";
 import CharacterSheetModal from "@/components/CharacterSheetModal";
 import CharacterImage from "@/components/CharacterImage";
+import { CampaignSelectionModal } from "@/components/CampaignSelectionModal";
 
 interface CharacterPageProps {
   character: Character | null;
@@ -42,6 +43,7 @@ const CharacterPage: React.FC<CharacterPageProps> = () => {
     useCharacterRegistration();
   const { address } = useWallet();
   const [isCharacterSheetOpen, setIsCharacterSheetOpen] = useState(false);
+  const [isCampaignModalOpen, setIsCampaignModalOpen] = useState(false);
 
   const [registeredCharacterId, setRegisteredCharacterId] = useState<any>(null);
 
@@ -183,9 +185,14 @@ const CharacterPage: React.FC<CharacterPageProps> = () => {
               <BioCardContainer>
                 <CharacterSectionTitle>Backstory</CharacterSectionTitle>
                 <CharacterBio character={character} openModal={openModal} />
-                <ViewCharacterSheetButton onClick={() => setIsCharacterSheetOpen(true)}>
-                  View Character Sheet
-                </ViewCharacterSheetButton>
+                <ButtonContainer>
+                  <ViewCharacterSheetButton onClick={() => setIsCharacterSheetOpen(true)}>
+                    View Character Sheet
+                  </ViewCharacterSheetButton>
+                  <StartCampaignButton onClick={() => setIsCampaignModalOpen(true)}>
+                    Load Campaign
+                  </StartCampaignButton>
+                </ButtonContainer>
               </BioCardContainer>
 
               <RegisterCharacter
@@ -227,6 +234,11 @@ const CharacterPage: React.FC<CharacterPageProps> = () => {
             characterSheet={character.sheet}
           />
         )}
+
+        <CampaignSelectionModal 
+          isOpen={isCampaignModalOpen}
+          onClose={() => setIsCampaignModalOpen(false)}
+        />
 
         <BottomNavigationBar />
       </Page>
@@ -354,6 +366,13 @@ const BioCardContainer = styled.div`
   margin-top: 1rem;
 `;
 
+const ButtonContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1rem;
+`;
+
 const ViewCharacterSheetButton = styled.button`
   background: #2d2d44;
   color: #bb8930;
@@ -363,13 +382,21 @@ const ViewCharacterSheetButton = styled.button`
   font-family: "Cinzel", serif;
   font-size: 1rem;
   cursor: pointer;
-  margin-top: 1rem;
-  width: 100%;
   transition: all 0.2s ease-in-out;
 
   &:hover {
     background: #3d3d54;
     transform: translateY(-2px);
+  }
+`;
+
+const StartCampaignButton = styled(ViewCharacterSheetButton)`
+  background: #bb8930;
+  color: #1e1e2d;
+  border: none;
+
+  &:hover {
+    background: #d4a03c;
   }
 `;
 
