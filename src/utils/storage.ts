@@ -1,3 +1,6 @@
+import { updateCharacterCache } from "@/cache/character";
+import { useCache } from "@/context/CacheContext";
+
 export const STORAGE_KEYS = {
   CURRENT_CHARACTER_ID: 'currentCharacterId',
   CURRENT_CAMPAIGN_ID: 'currentCampaignId',

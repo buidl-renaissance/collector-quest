@@ -403,19 +403,6 @@ const CharacterSheetPage: React.FC = () => {
   };
 
   useEffect(() => {
-    if (!characterLoading && character && !characterSheet && !sheetLoading) {
-      console.log("Generating character sheet with data:", character);
-      generateCharacterSheet();
-    }
-  }, [
-    character,
-    characterLoading,
-    characterSheet,
-    sheetLoading,
-    generateCharacterSheet,
-  ]);
-
-  useEffect(() => {
     if (characterSheet) {
       console.log("Character sheet generated:", characterSheet);
       console.log("Combat data:", characterSheet.combat);

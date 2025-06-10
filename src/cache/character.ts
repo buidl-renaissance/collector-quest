@@ -3,6 +3,13 @@ import { useCache } from '@/context/CacheContext';
 
 // Default cache duration for characters (30 minutes)
 export const CHARACTER_CACHE_DURATION = 30 * 60 * 1000;
+export const CURRENT_CHARACTER_ID = 'currentCharacterId';
+
+export const getCurrentCharacterId = () => localStorage.getItem(CURRENT_CHARACTER_ID);
+
+export const setCurrentCharacterId = (id: string) => {
+  localStorage.setItem(CURRENT_CHARACTER_ID, id);
+};
 
 // Helper function to fetch character from API
 async function fetchCharacterFromAPI(id: string): Promise<Character> {

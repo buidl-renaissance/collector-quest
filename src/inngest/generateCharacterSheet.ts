@@ -10,7 +10,7 @@ import { calculateAbilityScores, generateAbilities } from "@/lib/generateAbiliti
 import { generateAttacks } from "@/lib/generateAttacks";
 import { generateLanguages } from "@/lib/generateLanguages";
 import { generateProficiencies } from "@/lib/generateProficiencies";
-import { updateResult, completeResult } from "@/lib/storage";
+import { updateResult, completeResult, createResult, failResult } from "@/db/generate";
 
 interface GenerateSheetEvent {
   data: {
@@ -32,11 +32,7 @@ export const generateCharacterSheet = inngest.createFunction(
       throw new Error("Character not found");
     }
 
-
-    updateResult(event.data.resultId!, JSON.stringify({
-      message: "Calculated character abilities",
-      step: "calculate-abilities",
-    }));
+    await updateResult(event.data.resultId!, 'pending', 'calculate-abilities', 'Calculating character abilities', null);
 
     // Step 0: Calculate abilities
     const abilitiesResult = await step.run("calculate-abilities", async () => {
@@ -56,14 +52,10 @@ export const generateCharacterSheet = inngest.createFunction(
       };
     });
 
-    updateResult(event.data.resultId!, JSON.stringify({
-      message: "Calculating combat stats",
-      step: "calculate-combat",
-      sheet: {
-        abilities: abilitiesResult.abilities,
-        abilitiesScores: abilitiesResult.abilitiesScores,
-      }
-    }));
+    await updateResult(event.data.resultId!, 'pending', 'calculate-combat', 'Calculating combat stats', {
+      abilities: abilitiesResult.abilities,
+      abilitiesScores: abilitiesResult.abilitiesScores,
+    });
 
     // Step 1: Calculate base stats
     const combatResult = await step.run("calculate-combat", async () => {
@@ -106,15 +98,11 @@ export const generateCharacterSheet = inngest.createFunction(
       };
     });
 
-    updateResult(event.data.resultId!, JSON.stringify({
-      message: "Generating character skills",
-      step: "generate-skills",
-      sheet: {
-        abilities: abilitiesResult.abilities,
-        abilitiesScores: abilitiesResult.abilitiesScores,
-        combat: combatResult.combat,
-      }
-    }));
+    await updateResult(event.data.resultId!, 'pending', 'generate-skills', 'Generating character skills', {
+      abilities: abilitiesResult.abilities,
+      abilitiesScores: abilitiesResult.abilitiesScores,
+      combat: combatResult.combat,
+    });
 
     // Step 2: Generate skills
     const skillsResult = await step.run("generate-skills", async () => {
@@ -132,16 +120,12 @@ export const generateCharacterSheet = inngest.createFunction(
       };
     });
 
-    updateResult(event.data.resultId!, JSON.stringify({
-      message: "Generating character features and traits",
-      step: "generate-features-traits",
-      sheet: {
-        abilities: abilitiesResult.abilities,
-        abilitiesScores: abilitiesResult.abilitiesScores,
-        combat: combatResult.combat,
-        skills: skillsResult.skills,
-      }
-    }));
+    await updateResult(event.data.resultId!, 'pending', 'generate-features-traits', 'Generating character features and traits', {
+      abilities: abilitiesResult.abilities,
+      abilitiesScores: abilitiesResult.abilitiesScores,
+      combat: combatResult.combat,
+      skills: skillsResult.skills,
+    });
 
     // Step 3: Generate features and traits
     const featuresAndTraitsResult = await step.run("generate-features-traits", async () => {
@@ -178,11 +162,7 @@ export const generateCharacterSheet = inngest.createFunction(
       proficiencies,
     };
 
-    completeResult(event.data.resultId!, JSON.stringify({
-      message: "Generated character sheet",
-      step: "generated-sheet",
-      sheet: characterSheet,
-    }));
+    await completeResult(event.data.resultId!, "Generated character sheet", characterSheet);
 
     return {
       success: true,

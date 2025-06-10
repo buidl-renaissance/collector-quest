@@ -164,20 +164,6 @@ const EquipmentPage: React.FC = () => {
     }
   }, [equipmentOption]);
 
-  // Redirect if no race or class is selected and generate equipment
-  useEffect(() => {
-    if (!raceLoading && !classLoading) {
-      if (!selectedRace) {
-        router.push("/character/race");
-      } else if (!selectedClass) {
-        router.push("/character/class");
-      } else if (equipmentOption === 'standard' && !equipment && !isGenerating) {
-        // Generate equipment if we have a character but no equipment yet
-        generateEquipment();
-      }
-    }
-  }, [selectedRace, selectedClass, raceLoading, classLoading, router, equipmentOption, equipment, isGenerating, generateEquipment]);
-
   const handleBack = () => {
     navigateTo(router, "/character/image");
   };

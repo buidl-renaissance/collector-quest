@@ -1,51 +1,48 @@
-import { useState, useEffect } from "react";
-import { Character } from "./useCurrentCharacter";
+import { useEffect, useState } from "react";
 import { useCurrentCharacter } from "./useCurrentCharacter";
-import { GenerationResult } from "@/data/generate";
-interface EquipmentItem {
-  name: string;
-  quantity: number;
-}
-
-interface Equipment {
-  weapons: EquipmentItem[];
-  armor: EquipmentItem[];
-  adventuringGear: EquipmentItem[];
-  tools: EquipmentItem[];
-  currency: EquipmentItem[];
-}
-
-interface GenerationStatus {
-  step: string;
-  message: string;
-  equipment?: Equipment;
-}
+import { useGeneratedResult } from "./useGeneratedResult";
+import { Equipment } from "@/data/character";
 
 export const useEquipment = () => {
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [status, setStatus] = useState<GenerationStatus | null>(null);
-  const [equipment, setEquipment] = useState<Equipment | null>(null);
   const { character, updateCharacter } = useCurrentCharacter();
   const [hasAttemptedGeneration, setHasAttemptedGeneration] = useState(false);
-  const [event, setEvent] = useState<GenerationResult<Equipment> | null>(null);
+  const [equipment, setEquipment] = useState<Equipment | null>(null);
+  const {
+    startGeneration,
+    isGenerating,
+    error,
+    status,
+    result: equipmentResult,
+    event,
+  } = useGeneratedResult<Equipment>();
+
+
+  useEffect(() => {
+    if (character?.id && !character.equipment) {
+      generateEquipment();
+    } else if (character?.id && character.equipment) {
+      setEquipment(character.equipment);
+    }
+  }, [character]);
+
+  useEffect(() => {
+    if (equipmentResult) {
+      setEquipment(equipmentResult);
+    }
+  }, [equipmentResult]);
 
   const generateEquipment = async () => {
     if (!character) {
-      setError("No character selected");
-      return;
+      throw new Error("No character selected");
     }
 
     if (hasAttemptedGeneration) {
       return;
     }
 
-    setIsGenerating(true);
-    setError(null);
-    setStatus(null);
     setHasAttemptedGeneration(true);
 
-    try {
+    await startGeneration(async () => {
       const response = await fetch("/api/character/generate-equipment", {
         method: "POST",
         headers: {
@@ -62,48 +59,12 @@ export const useEquipment = () => {
 
       const { event, equipment } = await response.json();
 
-      if (equipment) {
-        setEquipment(equipment);
-        setIsGenerating(false);
-        if (character) {
-          updateCharacter({ equipment: equipment });
-        }
-      } else {
-        setEvent(event);
-        pollStatus(event.id);
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to generate equipment");
-      setIsGenerating(false);
-    }
-  };
-
-  const pollStatus = async (resultId: string) => {
-    try {
-      const response = await fetch(`/api/generate/results?id=${resultId}`);
-      if (!response.ok) {
-        throw new Error("Failed to fetch status");
+      if (equipment && character) {
+        updateCharacter({ equipment });
       }
 
-      const data = await response.json();
-      setStatus(data);
-
-      const result = data.result;
-
-      if (result) {
-        setEquipment(result);
-        setIsGenerating(false);
-        if (character) {
-          updateCharacter({ equipment: result });
-        }
-      } else if (result?.step !== "complete") {
-        // Continue polling if not complete
-        setTimeout(() => pollStatus(resultId), 1000);
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to fetch status");
-      setIsGenerating(false);
-    }
+      return { event, result: equipment };
+    });
   };
 
   return {

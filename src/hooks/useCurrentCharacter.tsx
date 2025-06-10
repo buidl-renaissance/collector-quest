@@ -10,23 +10,25 @@ export const useCurrentCharacter = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [characterId, setCharacterId] = useState<string | null>(null);
-  
   const cache = useCache();
   const { getCharacter } = useCharacter(characterId);
+
+
+  useEffect(() => {
+    const storedCharacterId = getCurrentCharacterId();
+    setCharacterId(storedCharacterId);
+  }, []); 
 
   useEffect(() => {
     const loadCharacter = async () => {
       try {
-        const storedCharacterId = getCurrentCharacterId();
-        setCharacterId(storedCharacterId);
 
-        if (!storedCharacterId) {
+        if (!characterId) {
           setLoading(false);
           return;
         }
 
         const characterData = await getCharacter();
-        
         if (characterData) {
           setCharacter(characterData);
         }
@@ -132,4 +134,3 @@ export const useCurrentCharacter = () => {
     updateCharacterTrait,
   };
 };
-
