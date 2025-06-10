@@ -4,7 +4,7 @@ import { getCurrentCharacterId, getCharacterKey, setCharacterKey } from '@/utils
 import { useGeneratedResult } from './useGeneratedResult';
 
 export function useCharacterSheet() {
-  const { character } = useCurrentCharacter();
+  const { character, updateCharacter } = useCurrentCharacter();
   const [characterSheet, setCharacterSheet] = useState<CharacterSheet | null>(null);
   const [currentStep, setCurrentStep] = useState<string>("calculate-abilities");
 
@@ -63,6 +63,7 @@ export function useCharacterSheet() {
       setCharacterSheet(characterSheetResult);
       if (character?.id) {  
         setCharacterKey(character.id, 'sheet', characterSheetResult);
+        updateCharacter({ sheet: characterSheetResult });
       }
     }
   }, [characterSheetResult]);

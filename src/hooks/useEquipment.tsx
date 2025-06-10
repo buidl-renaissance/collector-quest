@@ -28,6 +28,9 @@ export const useEquipment = () => {
   useEffect(() => {
     if (equipmentResult) {
       setEquipment(equipmentResult);
+      if (character?.id) {
+        updateCharacter({ equipment: equipmentResult });
+      }
     }
   }, [equipmentResult]);
 
