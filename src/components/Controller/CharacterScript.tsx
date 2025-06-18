@@ -7,6 +7,7 @@ interface CharacterScriptProps {
   image?: string;
   imageTitle?: string;
   imageCaption?: string;
+  script?: string;
   locale?: {
     village?: string;
     region?: string;
@@ -18,6 +19,7 @@ export const CharacterScript = ({
   image = "/images/the-sleeping-dragon-tavern.png",
   imageTitle = "The Sleeping Dragon Tavern",
   imageCaption,
+  script,
   locale,
 }: CharacterScriptProps) => {
   return (
@@ -29,14 +31,7 @@ export const CharacterScript = ({
         </CharacterHeader>
       )}
 
-      <ScriptContent>
-        You find yourself in the warm, inviting atmosphere of The Sleeping
-        Dragon Tavern. The air is thick with the aroma of spiced mead and hearty
-        stew. Wooden beams stretch across the ceiling, their ancient timbers
-        darkened by years of hearth smoke. A mix of locals and travelers occupy
-        the scattered tables, their conversations creating a gentle murmur
-        throughout the room.
-      </ScriptContent>
+      <ScriptContent>{script}</ScriptContent>
       <LocationHeader>
         {image && (
           <LocationImageContainer>

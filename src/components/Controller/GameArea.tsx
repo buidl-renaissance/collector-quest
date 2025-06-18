@@ -1,12 +1,62 @@
 import styled from "@emotion/styled";
 import { ReactNode } from "react";
 import { CharacterScript } from "./CharacterScript";
+import { useCampaignIntroduction } from "@/hooks/useCampaignIntroduction";
 
 interface GameAreaProps {
   children?: ReactNode;
 }
 
 export const GameArea = ({ children }: GameAreaProps) => {
+  const { introductionData, loading, error, generationStatus, generationMessage } = useCampaignIntroduction();
+
+  // Show loading state
+  if (loading) {
+    return (
+      <GameAreaContainer>
+        <GameContent>
+          <DungeonMasterSection>
+            <DmHeader>
+              <DmImageContainer>
+                <DmImage src="/images/COLLECTOR-quest-intro-1024.jpg" alt="Dungeon Master" />
+              </DmImageContainer>
+              <DmInfo>
+                <DmTitle>Dungeon Master</DmTitle>
+              </DmInfo>
+            </DmHeader>
+            <LoadingMessage>
+              {generationMessage || 'Loading your adventure...'}
+            </LoadingMessage>
+          </DungeonMasterSection>
+          {children}
+        </GameContent>
+      </GameAreaContainer>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <GameAreaContainer>
+        <GameContent>
+          <DungeonMasterSection>
+            <DmHeader>
+              <DmImageContainer>
+                <DmImage src="/images/COLLECTOR-quest-intro-1024.jpg" alt="Dungeon Master" />
+              </DmImageContainer>
+              <DmInfo>
+                <DmTitle>Dungeon Master</DmTitle>
+              </DmInfo>
+            </DmHeader>
+            <ErrorMessage>Error: {error}</ErrorMessage>
+          </DungeonMasterSection>
+          {children}
+        </GameContent>
+      </GameAreaContainer>
+    );
+  }
+
+  // Show introduction or fallback
   return (
     <GameAreaContainer>
       <GameContent>
@@ -19,16 +69,31 @@ export const GameArea = ({ children }: GameAreaProps) => {
               <DmTitle>Dungeon Master</DmTitle>
             </DmInfo>
           </DmHeader>
-          <CharacterScript 
-            character={null}
-            image="/images/the-sleeping-dragon-tavern.png"
-            imageTitle="The Sleeping Dragon Tavern"
-            imageCaption="The Sleeping Dragon Tavern"
-            locale={{
-              village: "Willowbrook",
-              region: "Greenmeadow Valley"
-            }}
-          />
+          {introductionData ? (
+            <CharacterScript
+              character={null}
+              script={introductionData.introduction}
+              image={introductionData.locale.imageUrl || "/images/the-sleeping-dragon-tavern.png"}
+              imageTitle={introductionData.locale.name}
+              imageCaption={introductionData.locale.description}
+              locale={{
+                village: introductionData.locale.name,
+                region: introductionData.locale.type
+              }}
+            />
+          ) : (
+            <CharacterScript
+              character={null}
+              script={"You find yourself in the warm, inviting atmosphere of The Sleeping Dragon Tavern. The air is thick with the aroma of spiced mead and hearty stew. Wooden beams stretch across the ceiling, their ancient timbers darkened by years of hearth smoke. A mix of locals and travelers occupy the scattered tables, their conversations creating a gentle murmur throughout the room."}
+              image="/images/the-sleeping-dragon-tavern.png"
+              imageTitle="The Sleeping Dragon Tavern"
+              imageCaption="The Sleeping Dragon Tavern"
+              locale={{
+                village: "Willowbrook",
+                region: "Greenmeadow Valley"
+              }}
+            />
+          )}
         </DungeonMasterSection>
         {children}
       </GameContent>
@@ -115,4 +180,21 @@ const DmTitle = styled.div`
   font-size: 1.2rem;
   font-weight: 600;
   font-family: "Cinzel", serif;
+`;
+
+const LoadingMessage = styled.div`
+  color: #d4af37;
+  font-family: "Cinzel", serif;
+  font-size: 1rem;
+  text-align: center;
+  padding: 2rem;
+  font-style: italic;
+`;
+
+const ErrorMessage = styled.div`
+  color: #ff6b6b;
+  font-family: "Cinzel", serif;
+  font-size: 1rem;
+  text-align: center;
+  padding: 2rem;
 `;

@@ -9,6 +9,7 @@ import { generateCharacterSheet } from "@/inngest/generateCharacterSheet";
 import { generateRelicFunction } from "@/inngest/generateArtifactRelic";
 import { generateQuestFunction } from "@/inngest/generateQuest";
 import { generateCampaignFunction } from "@/inngest/generateCampaign";
+import { generateCampaignIntroductionFunction } from "@/inngest/generateCampaignIntroduction";
 
 export const config = {
   api: {
@@ -34,5 +35,6 @@ export default serve({
     generateTraits,
     generateEquipment,
     generateCampaignFunction,
+    generateCampaignIntroductionFunction,
   ],
 });

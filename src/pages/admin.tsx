@@ -300,6 +300,12 @@ const AdminPage: React.FC = () => {
                 Return to the main realm view
               </CardDescription>
             </AdminCard>
+            
+            <AdminCard href="/admin/locales">
+              <CardIcon><FaMapMarkedAlt /></CardIcon>
+              <CardTitle>Manage Locales</CardTitle>
+              <CardDescription>View, create, edit, and generate map locales</CardDescription>
+            </AdminCard>
           </AdminGrid>
         </Container>
         <BottomNavigationBar />
