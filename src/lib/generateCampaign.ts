@@ -1,47 +1,15 @@
 import OpenAI from 'openai';
 import { Character } from '../data/character';
+import { formatCharacterDescription, generateCharacterSummaries } from './character';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
 export async function generateCampaign(characters: Character[]) {
-  // Format characters into summaries
-  const characterSummaries = characters.map((char, i) => ({
-    name: char.name,
-    race: char.race?.name || 'Unknown',
-    class: char.class?.name || 'Unknown',
-    backstory: char.backstory || 'Unknown',
-    motivation: char.motivation || 'Unknown',
-    personality: char.traits?.personality?.join(', ') || 'Unknown',
-    bonds: char.traits?.bonds?.join(', ') || 'Unknown',
-    flaws: char.traits?.flaws?.join(', ') || 'Unknown',
-    alignment: char.traits?.alignment || 'Unknown',
-    deity: char.traits?.deity || 'Unknown',
-    background: char.traits?.background || 'Unknown',
-    ideals: char.traits?.ideals?.join(', ') || 'Unknown',
-    actions: char.traits?.actions?.join(', ') || 'Unknown',
-  }));
-
-  // Build character descriptions string
-  const characterDescriptions = characterSummaries
-    .map((char, i) => (
-      `${i + 1}. Name: ${char.name}\n` +
-      `   Race: ${char.race}\n` +
-      `   Class: ${char.class}\n` +
-      `   Background: ${char.background}\n` +
-      `   Motivation: ${char.motivation}\n` +
-      `   Personality: ${char.personality}\n` +
-      `   Bonds: ${char.bonds}\n` +
-      `   Flaws: ${char.flaws}\n` +
-      `   Alignment: ${char.alignment}\n` +
-      `   Deity: ${char.deity}\n` +
-      `   Background: ${char.background}\n` +
-      `   Ideals: ${char.ideals}\n` +
-      `   Actions: ${char.actions}`
-    ))
-    .join('\n\n');
-
+  const characterSummaries = generateCharacterSummaries(characters);
+  const characterDescriptions = characterSummaries.map((summary, index) => formatCharacterDescription(summary, `Character ${index + 1}:`)).join("\n\n");
+  
   const response = await openai.chat.completions.create({
     model: "gpt-4",
     messages: [
